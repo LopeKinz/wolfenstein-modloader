@@ -218,7 +218,7 @@ return null
 * Returns the overwritten on-disk bytes so a caller can journal them.
 
 `writeAsset(type, name, data)` applies `writeInPlace` to **every**
-occurrence (*Modding-Guide §5*).
+occurrence (*Modding-Guide §5*); an unknown asset is an error.
 
 ### 5.2 Rebuild
 
@@ -504,7 +504,8 @@ non-interlaced, all five filter types, multiple IDAT; returns RGBA. Others →
 ```
 
 `parseBsnf(bytes) -> [{language, hash, length, granule, formatTag, channels,
-sampleRate, avgBytesPerSec, blockAlign, bitsPerSample}]`. Duration =
+sampleRate, avgBytesPerSec, blockAlign, bitsPerSample}]` (bindings use their
+language's casing; `audio.json` uses snake_case keys). Duration =
 `granule / sampleRate`.
 
 ### 10.2 Streamed containers
@@ -528,7 +529,8 @@ checksum(payload) = BE u32( w0 ^ w1 ^ w2 ^ w3 ),  w = LE u32×4 of MD5(payload)
 
 `.dat` files and TNO `profile.bin`: `file[0:4] == checksum(file[4:])`.
 `checksum(b"") = 3b 75 65 5e`. API: `saveChecksum(payload) -> 4 bytes`,
-`verifySave(file) -> bool`, `fixSave(file) -> bytes`.
+`verifySave(file) -> bool`, `fixSave(file) -> bytes` (input shorter than 4
+bytes → error).
 
 ---
 
