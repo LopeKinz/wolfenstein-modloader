@@ -175,7 +175,8 @@ if r >= 13:
     n = ceil((r - 5) / 65540)          # number of stored data blocks
     L = r - 5 - 5*n                     # total padding bytes, L >= 3
     padding = "\n//" + " " * (L - 3)    # a Decl line comment
-    split padding into n chunks: every chunk 65535 bytes except the last
+    split padding into n chunks of at most 65535 bytes, filled in order
+    (the last chunk may be empty — its 5-byte block is still emitted)
     for each chunk c: s += [0x00, len(c) LE u16, ~len(c) LE u16] + c
     s += 00 00 00 FF FF                 # empty stored block = sync marker
     return (s, data + padding)
@@ -261,7 +262,7 @@ the input.
 | punct | one of `{ } ( ) = ; ,` |
 | word | maximal run of any other characters, stopping before whitespace, punct, `"`, or the start of `//` / `/*` |
 
-A word is **numeric** iff it matches
+A word is **numeric** iff it matches (ASCII digits only)
 `^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?f?$`.
 
 ### 6.2 Grammar
@@ -338,6 +339,8 @@ Examples: `edit.damageParms.maxDamage`, `edit.validAmmoClips.item[0].clipSize`,
   `format(node, value)` into the span, then re-parse. Unknown path →
   `DeclError`.
 * `setRaw(path, text)` — splice verbatim.
+* An edit whose result no longer parses raises `DeclError` and leaves the
+  Decl unchanged.
 
 ### 6.5 Value formatting — `format(node, value)`
 

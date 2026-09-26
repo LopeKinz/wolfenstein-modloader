@@ -16,7 +16,7 @@ from .errors import DeclError
 
 _PUNCT = "{}()=;,"
 _WS = " \t\r\n\f\v"
-_NUMERIC = re.compile(r"^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?f?$")
+_NUMERIC = re.compile(r"^[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)?f?$")
 
 Value = Union[str, int, float, bool]
 
@@ -424,9 +424,10 @@ class Decl:
         return self.set_raw(path, format_value(n, value))
 
     def _reparse(self, text: str) -> None:
+        nodes = _Parser(text).run()  # raises before any state changes
         self._text = text
-        self._nodes = _Parser(text).run()
-        self._index = {n.path: n for n in self._nodes}
+        self._nodes = nodes
+        self._index = {n.path: n for n in nodes}
 
 
 def parse(text: str) -> Decl:

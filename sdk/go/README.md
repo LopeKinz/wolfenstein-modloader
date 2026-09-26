@@ -13,8 +13,8 @@ import wolfsdk "github.com/LopeKinz/wolfenstein-modloader/sdk/go"
 ```
 
 The package implements the language-neutral contract in
-[`spec/SPEC.md`](../../spec/SPEC.md) and runs the shared test vectors in
-[`spec/vectors`](../../spec/vectors). Background on the file formats is in the
+[`spec/SPEC.md`](https://github.com/LopeKinz/wolfenstein-modloader/blob/main/spec/SPEC.md) and runs the shared test vectors in
+[`spec/vectors`](https://github.com/LopeKinz/wolfenstein-modloader/blob/main/spec/vectors). Background on the file formats is in the
 [project wiki](https://github.com/LopeKinz/wolfenstein-modloader/wiki).
 
 The full command-line tool with a journaled patcher (`apply` / `revert`,

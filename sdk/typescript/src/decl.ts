@@ -10,7 +10,7 @@ import { DeclError } from "./errors.js";
 
 const PUNCT = "{}()=;,";
 const WS = " \t\r\n\f\v";
-const NUMERIC = /^[+-]?(\p{Nd}+\.?\p{Nd}*|\.\p{Nd}+)([eE][+-]?\p{Nd}+)?f?$/u;
+const NUMERIC = /^[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)?f?$/;
 
 /** A value accepted by {@link Decl.set}. */
 export type Value = string | number | boolean;

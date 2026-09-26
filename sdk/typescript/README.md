@@ -9,8 +9,8 @@ parses audio descriptors, fixes save-game checksums and layers `mod.json`
 mods with conflict detection.
 
 This package is one binding of a language-neutral contract,
-[`spec/SPEC.md`](../../spec/SPEC.md), and passes the shared test vectors in
-[`spec/vectors/`](../../spec/vectors/). Background on the file formats is in the
+[`spec/SPEC.md`](https://github.com/LopeKinz/wolfenstein-modloader/blob/main/spec/SPEC.md), and passes the shared test vectors in
+[`spec/vectors/`](https://github.com/LopeKinz/wolfenstein-modloader/blob/main/spec/vectors/). Background on the file formats is in the
 [project wiki](https://github.com/LopeKinz/wolfenstein-modloader/wiki)
 (start with the
 [Modding Guide](https://github.com/LopeKinz/wolfenstein-modloader/wiki/Modding-Guide)
