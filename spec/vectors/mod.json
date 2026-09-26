@@ -1,0 +1,115 @@
+{
+  "base": {
+    "weapon:weapon/shotgun_base": "base/weapon__weapon_shotgun_base.decl",
+    "damage:damage/tungsten/mg60": "base/damage__damage_tungsten_mg60.decl",
+    "material:models/weapons/handgun/handgun_hg": "base/material__models_weapons_handgun_handgun_hg.decl"
+  },
+  "order": [
+    "low",
+    "high",
+    "legacy",
+    "mid"
+  ],
+  "sorted": [
+    "legacy",
+    "low",
+    "mid",
+    "high"
+  ],
+  "results": {
+    "damage:damage/tungsten/mg60": "expected/damage__damage_tungsten_mg60.decl",
+    "weapon:weapon/shotgun_base": "expected/weapon__weapon_shotgun_base.decl",
+    "material:models/weapons/handgun/handgun_hg": "expected/material__models_weapons_handgun_handgun_hg.decl"
+  },
+  "resultOrder": [
+    "damage:damage/tungsten/mg60",
+    "weapon:weapon/shotgun_base",
+    "material:models/weapons/handgun/handgun_hg"
+  ],
+  "conflicts": [
+    {
+      "kind": "path",
+      "asset": "weapon:weapon/shotgun_base",
+      "path": "edit.validAmmoClips.item[0].clipSize",
+      "mods": [
+        "low",
+        "high"
+      ],
+      "winner": "high"
+    },
+    {
+      "kind": "file",
+      "asset": "material:models/weapons/handgun/handgun_hg",
+      "path": null,
+      "mods": [
+        "mid",
+        "high"
+      ],
+      "winner": "high"
+    },
+    {
+      "kind": "file-over-set",
+      "asset": "material:models/weapons/handgun/handgun_hg",
+      "path": null,
+      "mods": [
+        "low",
+        "mid"
+      ],
+      "winner": "mid"
+    },
+    {
+      "kind": "file-over-set",
+      "asset": "material:models/weapons/handgun/handgun_hg",
+      "path": null,
+      "mods": [
+        "low",
+        "high"
+      ],
+      "winner": "high"
+    }
+  ],
+  "errors": [
+    {
+      "asset": "weapon:weapon/missing",
+      "mod": "legacy"
+    },
+    {
+      "asset": "weapon:weapon/shotgun_base",
+      "mod": "legacy"
+    }
+  ],
+  "invalid": [
+    [
+      "not an object",
+      "[]"
+    ],
+    [
+      "bad priority",
+      "{\"priority\": \"high\", \"assets\": {}}"
+    ],
+    [
+      "bad game",
+      "{\"game\": \"doom\", \"assets\": {}}"
+    ],
+    [
+      "no change",
+      "{\"assets\": {\"a:b\": {}}}"
+    ],
+    [
+      "bad key",
+      "{\"assets\": {\"nocolon\": {\"set\": {}}}}"
+    ],
+    [
+      "bad value",
+      "{\"assets\": {\"a:b\": {\"set\": {\"x\": [1]}}}}"
+    ],
+    [
+      "null value",
+      "{\"assets\": {\"a:b\": {\"set\": {\"x\": null}}}}"
+    ],
+    [
+      "bad json",
+      "{"
+    ]
+  ]
+}

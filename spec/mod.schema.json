@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/LopeKinz/wolfenstein-modloader/spec/mod.schema.json",
+  "title": "Wolfenstein SDK mod.json",
+  "description": "A mod: a list of changes to assets (Decls). See spec/SPEC.md §7.",
+  "type": "object",
+  "properties": {
+    "name": { "type": "string", "description": "Display name; defaults to the mod directory name." },
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "game": { "enum": ["tno", "tnc"], "description": "tno = The New Order, tnc = The New Colossus." },
+    "spiel": { "enum": ["tno", "tnc"], "description": "Legacy alias of 'game'." },
+    "priority": { "type": "integer", "default": 0, "description": "Low priorities are applied first; the highest wins." },
+    "assets": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[^:]+:.+$" },
+      "additionalProperties": { "$ref": "#/$defs/change" }
+    }
+  },
+  "patternProperties": {
+    "^[^:]+:.+$": { "$ref": "#/$defs/change", "description": "Legacy form: asset entries at the top level." }
+  },
+  "$defs": {
+    "change": {
+      "type": "object",
+      "properties": {
+        "set": {
+          "type": "object",
+          "description": "Decl path -> new value. Order is preserved.",
+          "additionalProperties": { "type": ["string", "number", "boolean"] }
+        },
+        "file": { "type": "string", "description": "Path (relative to the mod directory) of a full replacement." }
+      },
+      "anyOf": [{ "required": ["set"] }, { "required": ["file"] }],
+      "additionalProperties": false
+    }
+  }
+}

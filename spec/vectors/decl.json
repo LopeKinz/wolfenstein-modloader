@@ -1,0 +1,712 @@
+{
+  "parse": [
+    {
+      "file": "shotgun.decl",
+      "paths": [
+        [
+          "inherit",
+          "string",
+          "\"weapon/base\""
+        ],
+        [
+          "edit.isDualWieldable",
+          "word",
+          "true"
+        ],
+        [
+          "edit.ammoPerShot",
+          "word",
+          "1"
+        ],
+        [
+          "edit.handsFovScale",
+          "word",
+          "0.90"
+        ],
+        [
+          "edit.handsModelMD6",
+          "string",
+          "\"weapons/shotgun.md6\""
+        ],
+        [
+          "edit.initialAmmoDecl",
+          "string",
+          "\"ammo/shotgun\""
+        ],
+        [
+          "edit.firingIntervals.num",
+          "word",
+          "3"
+        ],
+        [
+          "edit.firingIntervals.firingIntervals[0]",
+          "word",
+          "200"
+        ],
+        [
+          "edit.firingIntervals.firingIntervals[1]",
+          "word",
+          "200"
+        ],
+        [
+          "edit.firingIntervals.firingIntervals[2]",
+          "word",
+          "200"
+        ],
+        [
+          "edit.validAmmoClips.num",
+          "word",
+          "1"
+        ],
+        [
+          "edit.validAmmoClips.item[0].clipSize",
+          "word",
+          "20"
+        ]
+      ],
+      "blocks": [
+        "edit",
+        "edit.firingIntervals",
+        "edit.validAmmoClips",
+        "edit.validAmmoClips.item[0]"
+      ]
+    },
+    {
+      "file": "mg60.decl",
+      "paths": [
+        [
+          "edit.damageParms.minDamage",
+          "word",
+          "12.5"
+        ],
+        [
+          "edit.damageParms.maxDamage",
+          "word",
+          "17.500000"
+        ],
+        [
+          "edit.damageParms.ragdollImpulseMag",
+          "word",
+          "500"
+        ],
+        [
+          "edit.damageParms.goreTypes",
+          "string",
+          "\"GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND\""
+        ],
+        [
+          "edit.damageParms.declGoreBehavior",
+          "string",
+          "\"standard/heavy\""
+        ]
+      ],
+      "blocks": [
+        "edit",
+        "edit.damageParms"
+      ]
+    },
+    {
+      "file": "handgun.decl",
+      "paths": [
+        [
+          "diffusemap",
+          "string",
+          "\"models/weapons/Handgun/Handgun\""
+        ],
+        [
+          "specularmap",
+          "string",
+          "\"models/weapons/Handgun/Handgun_s\""
+        ],
+        [
+          "virtualmapping.[0]",
+          "word",
+          "0.015625"
+        ],
+        [
+          "virtualmapping.[1]",
+          "word",
+          "0.015625"
+        ],
+        [
+          "virtualmapping.[2]",
+          "word",
+          "0.078125"
+        ],
+        [
+          "virtualmapping.[3]",
+          "word",
+          "0.031250"
+        ],
+        [
+          "usevirtualmapping",
+          "word",
+          "1"
+        ]
+      ],
+      "blocks": [
+        "virtualmapping"
+      ]
+    },
+    {
+      "file": "material.decl",
+      "paths": [
+        [
+          "surfacetype",
+          "word",
+          "5.000000"
+        ],
+        [
+          "twoSided",
+          "flag",
+          "twoSided"
+        ],
+        [
+          "sssblurscale",
+          "vector",
+          "2.5 1.0 0.6 0.1"
+        ],
+        [
+          "virtualmapping.[0]",
+          "word",
+          "0.015625"
+        ],
+        [
+          "virtualmapping.[1]",
+          "word",
+          "0.015625"
+        ],
+        [
+          "virtualmapping.[2]",
+          "word",
+          "0.078125"
+        ],
+        [
+          "virtualmapping.[3]",
+          "word",
+          "0.031250"
+        ],
+        [
+          "offset",
+          "tuple",
+          "( 0 0 0 )"
+        ],
+        [
+          "prop:_info.tag:muzzle.trans",
+          "tuple",
+          "( 0 0 0 )"
+        ],
+        [
+          "prop:_info.tag:muzzle.rot",
+          "tuple",
+          "( 1 0 0 ( 0 1 0 ) )"
+        ],
+        [
+          "prop:_info.tag:eject.trans",
+          "tuple",
+          "( 1 2.5 -3 )"
+        ],
+        [
+          "bumpmap",
+          "string",
+          "\"models/x_local\""
+        ],
+        [
+          "powermip",
+          "word",
+          "-1"
+        ],
+        [
+          "scale",
+          "word",
+          "1.0f"
+        ]
+      ],
+      "blocks": [
+        "virtualmapping",
+        "prop:_info",
+        "prop:_info.tag:muzzle",
+        "prop:_info.tag:eject"
+      ]
+    },
+    {
+      "file": "table.decl",
+      "paths": [
+        [
+          "spline",
+          "word",
+          "clamp"
+        ],
+        [
+          "min",
+          "word",
+          "0.5"
+        ],
+        [
+          "max",
+          "word",
+          "0.5"
+        ],
+        [
+          "left",
+          "word",
+          "0"
+        ],
+        [
+          "right",
+          "word",
+          "1"
+        ],
+        [
+          "[0].[0]",
+          "word",
+          "0:0"
+        ],
+        [
+          "[0].[1]",
+          "word",
+          "1:1"
+        ]
+      ],
+      "blocks": [
+        "[0]"
+      ]
+    },
+    {
+      "file": "skins.decl",
+      "paths": [
+        [
+          "white.models/weapons/handgun/handgun_hg",
+          "string",
+          "\"models/weapons/handgun/handgun_white_hg\""
+        ],
+        [
+          "white.models/weapons/handgun/handgun_silencer",
+          "string",
+          "\"models/weapons/handgun/handgun_silencer_white\""
+        ]
+      ],
+      "blocks": [
+        "white"
+      ]
+    },
+    {
+      "file": "md6.decl",
+      "paths": [
+        [
+          "init.inherit",
+          "string",
+          "\"characters/standard/base.md6\""
+        ],
+        [
+          "init.multimesh.base",
+          "string",
+          "\"md6/models/soldier.md6mesh\""
+        ],
+        [
+          "joints.joint:head.parent",
+          "string",
+          "\"neck\""
+        ],
+        [
+          "joints.joint:head#1.parent",
+          "string",
+          "\"spine\""
+        ]
+      ],
+      "blocks": [
+        "init",
+        "init.multimesh",
+        "joints",
+        "joints.joint:head",
+        "joints.joint:head#1"
+      ]
+    },
+    {
+      "file": "duplicates.decl",
+      "paths": [
+        [
+          "edit.dup",
+          "word",
+          "1"
+        ],
+        [
+          "edit.dup#1",
+          "word",
+          "2"
+        ],
+        [
+          "edit.dup#2",
+          "word",
+          "3"
+        ],
+        [
+          "edit.path",
+          "string",
+          "\"C:\\\\games\\\\\\\"quoted\\\"\""
+        ],
+        [
+          "edit.list.[0]",
+          "string",
+          "\"a\""
+        ],
+        [
+          "edit.list.[1]",
+          "string",
+          "\"b\""
+        ],
+        [
+          "edit.list.[2]",
+          "word",
+          "c"
+        ],
+        [
+          "edit.flag2",
+          "flag",
+          "flag2"
+        ],
+        [
+          "trailing",
+          "word",
+          "7"
+        ]
+      ],
+      "blocks": [
+        "edit",
+        "edit.list",
+        "edit.empty"
+      ]
+    },
+    {
+      "file": "crlf.decl",
+      "paths": [
+        [
+          "inherit",
+          "string",
+          "\"weapon/base\""
+        ],
+        [
+          "edit.isDualWieldable",
+          "word",
+          "true"
+        ],
+        [
+          "edit.ammoPerShot",
+          "word",
+          "1"
+        ],
+        [
+          "edit.handsFovScale",
+          "word",
+          "0.90"
+        ],
+        [
+          "edit.handsModelMD6",
+          "string",
+          "\"weapons/shotgun.md6\""
+        ],
+        [
+          "edit.initialAmmoDecl",
+          "string",
+          "\"ammo/shotgun\""
+        ],
+        [
+          "edit.firingIntervals.num",
+          "word",
+          "3"
+        ],
+        [
+          "edit.firingIntervals.firingIntervals[0]",
+          "word",
+          "200"
+        ],
+        [
+          "edit.firingIntervals.firingIntervals[1]",
+          "word",
+          "200"
+        ],
+        [
+          "edit.firingIntervals.firingIntervals[2]",
+          "word",
+          "200"
+        ],
+        [
+          "edit.validAmmoClips.num",
+          "word",
+          "1"
+        ],
+        [
+          "edit.validAmmoClips.item[0].clipSize",
+          "word",
+          "20"
+        ]
+      ],
+      "blocks": [
+        "edit",
+        "edit.firingIntervals",
+        "edit.validAmmoClips",
+        "edit.validAmmoClips.item[0]"
+      ]
+    }
+  ],
+  "edits": [
+    {
+      "file": "shotgun.decl",
+      "set": [
+        [
+          "edit.firingIntervals.firingIntervals[0]",
+          120
+        ],
+        [
+          "edit.firingIntervals.firingIntervals[2]",
+          120
+        ],
+        [
+          "edit.validAmmoClips.item[0].clipSize",
+          40
+        ],
+        [
+          "edit.isDualWieldable",
+          false
+        ],
+        [
+          "edit.handsFovScale",
+          1
+        ],
+        [
+          "inherit",
+          "weapon/other"
+        ]
+      ],
+      "expect": "edit0.out"
+    },
+    {
+      "file": "mg60.decl",
+      "set": [
+        [
+          "edit.damageParms.minDamage",
+          22
+        ],
+        [
+          "edit.damageParms.maxDamage",
+          30.25
+        ],
+        [
+          "edit.damageParms.ragdollImpulseMag",
+          1200
+        ],
+        [
+          "edit.damageParms.goreTypes",
+          "GORETYPE_NONE \"x\""
+        ]
+      ],
+      "expect": "edit1.out"
+    },
+    {
+      "file": "handgun.decl",
+      "set": [
+        [
+          "diffusemap",
+          "models/weapons/Handgun/Handgun_white_hg"
+        ],
+        [
+          "virtualmapping",
+          "{ 0.015625, 0.015625, 0.000000, 0.062500 }"
+        ]
+      ],
+      "expect": "edit2.out"
+    },
+    {
+      "file": "handgun.decl",
+      "set": [
+        [
+          "virtualmapping.[3]",
+          0.0625
+        ],
+        [
+          "usevirtualmapping",
+          0
+        ]
+      ],
+      "expect": "edit3.out"
+    },
+    {
+      "file": "material.decl",
+      "set": [
+        [
+          "surfacetype",
+          7
+        ],
+        [
+          "sssblurscale",
+          "1 1 1 1"
+        ],
+        [
+          "prop:_info.tag:eject.trans",
+          "( 0 0 0 )"
+        ],
+        [
+          "scale",
+          2
+        ],
+        [
+          "powermip",
+          -2.5
+        ],
+        [
+          "bumpmap",
+          "models/y"
+        ]
+      ],
+      "expect": "edit4.out"
+    },
+    {
+      "file": "table.decl",
+      "set": [
+        [
+          "min",
+          0
+        ],
+        [
+          "max",
+          0
+        ]
+      ],
+      "expect": "edit5.out"
+    },
+    {
+      "file": "skins.decl",
+      "set": [
+        [
+          "white.\"models/weapons/handgun/handgun_hg\"",
+          "models/other"
+        ]
+      ],
+      "expect": "edit6.out"
+    },
+    {
+      "file": "md6.decl",
+      "set": [
+        [
+          "init.multimesh.base",
+          "md6/models/other.md6mesh"
+        ],
+        [
+          "joints.joint:head#1.parent",
+          "pelvis"
+        ]
+      ],
+      "expect": "edit7.out"
+    },
+    {
+      "file": "duplicates.decl",
+      "set": [
+        [
+          "edit.dup#2",
+          30
+        ],
+        [
+          "edit.path",
+          "D:\\x"
+        ],
+        [
+          "trailing",
+          1e-07
+        ]
+      ],
+      "expect": "edit8.out"
+    },
+    {
+      "file": "crlf.decl",
+      "set": [
+        [
+          "edit.validAmmoClips.item[0].clipSize",
+          99
+        ]
+      ],
+      "expect": "edit9.out"
+    }
+  ],
+  "parseErrors": [
+    "{ a = 1;",
+    "{ a = \"unterminated }",
+    "{ a = ; }",
+    "{ a = }",
+    "{ a = ( 1 2 }"
+  ],
+  "setErrors": [
+    {
+      "file": "shotgun.decl",
+      "path": "edit.nope",
+      "value": 1
+    },
+    {
+      "file": "material.decl",
+      "path": "twoSided",
+      "value": 1
+    }
+  ],
+  "paths": [
+    [
+      "edit.damageParms.maxDamage",
+      [
+        "edit",
+        "damageParms",
+        "maxDamage"
+      ]
+    ],
+    [
+      "edit.validAmmoClips.item[0].clipSize",
+      [
+        "edit",
+        "validAmmoClips",
+        "item[0]",
+        "clipSize"
+      ]
+    ],
+    [
+      "props.prop:_info.tag:muzzle.trans",
+      [
+        "props",
+        "prop:_info",
+        "tag:muzzle",
+        "trans"
+      ]
+    ],
+    [
+      "virtualmapping.[2]",
+      [
+        "virtualmapping",
+        "[2]"
+      ]
+    ],
+    [
+      "white.\"models/a.b\"",
+      [
+        "white",
+        "models/a.b"
+      ]
+    ],
+    [
+      "\"a b\".\"c\\\"d\".e",
+      [
+        "a b",
+        "c\"d",
+        "e"
+      ]
+    ],
+    [
+      "\"x\\\\y\"",
+      [
+        "x\\y"
+      ]
+    ]
+  ],
+  "pathErrors": [
+    "",
+    "a..b",
+    ".a",
+    "a.",
+    "\"open"
+  ]
+}

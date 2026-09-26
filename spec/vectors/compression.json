@@ -1,0 +1,153 @@
+{
+  "files": {
+    "decl": "compression/decl.bin",
+    "random": "compression/random.bin",
+    "large": "compression/large.bin"
+  },
+  "cases": [
+    {
+      "data": "decl",
+      "delta": 0,
+      "pad": false,
+      "mustFit": true
+    },
+    {
+      "data": "decl",
+      "delta": 0,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "decl",
+      "delta": -1,
+      "pad": true,
+      "mustFit": false
+    },
+    {
+      "data": "decl",
+      "delta": 13,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "decl",
+      "delta": 200,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "decl",
+      "delta": 200,
+      "pad": false,
+      "mustFit": false
+    },
+    {
+      "data": "decl",
+      "delta": 70000,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "decl",
+      "delta": 140000,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "random",
+      "delta": 0,
+      "pad": false,
+      "mustFit": true
+    },
+    {
+      "data": "random",
+      "delta": 0,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "random",
+      "delta": -1,
+      "pad": true,
+      "mustFit": false
+    },
+    {
+      "data": "random",
+      "delta": 13,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "random",
+      "delta": 200,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "random",
+      "delta": 200,
+      "pad": false,
+      "mustFit": false
+    },
+    {
+      "data": "random",
+      "delta": 70000,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "random",
+      "delta": 140000,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "large",
+      "delta": 0,
+      "pad": false,
+      "mustFit": true
+    },
+    {
+      "data": "large",
+      "delta": 0,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "large",
+      "delta": -1,
+      "pad": true,
+      "mustFit": false
+    },
+    {
+      "data": "large",
+      "delta": 13,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "large",
+      "delta": 200,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "large",
+      "delta": 200,
+      "pad": false,
+      "mustFit": false
+    },
+    {
+      "data": "large",
+      "delta": 70000,
+      "pad": true,
+      "mustFit": true
+    },
+    {
+      "data": "large",
+      "delta": 140000,
+      "pad": true,
+      "mustFit": true
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "decode": [
+    {
+      "file": "rgba8.bim",
+      "hash": 287454020,
+      "header": [
+        0,
+        4,
+        2,
+        1,
+        1,
+        0,
+        3,
+        0,
+        0,
+        0,
+        0,
+        4,
+        2
+      ],
+      "mips": [
+        [
+          4,
+          2,
+          32
+        ]
+      ],
+      "width": 4,
+      "height": 2,
+      "rgbaSha256": "3635fbd0c7a804f45b353cae338efc9e5c232b1dfd8f7fbde7f0cbfc4f50441b",
+      "rgbaHex": "68b61bce10efb005555e48c86836a722129e22d49164d9e13561b5d5bfaa20d9"
+    },
+    {
+      "file": "a8.bim",
+      "hash": 85,
+      "header": [
+        0,
+        5,
+        3,
+        1,
+        1,
+        0,
+        5,
+        0,
+        0,
+        0,
+        0,
+        5,
+        3
+      ],
+      "mips": [
+        [
+          5,
+          3,
+          15
+        ]
+      ],
+      "width": 5,
+      "height": 3,
+      "rgbaSha256": "57d272a95cfbd1e398f77fa2be4d23d6332338d8e173d602622c94e46c16dfe1",
+      "rgbaHex": "747474ff7b7b7bff878787ff787878ff040404ffe4e4e4ff919191ff2f2f2fff1e1e1eff313131ff1c1c1cffb7b7b7ffd0d0d0ff1a1a1afffcfcfcff"
+    },
+    {
+      "file": "bc1.bim",
+      "hash": 7,
+      "header": [
+        0,
+        8,
+        8,
+        1,
+        2,
+        0,
+        10,
+        0,
+        0,
+        0,
+        0,
+        8,
+        8
+      ],
+      "mips": [
+        [
+          8,
+          8,
+          32
+        ],
+        [
+          4,
+          4,
+          8
+        ]
+      ],
+      "width": 8,
+      "height": 8,
+      "rgbaSha256": "7a18ad9ef7dad14c6f891ea6481b9972d27c9a8bb9ebba3a0c8bbfbe042a3587",
+      "rgbaHex": null
+    },
+    {
+      "file": "bc3.bim",
+      "hash": 9,
+      "header": [
+        0,
+        6,
+        5,
+        1,
+        1,
+        0,
+        11,
+        0,
+        0,
+        0,
+        0,
+        6,
+        5
+      ],
+      "mips": [
+        [
+          6,
+          5,
+          64
+        ]
+      ],
+      "width": 6,
+      "height": 5,
+      "rgbaSha256": "9def2c9354f4e98a14c37b9068b8af7522c930cbd3bcc2b115498c6e17f85c7e",
+      "rgbaHex": null
+    },
+    {
+      "file": "short.bim",
+      "hash": 1,
+      "header": [
+        0,
+        1,
+        1,
+        1,
+        3,
+        0,
+        3,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "mips": [
+        [
+          1,
+          1,
+          4
+        ]
+      ],
+      "width": 1,
+      "height": 1,
+      "rgbaSha256": "9f64a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a",
+      "rgbaHex": "01020304"
+    }
+  ],
+  "badMagic": [
+    "bad_magic.bim"
+  ],
+  "encode": {
+    "template": "bc1.bim",
+    "width": 2,
+    "height": 1,
+    "rgbaHex": "0001020304050607",
+    "expect": "encoded.bim"
+  },
+  "png": [
+    {
+      "file": "rgba.png",
+      "width": 7,
+      "height": 6,
+      "rgbaSha256": "7ee4479a34a18791bb5f018973a0e2f70771c3aaa184da40575f783401a9c746"
+    },
+    {
+      "file": "rgb.png",
+      "width": 5,
+      "height": 5,
+      "rgbaSha256": "9c622a2469492195183ab41517dc3568b57da7acacee36719fa544444507a3f1"
+    },
+    {
+      "file": "grey.png",
+      "width": 3,
+      "height": 5,
+      "rgbaSha256": "7ee5846f609694d2910d59a06a058e9be3b6726156bfe0549407df5c97e42f70"
+    },
+    {
+      "file": "greyalpha.png",
+      "width": 4,
+      "height": 5,
+      "rgbaSha256": "063a5d6f70a50b36d38d1bedb75c1c2ee5b809dcbf068b6f53cae2475b07e238"
+    }
+  ]
+}

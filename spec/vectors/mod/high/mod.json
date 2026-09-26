@@ -1,0 +1,14 @@
+{
+  "name": "high",
+  "priority": 5,
+  "assets": {
+    "weapon:weapon/shotgun_base": {
+      "set": {
+        "edit.validAmmoClips.item[0].clipSize": 50
+      }
+    },
+    "material:models/weapons/handgun/handgun_hg": {
+      "file": "handgun_white.decl"
+    }
+  }
+}

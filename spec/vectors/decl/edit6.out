@@ -1,0 +1,6 @@
+{
+	white {
+		"models/weapons/handgun/handgun_hg" "models/other"
+		"models/weapons/handgun/handgun_silencer" "models/weapons/handgun/handgun_silencer_white"
+	}
+}

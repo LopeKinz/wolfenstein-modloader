@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wolfenstein-sdk"
+version = "0.1.0"
+description = "SDK for modding Wolfenstein: The New Order and The New Colossus — archives, Decls, BIM images, audio descriptors, save checksums"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{ name = "LopeKinz" }]
+keywords = ["wolfenstein", "modding", "id-tech", "decl", "reverse-engineering"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: Games/Entertainment :: First Person Shooters",
+  "Topic :: Software Development :: Libraries",
+]
+
+[project.urls]
+Homepage = "https://github.com/LopeKinz/wolfenstein-modloader"
+Documentation = "https://github.com/LopeKinz/wolfenstein-modloader/wiki"
+Specification = "https://github.com/LopeKinz/wolfenstein-modloader/blob/main/spec/SPEC.md"
+
+[project.scripts]
+wolfsdk = "wolfsdk.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

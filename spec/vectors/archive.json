@@ -1,0 +1,223 @@
+{
+  "pairs": [
+    [
+      "chunk0.index",
+      "chunk0.resources"
+    ],
+    [
+      "chunk1.index",
+      "chunk1.resources"
+    ],
+    [
+      "chunk9.index",
+      "chunk9.resources"
+    ]
+  ],
+  "chunks": [
+    {
+      "index": "chunk0.index",
+      "resources": "chunk0.resources",
+      "counterA": 4,
+      "counterB": 5,
+      "resourcesSize": 1056,
+      "entries": [
+        {
+          "index": 0,
+          "type": "weapon",
+          "name": "weapon/shotgun_base",
+          "path": "generated/decls/weapon/weapon/shotgun_base.decl",
+          "offset": 16,
+          "usize": 390,
+          "csize": 223,
+          "start": 44,
+          "tripleOffset": 128,
+          "trailerHex": "00000000000000000000000001",
+          "streamOffset": null,
+          "compressed": true,
+          "payloadSha256": "0fd291965d20467e1d2c2155c007890439eb53468cdaf8a490103767c5580508"
+        },
+        {
+          "index": 1,
+          "type": "damage",
+          "name": "damage/tungsten/mg60",
+          "path": "generated/decls/damage/damage/tungsten/mg60.decl",
+          "offset": 240,
+          "usize": 502,
+          "csize": 462,
+          "start": 153,
+          "tripleOffset": 239,
+          "trailerHex": "00000000000000000000000002",
+          "streamOffset": null,
+          "compressed": true,
+          "payloadSha256": "0e6e460e23eae8117dbe1cd47919872a7f64b95c22e5c84bb0064756172b1c1e"
+        },
+        {
+          "index": 2,
+          "type": "material",
+          "name": "models/weapons/handgun/handgun_hg",
+          "path": "generated/decls/material/models/weapons/handgun/handgun_hg.decl",
+          "offset": 704,
+          "usize": 177,
+          "csize": 177,
+          "start": 264,
+          "tripleOffset": 380,
+          "trailerHex": "00000000000000000000000003",
+          "streamOffset": null,
+          "compressed": false,
+          "payloadSha256": "eb1c5a561ee4bbd6f70b5ba2d04d4f8b3a98e225bd98bd619fec72c0ea302ca8"
+        },
+        {
+          "index": 3,
+          "type": "image",
+          "name": "ui/test_rgba8",
+          "path": "generated/image/ui/test_rgba8.bimage",
+          "offset": 896,
+          "usize": 104,
+          "csize": 68,
+          "start": 405,
+          "tripleOffset": 471,
+          "trailerHex": "00000000000000000000000004",
+          "streamOffset": null,
+          "compressed": true,
+          "payloadSha256": "d1caae19f29f79eef6f2fb836d2ff5188e7467126c7c3219ffd7f0405c123630"
+        },
+        {
+          "index": 4,
+          "type": "sample",
+          "name": "sound/test/imp_01.wav",
+          "path": "generated/sound/test/imp_01_vorbis.bsnd",
+          "offset": 976,
+          "usize": 74,
+          "csize": 74,
+          "start": 496,
+          "tripleOffset": 574,
+          "trailerHex": "00000000000000000000000000000000000000000000400000000000000000000000000000000005",
+          "streamOffset": 16384,
+          "compressed": false,
+          "payloadSha256": "cef76ea3169e06b537d3462ed7d6d2f8d5375860eb0e7304e5b17965a585fbd8"
+        }
+      ]
+    },
+    {
+      "index": "chunk1.index",
+      "resources": "chunk1.resources",
+      "counterA": 4,
+      "counterB": 5,
+      "resourcesSize": 832,
+      "entries": [
+        {
+          "index": 0,
+          "type": "image",
+          "name": "ui/test_bc1",
+          "path": "generated/image/ui/test_bc1.bimage",
+          "offset": 16,
+          "usize": 124,
+          "csize": 77,
+          "start": 44,
+          "tripleOffset": 106,
+          "trailerHex": "00000000000000000000000006",
+          "streamOffset": null,
+          "compressed": true,
+          "payloadSha256": "cc579b95abfe60ae9eee318865b18bcad1f77d75eafd13d9cc2c510ef311dfc5"
+        },
+        {
+          "index": 1,
+          "type": "weapon",
+          "name": "weapon/shotgun_base",
+          "path": "generated/decls/weapon/weapon/shotgun_base.decl",
+          "offset": 96,
+          "usize": 390,
+          "csize": 223,
+          "start": 131,
+          "tripleOffset": 215,
+          "trailerHex": "00000000000000000000000007",
+          "streamOffset": null,
+          "compressed": true,
+          "payloadSha256": "0fd291965d20467e1d2c2155c007890439eb53468cdaf8a490103767c5580508"
+        },
+        {
+          "index": 2,
+          "type": "sample",
+          "name": "sound/vo/english/test/line_01.wav",
+          "path": "generated/sound/vo/english/test/line_01_vorbis.bsnd",
+          "offset": 320,
+          "usize": 272,
+          "csize": 272,
+          "start": 240,
+          "tripleOffset": 342,
+          "trailerHex": "00000000000000000000000000000000000000000000000000000000000000000000000000000008",
+          "streamOffset": 0,
+          "compressed": false,
+          "payloadSha256": "6295b1c2b48b704eba540b4dbb26339948d54e231d2d180477cffb4b49754ad8"
+        },
+        {
+          "index": 3,
+          "type": "image",
+          "name": "ui/test_bc3",
+          "path": "generated/image/ui/test_bc3.bimage",
+          "offset": 592,
+          "usize": 136,
+          "csize": 101,
+          "start": 394,
+          "tripleOffset": 456,
+          "trailerHex": "00000000000000000000000009",
+          "streamOffset": null,
+          "compressed": true,
+          "payloadSha256": "3da7d3a8e74bd4b454d7736dc66d163805f3bdf887e5b08b6ead4cf4676c8703"
+        },
+        {
+          "index": 4,
+          "type": "skins",
+          "name": "weapons/handgun",
+          "path": "generated/decls/skins/weapons/handgun.decl",
+          "offset": 704,
+          "usize": 218,
+          "csize": 118,
+          "start": 481,
+          "tripleOffset": 555,
+          "trailerHex": "0000000000000000000000000a",
+          "streamOffset": null,
+          "compressed": true,
+          "payloadSha256": "fd4c8ab1b5a8a60a738d365a7f6dfaf3677fd20b4861f0604c5c7023163a6fed"
+        }
+      ]
+    }
+  ],
+  "find": {
+    "weapon:weapon/shotgun_base": [
+      "chunk0.index",
+      "chunk1.index"
+    ],
+    "damage:damage/tungsten/mg60": [
+      "chunk0.index"
+    ],
+    "weapon:nope": []
+  },
+  "writeInPlace": [
+    {
+      "asset": "damage:damage/tungsten/mg60",
+      "text": "{\n\tedit = {\n\t\tdamageParms = {\n\t\t\tminDamage = 12.5;\n\t\t\tmaxDamage = 30.000000;\n\t\t\tragdollImpulseMag = 500;\n\t\t\tgoreTypes = \"GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND\";\n\t\t\tdeclGoreBehavior = \"standard/heavy\";\n\t\t}\n\t}\n}\n",
+      "expect": "fits"
+    },
+    {
+      "asset": "material:models/weapons/handgun/handgun_hg",
+      "text": "{\n\tdiffusemap\t\"models/weapons/Handgun/Handgun\"\n\tspecularmap\t\"models/weapons/Handgun/Handgun_x\"\n\tvirtualmapping { 0.015625, 0.015625, 0.078125, 0.031250 }\n\tusevirtualmapping 1\n}\n",
+      "expect": "fits"
+    },
+    {
+      "asset": "material:models/weapons/handgun/handgun_hg",
+      "text": "{\n\tdiffusemap\t\"models/weapons/Handgun/Handgun\"\n\tspecularmap\t\"models/weapons/Handgun/Handgun_s\"\n\tvirtualmapping { 0.015625, 0.015625, 0.078125, 0.031250 }\n\tusevirtualmapping 1\n}\n ",
+      "expect": "nofit"
+    },
+    {
+      "asset": "weapon:weapon/shotgun_base",
+      "text": "{\n\tinherit = \"weapon/base\";\n\tedit = {\n\t\tisDualWieldable = true;\n\t\tammoPerShot = 1;\n\t\thandsFovScale = 0.90;\n\t\thandsModelMD6 = \"weapons/shotgun.md6\";\n\t\tinitialAmmoDecl = \"ammo/shotgun\";\n\t\tfiringIntervals = {\n\t\t\tnum = 3;\n\t\t\tfiringIntervals[0] = 200;\n\t\t\tfiringIntervals[1] = 200;\n\t\t\tfiringIntervals[2] = 200;\n\t\t}\n\t\tvalidAmmoClips = {\n\t\t\tnum = 1;\n\t\t\titem[0] = {\n\t\t\t\tclipSize = 20;\n\t\t\t}\n\t\t}\n\t}\n}\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n",
+      "expect": "nofit"
+    }
+  ],
+  "rebuild": {
+    "chunk": "chunk0.index",
+    "asset": "weapon:weapon/shotgun_base",
+    "text": "{\n\tinherit = \"weapon/base\";\n\tedit = {\n\t\tisDualWieldable = true;\n\t\tammoPerShot = 1;\n\t\thandsFovScale = 0.90;\n\t\thandsModelMD6 = \"weapons/shotgun.md6\";\n\t\tinitialAmmoDecl = \"ammo/shotgun\";\n\t\tfiringIntervals = {\n\t\t\tnum = 3;\n\t\t\tfiringIntervals[0] = 200;\n\t\t\tfiringIntervals[1] = 200;\n\t\t\tfiringIntervals[2] = 200;\n\t\t}\n\t\tvalidAmmoClips = {\n\t\t\tnum = 1;\n\t\t\titem[0] = {\n\t\t\t\tclipSize = 20;\n\t\t\t}\n\t\t}\n\t}\n}\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n// much longer\n"
+  }
+}

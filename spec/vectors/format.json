@@ -1,0 +1,152 @@
+[
+  {
+    "raw": "17.500000",
+    "kind": "word",
+    "value": 22,
+    "expected": "22.000000"
+  },
+  {
+    "raw": "17.500000",
+    "kind": "word",
+    "value": 0.0625,
+    "expected": "0.062500"
+  },
+  {
+    "raw": "17.500000",
+    "kind": "word",
+    "value": 0.1234567,
+    "expected": "0.1234567"
+  },
+  {
+    "raw": "25",
+    "kind": "word",
+    "value": 30,
+    "expected": "30"
+  },
+  {
+    "raw": "25",
+    "kind": "word",
+    "value": 30.5,
+    "expected": "30.5"
+  },
+  {
+    "raw": "25.",
+    "kind": "word",
+    "value": 3,
+    "expected": "3."
+  },
+  {
+    "raw": "1.0f",
+    "kind": "word",
+    "value": 2,
+    "expected": "2.0f"
+  },
+  {
+    "raw": "5f",
+    "kind": "word",
+    "value": 2.5,
+    "expected": "2.5f"
+  },
+  {
+    "raw": "1.5e3",
+    "kind": "word",
+    "value": 2,
+    "expected": "2.0"
+  },
+  {
+    "raw": "0.1",
+    "kind": "word",
+    "value": 0,
+    "expected": "0.0"
+  },
+  {
+    "raw": "0.1",
+    "kind": "word",
+    "value": -0.0,
+    "expected": "0.0"
+  },
+  {
+    "raw": "x",
+    "kind": "word",
+    "value": 1e-07,
+    "expected": "0.0000001"
+  },
+  {
+    "raw": "x",
+    "kind": "word",
+    "value": 1e+21,
+    "expected": "1000000000000000000000"
+  },
+  {
+    "raw": "x",
+    "kind": "word",
+    "value": -3,
+    "expected": "-3"
+  },
+  {
+    "raw": "x",
+    "kind": "word",
+    "value": 123456789.125,
+    "expected": "123456789.125"
+  },
+  {
+    "raw": "x",
+    "kind": "word",
+    "value": 0.30000000000000004,
+    "expected": "0.30000000000000004"
+  },
+  {
+    "raw": "true",
+    "kind": "word",
+    "value": true,
+    "expected": "true"
+  },
+  {
+    "raw": "1",
+    "kind": "word",
+    "value": false,
+    "expected": "false"
+  },
+  {
+    "raw": "\"a\"",
+    "kind": "string",
+    "value": "b",
+    "expected": "\"b\""
+  },
+  {
+    "raw": "\"a\"",
+    "kind": "string",
+    "value": "q\"\\",
+    "expected": "\"q\\\"\\\\\""
+  },
+  {
+    "raw": "word",
+    "kind": "word",
+    "value": "other",
+    "expected": "other"
+  },
+  {
+    "raw": "{ 1 }",
+    "kind": "block",
+    "value": "{ 2 }",
+    "expected": "{ 2 }"
+  },
+  {
+    "raw": "( 1 )",
+    "kind": "tuple",
+    "value": "( 2 )",
+    "expected": "( 2 )"
+  },
+  {
+    "raw": "1 2 3",
+    "kind": "vector",
+    "value": 4,
+    "expected": "4"
+  },
+  {
+    "raw": "\"a\"",
+    "kind": "string",
+    "value": 5,
+    "expected": "5"
+  }
+]

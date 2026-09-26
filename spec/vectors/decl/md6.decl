@@ -1,0 +1,8 @@
+init {
+	inherit "characters/standard/base.md6"
+	multimesh { base "md6/models/soldier.md6mesh" }
+}
+joints {
+	joint "head" { parent "neck" }
+	joint "head" { parent "spine" }
+}

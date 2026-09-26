@@ -1,0 +1,102 @@
+{
+  "bsnf": [
+    {
+      "file": "mono.bsnf",
+      "samples": [
+        {
+          "language": "",
+          "hash": 3405691582,
+          "length": 78,
+          "granule": 38822,
+          "format_tag": 26447,
+          "channels": 2,
+          "sample_rate": 48000,
+          "avg_bytes_per_sec": 192000,
+          "block_align": 4,
+          "bits_per_sample": 16
+        }
+      ]
+    },
+    {
+      "file": "multi.bsnf",
+      "samples": [
+        {
+          "language": "english",
+          "hash": 1,
+          "length": 1497,
+          "granule": 48000,
+          "format_tag": 26447,
+          "channels": 1,
+          "sample_rate": 48000,
+          "avg_bytes_per_sec": 96000,
+          "block_align": 2,
+          "bits_per_sample": 16
+        },
+        {
+          "language": "french",
+          "hash": 2,
+          "length": 1000,
+          "granule": 24000,
+          "format_tag": 26447,
+          "channels": 1,
+          "sample_rate": 48000,
+          "avg_bytes_per_sec": 96000,
+          "block_align": 2,
+          "bits_per_sample": 16
+        },
+        {
+          "language": "italian",
+          "hash": 3,
+          "length": 2000,
+          "granule": 12000,
+          "format_tag": 26447,
+          "channels": 2,
+          "sample_rate": 48000,
+          "avg_bytes_per_sec": 192000,
+          "block_align": 4,
+          "bits_per_sample": 16
+        },
+        {
+          "language": "spanish",
+          "hash": 4,
+          "length": 3000,
+          "granule": 96000,
+          "format_tag": 26447,
+          "channels": 2,
+          "sample_rate": 48000,
+          "avg_bytes_per_sec": 192000,
+          "block_align": 4,
+          "bits_per_sample": 16
+        }
+      ]
+    }
+  ],
+  "ogg": {
+    "file": "streamed.bin",
+    "streams": [
+      [
+        0,
+        1098
+      ],
+      [
+        16384,
+        78
+      ]
+    ],
+    "badOffset": 5
+  },
+  "containers": [
+    [
+      "sound/vo/english/ai/x.wav",
+      "english.streamed"
+    ],
+    [
+      "sound/projectile/imp_01.wav",
+      "streamed.resources"
+    ],
+    [
+      "sound/vo/french/x.wav",
+      "streamed.resources"
+    ]
+  ]
+}
