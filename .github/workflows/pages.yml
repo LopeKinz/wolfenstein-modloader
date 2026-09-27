@@ -1,12 +1,13 @@
 name: GitHub Pages
 
-# Publishes site/ to https://lopekinz.github.io/wolfenstein-modloader/
+# Publishes docs/ to https://lopekinz.github.io/wolfenstein-modloader/
 # One-time setup: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# (Alternative without Actions: Source "Deploy from a branch", branch main, folder /docs.)
 
 on:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/pages.yml"]
+    paths: ["docs/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -29,6 +30,6 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: docs
       - id: deployment
         uses: actions/deploy-pages@v4
