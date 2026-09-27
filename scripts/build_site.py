@@ -269,6 +269,9 @@ def summary_block(s: dict | None) -> str:
                 + "<p>" + both("A plain-language summary of this page is still being written.",
                                "Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.") + "</p></section>")
     parts = []
+    if s.get("update"):
+        u = s["update"]
+        parts.append('<p class="update"><b>' + both("Update", "Aktualisierung") + "</b> " + both(hints(u["en"]), hints(u["de"])) + "</p>")
     for lang in ("en", "de"):
         d = s[lang]
         pts = "".join(f"<li>{hints(p)}</li>" for p in d["points"])
