@@ -209,6 +209,42 @@ footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space
 @media (max-width: 860px) { .studio { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .pulse, .console .cursor { animation: none; } }
 
+/* ---------- research roadmap ---------- */
+.rm-summary { display: flex; flex-wrap: wrap; gap: 12px; margin: -8px 0 26px; }
+.rm-summary div { background: var(--bg-2); border: 1px solid var(--steel-hi); padding: 10px 16px; min-width: 150px; }
+.rm-summary b { display: block; font-family: "Black Ops One", sans-serif; font-weight: 400; font-size: 30px; line-height: 1.1; }
+.rm-summary span { font-size: 13px; text-transform: uppercase; letter-spacing: .14em; color: var(--paper-dim); }
+.rm-summary .done b { color: var(--ok); } .rm-summary .wip b { color: var(--warn); } .rm-summary .open b { color: var(--red); }
+.rm-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+.rm-filter button {
+  background: none; border: 1px solid var(--steel-hi); color: var(--paper-dim); cursor: pointer;
+  font: 600 13px "Oswald", sans-serif; letter-spacing: .14em; text-transform: uppercase; padding: 6px 14px;
+}
+.rm-filter button[aria-pressed="true"] { border-color: var(--red); color: var(--paper); background: rgba(200,16,46,.15); }
+.lanes { display: grid; gap: 20px; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+.lane > h3 {
+  margin: 0 0 12px; font-family: "Black Ops One", sans-serif; font-weight: 400; text-transform: uppercase;
+  letter-spacing: .08em; font-size: 19px; padding-bottom: 8px; border-bottom: 3px solid;
+}
+.lane.done > h3 { border-color: var(--ok); color: var(--ok); }
+.lane.wip > h3 { border-color: var(--warn); color: var(--warn); }
+.lane.open > h3 { border-color: var(--red); color: var(--red); }
+.lane .cards { display: grid; gap: 12px; }
+.rm-card {
+  display: block; text-decoration: none; background: linear-gradient(160deg, var(--steel), var(--bg-2));
+  border: 1px solid var(--steel-hi); padding: 14px 16px; transition: border-color .15s, transform .15s;
+}
+.rm-card:hover { border-color: var(--red); transform: translateY(-2px); }
+.rm-card .meta { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+.rm-card .game { font-family: "Special Elite", monospace; font-size: 12px; letter-spacing: .12em; border: 1px solid var(--steel-hi); padding: 0 6px; color: var(--paper-dim); }
+.rm-card .area { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--paper-dim); }
+.rm-card b { display: block; font-size: 17px; line-height: 1.3; }
+.rm-card p { margin: 6px 0 0; font-size: 15px; color: var(--paper-dim); line-height: 1.5; }
+.rm-card .src { display: inline-block; margin-top: 8px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--red); font-weight: 700; }
+.rm-note { margin-top: 22px; font-family: "Special Elite", monospace; color: var(--paper-dim); font-size: 14px; }
+@media (max-width: 900px) { .lanes { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .rm-card { transition: none; } }
+
 @media (max-width: 720px) {
   .bar nav { display: none; }
   .lang { margin-left: auto; }
@@ -225,6 +261,7 @@ footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space
   <div class="wrap">
     <a class="brand" href="#top">WOLF<b>/</b>MODLOADER</a>
     <nav>
+      <a href="#roadmap">Roadmap</a>
       <a href="#studio">Studio</a>
       <a href="#games"><span class="en">Games</span><span class="de">Spiele</span></a>
       <a href="#dossier"><span class="en">Dossier</span><span class="de">Dossier</span></a>
@@ -254,11 +291,34 @@ footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space
       </p>
       <div class="cta">
         <a class="btn primary" href="https://github.com/LopeKinz/wolfenstein-modloader/wiki"><span class="en">Open the Wiki</span><span class="de">Zum Wiki</span></a>
+        <a class="btn ghost" href="#roadmap"><span class="en">Research roadmap</span><span class="de">Forschungs-Roadmap</span></a>
         <a class="btn ghost" href="https://github.com/LopeKinz/wolfenstein-modloader"><span class="en">View on GitHub</span><span class="de">Auf GitHub ansehen</span></a>
       </div>
       <a class="soon-ribbon" href="#studio"><span class="pulse"></span><span class="en">Wolfenstein Studio — coming soon</span><span class="de">Wolfenstein Studio — bald verfügbar</span></a>
     </div>
   </div>
+
+  <section id="roadmap">
+    <div class="wrap">
+      <div class="kicker"><span class="en">Research roadmap</span><span class="de">Forschungs-Roadmap</span></div>
+      <h2><span class="en">Where the research stands</span><span class="de">Wo die Forschung steht</span></h2>
+      <div class="rm-summary" id="rm-summary"></div>
+      <div class="rm-filter" role="group" aria-label="Filter">
+        <button type="button" data-game="all" aria-pressed="true"><span class="en">All</span><span class="de">Alle</span></button>
+        <button type="button" data-game="TNO" aria-pressed="false">The New Order</button>
+        <button type="button" data-game="TNC" aria-pressed="false">The New Colossus</button>
+      </div>
+      <div class="lanes">
+        <div class="lane done"><h3><span class="en">Solved</span><span class="de">Gelöst</span></h3><div class="cards" data-lane="done"></div></div>
+        <div class="lane wip"><h3><span class="en">In progress</span><span class="de">In Arbeit</span></h3><div class="cards" data-lane="wip"></div></div>
+        <div class="lane open"><h3><span class="en">Open</span><span class="de">Offen</span></h3><div class="cards" data-lane="open"></div></div>
+      </div>
+      <p class="rm-note">
+        <span class="en">» Based on the research reports in the wiki (as of 23 Sep 2026). Every card links to its source.</span>
+        <span class="de">» Grundlage sind die Forschungsberichte im Wiki (Stand 23.09.2026). Jede Karte verlinkt ihre Quelle.</span>
+      </p>
+    </div>
+  </section>
 
   <section id="studio">
     <div class="wrap">
@@ -414,6 +474,74 @@ FILES.forEach(([slug, title, en, de], i) => {
 });
 const tags = document.getElementById("tags");
 TAGS.forEach(([en, de]) => tags.appendChild(el("span", "", `<span class="en">${en}</span><span class="de">${de}</span>`)));
+
+const ROADMAP = [
+  // lane, game, page, area [en,de], title [en,de], text [en,de]
+  ["done", "TNO", "File-Formats", ["Archives","Archive"], ["Archive format and in-place patching","Archivformat und Patchen im Slot"],
+   ["373 patched assets across all 14 archives loaded for 48 min without a single loader error.","373 gepatchte Assets in allen 14 Archiven liefen 48 Min. ohne einen einzigen Loader-Fehler."]],
+  ["done", "TNO+TNC", "TNC-Modding-Surface", ["Decls","Decls"], ["Decl parser and editor for both games","Decl-Parser und -Editor für beide Spiele"],
+   ["0 parse errors over 44,140 Decls of Part 2; 1,432 of 1,432 edits read back correctly.","0 Parserfehler bei 44.140 Decls aus Teil 2; 1.432 von 1.432 Änderungen korrekt zurückgelesen."]],
+  ["done", "TNO+TNC", "Save-Games-and-Profiles", ["Saves","Spielstände"], ["Save header is MD5_BlockChecksum","Spielstand-Header ist MD5_BlockChecksum"],
+   ["82 of 82 save files match, in both games.","82 von 82 Spielstanddateien stimmen, in beiden Spielen."]],
+  ["done", "TNC", "Research-Report-Idclhash", ["Containers","Container"], ["IDCL header hashes +0x08 and +0x20","IDCL-Header-Hashes +0x08 und +0x20"],
+   ["Derived from the loader code; 27 of 27 archives match. No secret seed required.","Aus dem Loader-Code abgeleitet; 27 von 27 Archiven stimmen. Kein geheimer Seed nötig."]],
+  ["done", "TNC", "Research-Report-Cfilekey2", ["Encryption","Verschlüsselung"], ["cfile key derivation","Schlüsselableitung für cfile"],
+   ["Key derivation found; the cfile corpus decrypts and re-encrypts byte for byte.","Schlüsselableitung gefunden; der cfile-Bestand entschlüsselt und verschlüsselt bytegenau."]],
+  ["done", "TNC", "Research-Report-Texdbkey", ["Textures","Texturen"], ["TexDB key","TexDB-Schlüssel"],
+   ["Solved from the code, not by a hash sweep.","Aus dem Code gelöst, nicht per Hash-Suche."]],
+  ["done", "TNC", "Research-Report-Meshfmt", ["Geometry","Geometrie"], ["Mesh format (model / modelstream)","Mesh-Format (model / modelstream)"],
+   ["Layout resolved; a simple box mesh can be written.","Aufbau geklärt; ein einfaches Box-Mesh lässt sich schreiben."]],
+  ["done", "TNC", "Developer-Mode", ["Console","Konsole"], ["Developer console in retail","Entwicklerkonsole im Retail-Spiel"],
+   ["com_enableDeveloperMode 1 opens a real console in The New Colossus.","com_enableDeveloperMode 1 öffnet in The New Colossus eine echte Konsole."]],
+  ["done", "TNC", "TNC-Verified-Findings-2026-09-23", ["Saves","Spielstände"], ["game.details checksum","Prüfsumme von game.details"],
+   ["A dictionary CRC32 as in idDict::Checksum; verified on 26 original files.","Ein Dictionary-CRC32 wie idDict::Checksum; an 26 Originaldateien geprüft."]],
+
+  ["wip", "TNC", "TNC-Custom-Map-Status", ["Custom maps","Eigene Karten"], ["Playable custom map","Spielbare eigene Karte"],
+   ["Alias package v3 is built with correct hashes; loading it in-game is still unproven.","Alias-Paket v3 mit korrekten Hashes gebaut; das Laden im Spiel ist noch nicht bewiesen."]],
+  ["wip", "TNC", "Research-Report-Save-Integrity-V3", ["Saves","Spielstände"], ["Custom save repair","Reparatur eigener Spielstände"],
+   ["Offline repair v3 is byte-exact; whether the game accepts it is still open.","Offline-Reparatur v3 ist bytegenau; ob das Spiel sie annimmt, ist offen."]],
+  ["wip", "TNC", "TNC-CVar-Validation", ["CVars","CVars"], ["Real CVar catalogue","Echter CVar-Katalog"],
+   ["Rebuilding the list from the engine's own listCvars output instead of scraped strings.","Liste wird aus der echten listCvars-Ausgabe der Engine neu aufgebaut statt aus Strings."]],
+  ["wip", "TNC", "Research-Report-Missions", ["Missions","Missionen"], ["Mission builder kit","Missions-Baukasten"],
+   ["Custom missions for the Gestapo Office map, scripted with Kiscule.","Eigene Missionen für die Karte Gestapo Office, geskriptet mit Kiscule."]],
+  ["wip", "TNO", "Modding-Limits", ["Images","Bilder"], ["Replaced UI images in-game","Ersetzte UI-Bilder im Spiel"],
+   ["Custom BIMs load without errors; whether they look right is not yet verified.","Eigene BIMs laden fehlerfrei; ob sie richtig aussehen, ist noch nicht geprüft."]],
+
+  ["open", "TNO", "TNO-Virtual-Textures", ["Textures","Texturen"], ["Virtual texture pixels","Pixel der virtuellen Texturen"],
+   ["The container is decoded; the cropped JPEG-XR pixel stream is not. Weapon skins depend on it.","Der Container ist entschlüsselt, der beschnittene JPEG-XR-Pixelstrom nicht. Waffenskins hängen daran."]],
+  ["open", "TNO", "Modding-Limits", ["Geometry","Geometrie"], ["New 3D geometry for Part 1","Neue 3D-Geometrie für Teil 1"],
+   [".md6mesh is binary and not yet examined.",".md6mesh ist binär und noch nicht untersucht."]],
+  ["open", "TNC", "Research-Report-Saveverify", ["Saves","Spielstände"], [".verify files",".verify-Dateien"],
+   ["Contain a random value per write; their role while loading is still being mapped.","Enthalten pro Schreibvorgang einen Zufallswert; ihre Rolle beim Laden wird noch erforscht."]],
+  ["open", "TNC", "Research-Report-Cmdtable", ["Console","Konsole"], ["map / devmap in retail","map / devmap im Retail-Spiel"],
+   ["Both commands exist but are not exposed; making them usable is technically open.","Beide Befehle existieren, sind aber nicht freigegeben; die Nutzung ist technisch offen."]],
+  ["open", "TNC", "TNC-Verified-Findings-2026-09-23", ["Containers","Container"], ["Entry hashes for alias assets","Eintrags-Hashes für Alias-Assets"],
+   ["Runtime effect of data_hash and hash_0x60 on newly added entries is unknown.","Die Laufzeitwirkung von data_hash und hash_0x60 bei neuen Einträgen ist unbekannt."]],
+];
+function renderRoadmap(filter) {
+  const counts = { done: 0, wip: 0, open: 0 };
+  document.querySelectorAll("#roadmap .cards").forEach(c => c.innerHTML = "");
+  ROADMAP.forEach(([lane, game, page, area, title, text]) => {
+    if (filter !== "all" && !game.split("+").includes(filter)) return;
+    counts[lane]++;
+    const a = el("a", "rm-card");
+    a.href = WIKI + page;
+    a.innerHTML = `<div class="meta"><span class="game">${game.replace("+", " · ")}</span><span class="area"><span class="en">${area[0]}</span><span class="de">${area[1]}</span></span></div>` +
+      `<b><span class="en">${title[0]}</span><span class="de">${title[1]}</span></b>` +
+      `<p><span class="en">${text[0]}</span><span class="de">${text[1]}</span></p>` +
+      `<span class="src"><span class="en">Source →</span><span class="de">Quelle →</span></span>`;
+    document.querySelector(`#roadmap .cards[data-lane="${lane}"]`).appendChild(a);
+  });
+  document.getElementById("rm-summary").innerHTML =
+    `<div class="done"><b>${counts.done}</b><span><span class="en">solved</span><span class="de">gelöst</span></span></div>` +
+    `<div class="wip"><b>${counts.wip}</b><span><span class="en">in progress</span><span class="de">in Arbeit</span></span></div>` +
+    `<div class="open"><b>${counts.open}</b><span><span class="en">open</span><span class="de">offen</span></span></div>`;
+}
+document.querySelectorAll(".rm-filter button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".rm-filter button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  renderRoadmap(b.dataset.game);
+}));
+renderRoadmap("all");
 
 function setLang(lang) {
   document.body.dataset.lang = lang;
