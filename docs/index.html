@@ -125,8 +125,8 @@
         <div class="game">
           <h3>II: The New Colossus</h3>
           <p class="eng">2017, <span class="t" data-t="engine">id Tech 6</span></p>
-          <p class="en">Harder to open: <span class="t" data-t="encryption">encrypted</span> files and <span class="t" data-t="hash">fingerprinted</span> archives. The current front line is a first playable custom map.</p>
-          <p class="de">Schwerer zu öffnen: <span class="t" data-t="encryption">verschlüsselte</span> Dateien und Archive mit <span class="t" data-t="hash">Fingerabdrücken</span>. Die aktuelle Front ist eine erste spielbare eigene Karte.</p>
+          <p class="en">Harder to open: <span class="t" data-t="encryption">encrypted</span> files and <span class="t" data-t="hash">fingerprinted</span> archives. A first custom map has been played in the game; documenting it and building bigger maps comes next.</p>
+          <p class="de">Schwerer zu öffnen: <span class="t" data-t="encryption">verschlüsselte</span> Dateien und Archive mit <span class="t" data-t="hash">Fingerabdrücken</span>. Eine erste eigene Karte wurde bereits im Spiel gespielt; als Nächstes kommen die Dokumentation und größere Karten.</p>
         </div>
       </div>
     </div>
@@ -229,9 +229,10 @@ const ROADMAP = [
     ["The small text file describing each save is protected by a simple checksum, and we know which.", "Die kleine Textdatei zu jedem Spielstand ist durch eine einfache Prüfsumme geschützt – und wir kennen sie."],
     ["game.details uses a dictionary CRC32 as in id Software's idDict::Checksum, verified on 26 original files.", "game.details nutzt einen Dictionary-CRC32 wie idDict::Checksum von id Software, geprüft an 26 Originaldateien."]],
 
-  ["wip", "TNC", "TNC-Custom-Map-Status", ["A playable custom map", "Eine spielbare eigene Karte"],
-    ["The goal is to load a new level into Part 2. The package is built, but nobody has played it yet.", "Ziel ist ein neues Level in Teil 2. Das Paket ist gebaut, aber noch hat es niemand gespielt."],
-    ["{alias|Map alias} package v3 has correct hashes. Loading, movement and collision still have to be confirmed in the game.", "Das {alias|Karten-Alias}-Paket v3 hat korrekte Hashes. Laden, Bewegung und Kollision müssen im Spiel noch bestätigt werden."]],
+  ["done", "TNC", "TNC-Custom-Map-Status", ["A custom map played in the game", "Eine eigene Karte im Spiel gespielt"],
+    ["A custom map has been loaded and played in Part 2. This comes from the project owner; the log and screenshots are not in the wiki yet.", "Eine eigene Karte wurde in Teil 2 geladen und gespielt. Das berichtet der Projektinhaber; Log und Screenshots stehen noch nicht im Wiki."],
+    ["The {alias|map alias} work led to a map that runs in the {retail|retail} game (reported 27 Sep 2026). The wiki pages still describe the state before that test.", "Die Arbeit am {alias|Karten-Alias} führte zu einer Karte, die im {retail|Retail}-Spiel läuft (gemeldet am 27.09.2026). Die Wiki-Seiten beschreiben noch den Stand vor diesem Test."]],
+
   ["wip", "TNC", "Research-Report-Save-Integrity-V3", ["Starting a custom map from a save", "Eine eigene Karte über einen Spielstand starten"],
     ["A prepared save file should drop you straight into the custom map.", "Ein vorbereiteter Spielstand soll dich direkt in die eigene Karte bringen."],
     ["Offline repair v3 is byte-exact. Whether the game accepts it, including its {verify|.verify file}, is still open.", "Offline-Reparatur v3 ist bytegenau. Ob das Spiel sie annimmt, samt {verify|.verify-Datei}, ist noch offen."]],

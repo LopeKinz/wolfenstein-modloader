@@ -290,3 +290,5 @@ footer p { max-width: 46rem; margin: 0 0 .8rem; }
 @media (max-width: 860px) { .docgrid, .cat { grid-template-columns: minmax(0, 1fr); } }
 .doc p, .doc li, .doc td, .doc blockquote { overflow-wrap: anywhere; }
 .subhead { font-family: var(--display); font-weight: 800; font-size: 1.6rem; margin: 0 0 .6rem; }
+.plainbox .update { background: var(--bunker); color: var(--plaster); margin: -.2rem 0 1.1rem; padding: .7rem .9rem; border-left: 6px solid var(--verdigris); font-size: 1rem; }
+.plainbox .update b { color: var(--verdigris); margin-right: .3rem; }

@@ -368,6 +368,10 @@
     "Interne Verweise (Geometrie, Kollision, Navigation, Schatten, {entity|Entities}) sind noch nicht umbenannt.",
     "Getestet werden darf nur ein vollständiger, umbenannter Satz, und nur in einem isolierten Suchpfad."
    ]
+  },
+  "update": {
+   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
   }
  },
  "Virtual-Texture-Planes": {
@@ -818,6 +822,10 @@
     "Interne Verweise in Entities, Kollision, Navmesh, Sichtbarkeit und Schatten wurden nicht umgeschrieben, und die Texturdatenbank ist leer.",
     "Fazit: Eine neue Map-Spec oder Entity-Datei allein erzeugt noch keine neue Karte."
    ]
+  },
+  "update": {
+   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
   }
  },
  "Research-Report-Texdb-Rewrite": {
@@ -1408,6 +1416,10 @@
     "Beim Einbinden muss die Texturdatenbank aus dem Original-DLC 2 verwendet werden.",
     "Hashes pro Eintrag und die Wirkung im laufenden Spiel sind noch offen."
    ]
+  },
+  "update": {
+   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
   }
  },
  "TNC-Modding-Surface": {
@@ -1708,6 +1720,10 @@
     "Ein Karten-{alias|Alias}-Paket behält alle 6.985 Originaleinträge und ergänzt 143 Alias-Einträge.",
     "Laden, Bewegung und sichtbare Änderungen müssen im Spiel noch bestätigt werden."
    ]
+  },
+  "update": {
+   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
   }
  },
  "Research-Report-Chunklist": {
@@ -1881,6 +1897,10 @@
     "Ein Patch, der die Karte im Entwicklermenü zeigen sollte, ließ das Spiel beim Start abstürzen und wurde entfernt.",
     "Die Original-Spielstände sind gesichert und jederzeit wiederherstellbar."
    ]
+  },
+  "update": {
+   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
   }
  },
  "Research-Report-C2v1-Identity": {
