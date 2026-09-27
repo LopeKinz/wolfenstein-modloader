@@ -4,268 +4,228 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wolfenstein Modloader</title>
-<meta name="description" content="Community documentation and reverse-engineering research for modding Wolfenstein: The New Order and Wolfenstein II: The New Colossus.">
+<meta name="description" content="We take the Wolfenstein games apart to learn how their files work, and write down everything we find, so anyone can mod them.">
 <meta property="og:title" content="Wolfenstein Modloader">
-<meta property="og:description" content="Community documentation and reverse-engineering research for modding Wolfenstein: The New Order and The New Colossus.">
-<meta name="theme-color" content="#0b0b0c">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b0b0c'/%3E%3Cpath d='M8 14h10l6 26 8-26h0l8 26 6-26h10L44 52h-9l-3-12-3 12h-9z' fill='%23c8102e'/%3E%3C/svg%3E">
+<meta property="og:description" content="Community research for modding Wolfenstein: The New Order and Wolfenstein II: The New Colossus, with a research roadmap.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%232d3134'/%3E%3Cpath d='M8 14h10l6 26 8-26 8 26 6-26h10L44 52h-9l-3-12-3 12h-9z' fill='%23e6dfcf'/%3E%3Crect x='0' y='56' width='64' height='8' fill='%238c1c1c'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Oswald:wght@400;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0b0b0c;
-  --bg-2: #141416;
-  --steel: #2a2b2e;
-  --steel-hi: #45474c;
-  --paper: #d9d2c3;
-  --paper-dim: #a39d90;
-  --red: #c8102e;
-  --red-dark: #7d0a1c;
-  --ok: #7fa36b;
-  --warn: #d4a23c;
-  --line: rgba(217, 210, 195, .14);
-  --max: 1120px;
+  --concrete: #2d3134;
+  --bunker: #1b1e21;
+  --plaster: #e6dfcf;
+  --plaster-dim: #b3ad9f;
+  --oxblood: #8c1c1c;
+  --flare: #d5614f;      /* oxblood lifted for text on concrete */
+  --brass: #b98b3e;
+  --verdigris: #5e8b7e;
+  --rule: rgba(230, 223, 207, .16);
+  --display: "Big Shoulders Stencil Display", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Spectral", Georgia, "Times New Roman", serif;
+  --rail: 15rem;
+  --measure: 40rem;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--paper);
-  font: 17px/1.6 "Oswald", system-ui, sans-serif;
-  letter-spacing: .01em;
+  background-color: var(--concrete);
+  /* poured-concrete grain */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color: var(--plaster);
+  font: 400 1.125rem/1.65 var(--body);
   overflow-x: hidden;
 }
-body::before { /* film grain + scanlines */
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50;
-  background:
-    repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px),
-    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.65) 100%);
-}
-a { color: inherit; }
-.wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
-
-/* ---------- top bar ---------- */
-.bar {
-  position: sticky; top: 0; z-index: 40;
-  background: linear-gradient(#0b0b0c, #0b0b0cee);
-  border-bottom: 3px solid var(--red);
-}
-.bar .wrap { display: flex; align-items: center; gap: 18px; height: 58px; }
-.brand { font-family: "Black Ops One", sans-serif; font-size: 20px; text-decoration: none; letter-spacing: .06em; white-space: nowrap; }
-.brand b { color: var(--red); font-weight: 400; }
-.bar nav { display: flex; gap: 18px; margin-left: auto; }
-.bar nav a { text-decoration: none; text-transform: uppercase; font-size: 14px; letter-spacing: .14em; color: var(--paper-dim); }
-.bar nav a:hover { color: var(--paper); }
-.lang { display: flex; border: 1px solid var(--steel-hi); }
-.lang button {
-  background: none; border: 0; color: var(--paper-dim); font: 600 13px "Oswald", sans-serif;
-  letter-spacing: .1em; padding: 5px 9px; cursor: pointer;
-}
-.lang button[aria-pressed="true"] { background: var(--red); color: #fff; }
-
-/* ---------- hero ---------- */
-.hero {
-  position: relative; padding: 96px 0 84px; text-align: center; overflow: hidden;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(200,16,46,.28), transparent 60%),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 2px, transparent 2px 80px),
-    var(--bg);
-}
-.hero .eagle { /* abstract resistance "W" crest */
-  width: 120px; height: 120px; margin: 0 auto 26px; display: block;
-  filter: drop-shadow(0 0 22px rgba(200,16,46,.55));
-}
-.stamp {
-  display: inline-block; font-family: "Special Elite", monospace; color: var(--red);
-  border: 2px solid var(--red); padding: 2px 12px; transform: rotate(-3deg);
-  letter-spacing: .2em; text-transform: uppercase; font-size: 14px; margin-bottom: 22px;
-}
-h1 {
-  font-family: "Black Ops One", sans-serif; font-weight: 400;
-  font-size: clamp(40px, 8.5vw, 96px); line-height: .95; margin: 0 0 18px;
-  text-transform: uppercase; letter-spacing: .03em;
-  text-shadow: 0 3px 0 var(--red-dark), 0 0 40px rgba(200,16,46,.35);
-}
-h1 span { display: block; color: var(--red); text-shadow: 0 3px 0 #000; }
-.lead { max-width: 720px; margin: 0 auto 34px; font-size: 20px; color: var(--paper-dim); }
-.cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-.btn {
-  display: inline-block; text-decoration: none; text-transform: uppercase; letter-spacing: .14em;
-  font-weight: 700; font-size: 15px; padding: 13px 26px; border: 2px solid var(--red);
-  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-}
-.btn.primary { background: var(--red); color: #fff; }
-.btn.primary:hover { background: #e0213f; }
-.btn.ghost { color: var(--paper); }
-.btn.ghost:hover { background: rgba(200,16,46,.15); }
-
-/* ---------- sections ---------- */
-section { padding: 72px 0; border-top: 1px solid var(--line); }
-.kicker { font-family: "Special Elite", monospace; color: var(--red); letter-spacing: .2em; text-transform: uppercase; font-size: 14px; }
-h2 {
-  font-family: "Black Ops One", sans-serif; font-weight: 400; text-transform: uppercase;
-  font-size: clamp(28px, 4.6vw, 44px); margin: 6px 0 28px; letter-spacing: .04em;
-}
-.grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
-
-.plate { /* riveted steel panel */
-  position: relative; background: linear-gradient(160deg, var(--steel), var(--bg-2));
-  border: 1px solid var(--steel-hi); padding: 28px 26px 24px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 12px 30px rgba(0,0,0,.45);
-}
-.plate::before, .plate::after {
-  content: ""; position: absolute; top: 10px; width: 8px; height: 8px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #8a8c91, #2c2d30);
-}
-.plate::before { left: 10px; } .plate::after { right: 10px; }
-.plate h3 { font-family: "Black Ops One", sans-serif; font-weight: 400; font-size: 24px; margin: 4px 0 4px; text-transform: uppercase; }
-.plate .engine { font-family: "Special Elite", monospace; color: var(--red); font-size: 14px; letter-spacing: .1em; }
-.plate p { color: var(--paper-dim); margin: 12px 0 0; }
-
-/* dossier cards */
-.files a.plate { text-decoration: none; display: block; transition: transform .15s, border-color .15s; }
-.files a.plate:hover { transform: translateY(-3px); border-color: var(--red); }
-.files .no { font-family: "Special Elite", monospace; color: var(--paper-dim); font-size: 13px; letter-spacing: .15em; }
-.files h3 { font-size: 20px; }
-.files .go { display: inline-block; margin-top: 14px; color: var(--red); text-transform: uppercase; font-size: 13px; letter-spacing: .16em; font-weight: 700; }
-
-/* evidence */
-.evidence { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
-.ev { border-left: 6px solid; padding: 16px 20px; background: var(--bg-2); }
-.ev b { display: block; font-family: "Black Ops One", sans-serif; font-weight: 400; text-transform: uppercase; font-size: 20px; letter-spacing: .06em; }
-.ev.m { border-color: var(--ok); } .ev.m b { color: var(--ok); }
-.ev.i { border-color: var(--warn); } .ev.i b { color: var(--warn); }
-.ev.h { border-color: var(--red); } .ev.h b { color: var(--red); }
-.ev p { margin: 6px 0 0; color: var(--paper-dim); }
-.note { margin-top: 24px; font-family: "Special Elite", monospace; color: var(--paper-dim); }
-
-/* scope tags */
-.tags { display: flex; flex-wrap: wrap; gap: 10px; }
-.tags > span {
-  font-family: "Special Elite", monospace; border: 1px solid var(--steel-hi); padding: 6px 12px;
-  background: var(--bg-2); font-size: 15px;
-}
-.tags > span::before { content: "■ "; color: var(--red); }
-
-/* typed dossier paper */
-.paper {
-  background: var(--paper); color: #1d1b17; font-family: "Special Elite", monospace;
-  padding: 30px 32px; position: relative; transform: rotate(-.4deg);
-  box-shadow: 0 16px 40px rgba(0,0,0,.6);
-}
-.paper .classified {
-  position: absolute; top: 18px; right: 18px; color: var(--red); border: 3px double var(--red);
-  padding: 2px 10px; transform: rotate(8deg); font-size: 15px; letter-spacing: .18em; opacity: .85;
-}
-.paper p { margin: 0 0 12px; max-width: 760px; }
-.paper p:last-child { margin: 0; }
-
-footer { padding: 34px 0 48px; border-top: 3px solid var(--red); color: var(--paper-dim); font-size: 14px; }
-footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space-between; }
-
+a { color: inherit; text-decoration-color: var(--flare); text-underline-offset: .18em; }
+a:hover { color: #fff; }
+:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
+.wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; }
 [data-lang="de"] .en, [data-lang="en"] .de { display: none; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--plaster); color: var(--bunker); padding: .5rem 1rem; z-index: 100; }
+.skip:focus { left: 1rem; }
 
-/* ---------- studio / coming soon ---------- */
-.soon-ribbon {
-  display: inline-flex; align-items: center; gap: 10px; margin-top: 30px; text-decoration: none;
-  font-family: "Special Elite", monospace; letter-spacing: .14em; text-transform: uppercase; font-size: 14px;
-  border: 1px dashed var(--red); padding: 8px 16px; color: var(--paper);
-}
-.soon-ribbon:hover { background: rgba(200,16,46,.12); }
-.pulse { width: 9px; height: 9px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 0 rgba(200,16,46,.7); animation: pulse 1.8s infinite; }
-@keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(200,16,46,0); } 100% { box-shadow: 0 0 0 0 rgba(200,16,46,0); } }
-#studio {
-  background:
-    linear-gradient(180deg, rgba(200,16,46,.10), transparent 40%),
-    repeating-linear-gradient(-45deg, rgba(255,255,255,.02) 0 14px, transparent 14px 28px);
-}
-.studio { display: grid; gap: 34px; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: start; }
-.studio .lead-text { font-size: 19px; color: var(--paper); margin: 0 0 18px; }
-.studio .sub { color: var(--paper-dim); margin: 0 0 22px; }
-.soon-badge {
-  display: inline-block; font-family: "Black Ops One", sans-serif; background: var(--red); color: #fff;
-  padding: 4px 14px; letter-spacing: .12em; text-transform: uppercase; font-size: 15px;
-  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); margin-left: 12px; vertical-align: middle;
-}
-.features { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
-.features li { background: var(--bg-2); border: 1px solid var(--steel-hi); border-left: 4px solid var(--red); padding: 12px 16px; }
-.features b { display: block; text-transform: uppercase; letter-spacing: .08em; font-size: 15px; }
-.features span.d { color: var(--paper-dim); font-size: 15px; }
-.console {
-  background: #060607; border: 1px solid var(--steel-hi); box-shadow: 0 18px 44px rgba(0,0,0,.6);
-  font-family: "Special Elite", monospace; font-size: 14px; color: var(--paper-dim);
-}
-.console .titlebar { display: flex; gap: 6px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--steel-hi); background: var(--steel); }
-.console .titlebar i { width: 10px; height: 10px; border-radius: 50%; background: var(--steel-hi); }
-.console .titlebar i:first-child { background: var(--red); }
-.console .titlebar span { margin-left: auto; letter-spacing: .14em; text-transform: uppercase; font-size: 12px; }
-.console .body { padding: 18px 18px 22px; line-height: 1.9; }
-.console .ok { color: var(--ok); } .console .r { color: var(--red); }
-.console .cursor { display: inline-block; width: 9px; height: 16px; background: var(--red); vertical-align: -3px; animation: blink 1s steps(1) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-.studio .status { margin-top: 18px; font-family: "Special Elite", monospace; font-size: 14px; color: var(--paper-dim); }
-@media (max-width: 860px) { .studio { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { .pulse, .console .cursor { animation: none; } }
+/* ---------- masthead ---------- */
+.mast { background: var(--bunker); border-bottom: 6px solid var(--oxblood); position: sticky; top: 0; z-index: 30; }
+.mast .wrap { display: flex; align-items: center; gap: 1.5rem; min-height: 3.5rem; }
+.mark { white-space: nowrap; font-family: var(--display); font-weight: 800; font-size: clamp(1.15rem, 4.5vw, 1.5rem); text-decoration: none; letter-spacing: .02em; }
+.mast nav { display: flex; gap: 1.4rem; margin-left: auto; font-size: 1rem; }
+.mast nav a { text-decoration: none; color: var(--plaster-dim); }
+.mast nav a:hover { color: var(--plaster); text-decoration: underline; text-decoration-color: var(--flare); }
+.lang { display: flex; border: 1px solid var(--rule); }
+.lang button { background: none; border: 0; color: var(--plaster-dim); font: 600 .9rem var(--body); padding: .3rem .6rem; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--plaster); color: var(--bunker); }
 
-/* ---------- research roadmap ---------- */
-.rm-summary { display: flex; flex-wrap: wrap; gap: 12px; margin: -8px 0 26px; }
-.rm-summary div { background: var(--bg-2); border: 1px solid var(--steel-hi); padding: 10px 16px; min-width: 150px; }
-.rm-summary b { display: block; font-family: "Black Ops One", sans-serif; font-weight: 400; font-size: 30px; line-height: 1.1; }
-.rm-summary span { font-size: 13px; text-transform: uppercase; letter-spacing: .14em; color: var(--paper-dim); }
-.rm-summary .done b { color: var(--ok); } .rm-summary .wip b { color: var(--warn); } .rm-summary .open b { color: var(--red); }
-.rm-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
-.rm-filter button {
-  background: none; border: 1px solid var(--steel-hi); color: var(--paper-dim); cursor: pointer;
-  font: 600 13px "Oswald", sans-serif; letter-spacing: .14em; text-transform: uppercase; padding: 6px 14px;
+/* ---------- hero: the decoding title ---------- */
+.hero { padding: 5.5rem 0 4.5rem; border-bottom: 1px solid var(--rule); }
+.hero h1 {
+  font-family: var(--display); font-weight: 900; margin: 0;
+  font-size: clamp(3.4rem, 12.5vw, 10.5rem); line-height: .82; letter-spacing: -.01em;
+  text-transform: none; color: var(--plaster);
 }
-.rm-filter button[aria-pressed="true"] { border-color: var(--red); color: var(--paper); background: rgba(200,16,46,.15); }
-.lanes { display: grid; gap: 20px; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
-.lane > h3 {
-  margin: 0 0 12px; font-family: "Black Ops One", sans-serif; font-weight: 400; text-transform: uppercase;
-  letter-spacing: .08em; font-size: 19px; padding-bottom: 8px; border-bottom: 3px solid;
+.hero h1 .line { display: block; white-space: nowrap; overflow: hidden; }
+.hero h1 .line + .line { color: var(--oxblood); -webkit-text-stroke: 2px var(--plaster); paint-order: stroke fill; }
+.hero h1 .c { display: inline-block; min-width: .2em; }
+.hero h1 .c.scr { color: var(--brass); -webkit-text-stroke: 0; }
+.hero .intro { max-width: var(--measure); margin: 2.2rem 0 0; font-size: 1.3rem; line-height: 1.55; }
+.hero .actions { display: flex; flex-wrap: wrap; gap: .9rem; margin-top: 2rem; }
+.btn {
+  display: inline-block; font: 600 1.05rem var(--body); text-decoration: none; padding: .7rem 1.3rem;
+  border: 2px solid var(--plaster);
 }
-.lane.done > h3 { border-color: var(--ok); color: var(--ok); }
-.lane.wip > h3 { border-color: var(--warn); color: var(--warn); }
-.lane.open > h3 { border-color: var(--red); color: var(--red); }
-.lane .cards { display: grid; gap: 12px; }
-.rm-card {
-  display: block; text-decoration: none; background: linear-gradient(160deg, var(--steel), var(--bg-2));
-  border: 1px solid var(--steel-hi); padding: 14px 16px; transition: border-color .15s, transform .15s;
-}
-.rm-card:hover { border-color: var(--red); transform: translateY(-2px); }
-.rm-card .meta { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
-.rm-card .game { font-family: "Special Elite", monospace; font-size: 12px; letter-spacing: .12em; border: 1px solid var(--steel-hi); padding: 0 6px; color: var(--paper-dim); }
-.rm-card .area { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--paper-dim); }
-.rm-card b { display: block; font-size: 17px; line-height: 1.3; }
-.rm-card p { margin: 6px 0 0; font-size: 15px; color: var(--paper-dim); line-height: 1.5; }
-.rm-card .src { display: inline-block; margin-top: 8px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--red); font-weight: 700; }
-.rm-note { margin-top: 22px; font-family: "Special Elite", monospace; color: var(--paper-dim); font-size: 14px; }
-@media (max-width: 900px) { .lanes { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { .rm-card { transition: none; } }
+.btn.solid { background: var(--plaster); color: var(--bunker); }
+.btn.solid:hover { background: #fff; color: var(--bunker); }
+.btn:not(.solid):hover { background: rgba(230,223,207,.1); }
+.hero .tally { margin-top: 2.2rem; color: var(--plaster-dim); font-size: 1rem; max-width: var(--measure); }
+.hero .tally b { font-weight: 600; }
+.tally .s-done { color: var(--verdigris); } .tally .s-wip { color: var(--brass); } .tally .s-open { color: var(--flare); }
 
-@media (max-width: 720px) {
-  .bar nav { display: none; }
+/* ---------- file sections: margin rail + content ---------- */
+.file { padding: 4.5rem 0; border-bottom: 1px solid var(--rule); }
+.file > .wrap { display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); gap: 2.5rem; }
+.rail h2 {
+  font-family: var(--display); font-weight: 800; font-size: clamp(2.1rem, 4vw, 3rem); line-height: .95;
+  margin: 0; position: sticky; top: 5rem;
+}
+.rail p { color: var(--plaster-dim); font-size: 1rem; margin: .8rem 0 0; position: sticky; top: 9rem; }
+.body > p { max-width: var(--measure); margin: 0 0 1.1rem; }
+.body > p.big { font-size: 1.3rem; line-height: 1.5; }
+
+/* ---------- glossary hints ---------- */
+.t {
+  font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help;
+  text-decoration: underline dotted var(--brass); text-decoration-thickness: 2px; text-underline-offset: .2em;
+}
+.t:hover, .t[aria-expanded="true"] { color: #fff; text-decoration-style: solid; }
+#tip {
+  position: fixed; z-index: 60; max-width: min(22rem, calc(100vw - 2rem));
+  background: var(--plaster); color: var(--bunker); padding: .75rem .95rem .8rem;
+  border-left: 6px solid var(--brass); box-shadow: 0 10px 28px rgba(0,0,0,.45);
+  font-size: 1rem; line-height: 1.45; pointer-events: none; opacity: 0; transform: translateY(4px);
+  transition: opacity .12s, transform .12s;
+}
+#tip.on { opacity: 1; transform: none; }
+#tip strong { display: block; font-family: var(--display); font-weight: 800; font-size: 1.35rem; line-height: 1; margin-bottom: .3rem; }
+.hint { font-size: 1rem; color: var(--plaster-dim); border-left: 3px solid var(--brass); padding-left: .8rem; max-width: var(--measure); }
+
+/* ---------- roadmap register ---------- */
+.filter { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--rule); margin-bottom: 2rem; }
+.filter button {
+  background: none; border: 0; color: var(--plaster-dim); font: 600 1rem var(--body);
+  padding: .5rem 1rem; cursor: pointer;
+}
+.filter button + button { border-left: 1px solid var(--rule); }
+.filter button[aria-pressed="true"] { background: var(--plaster); color: var(--bunker); }
+.group { margin-bottom: 2.6rem; }
+.group > h3 {
+  font-family: var(--display); font-weight: 800; font-size: 1.9rem; margin: 0 0 .2rem; line-height: 1;
+  display: flex; align-items: baseline; gap: .6rem;
+}
+.group > h3 .n { font-family: var(--body); font-weight: 400; font-size: 1.05rem; color: var(--plaster-dim); }
+.group.done > h3 { color: var(--verdigris); }
+.group.wip > h3 { color: var(--brass); }
+.group.open > h3 { color: var(--flare); }
+.group > p { margin: 0 0 1rem; color: var(--plaster-dim); font-size: 1rem; }
+.entries { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--plaster); }
+.entry { border-bottom: 1px solid var(--rule); padding: 1.1rem 0 1.15rem; display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1.2rem; }
+.stamp {
+  align-self: start; justify-self: start; font-family: var(--display); font-weight: 900; font-size: 1.05rem;
+  letter-spacing: .04em; padding: .1rem .5rem; border: 2px solid; transform: rotate(-4deg); margin-top: .25rem;
+}
+.done .stamp { color: var(--verdigris); } .wip .stamp { color: var(--brass); } .open .stamp { color: var(--flare); }
+.entry h4 { margin: 0; font-size: 1.2rem; font-weight: 600; line-height: 1.35; }
+.entry .games { font-size: .95rem; color: var(--plaster-dim); font-style: italic; }
+.entry .plain { margin: .35rem 0 0; max-width: var(--measure); }
+.entry details { margin-top: .5rem; max-width: var(--measure); }
+.entry summary { cursor: pointer; color: var(--plaster-dim); font-size: .98rem; width: fit-content; }
+.entry summary:hover { color: var(--plaster); }
+.entry details[open] summary { color: var(--plaster); }
+.entry details p { margin: .45rem 0 0; font-size: 1rem; color: var(--plaster-dim); }
+.entry details p a { color: var(--plaster); }
+
+/* ---------- studio: a typed dossier page ---------- */
+.dossier {
+  background: var(--plaster); color: var(--bunker); padding: 2.2rem 2.4rem 2.3rem; position: relative;
+  box-shadow: 0 18px 40px rgba(0,0,0,.4); max-width: 46rem;
+}
+.dossier .soon {
+  position: absolute; top: 1.4rem; right: 1.4rem; font-family: var(--display); font-weight: 900; font-size: 1.5rem;
+  color: var(--oxblood); border: 3px solid var(--oxblood); padding: .05rem .6rem; transform: rotate(6deg);
+}
+.dossier h3 { font-family: var(--display); font-weight: 900; font-size: clamp(2.2rem, 5vw, 3.2rem); line-height: .95; margin: 0 0 1rem; max-width: 12ch; }
+.dossier p { margin: 0 0 1rem; }
+.dossier ul { margin: 1.2rem 0 1.2rem; padding: 0; list-style: none; }
+.dossier li { padding: .55rem 0 .55rem 1.3rem; border-top: 1px solid rgba(27,30,33,.18); position: relative; }
+.dossier li::before { content: ""; position: absolute; left: 0; top: 1.05rem; width: .55rem; height: .55rem; background: var(--oxblood); }
+.dossier li b { font-weight: 600; }
+.dossier .note { font-style: italic; color: #55504a; margin: 0; }
+.dossier .t { text-decoration-color: var(--oxblood); }
+.dossier .t:hover { color: var(--oxblood); }
+
+/* ---------- games ---------- */
+.games { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 2rem; }
+.game h3 { font-family: var(--display); font-weight: 800; font-size: 2rem; line-height: 1; margin: 0; }
+.game .eng { color: var(--brass); margin: .3rem 0 .6rem; font-style: italic; }
+.game p { margin: 0; }
+
+/* ---------- evidence ---------- */
+.levels { display: grid; gap: 1.2rem; max-width: 44rem; }
+.level { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 1rem; align-items: baseline; }
+.level b { font-family: var(--display); font-weight: 900; font-size: 1.6rem; line-height: 1; }
+.level.m b { color: var(--verdigris); } .level.i b { color: var(--brass); } .level.h b { color: var(--flare); }
+.level p { margin: 0; }
+
+/* ---------- glossary ---------- */
+.gloss { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: .2rem 2.4rem; margin: 0; }
+.gloss div { padding: .75rem 0; border-top: 1px solid var(--rule); scroll-margin-top: 5rem; }
+.gloss dt { font-family: var(--display); font-weight: 800; font-size: 1.45rem; line-height: 1.05; }
+.gloss dd { margin: .2rem 0 0; color: var(--plaster-dim); font-size: 1.02rem; }
+.gloss div:target dt { color: var(--brass); }
+
+/* ---------- start here ---------- */
+.reads { list-style: none; padding: 0; margin: 0; max-width: 46rem; }
+.reads li { border-top: 1px solid var(--rule); }
+.reads a { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 1rem; padding: .85rem 0; text-decoration: none; }
+.reads a b { font-weight: 600; text-decoration: underline; text-decoration-color: var(--flare); text-underline-offset: .18em; }
+.reads a span { color: var(--plaster-dim); }
+.reads a:hover span { color: var(--plaster); }
+
+footer { background: var(--bunker); padding: 2.5rem 0 3rem; color: var(--plaster-dim); font-size: 1rem; }
+footer p { max-width: 46rem; margin: 0 0 .8rem; }
+
+@media (max-width: 860px) {
+  .file > .wrap { grid-template-columns: 1fr; gap: 1.2rem; }
+  .rail h2, .rail p { position: static; }
+  .mast nav { display: none; }
   .lang { margin-left: auto; }
-  .hero { padding: 64px 0 60px; }
-  .paper { padding: 26px 20px; transform: none; }
-  .paper .classified { position: static; display: inline-block; margin-bottom: 12px; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .files a.plate { transition: none; } }
+@media (max-width: 560px) {
+  .hero { padding: 3.5rem 0 3rem; }
+  .entry { grid-template-columns: 1fr; gap: .4rem; }
+  .level { grid-template-columns: 1fr; gap: .2rem; }
+  .reads a { grid-template-columns: 1fr; gap: .1rem; }
+  .dossier { padding: 1.6rem 1.3rem; }
+  .dossier .soon { position: static; display: inline-block; margin-bottom: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  #tip { transition: none; }
+}
 </style>
 </head>
 <body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
 
-<header class="bar">
+<header class="mast">
   <div class="wrap">
-    <a class="brand" href="#top">WOLF<b>/</b>MODLOADER</a>
-    <nav>
+    <a class="mark" href="#top">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
       <a href="#roadmap">Roadmap</a>
       <a href="#studio">Studio</a>
-      <a href="#games"><span class="en">Games</span><span class="de">Spiele</span></a>
-      <a href="#dossier"><span class="en">Dossier</span><span class="de">Dossier</span></a>
-      <a href="#evidence"><span class="en">Evidence</span><span class="de">Belege</span></a>
+      <a href="#glossary"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">Wiki</a>
       <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
     </nav>
     <div class="lang" role="group" aria-label="Language">
@@ -275,284 +235,403 @@ footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space
   </div>
 </header>
 
-<main id="top">
-  <div class="hero">
+<main id="main">
+  <div class="hero" id="top">
     <div class="wrap">
-      <svg class="eagle" viewBox="0 0 120 120" aria-hidden="true">
-        <circle cx="60" cy="60" r="56" fill="none" stroke="#c8102e" stroke-width="4"/>
-        <circle cx="60" cy="60" r="47" fill="none" stroke="#45474c" stroke-width="2" stroke-dasharray="4 5"/>
-        <path d="M22 36h13l9 38 11-38h10l11 38 9-38h13L84 88H73L60 50 47 88H36z" fill="#c8102e"/>
-      </svg>
-      <div class="stamp"><span class="en">Resistance files</span><span class="de">Akten des Widerstands</span></div>
-      <h1>Wolfenstein<span>Modloader</span></h1>
-      <p class="lead">
-        <span class="en">Community documentation and reverse-engineering research for modding the MachineGames Wolfenstein titles.</span>
-        <span class="de">Community-Dokumentation und Reverse-Engineering-Forschung zum Modden der Wolfenstein-Spiele von MachineGames.</span>
+      <h1 aria-label="Wolfenstein Modloader"><span class="line" data-decode>Wolfenstein</span><span class="line" data-decode>Modloader</span></h1>
+      <p class="intro">
+        <span class="en">We take the Wolfenstein games apart to learn how their files work, and write down everything we find, so anyone can <span class="t" data-t="modding">mod</span> them.</span>
+        <span class="de">Wir nehmen die Wolfenstein-Spiele auseinander, um zu verstehen, wie ihre Dateien funktionieren, und schreiben alles auf, was wir finden – damit jeder sie <span class="t" data-t="modding">modden</span> kann.</span>
       </p>
-      <div class="cta">
-        <a class="btn primary" href="https://github.com/LopeKinz/wolfenstein-modloader/wiki"><span class="en">Open the Wiki</span><span class="de">Zum Wiki</span></a>
-        <a class="btn ghost" href="#roadmap"><span class="en">Research roadmap</span><span class="de">Forschungs-Roadmap</span></a>
-        <a class="btn ghost" href="https://github.com/LopeKinz/wolfenstein-modloader"><span class="en">View on GitHub</span><span class="de">Auf GitHub ansehen</span></a>
+      <div class="actions">
+        <a class="btn solid" href="#roadmap"><span class="en">See the research roadmap</span><span class="de">Forschungs-Roadmap ansehen</span></a>
+        <a class="btn" href="https://github.com/LopeKinz/wolfenstein-modloader/wiki"><span class="en">Read the wiki</span><span class="de">Wiki lesen</span></a>
       </div>
-      <a class="soon-ribbon" href="#studio"><span class="pulse"></span><span class="en">Wolfenstein Studio — coming soon</span><span class="de">Wolfenstein Studio — bald verfügbar</span></a>
+      <p class="tally" id="tally"></p>
     </div>
   </div>
 
-  <section id="roadmap">
+  <section class="file" id="about" aria-labelledby="h-about">
     <div class="wrap">
-      <div class="kicker"><span class="en">Research roadmap</span><span class="de">Forschungs-Roadmap</span></div>
-      <h2><span class="en">Where the research stands</span><span class="de">Wo die Forschung steht</span></h2>
-      <div class="rm-summary" id="rm-summary"></div>
-      <div class="rm-filter" role="group" aria-label="Filter">
-        <button type="button" data-game="all" aria-pressed="true"><span class="en">All</span><span class="de">Alle</span></button>
-        <button type="button" data-game="TNO" aria-pressed="false">The New Order</button>
-        <button type="button" data-game="TNC" aria-pressed="false">The New Colossus</button>
+      <div class="rail"><h2 id="h-about"><span class="en">What this is</span><span class="de">Worum es geht</span></h2></div>
+      <div class="body">
+        <p class="big en">Games keep their weapons, enemies, maps and pictures in large packed files. Nobody outside the studio documented how those files are built, so we find out ourselves. That work is called <span class="t" data-t="re">reverse engineering</span>.</p>
+        <p class="big de">Spiele bewahren Waffen, Gegner, Karten und Bilder in großen gepackten Dateien auf. Außerhalb des Studios hat niemand dokumentiert, wie diese Dateien aufgebaut sind – also finden wir es selbst heraus. Diese Arbeit heißt <span class="t" data-t="re">Reverse Engineering</span>.</p>
+        <p class="en">Everything we learn goes into the wiki: how the <span class="t" data-t="archive">archives</span> are packed, how a weapon is described in a <span class="t" data-t="decl">Decl</span>, which limits the <span class="t" data-t="engine">engine</span> sets, and which ideas turned out to be wrong.</p>
+        <p class="de">Alles, was wir lernen, steht im Wiki: wie die <span class="t" data-t="archive">Archive</span> gepackt sind, wie eine Waffe in einer <span class="t" data-t="decl">Decl</span> beschrieben wird, welche Grenzen die <span class="t" data-t="engine">Engine</span> setzt und welche Ideen sich als falsch erwiesen haben.</p>
+        <p class="hint">
+          <span class="en">Words with a dotted line have a short explanation. Point at them, tap them or reach them with the Tab key.</span>
+          <span class="de">Wörter mit gepunkteter Linie haben eine kurze Erklärung. Zeig darauf, tippe sie an oder erreiche sie mit der Tab-Taste.</span>
+        </p>
       </div>
-      <div class="lanes">
-        <div class="lane done"><h3><span class="en">Solved</span><span class="de">Gelöst</span></h3><div class="cards" data-lane="done"></div></div>
-        <div class="lane wip"><h3><span class="en">In progress</span><span class="de">In Arbeit</span></h3><div class="cards" data-lane="wip"></div></div>
-        <div class="lane open"><h3><span class="en">Open</span><span class="de">Offen</span></h3><div class="cards" data-lane="open"></div></div>
-      </div>
-      <p class="rm-note">
-        <span class="en">» Based on the research reports in the wiki (as of 23 Sep 2026). Every card links to its source.</span>
-        <span class="de">» Grundlage sind die Forschungsberichte im Wiki (Stand 23.09.2026). Jede Karte verlinkt ihre Quelle.</span>
-      </p>
     </div>
   </section>
 
-  <section id="studio">
+  <section class="file" id="roadmap" aria-labelledby="h-roadmap">
     <div class="wrap">
-      <div class="kicker"><span class="en">In development</span><span class="de">In Entwicklung</span></div>
-      <h2>Wolfenstein Studio <span class="soon-badge"><span class="en">Coming soon</span><span class="de">Bald</span></span></h2>
-      <div class="studio">
-        <div>
-          <p class="lead-text">
-            <span class="en">Wolfenstein Studio is the upcoming desktop application of this project: one place to explore the game files, build mods and play them — without the command line.</span>
-            <span class="de">Wolfenstein Studio ist die kommende Desktop-Anwendung dieses Projekts: ein Ort, um die Spieldateien zu erkunden, Mods zu bauen und sie zu spielen – ohne Kommandozeile.</span>
-          </p>
-          <p class="sub">
-            <span class="en">It turns the research documented in the wiki into a tool: every format, rule and limit described there is what the Studio reads and respects.</span>
-            <span class="de">Es macht aus der im Wiki dokumentierten Forschung ein Werkzeug: Jedes Format, jede Regel und jede Grenze, die dort beschrieben ist, liest und beachtet das Studio.</span>
-          </p>
-          <ul class="features">
-            <li><b><span class="en">Asset browser</span><span class="de">Asset-Browser</span></b>
-              <span class="d"><span class="en">Open the archives of both games and look at Decls, text and images directly.</span><span class="de">Die Archive beider Spiele öffnen und Decls, Texte und Bilder direkt ansehen.</span></span></li>
-            <li><b><span class="en">Mod editor</span><span class="de">Mod-Editor</span></b>
-              <span class="d"><span class="en">Change values such as damage, magazine size or enemy health and save them as a mod.</span><span class="de">Werte wie Schaden, Magazingröße oder Gegnerleben ändern und als Mod speichern.</span></span></li>
-            <li><b><span class="en">Safe install &amp; revert</span><span class="de">Sicher installieren &amp; zurücknehmen</span></b>
-              <span class="d"><span class="en">Apply mods with a backup and undo every change with one click.</span><span class="de">Mods mit Backup anwenden und jede Änderung mit einem Klick rückgängig machen.</span></span></li>
-            <li><b><span class="en">Conflict check</span><span class="de">Konfliktprüfung</span></b>
-              <span class="d"><span class="en">See which mods touch the same values before you start the game.</span><span class="de">Sehen, welche Mods dieselben Werte ändern, bevor das Spiel startet.</span></span></li>
+      <div class="rail">
+        <h2 id="h-roadmap"><span class="en">Research roadmap</span><span class="de">Forschungs-Roadmap</span></h2>
+        <p><span class="en">From the research reports in the wiki, as of 23 September 2026.</span><span class="de">Aus den Forschungsberichten im Wiki, Stand 23. September 2026.</span></p>
+      </div>
+      <div class="body">
+        <div class="filter" role="group" aria-label="Game">
+          <button type="button" data-game="all" aria-pressed="true"><span class="en">Both games</span><span class="de">Beide Spiele</span></button>
+          <button type="button" data-game="TNO" aria-pressed="false">The New Order</button>
+          <button type="button" data-game="TNC" aria-pressed="false">The New Colossus</button>
+        </div>
+        <div id="register"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="file" id="studio" aria-labelledby="h-studio">
+    <div class="wrap">
+      <div class="rail">
+        <h2 id="h-studio">Wolfenstein Studio</h2>
+        <p><span class="en">Coming soon.</span><span class="de">Bald verfügbar.</span></p>
+      </div>
+      <div class="body">
+        <article class="dossier">
+          <div class="soon"><span class="en">Coming soon</span><span class="de">Kommt bald</span></div>
+          <h3><span class="en">Modding without the command line</span><span class="de">Modden ohne Kommandozeile</span></h3>
+          <p class="en">Wolfenstein Studio is the desktop app this project is building. It turns the research on this page into buttons: open the game files, change what you want, play, and undo it again.</p>
+          <p class="de">Wolfenstein Studio ist die Desktop-App, an der dieses Projekt baut. Sie macht aus der Forschung auf dieser Seite Knöpfe: Spieldateien öffnen, ändern, was du willst, spielen – und es wieder rückgängig machen.</p>
+          <ul>
+            <li class="en"><b>Look inside the game.</b> Browse the <span class="t" data-t="archive">archives</span> of both games and read <span class="t" data-t="decl">Decls</span>, texts and images.</li>
+            <li class="de"><b>In das Spiel hineinsehen.</b> Die <span class="t" data-t="archive">Archive</span> beider Spiele durchsuchen und <span class="t" data-t="decl">Decls</span>, Texte und Bilder lesen.</li>
+            <li class="en"><b>Change values.</b> Damage, magazine size, enemy health – edit them and save the result as a mod.</li>
+            <li class="de"><b>Werte ändern.</b> Schaden, Magazingröße, Gegnerleben – bearbeiten und als Mod speichern.</li>
+            <li class="en"><b>Install safely.</b> Every change is backed up and can be undone with one click.</li>
+            <li class="de"><b>Sicher installieren.</b> Jede Änderung wird gesichert und lässt sich mit einem Klick zurücknehmen.</li>
+            <li class="en"><b>Spot conflicts.</b> See when two mods change the same value before you start the game.</li>
+            <li class="de"><b>Konflikte erkennen.</b> Sehen, wenn zwei Mods denselben Wert ändern, bevor das Spiel startet.</li>
           </ul>
-          <p class="status">
-            <span class="en">» Status: in development. Release date and final feature set to be announced here.</span>
-            <span class="de">» Status: in Entwicklung. Termin und endgültiger Funktionsumfang werden hier bekanntgegeben.</span>
-          </p>
-        </div>
-        <div class="console" aria-hidden="true">
-          <div class="titlebar"><i></i><i></i><i></i><span>Wolfenstein Studio</span></div>
-          <div class="body">
-            &gt; <span class="en">loading archives</span><span class="de">lade Archive</span> … <span class="ok">OK</span><br>
-            &gt; weapon/shotgun_base<br>
-            &nbsp;&nbsp;clipSize &nbsp;20 → <span class="r">40</span><br>
-            &nbsp;&nbsp;firingInterval &nbsp;200 → <span class="r">120</span><br>
-            &gt; <span class="en">conflicts</span><span class="de">Konflikte</span>: <span class="ok">0</span><br>
-            &gt; <span class="en">build mod</span><span class="de">Mod bauen</span> … <span class="r">COMING SOON</span> <span class="cursor"></span>
-          </div>
-        </div>
+          <p class="note en">In development. The release date and final features will be announced here.</p>
+          <p class="note de">In Entwicklung. Termin und endgültiger Funktionsumfang werden hier bekanntgegeben.</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <section id="games">
+  <section class="file" id="games" aria-labelledby="h-games">
     <div class="wrap">
-      <div class="kicker"><span class="en">Targets</span><span class="de">Ziele</span></div>
-      <h2><span class="en">Two games, two engines</span><span class="de">Zwei Spiele, zwei Engines</span></h2>
-      <div class="grid">
-        <article class="plate">
-          <div class="engine">id Tech 5 · 2014</div>
+      <div class="rail"><h2 id="h-games"><span class="en">The two games</span><span class="de">Die zwei Spiele</span></h2></div>
+      <div class="body games">
+        <div class="game">
           <h3>The New Order</h3>
-          <p>
-            <span class="en">Archive and resource formats, Decls, textures, audio, maps and save games — the most thoroughly measured part of the research.</span>
-            <span class="de">Archiv- und Ressourcenformate, Decls, Texturen, Audio, Karten und Spielstände – der am gründlichsten vermessene Teil der Forschung.</span>
-          </p>
-        </article>
-        <article class="plate">
-          <div class="engine">id Tech 6 · 2017</div>
+          <p class="eng">2014, <span class="t" data-t="engine">id Tech 5</span></p>
+          <p class="en">The best-measured part of the research. Archives, Decls, images, sound and save games are understood well enough to change them safely.</p>
+          <p class="de">Der am besten vermessene Teil der Forschung. Archive, Decls, Bilder, Ton und Spielstände sind so gut verstanden, dass man sie sicher ändern kann.</p>
+        </div>
+        <div class="game">
           <h3>II: The New Colossus</h3>
-          <p>
-            <span class="en">Resource containers, encrypted resources, the CVar catalogue, DLC overrides and custom-map prototypes.</span>
-            <span class="de">Ressourcen-Container, verschlüsselte Ressourcen, der CVar-Katalog, DLC-Overrides und Prototypen eigener Karten.</span>
-          </p>
-        </article>
+          <p class="eng">2017, <span class="t" data-t="engine">id Tech 6</span></p>
+          <p class="en">Harder to open: <span class="t" data-t="encryption">encrypted</span> files and <span class="t" data-t="hash">fingerprinted</span> archives. The current front line is a first playable custom map.</p>
+          <p class="de">Schwerer zu öffnen: <span class="t" data-t="encryption">verschlüsselte</span> Dateien und Archive mit <span class="t" data-t="hash">Fingerabdrücken</span>. Die aktuelle Front ist eine erste spielbare eigene Karte.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="dossier">
+  <section class="file" id="evidence" aria-labelledby="h-evidence">
     <div class="wrap">
-      <div class="kicker"><span class="en">Start here</span><span class="de">Hier beginnen</span></div>
-      <h2><span class="en">The dossier</span><span class="de">Das Dossier</span></h2>
-      <div class="grid files" id="files"></div>
-    </div>
-  </section>
-
-  <section id="evidence">
-    <div class="wrap">
-      <div class="kicker"><span class="en">Evidence standards</span><span class="de">Belegstandards</span></div>
-      <h2><span class="en">Know what is proven</span><span class="de">Wissen, was bewiesen ist</span></h2>
-      <div class="evidence">
-        <div class="ev m"><b><span class="en">Measured</span><span class="de">Gemessen</span></b>
-          <p><span class="en">Confirmed at runtime, on disk, or against real game data.</span><span class="de">Zur Laufzeit, auf der Festplatte oder an echten Spieldaten bestätigt.</span></p></div>
-        <div class="ev i"><b><span class="en">Inferred</span><span class="de">Abgeleitet</span></b>
-          <p><span class="en">Supported by binary analysis or structural evidence, not yet confirmed in the running game.</span><span class="de">Durch Binäranalyse oder strukturelle Belege gestützt, im laufenden Spiel noch nicht bestätigt.</span></p></div>
-        <div class="ev h"><b><span class="en">Hypothesized</span><span class="de">Vermutet</span></b>
-          <p><span class="en">A plausible lead that still requires verification.</span><span class="de">Eine plausible Spur, die noch überprüft werden muss.</span></p></div>
+      <div class="rail">
+        <h2 id="h-evidence"><span class="en">How sure we are</span><span class="de">Wie sicher wir sind</span></h2>
+        <p><span class="en">Every statement in the wiki carries one of these.</span><span class="de">Jede Aussage im Wiki trägt eine dieser Stufen.</span></p>
       </div>
-      <p class="note">
-        <span class="en">» Negative results, failed approaches and open questions are kept on record.</span>
-        <span class="de">» Negative Ergebnisse, gescheiterte Ansätze und offene Fragen bleiben dokumentiert.</span>
-      </p>
-    </div>
-  </section>
-
-  <section id="scope">
-    <div class="wrap">
-      <div class="kicker"><span class="en">Current scope</span><span class="de">Aktueller Umfang</span></div>
-      <h2><span class="en">What the wiki covers</span><span class="de">Was das Wiki abdeckt</span></h2>
-      <div class="tags" id="tags"></div>
-    </div>
-  </section>
-
-  <section id="disclaimer">
-    <div class="wrap">
-      <div class="paper">
-        <div class="classified"><span class="en">Notice</span><span class="de">Hinweis</span></div>
-        <p class="en">This is an independent community project. It is not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media, or Microsoft. Wolfenstein and the names of the referenced games are trademarks of their respective owners.</p>
-        <p class="de">Dies ist ein unabhängiges Community-Projekt. Es steht in keiner Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft und wird von diesen nicht unterstützt. Wolfenstein und die Namen der genannten Spiele sind Marken ihrer jeweiligen Inhaber.</p>
-        <p class="en">Do not redistribute copyrighted game assets. Use the documentation only with game files you are legally entitled to access.</p>
-        <p class="de">Verbreite keine urheberrechtlich geschützten Spieldateien. Nutze die Dokumentation nur mit Spieldateien, auf die du rechtmäßig zugreifen darfst.</p>
+      <div class="body">
+        <div class="levels">
+          <div class="level m"><b><span class="en">Measured</span><span class="de">Gemessen</span></b>
+            <p><span class="en">We saw it happen: in the running game, on disk, or in real game data.</span><span class="de">Wir haben es gesehen: im laufenden Spiel, auf der Festplatte oder in echten Spieldaten.</span></p></div>
+          <div class="level i"><b><span class="en">Inferred</span><span class="de">Abgeleitet</span></b>
+            <p><span class="en">The program code or file structure points to it, but nobody has confirmed it in the game yet.</span><span class="de">Programmcode oder Dateiaufbau deuten darauf hin, aber im Spiel hat es noch niemand bestätigt.</span></p></div>
+          <div class="level h"><b><span class="en">Hypothesized</span><span class="de">Vermutet</span></b>
+            <p><span class="en">A good lead that still has to be checked.</span><span class="de">Eine gute Spur, die noch geprüft werden muss.</span></p></div>
+        </div>
+        <p style="margin-top:1.6rem"><span class="en">Failed attempts and open questions stay in the record, so you can tell what is proven from what is still research.</span><span class="de">Gescheiterte Versuche und offene Fragen bleiben stehen, damit man Bewiesenes von laufender Forschung unterscheiden kann.</span></p>
       </div>
+    </div>
+  </section>
+
+  <section class="file" id="glossary" aria-labelledby="h-glossary">
+    <div class="wrap">
+      <div class="rail">
+        <h2 id="h-glossary"><span class="en">Words explained</span><span class="de">Begriffe erklärt</span></h2>
+        <p><span class="en">The technical words on this page, in plain language.</span><span class="de">Die Fachwörter dieser Seite in einfacher Sprache.</span></p>
+      </div>
+      <div class="body"><dl class="gloss" id="gloss"></dl></div>
+    </div>
+  </section>
+
+  <section class="file" id="start" aria-labelledby="h-start">
+    <div class="wrap">
+      <div class="rail"><h2 id="h-start"><span class="en">Where to start reading</span><span class="de">Wo du anfängst</span></h2></div>
+      <div class="body"><ul class="reads" id="reads"></ul></div>
     </div>
   </section>
 </main>
 
 <footer>
   <div class="wrap">
-    <span>Wolfenstein Modloader · <span class="en">community research</span><span class="de">Community-Forschung</span></span>
-    <a href="https://github.com/LopeKinz/wolfenstein-modloader">github.com/LopeKinz/wolfenstein-modloader</a>
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft. Wolfenstein and the names of the games are trademarks of their owners.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft. Wolfenstein und die Namen der Spiele sind Marken ihrer Inhaber.</p>
+    <p class="en">Do not share copyrighted game files. Use this research only with games you own.</p>
+    <p class="de">Teile keine urheberrechtlich geschützten Spieldateien. Nutze diese Forschung nur mit Spielen, die dir gehören.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader">github.com/LopeKinz/wolfenstein-modloader</a></p>
   </div>
 </footer>
 
+<div id="tip" role="tooltip"></div>
+
 <script>
 const WIKI = "https://github.com/LopeKinz/wolfenstein-modloader/wiki/";
-const FILES = [
-  ["Modding-Guide", "Modding Guide", "Decls, weapons, skins, characters, load order and pitfalls.", "Decls, Waffen, Skins, Figuren, Ladereihenfolge und Fallstricke."],
-  ["File-Formats", "File Formats", "Index, resources, Decls, BIM images, audio and virtual textures.", "Index, Ressourcen, Decls, BIM-Bilder, Audio und virtuelle Texturen."],
-  ["Modding-Limits", "Modding Limits", "What works, what doesn't — and the measured reasons why.", "Was geht, was nicht – und die gemessenen Gründe dafür."],
-  ["TNO-Modding-Surface", "The New Order Surface", "Every lever in Part 1, from damage tables to enemy health.", "Jeder Hebel in Teil 1, von Schadenstabellen bis Gegnerleben."],
-  ["TNC-Modding-Surface", "The New Colossus Surface", "Difficulty tables, perks, upgrades and the cost of each change.", "Schwierigkeitstabellen, Perks, Upgrades und die Kosten jeder Änderung."],
-  ["Reverse-Engineering-Research", "Reverse Engineering", "Detailed research reports, briefs and binary analysis.", "Ausführliche Forschungsberichte, Briefings und Binäranalyse."],
-  ["Known-Contradictions", "Known Contradictions", "Where sources disagree, and how each conflict was resolved.", "Wo Quellen sich widersprechen und wie jeder Konflikt gelöst wurde."],
-  ["Research-Artifacts", "Research Artifacts", "Inventory of large generated artifacts from the workspace.", "Verzeichnis großer generierter Artefakte aus dem Arbeitsbereich."],
-];
-const TAGS = [
-  ["Archive formats", "Archivformate"], ["Resource formats", "Ressourcenformate"], ["Declarations", "Deklarationen"],
-  ["Audio", "Audio"], ["UI assets", "UI-Assets"], ["Maps", "Karten"], ["Save games", "Spielstände"],
-  ["Developer mode", "Entwicklermodus"], ["Loading paths", "Ladepfade"], ["Patch precedence", "Patch-Vorrang"],
-  ["Textures", "Texturen"], ["Kiscule scripting", "Kiscule-Skripting"], ["Custom maps", "Eigene Karten"],
-];
-const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-const files = document.getElementById("files");
-FILES.forEach(([slug, title, en, de], i) => {
-  const a = el("a", "plate");
-  a.href = WIKI + slug;
-  a.innerHTML = `<div class="no">FILE № ${String(i + 1).padStart(3, "0")}</div><h3>${title}</h3>` +
-    `<p><span class="en">${en}</span><span class="de">${de}</span></p>` +
-    `<span class="go"><span class="en">Read file →</span><span class="de">Akte lesen →</span></span>`;
-  files.appendChild(a);
-});
-const tags = document.getElementById("tags");
-TAGS.forEach(([en, de]) => tags.appendChild(el("span", "", `<span class="en">${en}</span><span class="de">${de}</span>`)));
 
+/* Glossary: [en name, en text, de name, de text] */
+const TERMS = {
+  modding: ["Modding", "Changing a game with your own content or values.", "Modding", "Ein Spiel mit eigenen Inhalten oder Werten verändern."],
+  re: ["Reverse engineering", "Finding out how a program works by examining it from the outside, without its source code.", "Reverse Engineering", "Herausfinden, wie ein Programm funktioniert, indem man es von außen untersucht – ohne Quellcode."],
+  engine: ["Engine (id Tech)", "The technical foundation a game is built on. The New Order uses id Tech 5, The New Colossus id Tech 6.", "Engine (id Tech)", "Das technische Fundament eines Spiels. The New Order nutzt id Tech 5, The New Colossus id Tech 6."],
+  retail: ["Retail", "The normal version of the game as sold, not a developer build.", "Retail", "Die normale, verkaufte Version des Spiels, kein Entwickler-Build."],
+  archive: ["Archive", "A large file that bundles thousands of game files, a bit like a zip file.", "Archiv", "Eine große Datei, die tausende Spieldateien bündelt, ähnlich wie eine Zip-Datei."],
+  slot: ["Slot", "The exact space a file takes up inside an archive. A changed file has to fit into it.", "Slot", "Der genaue Platz, den eine Datei im Archiv belegt. Eine geänderte Datei muss hineinpassen."],
+  decl: ["Decl", "Short for declaration: a text file that describes one thing in the game, such as a weapon or an enemy.", "Decl", "Kurz für Deklaration: eine Textdatei, die ein Ding im Spiel beschreibt, etwa eine Waffe oder einen Gegner."],
+  checksum: ["Checksum", "A short number calculated from a file. If the file changes, the number changes too.", "Prüfsumme", "Eine kurze Zahl, aus einer Datei berechnet. Ändert sich die Datei, ändert sich auch die Zahl."],
+  hash: ["Hash (fingerprint)", "A fingerprint of data. The game uses it to notice when a file was changed.", "Hash (Fingerabdruck)", "Ein Fingerabdruck von Daten. Das Spiel merkt daran, ob eine Datei verändert wurde."],
+  encryption: ["Encryption", "Scrambling data so that only someone with the key can read it.", "Verschlüsselung", "Daten so verwürfeln, dass nur jemand mit dem Schlüssel sie lesen kann."],
+  key: ["Key", "The secret value that locks and unlocks encrypted data.", "Schlüssel", "Der geheime Wert, der verschlüsselte Daten ver- und entschlüsselt."],
+  idcl: ["IDCL container", "The archive format of Wolfenstein II. Each archive carries fingerprints of its own contents.", "IDCL-Container", "Das Archivformat von Wolfenstein II. Jedes Archiv trägt Fingerabdrücke seines eigenen Inhalts."],
+  bim: ["BIM image", "The game's own picture format, used for menus and the HUD.", "BIM-Bild", "Das eigene Bildformat des Spiels, genutzt für Menüs und das HUD."],
+  vt: ["Virtual textures", "One gigantic image that holds the surfaces of the whole game world. Also called megatexture.", "Virtuelle Texturen", "Ein riesiges Bild, das die Oberflächen der ganzen Spielwelt enthält. Auch Megatexture genannt."],
+  mesh: ["Mesh", "The 3D shape of an object, built from many small triangles.", "Mesh", "Die 3D-Form eines Objekts, aufgebaut aus vielen kleinen Dreiecken."],
+  cvar: ["CVar", "A console variable: a named setting such as field of view or HUD on/off.", "CVar", "Eine Konsolenvariable: eine benannte Einstellung wie Sichtfeld oder HUD an/aus."],
+  console: ["Developer console", "A text input inside the game for commands and settings, normally meant for developers.", "Entwicklerkonsole", "Eine Texteingabe im Spiel für Befehle und Einstellungen, eigentlich für Entwickler gedacht."],
+  alias: ["Map alias", "A copy of an existing map under a new name, so it can be changed without touching the original.", "Karten-Alias", "Eine Kopie einer bestehenden Karte unter neuem Namen, damit man sie ändern kann, ohne das Original anzufassen."],
+  verify: [".verify file", "An extra file the game writes next to a save game to check it later.", ".verify-Datei", "Eine Zusatzdatei, die das Spiel neben einen Spielstand schreibt, um ihn später zu prüfen."],
+  kiscule: ["Kiscule", "The game's scripting system for missions and scripted events.", "Kiscule", "Das Skriptsystem des Spiels für Missionen und gescriptete Ereignisse."],
+};
+
+/* Roadmap: [status, games, wiki page, [en title, de title], [en plain, de plain], [en detail, de detail]]
+   In text, {key|label} becomes a glossary hint. */
 const ROADMAP = [
-  // lane, game, page, area [en,de], title [en,de], text [en,de]
-  ["done", "TNO", "File-Formats", ["Archives","Archive"], ["Archive format and in-place patching","Archivformat und Patchen im Slot"],
-   ["373 patched assets across all 14 archives loaded for 48 min without a single loader error.","373 gepatchte Assets in allen 14 Archiven liefen 48 Min. ohne einen einzigen Loader-Fehler."]],
-  ["done", "TNO+TNC", "TNC-Modding-Surface", ["Decls","Decls"], ["Decl parser and editor for both games","Decl-Parser und -Editor für beide Spiele"],
-   ["0 parse errors over 44,140 Decls of Part 2; 1,432 of 1,432 edits read back correctly.","0 Parserfehler bei 44.140 Decls aus Teil 2; 1.432 von 1.432 Änderungen korrekt zurückgelesen."]],
-  ["done", "TNO+TNC", "Save-Games-and-Profiles", ["Saves","Spielstände"], ["Save header is MD5_BlockChecksum","Spielstand-Header ist MD5_BlockChecksum"],
-   ["82 of 82 save files match, in both games.","82 von 82 Spielstanddateien stimmen, in beiden Spielen."]],
-  ["done", "TNC", "Research-Report-Idclhash", ["Containers","Container"], ["IDCL header hashes +0x08 and +0x20","IDCL-Header-Hashes +0x08 und +0x20"],
-   ["Derived from the loader code; 27 of 27 archives match. No secret seed required.","Aus dem Loader-Code abgeleitet; 27 von 27 Archiven stimmen. Kein geheimer Seed nötig."]],
-  ["done", "TNC", "Research-Report-Cfilekey2", ["Encryption","Verschlüsselung"], ["cfile key derivation","Schlüsselableitung für cfile"],
-   ["Key derivation found; the cfile corpus decrypts and re-encrypts byte for byte.","Schlüsselableitung gefunden; der cfile-Bestand entschlüsselt und verschlüsselt bytegenau."]],
-  ["done", "TNC", "Research-Report-Texdbkey", ["Textures","Texturen"], ["TexDB key","TexDB-Schlüssel"],
-   ["Solved from the code, not by a hash sweep.","Aus dem Code gelöst, nicht per Hash-Suche."]],
-  ["done", "TNC", "Research-Report-Meshfmt", ["Geometry","Geometrie"], ["Mesh format (model / modelstream)","Mesh-Format (model / modelstream)"],
-   ["Layout resolved; a simple box mesh can be written.","Aufbau geklärt; ein einfaches Box-Mesh lässt sich schreiben."]],
-  ["done", "TNC", "Developer-Mode", ["Console","Konsole"], ["Developer console in retail","Entwicklerkonsole im Retail-Spiel"],
-   ["com_enableDeveloperMode 1 opens a real console in The New Colossus.","com_enableDeveloperMode 1 öffnet in The New Colossus eine echte Konsole."]],
-  ["done", "TNC", "TNC-Verified-Findings-2026-09-23", ["Saves","Spielstände"], ["game.details checksum","Prüfsumme von game.details"],
-   ["A dictionary CRC32 as in idDict::Checksum; verified on 26 original files.","Ein Dictionary-CRC32 wie idDict::Checksum; an 26 Originaldateien geprüft."]],
+  ["done", "TNO", "File-Formats", ["Game archives can be changed safely", "Spielarchive lassen sich sicher ändern"],
+    ["Mods can write their changes into the game's own files without breaking them.", "Mods können ihre Änderungen in die Dateien des Spiels schreiben, ohne sie zu beschädigen."],
+    ["Changes go into the existing {slot|slot} of the {archive|archive}. 373 patched assets ran for 48 minutes without a single loader error.", "Änderungen landen im bestehenden {slot|Slot} des {archive|Archivs}. 373 gepatchte Assets liefen 48 Minuten ohne einen einzigen Ladefehler."]],
+  ["done", "TNO TNC", "TNC-Modding-Surface", ["Game values are readable text", "Spielwerte sind lesbarer Text"],
+    ["Weapon damage, enemy health and similar values sit in text files that can be changed line by line.", "Waffenschaden, Gegnerleben und ähnliche Werte stehen in Textdateien, die sich Zeile für Zeile ändern lassen."],
+    ["The {decl|Decl} parser reads both dialects: 0 errors over 44,140 Decls of Part 2, and 1,432 of 1,432 edits read back correctly.", "Der {decl|Decl}-Parser liest beide Dialekte: 0 Fehler bei 44.140 Decls aus Teil 2, und 1.432 von 1.432 Änderungen korrekt zurückgelesen."]],
+  ["done", "TNO TNC", "Save-Games-and-Profiles", ["Save files can be checked and repaired", "Spielstände lassen sich prüfen und reparieren"],
+    ["We know how the game checks that a save file is intact.", "Wir wissen, wie das Spiel prüft, ob ein Spielstand unbeschädigt ist."],
+    ["The 4-byte header is id Software's MD5_BlockChecksum, a {checksum|checksum}. 82 of 82 files match.", "Der 4-Byte-Header ist id Softwares MD5_BlockChecksum, eine {checksum|Prüfsumme}. 82 von 82 Dateien stimmen."]],
+  ["done", "TNC", "Research-Report-Idclhash", ["The seals on Part 2's archives", "Die Siegel der Archive von Teil 2"],
+    ["Part 2 checks every archive with two fingerprints. We can now calculate both.", "Teil 2 prüft jedes Archiv mit zwei Fingerabdrücken. Wir können jetzt beide berechnen."],
+    ["Both header {hash|hashes} of the {idcl|IDCL container} were derived from the loader code. 27 of 27 archives match.", "Beide Header-{hash|Hashes} des {idcl|IDCL-Containers} wurden aus dem Ladecode abgeleitet. 27 von 27 Archiven stimmen."]],
+  ["done", "TNC", "Research-Report-Cfilekey2", ["Encrypted config files opened", "Verschlüsselte Konfigurationsdateien geöffnet"],
+    ["Some Part 2 files are locked. They can now be opened and saved again unchanged.", "Einige Dateien in Teil 2 sind verschlossen. Sie lassen sich jetzt öffnen und unverändert wieder speichern."],
+    ["The {key|key} derivation for the cfile {encryption|encryption} was found. All 67 files decrypt and re-encrypt byte for byte.", "Die Ableitung des {key|Schlüssels} für die cfile-{encryption|Verschlüsselung} wurde gefunden. Alle 67 Dateien ent- und verschlüsseln bytegenau."]],
+  ["done", "TNC", "Research-Report-Texdbkey", ["How Part 2 finds its textures", "Wie Teil 2 seine Texturen findet"],
+    ["We know how the game picks the right picture for a surface.", "Wir wissen, wie das Spiel das richtige Bild für eine Oberfläche auswählt."],
+    ["The TexDB {key|key} was worked out from the program code instead of being guessed.", "Der TexDB-{key|Schlüssel} wurde aus dem Programmcode hergeleitet statt geraten."]],
+  ["done", "TNC", "Research-Report-Meshfmt", ["3D model files decoded", "3D-Modelldateien entschlüsselt"],
+    ["Part 2's model files are understood well enough to write a simple box.", "Die Modelldateien von Teil 2 sind so gut verstanden, dass sich eine einfache Kiste schreiben lässt."],
+    ["The {mesh|mesh} layout (model, modelAsset, modelstream) is resolved.", "Der Aufbau der {mesh|Meshes} (model, modelAsset, modelstream) ist geklärt."]],
+  ["done", "TNC", "Developer-Mode", ["Developer console in the shop version", "Entwicklerkonsole in der Kaufversion"],
+    ["Part 2 opens a real developer console with one start option.", "Teil 2 öffnet mit einer Startoption eine echte Entwicklerkonsole."],
+    ["com_enableDeveloperMode 1 enables the {console|console} in the {retail|retail} build.", "com_enableDeveloperMode 1 schaltet die {console|Konsole} im {retail|Retail}-Build frei."]],
+  ["done", "TNC", "TNC-Verified-Findings-2026-09-23", ["The info file next to each save", "Die Infodatei neben jedem Spielstand"],
+    ["The small text file describing each save is protected by a simple checksum, and we know which.", "Die kleine Textdatei zu jedem Spielstand ist durch eine einfache Prüfsumme geschützt – und wir kennen sie."],
+    ["game.details uses a dictionary CRC32 as in id Software's idDict::Checksum, verified on 26 original files.", "game.details nutzt einen Dictionary-CRC32 wie idDict::Checksum von id Software, geprüft an 26 Originaldateien."]],
 
-  ["wip", "TNC", "TNC-Custom-Map-Status", ["Custom maps","Eigene Karten"], ["Playable custom map","Spielbare eigene Karte"],
-   ["Alias package v3 is built with correct hashes; loading it in-game is still unproven.","Alias-Paket v3 mit korrekten Hashes gebaut; das Laden im Spiel ist noch nicht bewiesen."]],
-  ["wip", "TNC", "Research-Report-Save-Integrity-V3", ["Saves","Spielstände"], ["Custom save repair","Reparatur eigener Spielstände"],
-   ["Offline repair v3 is byte-exact; whether the game accepts it is still open.","Offline-Reparatur v3 ist bytegenau; ob das Spiel sie annimmt, ist offen."]],
-  ["wip", "TNC", "TNC-CVar-Validation", ["CVars","CVars"], ["Real CVar catalogue","Echter CVar-Katalog"],
-   ["Rebuilding the list from the engine's own listCvars output instead of scraped strings.","Liste wird aus der echten listCvars-Ausgabe der Engine neu aufgebaut statt aus Strings."]],
-  ["wip", "TNC", "Research-Report-Missions", ["Missions","Missionen"], ["Mission builder kit","Missions-Baukasten"],
-   ["Custom missions for the Gestapo Office map, scripted with Kiscule.","Eigene Missionen für die Karte Gestapo Office, geskriptet mit Kiscule."]],
-  ["wip", "TNO", "Modding-Limits", ["Images","Bilder"], ["Replaced UI images in-game","Ersetzte UI-Bilder im Spiel"],
-   ["Custom BIMs load without errors; whether they look right is not yet verified.","Eigene BIMs laden fehlerfrei; ob sie richtig aussehen, ist noch nicht geprüft."]],
+  ["wip", "TNC", "TNC-Custom-Map-Status", ["A playable custom map", "Eine spielbare eigene Karte"],
+    ["The goal is to load a new level into Part 2. The package is built, but nobody has played it yet.", "Ziel ist ein neues Level in Teil 2. Das Paket ist gebaut, aber noch hat es niemand gespielt."],
+    ["{alias|Map alias} package v3 has correct hashes. Loading, movement and collision still have to be confirmed in the game.", "Das {alias|Karten-Alias}-Paket v3 hat korrekte Hashes. Laden, Bewegung und Kollision müssen im Spiel noch bestätigt werden."]],
+  ["wip", "TNC", "Research-Report-Save-Integrity-V3", ["Starting a custom map from a save", "Eine eigene Karte über einen Spielstand starten"],
+    ["A prepared save file should drop you straight into the custom map.", "Ein vorbereiteter Spielstand soll dich direkt in die eigene Karte bringen."],
+    ["Offline repair v3 is byte-exact. Whether the game accepts it, including its {verify|.verify file}, is still open.", "Offline-Reparatur v3 ist bytegenau. Ob das Spiel sie annimmt, samt {verify|.verify-Datei}, ist noch offen."]],
+  ["wip", "TNC", "TNC-CVar-Validation", ["A reliable list of hidden settings", "Eine verlässliche Liste versteckter Einstellungen"],
+    ["We collect which settings really exist, straight from the game instead of guessing from its program file.", "Wir sammeln, welche Einstellungen wirklich existieren – direkt aus dem Spiel statt geraten aus der Programmdatei."],
+    ["The {cvar|CVar} catalogue is rebuilt from the engine's own listCvars output.", "Der {cvar|CVar}-Katalog wird aus der echten listCvars-Ausgabe der Engine neu aufgebaut."]],
+  ["wip", "TNC", "Research-Report-Missions", ["Your own missions", "Eigene Missionen"],
+    ["Building your own mission goals and scripted events on an existing map.", "Eigene Missionsziele und gescriptete Ereignisse auf einer bestehenden Karte bauen."],
+    ["A mission kit for the Gestapo Office map, scripted with {kiscule|Kiscule}.", "Ein Missions-Baukasten für die Karte Gestapo Office, gescriptet mit {kiscule|Kiscule}."]],
+  ["wip", "TNO", "Modding-Limits", ["Replacing menu and HUD pictures", "Menü- und HUD-Bilder ersetzen"],
+    ["Custom pictures load without errors. Whether they look right in the game is still being checked.", "Eigene Bilder laden fehlerfrei. Ob sie im Spiel richtig aussehen, wird noch geprüft."],
+    ["Self-built {bim|BIM images} loaded without a single error line; the visual result is not yet verified.", "Selbst gebaute {bim|BIM-Bilder} luden ohne eine Fehlerzeile; das Ergebnis im Bild ist noch nicht geprüft."]],
 
-  ["open", "TNO", "TNO-Virtual-Textures", ["Textures","Texturen"], ["Virtual texture pixels","Pixel der virtuellen Texturen"],
-   ["The container is decoded; the cropped JPEG-XR pixel stream is not. Weapon skins depend on it.","Der Container ist entschlüsselt, der beschnittene JPEG-XR-Pixelstrom nicht. Waffenskins hängen daran."]],
-  ["open", "TNO", "Modding-Limits", ["Geometry","Geometrie"], ["New 3D geometry for Part 1","Neue 3D-Geometrie für Teil 1"],
-   [".md6mesh is binary and not yet examined.",".md6mesh ist binär und noch nicht untersucht."]],
-  ["open", "TNC", "Research-Report-Saveverify", ["Saves","Spielstände"], [".verify files",".verify-Dateien"],
-   ["Contain a random value per write; their role while loading is still being mapped.","Enthalten pro Schreibvorgang einen Zufallswert; ihre Rolle beim Laden wird noch erforscht."]],
-  ["open", "TNC", "Research-Report-Cmdtable", ["Console","Konsole"], ["map / devmap in retail","map / devmap im Retail-Spiel"],
-   ["Both commands exist but are not exposed; making them usable is technically open.","Beide Befehle existieren, sind aber nicht freigegeben; die Nutzung ist technisch offen."]],
-  ["open", "TNC", "TNC-Verified-Findings-2026-09-23", ["Containers","Container"], ["Entry hashes for alias assets","Eintrags-Hashes für Alias-Assets"],
-   ["Runtime effect of data_hash and hash_0x60 on newly added entries is unknown.","Die Laufzeitwirkung von data_hash und hash_0x60 bei neuen Einträgen ist unbekannt."]],
+  ["open", "TNO", "TNO-Virtual-Textures", ["Painting weapon and character surfaces", "Waffen- und Figurenoberflächen bemalen"],
+    ["Most surfaces are stored in a picture format we cannot read yet, so new weapon skins cannot be painted.", "Die meisten Oberflächen liegen in einem Bildformat, das wir noch nicht lesen können – neue Waffenskins lassen sich deshalb nicht malen."],
+    ["The {vt|virtual texture} container is decoded, but the cropped JPEG-XR pixel stream is not.", "Der Container der {vt|virtuellen Texturen} ist entschlüsselt, der beschnittene JPEG-XR-Pixelstrom nicht."]],
+  ["open", "TNO", "Modding-Limits", ["New 3D models in Part 1", "Neue 3D-Modelle in Teil 1"],
+    ["Part 1's model files have not been examined, so new shapes are not possible there yet.", "Die Modelldateien von Teil 1 sind noch nicht untersucht, neue Formen sind dort also noch nicht möglich."],
+    ["The .md6mesh {mesh|mesh} format is binary and still unexamined.", "Das {mesh|Mesh}-Format .md6mesh ist binär und noch nicht untersucht."]],
+  ["open", "TNC", "Research-Report-Saveverify", ["The extra check file for saves", "Die zusätzliche Prüfdatei für Spielstände"],
+    ["Part 2 writes one more file per save, with a random part in it. Its exact role when loading is unclear.", "Teil 2 schreibt pro Spielstand eine weitere Datei mit einem Zufallsanteil. Welche Rolle sie beim Laden spielt, ist unklar."],
+    ["{verify|.verify files} contain a random value per write, so identical saves get different files.", "{verify|.verify-Dateien} enthalten pro Schreibvorgang einen Zufallswert; gleiche Spielstände ergeben verschiedene Dateien."]],
+  ["open", "TNC", "Research-Report-Cmdtable", ["Loading any map by command", "Beliebige Karten per Befehl laden"],
+    ["The commands to load a map exist in Part 2, but they are locked.", "Die Befehle zum Laden einer Karte gibt es in Teil 2, aber sie sind gesperrt."],
+    ["map and devmap are registered but not exposed in the {retail|retail} command table.", "map und devmap sind registriert, stehen aber nicht in der Befehlstabelle des {retail|Retail}-Spiels."]],
+  ["open", "TNC", "TNC-Verified-Findings-2026-09-23", ["Fingerprints of newly added files", "Fingerabdrücke neu hinzugefügter Dateien"],
+    ["It is unknown whether the game checks the fingerprints of files that a map package adds.", "Unbekannt ist, ob das Spiel die Fingerabdrücke von Dateien prüft, die ein Kartenpaket hinzufügt."],
+    ["The runtime effect of data_hash and hash_0x60 on {alias|alias} entries is still open.", "Die Laufzeitwirkung von data_hash und hash_0x60 bei {alias|Alias}-Einträgen ist noch offen."]],
 ];
+
+const GROUPS = {
+  done: ["Solved", "Gelöst", "Understood and checked against real game data.", "Verstanden und an echten Spieldaten geprüft."],
+  wip: ["In progress", "In Arbeit", "Partly done; the last proof in the game is missing.", "Teilweise erledigt; der letzte Beweis im Spiel fehlt."],
+  open: ["Open", "Offen", "Not solved yet. Help is welcome.", "Noch nicht gelöst. Hilfe ist willkommen."],
+};
+
+const READS = [
+  ["Modding-Guide", "Modding Guide", "Your first mod: weapons, skins, enemies, load order.", "Deine erste Mod: Waffen, Skins, Gegner, Ladereihenfolge."],
+  ["File-Formats", "File Formats", "How the game's files are built, byte by byte.", "Wie die Spieldateien aufgebaut sind, Byte für Byte."],
+  ["Modding-Limits", "Modding Limits", "What works, what doesn't, and why.", "Was geht, was nicht – und warum."],
+  ["TNO-Modding-Surface", "The New Order", "Every value you can change in Part 1.", "Jeder Wert, den du in Teil 1 ändern kannst."],
+  ["TNC-Modding-Surface", "The New Colossus", "Every value you can change in Part 2.", "Jeder Wert, den du in Teil 2 ändern kannst."],
+  ["Reverse-Engineering-Research", "Research reports", "The detailed reports behind the roadmap.", "Die ausführlichen Berichte hinter der Roadmap."],
+  ["Known-Contradictions", "Known contradictions", "Where sources disagree, and how it was settled.", "Wo Quellen sich widersprechen und wie es geklärt wurde."],
+];
+
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const hints = s => esc(s).replace(/\{(\w+)\|([^}]+)\}/g, (_, k, label) => `<span class="t" data-t="${k}">${label}</span>`);
+const both = (en, de, fn = esc) => `<span class="en">${fn(en)}</span><span class="de">${fn(de)}</span>`;
+
+/* ---------- roadmap ---------- */
 function renderRoadmap(filter) {
+  const reg = document.getElementById("register");
+  reg.innerHTML = "";
   const counts = { done: 0, wip: 0, open: 0 };
-  document.querySelectorAll("#roadmap .cards").forEach(c => c.innerHTML = "");
-  ROADMAP.forEach(([lane, game, page, area, title, text]) => {
-    if (filter !== "all" && !game.split("+").includes(filter)) return;
-    counts[lane]++;
-    const a = el("a", "rm-card");
-    a.href = WIKI + page;
-    a.innerHTML = `<div class="meta"><span class="game">${game.replace("+", " · ")}</span><span class="area"><span class="en">${area[0]}</span><span class="de">${area[1]}</span></span></div>` +
-      `<b><span class="en">${title[0]}</span><span class="de">${title[1]}</span></b>` +
-      `<p><span class="en">${text[0]}</span><span class="de">${text[1]}</span></p>` +
-      `<span class="src"><span class="en">Source →</span><span class="de">Quelle →</span></span>`;
-    document.querySelector(`#roadmap .cards[data-lane="${lane}"]`).appendChild(a);
-  });
-  document.getElementById("rm-summary").innerHTML =
-    `<div class="done"><b>${counts.done}</b><span><span class="en">solved</span><span class="de">gelöst</span></span></div>` +
-    `<div class="wip"><b>${counts.wip}</b><span><span class="en">in progress</span><span class="de">in Arbeit</span></span></div>` +
-    `<div class="open"><b>${counts.open}</b><span><span class="en">open</span><span class="de">offen</span></span></div>`;
+  for (const lane of ["done", "wip", "open"]) {
+    const rows = ROADMAP.filter(r => r[0] === lane && (filter === "all" || r[1].split(" ").includes(filter)));
+    counts[lane] = rows.length;
+    if (!rows.length) continue;
+    const g = GROUPS[lane];
+    const sec = document.createElement("div");
+    sec.className = "group " + lane;
+    sec.innerHTML = `<h3>${both(g[0], g[1])} <span class="n">${rows.length}</span></h3><p>${both(g[2], g[3])}</p>`;
+    const ul = document.createElement("ul");
+    ul.className = "entries";
+    for (const [, games, page, title, plain, detail] of rows) {
+      const li = document.createElement("li");
+      li.className = "entry";
+      const gameNames = games.split(" ").map(x => x === "TNO" ? "The New Order" : "The New Colossus").join(", ");
+      li.innerHTML =
+        `<span class="stamp">${both(g[0], g[1])}</span>` +
+        `<div><h4>${both(title[0], title[1])}</h4><span class="games">${gameNames}</span>` +
+        `<p class="plain">${both(plain[0], plain[1])}</p>` +
+        `<details><summary>${both("Technical details", "Technische Details")}</summary>` +
+        `<p>${both(detail[0], detail[1], hints)} <a href="${WIKI + page}">${both("Read the report", "Bericht lesen")}</a></p></details></div>`;
+      ul.appendChild(li);
+    }
+    sec.appendChild(ul);
+    reg.appendChild(sec);
+  }
+  return counts;
 }
-document.querySelectorAll(".rm-filter button").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll(".rm-filter button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+const all = renderRoadmap("all");
+document.getElementById("tally").innerHTML =
+  `<span class="en">Right now: <b class="s-done">${all.done} solved</b>, <b class="s-wip">${all.wip} in progress</b>, <b class="s-open">${all.open} open</b>.</span>` +
+  `<span class="de">Aktuell: <b class="s-done">${all.done} gelöst</b>, <b class="s-wip">${all.wip} in Arbeit</b>, <b class="s-open">${all.open} offen</b>.</span>`;
+document.querySelectorAll(".filter button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".filter button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
   renderRoadmap(b.dataset.game);
 }));
-renderRoadmap("all");
 
-function setLang(lang) {
-  document.body.dataset.lang = lang;
-  document.documentElement.lang = lang;
-  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.set === lang)));
-  try { localStorage.setItem("lang", lang); } catch (e) {}
+/* ---------- glossary list and reading list ---------- */
+document.getElementById("gloss").innerHTML = Object.entries(TERMS)
+  .map(([k, t]) => `<div id="g-${k}"><dt>${both(t[0], t[2])}</dt><dd>${both(t[1], t[3])}</dd></div>`).join("");
+document.getElementById("reads").innerHTML = READS
+  .map(([page, title, en, de]) => `<li><a href="${WIKI + page}"><b>${esc(title)}</b>${both(en, de)}</a></li>`).join("");
+
+/* ---------- hint tooltips ---------- */
+const tip = document.getElementById("tip");
+let current = null, shownAt = 0;
+function lang() { return document.body.dataset.lang === "de" ? 1 : 0; }
+function show(el) {
+  const t = TERMS[el.dataset.t];
+  if (!t) return;
+  if (current && current !== el) current.setAttribute("aria-expanded", "false");
+  if (current !== el || !tip.classList.contains("on")) shownAt = performance.now();
+  current = el;
+  el.setAttribute("aria-expanded", "true");
+  tip.innerHTML = `<strong>${esc(t[lang() * 2])}</strong>${esc(t[lang() * 2 + 1])}`;
+  tip.classList.add("on");
+  const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = Math.min(Math.max(12, r.left), innerWidth - w - 12);
+  let y = r.bottom + 10;
+  if (y + h > innerHeight - 8) y = r.top - h - 10;
+  tip.style.left = x + "px";
+  tip.style.top = y + "px";
+}
+function hide() {
+  if (current) current.setAttribute("aria-expanded", "false");
+  current = null;
+  tip.classList.remove("on");
+}
+function wire(root) {
+  root.querySelectorAll(".t:not([tabindex])").forEach(el => {
+    el.tabIndex = 0;
+    el.setAttribute("role", "button");
+    el.setAttribute("aria-expanded", "false");
+    el.setAttribute("aria-describedby", "tip");
+  });
+}
+document.addEventListener("mouseover", e => { const t = e.target.closest(".t"); if (t) show(t); });
+document.addEventListener("mouseout", e => { const t = e.target.closest(".t"); if (t && !t.contains(e.relatedTarget) && document.activeElement !== t) hide(); });
+document.addEventListener("focusin", e => { const t = e.target.closest(".t"); t ? show(t) : hide(); });
+document.addEventListener("click", e => {
+  const t = e.target.closest(".t");
+  // a tap fires hover/focus first; only a later second tap closes the hint
+  if (t) { e.preventDefault(); current === t && tip.classList.contains("on") && performance.now() - shownAt > 400 ? hide() : show(t); }
+  else hide();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") hide(); });
+addEventListener("scroll", hide, { passive: true });
+new MutationObserver(() => wire(document)).observe(document.getElementById("register"), { childList: true });
+wire(document);
+
+/* ---------- language ---------- */
+function setLang(l) {
+  document.body.dataset.lang = l;
+  document.documentElement.lang = l;
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.set === l)));
+  hide();
+  try { localStorage.setItem("lang", l); } catch (e) {}
 }
 document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.set)));
 let initial = "en";
-try { initial = localStorage.getItem("lang") || ((navigator.language || "").startsWith("de") ? "de" : "en"); } catch (e) {}
+try { initial = localStorage.getItem("lang") || ((navigator.language || "").toLowerCase().startsWith("de") ? "de" : "en"); } catch (e) {}
 setLang(initial);
+
+/* ---------- the one orchestrated moment: the title decodes ---------- */
+(function decode() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const GLYPHS = "abcdeghknopqrsuvxyz0123456789";
+  const lines = [...document.querySelectorAll("[data-decode]")];
+  const cells = [];
+  lines.forEach(line => {
+    const text = line.textContent;
+    line.setAttribute("aria-hidden", "true");
+    line.textContent = "";
+    [...text].forEach(ch => {
+      const s = document.createElement("span");
+      s.className = "c scr";
+      s.dataset.ch = ch;
+      s.textContent = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      line.appendChild(s);
+      cells.push(s);
+    });
+  });
+  const start = performance.now(), per = 55, lead = 250;
+  (function frame(now) {
+    let pending = 0;
+    cells.forEach((s, i) => {
+      if (!s.classList.contains("scr")) return;
+      if (now - start > lead + i * per) { s.textContent = s.dataset.ch; s.classList.remove("scr"); }
+      else { pending++; if (Math.random() < .35) s.textContent = GLYPHS[Math.floor(Math.random() * GLYPHS.length)]; }
+    });
+    if (pending) requestAnimationFrame(frame);
+    else lines.forEach(l => { l.textContent = [...l.children].map(c => c.dataset.ch).join(""); });
+  })(start);
+})();
 </script>
 </body>
 </html>
