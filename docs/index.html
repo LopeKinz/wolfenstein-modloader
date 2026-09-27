@@ -167,6 +167,48 @@ footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space
 
 [data-lang="de"] .en, [data-lang="en"] .de { display: none; }
 
+/* ---------- studio / coming soon ---------- */
+.soon-ribbon {
+  display: inline-flex; align-items: center; gap: 10px; margin-top: 30px; text-decoration: none;
+  font-family: "Special Elite", monospace; letter-spacing: .14em; text-transform: uppercase; font-size: 14px;
+  border: 1px dashed var(--red); padding: 8px 16px; color: var(--paper);
+}
+.soon-ribbon:hover { background: rgba(200,16,46,.12); }
+.pulse { width: 9px; height: 9px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 0 rgba(200,16,46,.7); animation: pulse 1.8s infinite; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(200,16,46,0); } 100% { box-shadow: 0 0 0 0 rgba(200,16,46,0); } }
+#studio {
+  background:
+    linear-gradient(180deg, rgba(200,16,46,.10), transparent 40%),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.02) 0 14px, transparent 14px 28px);
+}
+.studio { display: grid; gap: 34px; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: start; }
+.studio .lead-text { font-size: 19px; color: var(--paper); margin: 0 0 18px; }
+.studio .sub { color: var(--paper-dim); margin: 0 0 22px; }
+.soon-badge {
+  display: inline-block; font-family: "Black Ops One", sans-serif; background: var(--red); color: #fff;
+  padding: 4px 14px; letter-spacing: .12em; text-transform: uppercase; font-size: 15px;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); margin-left: 12px; vertical-align: middle;
+}
+.features { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.features li { background: var(--bg-2); border: 1px solid var(--steel-hi); border-left: 4px solid var(--red); padding: 12px 16px; }
+.features b { display: block; text-transform: uppercase; letter-spacing: .08em; font-size: 15px; }
+.features span.d { color: var(--paper-dim); font-size: 15px; }
+.console {
+  background: #060607; border: 1px solid var(--steel-hi); box-shadow: 0 18px 44px rgba(0,0,0,.6);
+  font-family: "Special Elite", monospace; font-size: 14px; color: var(--paper-dim);
+}
+.console .titlebar { display: flex; gap: 6px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--steel-hi); background: var(--steel); }
+.console .titlebar i { width: 10px; height: 10px; border-radius: 50%; background: var(--steel-hi); }
+.console .titlebar i:first-child { background: var(--red); }
+.console .titlebar span { margin-left: auto; letter-spacing: .14em; text-transform: uppercase; font-size: 12px; }
+.console .body { padding: 18px 18px 22px; line-height: 1.9; }
+.console .ok { color: var(--ok); } .console .r { color: var(--red); }
+.console .cursor { display: inline-block; width: 9px; height: 16px; background: var(--red); vertical-align: -3px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.studio .status { margin-top: 18px; font-family: "Special Elite", monospace; font-size: 14px; color: var(--paper-dim); }
+@media (max-width: 860px) { .studio { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .pulse, .console .cursor { animation: none; } }
+
 @media (max-width: 720px) {
   .bar nav { display: none; }
   .lang { margin-left: auto; }
@@ -183,6 +225,7 @@ footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space
   <div class="wrap">
     <a class="brand" href="#top">WOLF<b>/</b>MODLOADER</a>
     <nav>
+      <a href="#studio">Studio</a>
       <a href="#games"><span class="en">Games</span><span class="de">Spiele</span></a>
       <a href="#dossier"><span class="en">Dossier</span><span class="de">Dossier</span></a>
       <a href="#evidence"><span class="en">Evidence</span><span class="de">Belege</span></a>
@@ -213,8 +256,53 @@ footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space
         <a class="btn primary" href="https://github.com/LopeKinz/wolfenstein-modloader/wiki"><span class="en">Open the Wiki</span><span class="de">Zum Wiki</span></a>
         <a class="btn ghost" href="https://github.com/LopeKinz/wolfenstein-modloader"><span class="en">View on GitHub</span><span class="de">Auf GitHub ansehen</span></a>
       </div>
+      <a class="soon-ribbon" href="#studio"><span class="pulse"></span><span class="en">Wolfenstein Studio — coming soon</span><span class="de">Wolfenstein Studio — bald verfügbar</span></a>
     </div>
   </div>
+
+  <section id="studio">
+    <div class="wrap">
+      <div class="kicker"><span class="en">In development</span><span class="de">In Entwicklung</span></div>
+      <h2>Wolfenstein Studio <span class="soon-badge"><span class="en">Coming soon</span><span class="de">Bald</span></span></h2>
+      <div class="studio">
+        <div>
+          <p class="lead-text">
+            <span class="en">Wolfenstein Studio is the upcoming desktop application of this project: one place to explore the game files, build mods and play them — without the command line.</span>
+            <span class="de">Wolfenstein Studio ist die kommende Desktop-Anwendung dieses Projekts: ein Ort, um die Spieldateien zu erkunden, Mods zu bauen und sie zu spielen – ohne Kommandozeile.</span>
+          </p>
+          <p class="sub">
+            <span class="en">It turns the research documented in the wiki into a tool: every format, rule and limit described there is what the Studio reads and respects.</span>
+            <span class="de">Es macht aus der im Wiki dokumentierten Forschung ein Werkzeug: Jedes Format, jede Regel und jede Grenze, die dort beschrieben ist, liest und beachtet das Studio.</span>
+          </p>
+          <ul class="features">
+            <li><b><span class="en">Asset browser</span><span class="de">Asset-Browser</span></b>
+              <span class="d"><span class="en">Open the archives of both games and look at Decls, text and images directly.</span><span class="de">Die Archive beider Spiele öffnen und Decls, Texte und Bilder direkt ansehen.</span></span></li>
+            <li><b><span class="en">Mod editor</span><span class="de">Mod-Editor</span></b>
+              <span class="d"><span class="en">Change values such as damage, magazine size or enemy health and save them as a mod.</span><span class="de">Werte wie Schaden, Magazingröße oder Gegnerleben ändern und als Mod speichern.</span></span></li>
+            <li><b><span class="en">Safe install &amp; revert</span><span class="de">Sicher installieren &amp; zurücknehmen</span></b>
+              <span class="d"><span class="en">Apply mods with a backup and undo every change with one click.</span><span class="de">Mods mit Backup anwenden und jede Änderung mit einem Klick rückgängig machen.</span></span></li>
+            <li><b><span class="en">Conflict check</span><span class="de">Konfliktprüfung</span></b>
+              <span class="d"><span class="en">See which mods touch the same values before you start the game.</span><span class="de">Sehen, welche Mods dieselben Werte ändern, bevor das Spiel startet.</span></span></li>
+          </ul>
+          <p class="status">
+            <span class="en">» Status: in development. Release date and final feature set to be announced here.</span>
+            <span class="de">» Status: in Entwicklung. Termin und endgültiger Funktionsumfang werden hier bekanntgegeben.</span>
+          </p>
+        </div>
+        <div class="console" aria-hidden="true">
+          <div class="titlebar"><i></i><i></i><i></i><span>Wolfenstein Studio</span></div>
+          <div class="body">
+            &gt; <span class="en">loading archives</span><span class="de">lade Archive</span> … <span class="ok">OK</span><br>
+            &gt; weapon/shotgun_base<br>
+            &nbsp;&nbsp;clipSize &nbsp;20 → <span class="r">40</span><br>
+            &nbsp;&nbsp;firingInterval &nbsp;200 → <span class="r">120</span><br>
+            &gt; <span class="en">conflicts</span><span class="de">Konflikte</span>: <span class="ok">0</span><br>
+            &gt; <span class="en">build mod</span><span class="de">Mod bauen</span> … <span class="r">COMING SOON</span> <span class="cursor"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section id="games">
     <div class="wrap">
