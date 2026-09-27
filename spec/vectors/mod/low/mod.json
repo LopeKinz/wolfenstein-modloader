@@ -1,0 +1,23 @@
+{
+  "name": "low",
+  "priority": 1,
+  "game": "tno",
+  "assets": {
+    "weapon:weapon/shotgun_base": {
+      "set": {
+        "edit.validAmmoClips.item[0].clipSize": 30,
+        "edit.ammoPerShot": 2
+      }
+    },
+    "damage:damage/tungsten/mg60": {
+      "set": {
+        "edit.damageParms.maxDamage": 25
+      }
+    },
+    "material:models/weapons/handgun/handgun_hg": {
+      "set": {
+        "usevirtualmapping": 0
+      }
+    }
+  }
+}

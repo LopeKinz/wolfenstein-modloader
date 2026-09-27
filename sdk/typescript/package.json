@@ -1,0 +1,60 @@
+{
+  "name": "wolfenstein-sdk",
+  "version": "0.1.0",
+  "description": "Modding SDK for Wolfenstein: The New Order / The New Colossus — archives, Decls, BIM images, audio descriptors, save checksums and mod.json layering.",
+  "license": "MIT",
+  "author": "LopeKinz",
+  "homepage": "https://github.com/LopeKinz/wolfenstein-modloader",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LopeKinz/wolfenstein-modloader.git",
+    "directory": "sdk/typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/LopeKinz/wolfenstein-modloader/issues"
+  },
+  "keywords": [
+    "wolfenstein",
+    "idtech5",
+    "id-tech",
+    "modding",
+    "modloader",
+    "decl",
+    "resources",
+    "bim",
+    "the-new-order",
+    "the-new-colossus"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "prepublishOnly": "npm run build && node --test test/*.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "typescript": "^5.6.0"
+  }
+}

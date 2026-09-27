@@ -1,0 +1,27 @@
+[package]
+name = "wolfenstein-sdk"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+license = "MIT"
+authors = ["LopeKinz"]
+description = "Modding SDK for Wolfenstein: The New Order / The New Colossus: archives, Decls, BIM images, audio descriptors, save checksums and mod.json layering"
+repository = "https://github.com/LopeKinz/wolfenstein-modloader"
+homepage = "https://github.com/LopeKinz/wolfenstein-modloader"
+documentation = "https://docs.rs/wolfenstein-sdk"
+readme = "README.md"
+keywords = ["wolfenstein", "modding", "idtech", "decl", "gamedev"]
+categories = ["game-development", "parser-implementations"]
+include = ["src/**/*", "tests/**/*", "README.md", "Cargo.toml", "LICENSE"]
+
+[lib]
+name = "wolfsdk"
+path = "src/lib.rs"
+
+[dependencies]
+flate2 = "1"
+md-5 = "0.10"
+serde_json = { version = "1", features = ["preserve_order"] }
+
+[dev-dependencies]
+sha2 = "0.10"

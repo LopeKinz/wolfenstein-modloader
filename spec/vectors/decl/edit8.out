@@ -1,0 +1,10 @@
+{
+	edit = {
+		dup = 1; dup = 2; dup = 30;
+		path = "D:\\x";
+		list = { "a", "b", c }
+		empty = { }
+		;; , ; flag2 ;
+	}
+}
+trailing = 0.0000001;

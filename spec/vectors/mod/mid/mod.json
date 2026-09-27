@@ -1,0 +1,9 @@
+{
+  "name": "mid",
+  "priority": 3,
+  "assets": {
+    "material:models/weapons/handgun/handgun_hg": {
+      "file": "handgun_blue.decl"
+    }
+  }
+}

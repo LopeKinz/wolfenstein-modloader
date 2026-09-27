@@ -1,0 +1,124 @@
+name: SDK Release
+
+# Publishes every binding when a tag vX.Y.Z is pushed:
+#   git tag v0.1.0 && git push origin v0.1.0
+#
+# One-time setup (repository settings):
+#   * PyPI:      add a Trusted Publisher for this repo, workflow "sdk-release.yml",
+#                environment "pypi" (no token needed).
+#   * npm:       secret NPM_TOKEN (automation token with publish rights).
+#   * crates.io: secret CARGO_REGISTRY_TOKEN.
+#   * Go:        nothing — this workflow pushes the tag sdk/go/vX.Y.Z that the
+#                Go module proxy needs for a module in a subdirectory.
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build and verify only, do not publish"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    uses: ./.github/workflows/sdk-ci.yml
+
+  pypi:
+    name: Publish to PyPI
+    needs: test
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/sync_version.py
+      - name: Build
+        working-directory: sdk/python
+        run: |
+          python -m pip install build
+          python -m build
+      - name: Publish
+        if: github.event_name == 'push'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: sdk/python/dist
+
+  npm:
+    name: Publish to npm
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    defaults:
+      run:
+        working-directory: sdk/typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm test
+      - name: Publish
+        run: npm publish ${{ github.event_name == 'push' && '' || '--dry-run' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  crates:
+    name: Publish to crates.io
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk/rust
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Publish
+        run: cargo publish ${{ github.event_name == 'push' && '' || '--dry-run' }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+  go:
+    name: Tag Go module
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Push sdk/go/${{ github.ref_name }}
+        if: github.event_name == 'push'
+        run: |
+          git tag "sdk/go/${GITHUB_REF_NAME}" "${GITHUB_SHA}"
+          git push origin "sdk/go/${GITHUB_REF_NAME}"
+      - name: Warm the Go module proxy
+        if: github.event_name == 'push'
+        run: |
+          curl -fsS "https://proxy.golang.org/github.com/!lope!kinz/wolfenstein-modloader/sdk/go/@v/${GITHUB_REF_NAME}.info" || true
+
+  github-release:
+    name: GitHub release
+    needs: [pypi, npm, crates, go]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" --title "SDK ${GITHUB_REF_NAME}" --generate-notes \
+            --notes "Published: PyPI \`wolfenstein-sdk\`, npm \`wolfenstein-sdk\`, crates.io \`wolfenstein-sdk\`, Go \`github.com/LopeKinz/wolfenstein-modloader/sdk/go@${GITHUB_REF_NAME}\`."

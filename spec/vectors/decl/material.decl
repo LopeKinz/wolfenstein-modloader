@@ -1,0 +1,16 @@
+// material with the no-'=' dialect
+{
+	surfacetype 5.000000
+	twoSided
+	sssblurscale 2.5 1.0 0.6 0.1
+	virtualmapping { 0.015625, 0.015625, 0.078125, 0.031250 }
+	offset ( 0 0 0 )
+	prop "_info" {
+		tag "muzzle" { trans ( 0 0 0 ) rot ( 1 0 0 ( 0 1 0 ) ) }
+		tag "eject" { trans ( 1 2.5 -3 ) }
+	}
+	/* block
+	   comment */ bumpmap "models/x_local"
+	powermip -1
+	scale 1.0f
+}

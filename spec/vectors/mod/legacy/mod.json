@@ -1,0 +1,20 @@
+{
+  "name": "legacy",
+  "spiel": "tno",
+  "damage:damage/tungsten/mg60": {
+    "file": "mg60.decl",
+    "set": {
+      "edit.damageParms.minDamage": 1
+    }
+  },
+  "weapon:weapon/missing": {
+    "set": {
+      "edit.x": 1
+    }
+  },
+  "weapon:weapon/shotgun_base": {
+    "set": {
+      "edit.unknown": 1
+    }
+  }
+}

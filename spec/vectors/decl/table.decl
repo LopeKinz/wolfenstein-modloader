@@ -1,0 +1,1 @@
+{ spline clamp min 0.5 max 0.5 left 0 right 1 {0:0, 1:1} }

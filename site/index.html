@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wolfenstein Modloader</title>
+<meta name="description" content="Community documentation and reverse-engineering research for modding Wolfenstein: The New Order and Wolfenstein II: The New Colossus.">
+<meta property="og:title" content="Wolfenstein Modloader">
+<meta property="og:description" content="Community documentation and reverse-engineering research for modding Wolfenstein: The New Order and The New Colossus.">
+<meta name="theme-color" content="#0b0b0c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b0b0c'/%3E%3Cpath d='M8 14h10l6 26 8-26h0l8 26 6-26h10L44 52h-9l-3-12-3 12h-9z' fill='%23c8102e'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Oswald:wght@400;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0b0c;
+  --bg-2: #141416;
+  --steel: #2a2b2e;
+  --steel-hi: #45474c;
+  --paper: #d9d2c3;
+  --paper-dim: #a39d90;
+  --red: #c8102e;
+  --red-dark: #7d0a1c;
+  --ok: #7fa36b;
+  --warn: #d4a23c;
+  --line: rgba(217, 210, 195, .14);
+  --max: 1120px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--paper);
+  font: 17px/1.6 "Oswald", system-ui, sans-serif;
+  letter-spacing: .01em;
+  overflow-x: hidden;
+}
+body::before { /* film grain + scanlines */
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.65) 100%);
+}
+a { color: inherit; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+/* ---------- top bar ---------- */
+.bar {
+  position: sticky; top: 0; z-index: 40;
+  background: linear-gradient(#0b0b0c, #0b0b0cee);
+  border-bottom: 3px solid var(--red);
+}
+.bar .wrap { display: flex; align-items: center; gap: 18px; height: 58px; }
+.brand { font-family: "Black Ops One", sans-serif; font-size: 20px; text-decoration: none; letter-spacing: .06em; white-space: nowrap; }
+.brand b { color: var(--red); font-weight: 400; }
+.bar nav { display: flex; gap: 18px; margin-left: auto; }
+.bar nav a { text-decoration: none; text-transform: uppercase; font-size: 14px; letter-spacing: .14em; color: var(--paper-dim); }
+.bar nav a:hover { color: var(--paper); }
+.lang { display: flex; border: 1px solid var(--steel-hi); }
+.lang button {
+  background: none; border: 0; color: var(--paper-dim); font: 600 13px "Oswald", sans-serif;
+  letter-spacing: .1em; padding: 5px 9px; cursor: pointer;
+}
+.lang button[aria-pressed="true"] { background: var(--red); color: #fff; }
+
+/* ---------- hero ---------- */
+.hero {
+  position: relative; padding: 96px 0 84px; text-align: center; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(200,16,46,.28), transparent 60%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 2px, transparent 2px 80px),
+    var(--bg);
+}
+.hero .eagle { /* abstract resistance "W" crest */
+  width: 120px; height: 120px; margin: 0 auto 26px; display: block;
+  filter: drop-shadow(0 0 22px rgba(200,16,46,.55));
+}
+.stamp {
+  display: inline-block; font-family: "Special Elite", monospace; color: var(--red);
+  border: 2px solid var(--red); padding: 2px 12px; transform: rotate(-3deg);
+  letter-spacing: .2em; text-transform: uppercase; font-size: 14px; margin-bottom: 22px;
+}
+h1 {
+  font-family: "Black Ops One", sans-serif; font-weight: 400;
+  font-size: clamp(40px, 8.5vw, 96px); line-height: .95; margin: 0 0 18px;
+  text-transform: uppercase; letter-spacing: .03em;
+  text-shadow: 0 3px 0 var(--red-dark), 0 0 40px rgba(200,16,46,.35);
+}
+h1 span { display: block; color: var(--red); text-shadow: 0 3px 0 #000; }
+.lead { max-width: 720px; margin: 0 auto 34px; font-size: 20px; color: var(--paper-dim); }
+.cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-block; text-decoration: none; text-transform: uppercase; letter-spacing: .14em;
+  font-weight: 700; font-size: 15px; padding: 13px 26px; border: 2px solid var(--red);
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+.btn.primary { background: var(--red); color: #fff; }
+.btn.primary:hover { background: #e0213f; }
+.btn.ghost { color: var(--paper); }
+.btn.ghost:hover { background: rgba(200,16,46,.15); }
+
+/* ---------- sections ---------- */
+section { padding: 72px 0; border-top: 1px solid var(--line); }
+.kicker { font-family: "Special Elite", monospace; color: var(--red); letter-spacing: .2em; text-transform: uppercase; font-size: 14px; }
+h2 {
+  font-family: "Black Ops One", sans-serif; font-weight: 400; text-transform: uppercase;
+  font-size: clamp(28px, 4.6vw, 44px); margin: 6px 0 28px; letter-spacing: .04em;
+}
+.grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+
+.plate { /* riveted steel panel */
+  position: relative; background: linear-gradient(160deg, var(--steel), var(--bg-2));
+  border: 1px solid var(--steel-hi); padding: 28px 26px 24px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 12px 30px rgba(0,0,0,.45);
+}
+.plate::before, .plate::after {
+  content: ""; position: absolute; top: 10px; width: 8px; height: 8px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #8a8c91, #2c2d30);
+}
+.plate::before { left: 10px; } .plate::after { right: 10px; }
+.plate h3 { font-family: "Black Ops One", sans-serif; font-weight: 400; font-size: 24px; margin: 4px 0 4px; text-transform: uppercase; }
+.plate .engine { font-family: "Special Elite", monospace; color: var(--red); font-size: 14px; letter-spacing: .1em; }
+.plate p { color: var(--paper-dim); margin: 12px 0 0; }
+
+/* dossier cards */
+.files a.plate { text-decoration: none; display: block; transition: transform .15s, border-color .15s; }
+.files a.plate:hover { transform: translateY(-3px); border-color: var(--red); }
+.files .no { font-family: "Special Elite", monospace; color: var(--paper-dim); font-size: 13px; letter-spacing: .15em; }
+.files h3 { font-size: 20px; }
+.files .go { display: inline-block; margin-top: 14px; color: var(--red); text-transform: uppercase; font-size: 13px; letter-spacing: .16em; font-weight: 700; }
+
+/* evidence */
+.evidence { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.ev { border-left: 6px solid; padding: 16px 20px; background: var(--bg-2); }
+.ev b { display: block; font-family: "Black Ops One", sans-serif; font-weight: 400; text-transform: uppercase; font-size: 20px; letter-spacing: .06em; }
+.ev.m { border-color: var(--ok); } .ev.m b { color: var(--ok); }
+.ev.i { border-color: var(--warn); } .ev.i b { color: var(--warn); }
+.ev.h { border-color: var(--red); } .ev.h b { color: var(--red); }
+.ev p { margin: 6px 0 0; color: var(--paper-dim); }
+.note { margin-top: 24px; font-family: "Special Elite", monospace; color: var(--paper-dim); }
+
+/* scope tags */
+.tags { display: flex; flex-wrap: wrap; gap: 10px; }
+.tags > span {
+  font-family: "Special Elite", monospace; border: 1px solid var(--steel-hi); padding: 6px 12px;
+  background: var(--bg-2); font-size: 15px;
+}
+.tags > span::before { content: "■ "; color: var(--red); }
+
+/* typed dossier paper */
+.paper {
+  background: var(--paper); color: #1d1b17; font-family: "Special Elite", monospace;
+  padding: 30px 32px; position: relative; transform: rotate(-.4deg);
+  box-shadow: 0 16px 40px rgba(0,0,0,.6);
+}
+.paper .classified {
+  position: absolute; top: 18px; right: 18px; color: var(--red); border: 3px double var(--red);
+  padding: 2px 10px; transform: rotate(8deg); font-size: 15px; letter-spacing: .18em; opacity: .85;
+}
+.paper p { margin: 0 0 12px; max-width: 760px; }
+.paper p:last-child { margin: 0; }
+
+footer { padding: 34px 0 48px; border-top: 3px solid var(--red); color: var(--paper-dim); font-size: 14px; }
+footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space-between; }
+
+[data-lang="de"] .en, [data-lang="en"] .de { display: none; }
+
+@media (max-width: 720px) {
+  .bar nav { display: none; }
+  .lang { margin-left: auto; }
+  .hero { padding: 64px 0 60px; }
+  .paper { padding: 26px 20px; transform: none; }
+  .paper .classified { position: static; display: inline-block; margin-bottom: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .files a.plate { transition: none; } }
+</style>
+</head>
+<body data-lang="en">
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top">WOLF<b>/</b>MODLOADER</a>
+    <nav>
+      <a href="#games"><span class="en">Games</span><span class="de">Spiele</span></a>
+      <a href="#dossier"><span class="en">Dossier</span><span class="de">Dossier</span></a>
+      <a href="#evidence"><span class="en">Evidence</span><span class="de">Belege</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <svg class="eagle" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="56" fill="none" stroke="#c8102e" stroke-width="4"/>
+        <circle cx="60" cy="60" r="47" fill="none" stroke="#45474c" stroke-width="2" stroke-dasharray="4 5"/>
+        <path d="M22 36h13l9 38 11-38h10l11 38 9-38h13L84 88H73L60 50 47 88H36z" fill="#c8102e"/>
+      </svg>
+      <div class="stamp"><span class="en">Resistance files</span><span class="de">Akten des Widerstands</span></div>
+      <h1>Wolfenstein<span>Modloader</span></h1>
+      <p class="lead">
+        <span class="en">Community documentation and reverse-engineering research for modding the MachineGames Wolfenstein titles.</span>
+        <span class="de">Community-Dokumentation und Reverse-Engineering-Forschung zum Modden der Wolfenstein-Spiele von MachineGames.</span>
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/LopeKinz/wolfenstein-modloader/wiki"><span class="en">Open the Wiki</span><span class="de">Zum Wiki</span></a>
+        <a class="btn ghost" href="https://github.com/LopeKinz/wolfenstein-modloader"><span class="en">View on GitHub</span><span class="de">Auf GitHub ansehen</span></a>
+      </div>
+    </div>
+  </div>
+
+  <section id="games">
+    <div class="wrap">
+      <div class="kicker"><span class="en">Targets</span><span class="de">Ziele</span></div>
+      <h2><span class="en">Two games, two engines</span><span class="de">Zwei Spiele, zwei Engines</span></h2>
+      <div class="grid">
+        <article class="plate">
+          <div class="engine">id Tech 5 · 2014</div>
+          <h3>The New Order</h3>
+          <p>
+            <span class="en">Archive and resource formats, Decls, textures, audio, maps and save games — the most thoroughly measured part of the research.</span>
+            <span class="de">Archiv- und Ressourcenformate, Decls, Texturen, Audio, Karten und Spielstände – der am gründlichsten vermessene Teil der Forschung.</span>
+          </p>
+        </article>
+        <article class="plate">
+          <div class="engine">id Tech 6 · 2017</div>
+          <h3>II: The New Colossus</h3>
+          <p>
+            <span class="en">Resource containers, encrypted resources, the CVar catalogue, DLC overrides and custom-map prototypes.</span>
+            <span class="de">Ressourcen-Container, verschlüsselte Ressourcen, der CVar-Katalog, DLC-Overrides und Prototypen eigener Karten.</span>
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="dossier">
+    <div class="wrap">
+      <div class="kicker"><span class="en">Start here</span><span class="de">Hier beginnen</span></div>
+      <h2><span class="en">The dossier</span><span class="de">Das Dossier</span></h2>
+      <div class="grid files" id="files"></div>
+    </div>
+  </section>
+
+  <section id="evidence">
+    <div class="wrap">
+      <div class="kicker"><span class="en">Evidence standards</span><span class="de">Belegstandards</span></div>
+      <h2><span class="en">Know what is proven</span><span class="de">Wissen, was bewiesen ist</span></h2>
+      <div class="evidence">
+        <div class="ev m"><b><span class="en">Measured</span><span class="de">Gemessen</span></b>
+          <p><span class="en">Confirmed at runtime, on disk, or against real game data.</span><span class="de">Zur Laufzeit, auf der Festplatte oder an echten Spieldaten bestätigt.</span></p></div>
+        <div class="ev i"><b><span class="en">Inferred</span><span class="de">Abgeleitet</span></b>
+          <p><span class="en">Supported by binary analysis or structural evidence, not yet confirmed in the running game.</span><span class="de">Durch Binäranalyse oder strukturelle Belege gestützt, im laufenden Spiel noch nicht bestätigt.</span></p></div>
+        <div class="ev h"><b><span class="en">Hypothesized</span><span class="de">Vermutet</span></b>
+          <p><span class="en">A plausible lead that still requires verification.</span><span class="de">Eine plausible Spur, die noch überprüft werden muss.</span></p></div>
+      </div>
+      <p class="note">
+        <span class="en">» Negative results, failed approaches and open questions are kept on record.</span>
+        <span class="de">» Negative Ergebnisse, gescheiterte Ansätze und offene Fragen bleiben dokumentiert.</span>
+      </p>
+    </div>
+  </section>
+
+  <section id="scope">
+    <div class="wrap">
+      <div class="kicker"><span class="en">Current scope</span><span class="de">Aktueller Umfang</span></div>
+      <h2><span class="en">What the wiki covers</span><span class="de">Was das Wiki abdeckt</span></h2>
+      <div class="tags" id="tags"></div>
+    </div>
+  </section>
+
+  <section id="disclaimer">
+    <div class="wrap">
+      <div class="paper">
+        <div class="classified"><span class="en">Notice</span><span class="de">Hinweis</span></div>
+        <p class="en">This is an independent community project. It is not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media, or Microsoft. Wolfenstein and the names of the referenced games are trademarks of their respective owners.</p>
+        <p class="de">Dies ist ein unabhängiges Community-Projekt. Es steht in keiner Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft und wird von diesen nicht unterstützt. Wolfenstein und die Namen der genannten Spiele sind Marken ihrer jeweiligen Inhaber.</p>
+        <p class="en">Do not redistribute copyrighted game assets. Use the documentation only with game files you are legally entitled to access.</p>
+        <p class="de">Verbreite keine urheberrechtlich geschützten Spieldateien. Nutze die Dokumentation nur mit Spieldateien, auf die du rechtmäßig zugreifen darfst.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Wolfenstein Modloader · <span class="en">community research</span><span class="de">Community-Forschung</span></span>
+    <a href="https://github.com/LopeKinz/wolfenstein-modloader">github.com/LopeKinz/wolfenstein-modloader</a>
+  </div>
+</footer>
+
+<script>
+const WIKI = "https://github.com/LopeKinz/wolfenstein-modloader/wiki/";
+const FILES = [
+  ["Modding-Guide", "Modding Guide", "Decls, weapons, skins, characters, load order and pitfalls.", "Decls, Waffen, Skins, Figuren, Ladereihenfolge und Fallstricke."],
+  ["File-Formats", "File Formats", "Index, resources, Decls, BIM images, audio and virtual textures.", "Index, Ressourcen, Decls, BIM-Bilder, Audio und virtuelle Texturen."],
+  ["Modding-Limits", "Modding Limits", "What works, what doesn't — and the measured reasons why.", "Was geht, was nicht – und die gemessenen Gründe dafür."],
+  ["TNO-Modding-Surface", "The New Order Surface", "Every lever in Part 1, from damage tables to enemy health.", "Jeder Hebel in Teil 1, von Schadenstabellen bis Gegnerleben."],
+  ["TNC-Modding-Surface", "The New Colossus Surface", "Difficulty tables, perks, upgrades and the cost of each change.", "Schwierigkeitstabellen, Perks, Upgrades und die Kosten jeder Änderung."],
+  ["Reverse-Engineering-Research", "Reverse Engineering", "Detailed research reports, briefs and binary analysis.", "Ausführliche Forschungsberichte, Briefings und Binäranalyse."],
+  ["Known-Contradictions", "Known Contradictions", "Where sources disagree, and how each conflict was resolved.", "Wo Quellen sich widersprechen und wie jeder Konflikt gelöst wurde."],
+  ["Research-Artifacts", "Research Artifacts", "Inventory of large generated artifacts from the workspace.", "Verzeichnis großer generierter Artefakte aus dem Arbeitsbereich."],
+];
+const TAGS = [
+  ["Archive formats", "Archivformate"], ["Resource formats", "Ressourcenformate"], ["Declarations", "Deklarationen"],
+  ["Audio", "Audio"], ["UI assets", "UI-Assets"], ["Maps", "Karten"], ["Save games", "Spielstände"],
+  ["Developer mode", "Entwicklermodus"], ["Loading paths", "Ladepfade"], ["Patch precedence", "Patch-Vorrang"],
+  ["Textures", "Texturen"], ["Kiscule scripting", "Kiscule-Skripting"], ["Custom maps", "Eigene Karten"],
+];
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
+const files = document.getElementById("files");
+FILES.forEach(([slug, title, en, de], i) => {
+  const a = el("a", "plate");
+  a.href = WIKI + slug;
+  a.innerHTML = `<div class="no">FILE № ${String(i + 1).padStart(3, "0")}</div><h3>${title}</h3>` +
+    `<p><span class="en">${en}</span><span class="de">${de}</span></p>` +
+    `<span class="go"><span class="en">Read file →</span><span class="de">Akte lesen →</span></span>`;
+  files.appendChild(a);
+});
+const tags = document.getElementById("tags");
+TAGS.forEach(([en, de]) => tags.appendChild(el("span", "", `<span class="en">${en}</span><span class="de">${de}</span>`)));
+
+function setLang(lang) {
+  document.body.dataset.lang = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.set === lang)));
+  try { localStorage.setItem("lang", lang); } catch (e) {}
+}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.set)));
+let initial = "en";
+try { initial = localStorage.getItem("lang") || ((navigator.language || "").startsWith("de") ? "de" : "en"); } catch (e) {}
+setLang(initial);
+</script>
+</body>
+</html>

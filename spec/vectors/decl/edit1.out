@@ -1,0 +1,11 @@
+{
+	edit = {
+		damageParms = {
+			minDamage = 22.0;
+			maxDamage = 30.250000;
+			ragdollImpulseMag = 1200;
+			goreTypes = "GORETYPE_NONE \"x\"";
+			declGoreBehavior = "standard/heavy";
+		}
+	}
+}

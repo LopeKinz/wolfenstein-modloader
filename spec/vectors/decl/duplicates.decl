@@ -1,0 +1,10 @@
+{
+	edit = {
+		dup = 1; dup = 2; dup = 3;
+		path = "C:\\games\\\"quoted\"";
+		list = { "a", "b", c }
+		empty = { }
+		;; , ; flag2 ;
+	}
+}
+trailing = 7;

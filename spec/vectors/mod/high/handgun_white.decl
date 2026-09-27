@@ -1,0 +1,6 @@
+{
+	diffusemap	"models/weapons/Handgun/Handgun_white_hg"
+	specularmap	"models/weapons/Handgun/Handgun_s"
+	virtualmapping { 0.015625, 0.015625, 0.078125, 0.031250 }
+	usevirtualmapping 1
+}

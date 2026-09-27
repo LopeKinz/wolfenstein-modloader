@@ -1,0 +1,22 @@
+{
+	inherit = "weapon/other";
+	edit = {
+		isDualWieldable = false;
+		ammoPerShot = 1;
+		handsFovScale = 1.00;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 120;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 120;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 40;
+			}
+		}
+	}
+}

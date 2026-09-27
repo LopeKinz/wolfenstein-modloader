@@ -1,0 +1,1100 @@
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
+{
+	inherit = "weapon/base";
+	edit = {
+		isDualWieldable = true;
+		ammoPerShot = 1;
+		handsFovScale = 0.90;
+		handsModelMD6 = "weapons/shotgun.md6";
+		initialAmmoDecl = "ammo/shotgun";
+		firingIntervals = {
+			num = 3;
+			firingIntervals[0] = 200;
+			firingIntervals[1] = 200;
+			firingIntervals[2] = 200;
+		}
+		validAmmoClips = {
+			num = 1;
+			item[0] = {
+				clipSize = 20;
+			}
+		}
+	}
+}
