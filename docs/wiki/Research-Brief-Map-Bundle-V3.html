@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Map Bundle V3 – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: audit a Wolfenstein II custom map bundle and build a complete alias version with one small visible change.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Map Bundle V3</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Map-Bundle-V3"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This is an assignment, not a result. For Wolfenstein II: The New Colossus, it asks a worker to check a custom map bundle based on the DLC map c2v1 and to build a complete, self-contained copy under a new map name with one small visible <span class="t" data-t="entity">entity</span> change. It stresses that simply copying a retail archive and adding a new map name is not a real custom map. It also demands clear separation between &#x27;structurally valid&#x27;, &#x27;mounts&#x27;, &#x27;loads&#x27; and &#x27;playable&#x27;, and no writing to the live game.</p><ul><li>Goal: a full dependency check of all map assets and a complete alias candidate.</li><li>The original retail map must still work after adding the alias.</li><li>Every important claim needs a negative check.</li><li>Limits for <span class="t" data-t="collision">collision</span>, navigation and rendering must be reported.</li><li>If the formats are not understood well enough, the worker should report the exact obstacle instead of shipping a misleading bundle.</li></ul></div><div class="de"><p class="lede">Dies ist ein Auftrag, kein Ergebnis. Für Wolfenstein II: The New Colossus soll ein Bearbeiter ein eigenes Kartenpaket auf Basis der DLC-Karte c2v1 prüfen und eine vollständige, eigenständige Kopie unter neuem Kartennamen mit einer kleinen sichtbaren <span class="t" data-t="entity">Objekt</span>-Änderung bauen. Er betont, dass ein kopiertes Originalarchiv mit neuem Kartennamen noch keine echte eigene Karte ist. Außerdem verlangt er eine klare Trennung zwischen „strukturell gültig“, „eingebunden“, „geladen“ und „spielbar“ und keine Schreibzugriffe auf das installierte Spiel.</p><ul><li>Ziel: eine vollständige Abhängigkeitsprüfung aller Karten-Assets und ein vollständiger Alias-Kandidat.</li><li>Die Originalkarte muss nach dem Hinzufügen des Alias weiter funktionieren.</li><li>Jede wichtige Aussage braucht eine Gegenprobe.</li><li>Grenzen bei <span class="t" data-t="collision">Kollision</span>, Navigation und Darstellung müssen benannt werden.</li><li>Sind die Formate nicht gut genug verstanden, soll der Bearbeiter das genaue Hindernis melden statt ein irreführendes Paket zu liefern.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-map_bundle_v3-a1; task map_bundle_v3; research/implement.
+Read .agent-cache/WORKER.md. Bus C:/Users/‹user›/.agents/skills/agent-cache-orchestrator/scripts/acbus.py.</p>
+<h1 id="objective">Objective</h1>
+<p>Audit custom map bundle and produce a defensible isolated complete alias candidate plus a small authored entity change if formats permit. Need exact asset identity/dependency evidence; a copied retail archive plus alias mapspec is not a custom map.</p>
+<h1 id="verification-behavior">Verification behavior</h1>
+<p>Every important assurance needs a counterexample/negative check. Distinguish static structural validity, mount, load, and playable geometry. Do not claim success from process/menu or string count. Report failures clearly.</p>
+<h1 id="sources">Sources</h1>
+<p>tools/build_tnc_custom_map_prototype.py, tools/install_tnc_custom_map_full.py, tools/check_tnc_map_identity.py, wolfsdk/idcl.py, tools/entities.py, docs/tnc_custom_map_status.md, re_probes/agent_reports/small_custom_map.md, texdb_rewrite.md.
+Game D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus dlc/dlc_2/base/chunk_22.resources (c2v1). Read existing resources metadata and map/entity formats first. Existing live dlc4 archive keeps original names, alias-only mapspec.</p>
+<h1 id="ownership">Ownership</h1>
+<p>New tools/build_tnc_map_alias_v3.py, tools/verify_tnc_map_alias_v3.py; new re_probes/map_alias_v3 directory and re_probes/agent_reports/map_bundle_v3.md. Do not edit earlier tools; propose master fixes as needed.</p>
+<h1 id="forbidden">Forbidden</h1>
+<p>No writes to live game or saves, no launches/memory writes. No full retail asset duplication unless needed; use existing archive read-only. Do not modify hardlinked payloads. No changes outside ownership.</p>
+<h1 id="acceptance">Acceptance</h1>
+<p>Audit all mandatory map assets and internal references. Full dependency closure retained in candidate, metadata integrity checked, original retail map remains resolvable if adding alias. Clearly define new map ID and visibly distinguish authored change. Report collision/navigation/rendering limitations. Only build if understood enough; otherwise provide exact format obstacle and evidence, not a misleading bundle.</p>
+<h1 id="coordinationdeliverable">Coordination/deliverable</h1>
+<p>Checkpoint significant milestones; publish useful facts. Concise outcome, files, checks, remaining blockers. Master owns runtime loading research in parallel. Finish bus task; master verifies result.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Loose-Assets.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Search Task: Loose Assets and External Load Paths</a><a class="next" href="Research-Brief-Map-Selection.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research Task: Map/DLC Selection Logic</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

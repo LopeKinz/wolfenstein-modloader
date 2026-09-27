@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>`streamed.resources` and `english.streamed` – Wolfenstein Modloader</title>
+<meta name="description" content="The two big streamed audio files of The New Order are fully decoded as plain Ogg Vorbis sound streams.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#systems"><span class="en">Game systems</span><span class="de">Spielsysteme</span></a></p>
+<h1><code>streamed.resources</code> and <code>english.streamed</code></h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Streamed-Audio-Containers"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-summary">0. Summary</a></li><li><a href="#1-inventory-where-they-lie-how-many-how-big">1. Inventory: where they lie, how many, how big</a></li><li><a href="#2-the-format-layer-by-layer">2. The Format, Layer by Layer</a></li><li><a href="#3-the-proof-of-completeness">3. The Proof of Completeness</a></li><li><a href="#4-the-proof-that-counts-an-entry-that-is-really-something">4. The Proof That Counts: An Entry That Is Really Something</a></li><li><a href="#5-the-control-check">5. The Control Check</a></li><li><a href="#6-whats-inside">6. What&#x27;s inside</a></li><li><a href="#7-what-this-means-for-mods">7. What this means for Mods</a></li><li><a href="#8-what-remains-open">8. What remains open</a></li><li><a href="#9-relation-to-docsaudiomd">9. Relation to docs/audio.md</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page explains the two large audio files of Wolfenstein: The New Order, streamed.resources and english.streamed. They turn out to be simple containers of standard <span class="t" data-t="ogg">Ogg Vorbis</span> sound streams, and every single byte is accounted for. All 23,565 sounds, about 24.6 hours of audio, can now be exported and played in any normal player. Replacing sounds directly is technically possible but risky, because these files are not included in the mod tool&#x27;s backup. The New Colossus has no such files; it uses a different audio system (Wwise).</p><ul><li>23,565 Ogg Vorbis streams, 24.6 hours of audio, 0 unexplained bytes.</li><li>All 362,152 Ogg pages pass their <span class="t" data-t="crc">CRC</span> check with 0 errors.</li><li>Sample counts decoded with ffmpeg match the game&#x27;s own index exactly (e.g. 7,938,432 = 7,938,432).</li><li>4,020 layered weapon sounds sit inside 149 &#x27;samplepacks&#x27; and have no index entry of their own.</li><li>Export is safe; direct replacement is not done because the 1.5 GB files are not backed up.</li></ul></div><div class="de"><p class="lede">Diese Seite erklärt die zwei großen Audiodateien von Wolfenstein: The New Order, streamed.resources und english.streamed. Es sind einfache Container mit Standard-<span class="t" data-t="ogg">Ogg-Vorbis</span>-Tonspuren, und jedes einzelne Byte ist erklärt. Alle 23.565 Sounds, etwa 24,6 Stunden Audio, lassen sich jetzt exportieren und mit jedem normalen Player abspielen. Sounds direkt zu ersetzen ist technisch möglich, aber riskant, weil diese Dateien nicht im Backup des Mod-Tools liegen. The New Colossus hat solche Dateien nicht; es nutzt ein anderes Audiosystem (Wwise).</p><ul><li>23.565 Ogg-Vorbis-Spuren, 24,6 Stunden Audio, 0 unerklärte Bytes.</li><li>Alle 362.152 Ogg-Seiten bestehen ihre <span class="t" data-t="crc">CRC</span>-Prüfung ohne Fehler.</li><li>Mit ffmpeg dekodierte Sample-Zahlen stimmen exakt mit dem Index des Spiels überein (z. B. 7.938.432 = 7.938.432).</li><li>4.020 geschichtete Waffensounds stecken in 149 &#x27;Samplepacks&#x27; und haben keinen eigenen Indexeintrag.</li><li>Export ist sicher; direktes Ersetzen wird nicht gemacht, weil die 1,5-GB-Dateien nicht gesichert sind.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>These are the two files that have been on the blacklist since the project began. They are now read — exclusively with <code>"rb"</code>, without a single write operation in the game folder. Everything here is measured, not explored; where something remains uncertain, it is marked as <em>conjecture</em>.</p>
+<p>All numbers come from <code>tools/streamed.py</code> (Standard Library, <code>mmap</code>).
+Verifiable via:</p>
+<pre><code>py -3.11 tools/streamed.py inventory
+py -3.11 tools/streamed.py walk &lt;file&gt; --crc all
+py -3.11 tools/streamed.py verify
+py -3.11 tools/streamed.py prove &quot;music/&quot; &lt;output_folder&gt;
+py -3.11 tools/streamed.py control --scratch &lt;output_folder&gt;
+py -3.11 tools/streamed.py --selftest
+</code></pre>
+<hr />
+<h2 id="0-summary">0. Summary</h2>
+<p><strong>They are Ogg Vorbis containers. Both, complete, with no remainder.</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Part 1 (TNO)</th>
+<th>Part 2 (TNC)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*.streamed</code> / <code>streamed.resources</code></td>
+<td><strong>2 files, 1,572,314,960 B</strong></td>
+<td><strong>none</strong></td>
+</tr>
+<tr>
+<td>Content</td>
+<td>23,565 Ogg Vorbis streams</td>
+<td>— (Wwise <code>.pack</code>, 2.88 GB)</td>
+</tr>
+<tr>
+<td>Playtime</td>
+<td><strong>24.6 hours</strong> of audio</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Coverage by the format described here</td>
+<td><strong>100.000%</strong> of streams, <strong>100.000%</strong> of page bytes</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Unexplained bytes</td>
+<td><strong>0</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p>For mods, this means: the audio bytes of Part 1 are addressable, exactly length-defined, and exportable. Replacement is possible but dangerous — §7.</p>
+<hr />
+<h2 id="1-inventory-where-they-lie-how-many-how-big">1. Inventory: where they lie, how many, how big</h2>
+<p>A recursive search was performed across both installations for <code>*.streamed</code>, <code>streamed.resources</code>, and anything carrying the name <code>streamed</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Game</th>
+<th>File</th>
+<th style="text-align: right;">Bytes</th>
+<th style="text-align: right;">GiB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TNO</td>
+<td><code>base\english.streamed</code></td>
+<td style="text-align: right;">415,137,488</td>
+<td style="text-align: right;">0.387</td>
+</tr>
+<tr>
+<td>TNO</td>
+<td><code>base\streamed.resources</code></td>
+<td style="text-align: right;">1,157,177,472</td>
+<td style="text-align: right;">1.078</td>
+</tr>
+<tr>
+<td>TNC</td>
+<td>—</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">—</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Part 2 has not a single <code>streamed</code> file.</strong> The audio lies there in <code>base\sound\soundbanks\pc\</code> as Wwise packages:</p>
+<pre><code>sound.pack                 1,722,766,110 B
+english(us).pack             758,900,091 B
+patch_3_sound.pack           193,042,687 B
+patch_1_sound.pack           110,345,075 B
+patch_2_sound.pack            47,419,238 B
+patch_1/2/3_english(us).pack  47,619,261 B combined
+patch_4_sound.pack / patch_4_english(us).pack   each 132 B
+wwise_project.bin              4,493,695 B
+prodspec.json                    163,237 B
+                          ------------------
+Sum                        2,884,749,658 B (2.69 GiB)
+</code></pre>
+<p>This is a different world (id Tech 6 + Wwise) and was not the subject of this investigation; <code>docs/audio.md</code> §0 had already correctly placed it.</p>
+<p><strong>Per language:</strong> in this installation there is exactly <em>one</em> language file, <code>english.streamed</code>. The <code>bsnf</code> descriptors in the archive lead to four languages (<code>english</code>, <code>french</code>, <code>italian</code>, <code>spanish</code>), but no <code>french.streamed</code> or similar exists. <em>Conjecture:</em> the other languages are separate Steam Depots and simply not installed. Not verified — this would require changing the game language in Steam, which was outside the scope of this task.</p>
+<hr />
+<h2 id="2-the-format-layer-by-layer">2. The Format, Layer by Layer</h2>
+<h3 id="21-it-is-not-a-project-format">2.1 It is <em>not</em> a project format</h3>
+<p>Neither <code>wolfsdk/resources.py</code> (Magic <code>03 53 45 52</code>) nor <code>wolfsdk/idcl.py</code> (Magic <code>IDCL</code>) applies. The files have <strong>no file header at all</strong> — Byte 0 is already the start of the first Ogg page (<code>4F 67 67 53</code> = <code>OggS</code>). There is no table, no directory, no count, no checksum at the container level. The directory lies <strong>outside</strong>, in the <code>chunkN.index</code>.</p>
+<h3 id="22-blocks-on-a-16384-byte-grid">2.2 Blocks on a 16384-Byte Grid</h3>
+<p>The container is a sequence of <strong>blocks</strong>. Each block begins on a multiple of 16384 (16 KiB) and is padded with <strong>null bytes</strong> up to the next 16-KiB boundary.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">Blocks</th>
+<th style="text-align: right;">free space per block: min</th>
+<th style="text-align: right;">median</th>
+<th style="text-align: right;">max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>streamed.resources</code></td>
+<td style="text-align: right;">14,603</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8,544</td>
+<td style="text-align: right;">16,382</td>
+</tr>
+<tr>
+<td><code>english.streamed</code></td>
+<td style="text-align: right;">5,091</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8,041</td>
+<td style="text-align: right;">16,380</td>
+</tr>
+</tbody>
+</table></div>
+<p>A block contains either <strong>one</strong> Ogg stream or a <strong>continuous chain</strong> of two to 140 Ogg streams (this is the <code>samplepack</code>, §2.4). The free space never exceeds a grid step — this serves as proof that the grid is truly 16384 and not a multiple thereof.</p>
+<blockquote>
+<p><code>docs/audio.md</code> §3 states "max 3,144,537 B of free space per slot". This was an artifact of the slot-based calculation: it measured the distance to the next <em>referenced</em> <code>sample</code> offset and skipped over the pack blocks in between. Measured block-wise, it is never more than 16,382 B.</p>
+</blockquote>
+<h3 id="23-the-ogg-layer">2.3 The Ogg Layer</h3>
+<p>Regular Ogg per specification, nothing changed, nothing truncated:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;"><code>streamed.resources</code></th>
+<th style="text-align: right;"><code>english.streamed</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ogg Pages</td>
+<td style="text-align: right;">267,219</td>
+<td style="text-align: right;">94,933</td>
+</tr>
+<tr>
+<td>Ogg Packages</td>
+<td style="text-align: right;">4,213,830</td>
+<td style="text-align: right;">1,780,066</td>
+</tr>
+<tr>
+<td>Logical Streams</td>
+<td style="text-align: right;">18,474</td>
+<td style="text-align: right;">5,091</td>
+</tr>
+<tr>
+<td>Page Bytes</td>
+<td style="text-align: right;">1,034,059,500 (89.360 %)</td>
+<td style="text-align: right;">373,618,721 (89.999 %)</td>
+</tr>
+<tr>
+<td>Padding</td>
+<td style="text-align: right;">123,117,972 (10.640 %)</td>
+<td style="text-align: right;">41,518,767 (10.001 %)</td>
+</tr>
+<tr>
+<td>Padding Pieces</td>
+<td style="text-align: right;">14,599</td>
+<td style="text-align: right;">5,090</td>
+</tr>
+<tr>
+<td>Padding that is <strong>not</strong> pure zeros</td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+<tr>
+<td>Page Sequence Number Breaks</td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+<tr>
+<td>Balance Pages + Padding − File Size</td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The Vorbis identification header of each stream, read:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th style="text-align: right;">Channels</th>
+<th style="text-align: right;">Rate</th>
+<th style="text-align: right;">br_nominal</th>
+<th>blocksize0/1</th>
+<th style="text-align: right;">Streams</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">48000</td>
+<td style="text-align: right;">128000</td>
+<td>256 / 2048</td>
+<td style="text-align: right;">13,721</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">48000</td>
+<td style="text-align: right;">128000</td>
+<td>256 / 2048</td>
+<td style="text-align: right;">3,948</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">48000</td>
+<td style="text-align: right;">96000</td>
+<td>256 / 2048</td>
+<td style="text-align: right;">4,692 + 704</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">48000</td>
+<td style="text-align: right;">96000</td>
+<td>256 / 2048</td>
+<td style="text-align: right;">399 + 101</td>
+</tr>
+</tbody>
+</table></div>
+<p>Comment header, <strong>identical in all 23,565 streams</strong>:</p>
+<pre><code>Xiph.Org libVorbis I 20120203 (Omnipresent)
+</code></pre>
+<p>This is libVorbis 1.3.3 (February 2012) — fitting for a game from 2014 and an indication that the streams were generated with the reference encoder, not with middleware. User comment fields (Title, Artist) do not exist; names are stored exclusively in the archive.</p>
+<p>Measured bitrate over all — page bytes divided by play duration:</p>
+<pre><code>streamed.resources   139,732 bit/s   (16.45 h audio)
+english.streamed     102,422 bit/s   (8.11 h audio)
+</code></pre>
+<p>This aligns with <code>br_nominal</code> 128000 and 96000 plus Ogg frame overhead. The bitrate is thus <strong>measured and explained</strong>, not estimated.</p>
+<h3 id="24-samplepack--what-the-chains-explain">2.4 <code>samplepack</code> — what the chains explain</h3>
+<p>During the pass it became apparent: of the 18,474 streams in <code>streamed.resources</code>, only 14,603 lie on the 16-KiB grid. The remaining <strong>3,871</strong> begin mid-block. This is not stated in <code>docs/audio.md</code> because there only the <code>sample</code> descriptors were followed, and they all point to grid addresses.</p>
+<p>The explanation is the asset type <code>sound</code> with path extension <code>.samplepack</code>, Magic <code>1KPS</code> (= <code>SPK1</code> byte-swapped). Layout, derived and then <strong>fully verified against all packs</strong>:</p>
+<pre><code>u8[4]    &quot;1KPS&quot;
+LE u16   Number of members
+per member:
+  LE u32   Path length
+  char[]   Path of the sample asset, e.g.
+           &quot;generated/sound/weapons/ar60/ar60_ai_split/…_vorbis.bsnd&quot;
+  LE u32   Offset, relative to block start
+  LE u32   Length in bytes
+</code></pre>
+<p>149 non-empty packs (plus 2 empty placeholders with <code>count = 0</code>), members min 5 / median 25 / max 140, <strong>totaling 4,020 streams and 45,113,737 bytes</strong>. 143 packs are under <code>weapons/</code>, 6 under <code>enemies/</code>.</p>
+<p>Content-wise these are the layered weapon sounds: a pack like <code>weapons/ar60/split_ai/ar60_ai_split_nearmid</code> bundles 40 variants (<code>fire_first_r001…r005</code>, <code>fire_split_r001…r030</code>, <code>fire_tail_r001…r005</code>) which are merged together on firing. They lie one after another in <strong>one</strong> streaming block: a single read operation, not forty.</p>
+<p><strong>Important for Mods:</strong> the 4,020 pack members have <strong>no own index entry</strong>. They are addressable exclusively via the pack. Anyone looking only at <code>sample</code> assets will see 21.8 % of the streams in <code>streamed.resources</code> missing.</p>
+<hr />
+<h2 id="3-the-proof-of-completeness">3. The Proof of Completeness</h2>
+<p>The requirement was: the structure must span the <em>entire</em> file, gap-free, non-overlapping, ending matching the file size. This is the finding.</p>
+<h3 id="31-container--archive">3.1 Container → Archive</h3>
+<p><code>tools/streamed.py verify</code> runs both containers without any index, collects every found stream start along with its measured length, and then asks for each individual one: is it claimed by any archive descriptor?</p>
+<pre><code>streamed.resources   Streams 18474   claimed 18474 (100,000 %)   remaining 0
+   claimed Bytes 1.034.059.500 of 1.034.059.500 page bytes (100,000 %)
+english.streamed     Streams  5091   claimed  5091 (100,000 %)   remaining 0
+   claimed Bytes   373.618.721 of   373.618.721 page bytes (100,000 %)
+total 23565 Streams, 23565 claimed (100,000 %)
+</code></pre>
+<h3 id="32-archive--container">3.2 Archive → Container</h3>
+<p>Conversely: no descriptor must point to nothing. The length in the descriptor must exactly match the length resulting from the Ogg page scan in the container.</p>
+<pre><code>unique sample-Assets      19545   hits exact  19545   failures 0
+unique samplepacks          151   of which empty 2
+   fully consumed         149   failures 0   members 4020
+</code></pre>
+<p>"Fully consumed" means for a pack: <strong>every</strong> one of its members lands on a real stream start <strong>and</strong> the length matches exactly. A single false member causes the entire pack to fail.</p>
+<h3 id="33-the-math-adds-up">3.3 The Math Adds Up</h3>
+<pre><code>19.545 sample-Assets            (= all 16-KiB block starts except the packs)
++  149 samplepack-block-starts
+= 19.694 blocks                 = 14.603 + 5.091  ✓
+
+  4.020 pack-members − 149 block-starts = 3.871 non-grid-aligned streams  ✓
+19.545 + 4.020 = 23.565 streams total                                     ✓
+</code></pre>
+<p>Each of these three equations was measured independently. No byte and no entry remains unaccounted for.</p>
+<h3 id="34-byte-balance">3.4 Byte Balance</h3>
+<p>For both files, <code>page_bytes + padding_bytes − file_size = 0</code>. The scan assigns every single byte: either part of an Ogg page or null padding. <strong>Unexplained bytes: 0.</strong> No overlap case, no backward offset, no sequence number gap.</p>
+<hr />
+<h2 id="4-the-proof-that-counts-an-entry-that-is-really-something">4. The Proof That Counts: An Entry That Is Really Something</h2>
+<p>The chain spans two separate files and closes on the individual PCM sample exactly. Executed with the real reference decoder (ffmpeg 8.1.2, libvorbis), not with a heuristic.</p>
+<h3 id="samplesoundmusicjournalhouse_of_the_rising_sunwav"><code>sample:sound/music/journal/house_of_the_rising_sun.wav</code></h3>
+<pre><code>Archive (chunkN.index)      Offset 0x08638000  (grid-aligned)
+Descriptor (bsnf in archive) Length 2.681.895 B   Granule 7.938.432 Samples
+Container (measured)        Length 2.681.895 B   Granule 7.938.432
+                            623 Ogg pages, CRC ok 623 / incorrect 0
+Vorbis-ID                  2 channels, 48000 Hz, br_nom 128000
+ffprobe                    codec_name=vorbis  duration=165.384000
+ffmpeg -f s16le            31.753.728 B / 2 channels = 7.938.432 PCM-Frames
+</code></pre>
+<p><strong>7.938.432 == 7.938.432.</strong> The number in the archive and the number calculated by a foreign decoder from the container bytes are identical. 165.384 s results with 2.681.895 bytes exactly 129.7 kbit/s — the nominal bitrate of the header.</p>
+<p>Two further proofs in the same form:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>Container</th>
+<th style="text-align: right;">Length</th>
+<th style="text-align: right;">Granule</th>
+<th style="text-align: right;">ffmpeg-PCM-Frames</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sound/music/journal/karla_master.wav</code></td>
+<td><code>streamed.resources</code></td>
+<td style="text-align: right;">2.115.418</td>
+<td style="text-align: right;">6.260.416</td>
+<td style="text-align: right;"><strong>6.260.416</strong></td>
+</tr>
+<tr>
+<td><code>sound/vo/english/bj/efforts/hurt/eff_pl_hurtsoft_001.wav</code></td>
+<td><code>english.streamed</code></td>
+<td style="text-align: right;">11.991</td>
+<td style="text-align: right;">33.340</td>
+<td style="text-align: right;"><strong>33.340</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="and-a-pack-member">And a Pack Member</h3>
+<p>The harder case, because this stream has <strong>no own index entry</strong> and is only findable via the <code>1KPS</code> table — member 1 of
+<code>weapons/ar60/split_ai/ar60_ai_split_nearmid</code>, absolute <code>0x003F167A</code>, thus in the middle of the block:</p>
+<pre><code>Pack says:   Offset relative 0x167A, Length 5.792 B
+Container:   5.792 B, 3 pages, CRC ok 3 / incorrect 0, Granule 4.080
+ffprobe:     vorbis, 48000 Hz, 2 channels, duration=0.085000
+ffmpeg:      16.320 B / 4 = 4.080 PCM-Frames
+</code></pre>
+<p><strong>4.080 == 4.080</strong>, and 4080 / 48000 = 0.085 s. The chain Pack table → container bytes → decoder closes exactly as well.</p>
+<hr />
+<h2 id="5-the-control-check">5. The Control Check</h2>
+<p>An inspection that accepts everything checks nothing. This one checks three things separately — Magic, page arithmetic, and CRC — and each must be able to fail individually.</p>
+<p>The Ogg checksum is CRC-32 with polynomial <code>0x04C11DB7</code>, MSB first, Init 0, no Final-XOR, <strong>no reflection</strong>. This is explicitly <em>not</em> <code>zlib.crc32</code> (same polynomial, but reflected, Init <code>0xFFFFFFFF</code>, Final-XOR). For the example <code>b"OggS-probe-0123456789"</code>: <code>zlib.crc32 = 0x291ADAC9</code>, <code>ogg_crc = 0x36C40DCD</code>.</p>
+<pre><code>Input                                 Bytes  Pages  CRCgepr  CRCbad  CRCok  Cover%
+Random bytes                          1048576       0        0       0      0    0,000
+Zeros                                1048576       0        0       0      0    0,000
+chunk0.resources @1MiB (TNO, real)    1048576       0        0       0      0    0,000
+chunk_1.resources (TNC, real)         1048576       0        0       0      0    0,000
+Random bytes with &quot;OggS&quot; Magic        1048576       0        0       0      0    0,000
+Real Ogg start (unchanged)            1048576     226      226       0    226   65,862
+Real Ogg start, 1 bit flipped         1048576     226      226       1    225   65,862
+</code></pre>
+<p>What this shows:</p>
+<ol>
+<li><strong>Real game data that is not Ogg is rejected</strong> — both archive formats, not just random. 0 pages, 0% coverage.</li>
+<li><strong>Magic alone is insufficient.</strong> Random bytes preceded by "OggS" yield 0 pages: the version byte check and segment table arithmetic catch them.</li>
+<li><strong>The CRC is sharp.</strong> A single flipped bit in a real stream causes exactly one page to fail — and only that one.</li>
+</ol>
+<p>Plus the full run: <strong>all 362,152 Ogg pages of both files were CRC-checked, 0 errors.</strong> There is no falsely structured entity that happens to hit a 32-bit checksum 362,152 times in a row.</p>
+<p><code>tools/streamed.py --selftest</code> additionally builds a valid Ogg page by hand, checks CRC and arithmetic, and ensures that a corrupted page and false Magic fail.</p>
+<hr />
+<h2 id="6-whats-inside">6. What's inside</h2>
+<p>After the upper scope of the <code>sample</code> name, across both containers combined (only the 19,545 indexed assets; the 4,020 Pack members count towards their Pack):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Scope</th>
+<th style="text-align: right;">Streams</th>
+<th style="text-align: right;">Bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vo</code> (Voice output)</td>
+<td style="text-align: right;">5,896</td>
+<td style="text-align: right;">385.8 MB</td>
+</tr>
+<tr>
+<td><code>music</code></td>
+<td style="text-align: right;">461</td>
+<td style="text-align: right;"><strong>382.3 MB</strong></td>
+</tr>
+<tr>
+<td><code>ambience</code></td>
+<td style="text-align: right;">1,331</td>
+<td style="text-align: right;">249.6 MB</td>
+</tr>
+<tr>
+<td><code>anim_events</code></td>
+<td style="text-align: right;">1,810</td>
+<td style="text-align: right;">106.5 MB</td>
+</tr>
+<tr>
+<td><code>weapons</code></td>
+<td style="text-align: right;">4,078</td>
+<td style="text-align: right;">65.5 MB</td>
+</tr>
+<tr>
+<td><code>enemies</code></td>
+<td style="text-align: right;">2,122</td>
+<td style="text-align: right;">53.7 MB</td>
+</tr>
+<tr>
+<td><code>ambient_events</code></td>
+<td style="text-align: right;">265</td>
+<td style="text-align: right;">35.1 MB</td>
+</tr>
+<tr>
+<td><code>vehicles</code></td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">21.6 MB</td>
+</tr>
+<tr>
+<td><code>movements</code></td>
+<td style="text-align: right;">941</td>
+<td style="text-align: right;">13.2 MB</td>
+</tr>
+<tr>
+<td><code>footsteps</code></td>
+<td style="text-align: right;">1,279</td>
+<td style="text-align: right;">12.3 MB</td>
+</tr>
+<tr>
+<td><code>explosions</code></td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">9.8 MB</td>
+</tr>
+<tr>
+<td><code>env_vo</code></td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">7.5 MB</td>
+</tr>
+<tr>
+<td><code>impacts</code></td>
+<td style="text-align: right;">295</td>
+<td style="text-align: right;">4.2 MB</td>
+</tr>
+<tr>
+<td><code>projectile</code></td>
+<td style="text-align: right;">255</td>
+<td style="text-align: right;">3.6 MB</td>
+</tr>
+<tr>
+<td>Rest (≈ 20 more)</td>
+<td style="text-align: right;">405</td>
+<td style="text-align: right;">~9 MB</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>english.streamed</code> contains <strong>exclusively</strong> <code>sound/vo/english/*</code> — 5,091 streams, 373.6 MB, 8.11 hours, a single namespace, no exceptions. <code>streamed.resources</code> contains everything else, distributed across 404 namespaces, including non-English voice output under <code>vo/efforts</code> (775 streams, neutral sounds like screams).</p>
+<p>Largest individual entries: <code>music</code> with 461 streams and 382 MB — so the music is almost as large as the entire English voice output. The longest stream in the container runs 357.4 s, the shortest 0.001 s.</p>
+<p>Stream sizes: <code>streamed.resources</code> min 4,426 / median 12,146 / max 5,789,560 bytes; <code>english.streamed</code> min 6,897 / median 37,199 / max 2,273,748 bytes.</p>
+<hr />
+<h2 id="7-what-this-means-for-mods">7. What this means for Mods</h2>
+<p><strong>What is now safe:</strong></p>
+<ul>
+<li><strong>Export.</strong> Each of the 23,565 Sounds can be individually extracted and played back with any standard player — <code>tools/streamed.py prove &lt;pattern&gt; &lt;directory&gt;</code> generates ready-made <code>.ogg</code> files. For modding, this is the foundational material: you hear what you will bend before you bend it.</li>
+<li><strong>Bending without touching the container.</strong> The method described in <code>docs/audio.md</code> §4 — making <code>edit.soundFiles.item[i]</code> of a <code>sound</code> declaration point to another existing sample — remains correct. It is now easier to use because candidates can be heard beforehand.</li>
+</ul>
+<p><strong>What works, but is dangerous:</strong></p>
+<p>A sample <em>replaces</em> itself by writing new Ogg bytes into its block and adjusting the length in the <code>bsnf</code>. Technically, there is no objection: the block has an average of 8.6 KiB slack (<code>english.streamed</code>: 8.0 KiB), there is no checksum at the container level, and the blocks are non-overlapping. <strong>It has not been done, and it should not be done</strong>, for a reason unrelated to the format:</p>
+<blockquote>
+<p><code>streamed.resources</code> and <code>english.streamed</code> lie <strong>in no backup</strong>.
+<code>base/_wolfsdk_backup/</code> contains only <code>chunkN.index</code> and <code>chunkN.resources</code>.
+A corrupted byte costs 1.5 GB of re-download via Steam's file verification.</p>
+</blockquote>
+<p>Anyone who intends to do this must first: make a full copy of both files outside the game directory, and extend <code>wolfsdk/patch.py</code> to treat this copy like the archive backup. Without both, it is not modding, but a risk.</p>
+<p>Three limitations apply, all measured:</p>
+<ol>
+<li><strong>Block space is tight.</strong> An average of 8,544 B slack (<code>english.streamed</code>: 8,041 B) means a replacement must be roughly 8 KiB larger than the original on average, or else it will overwrite the neighboring block. There is no more than 16,382 B slack anywhere, and in at least one block it is 0.</li>
+<li><strong>Packs are rigid.</strong> Changing a member of a <code>samplepack</code> shifts all subsequent members — and the offsets are recorded in the <code>1KPS</code> table within the archive. These are two files that must match. This affects 4,020 streams, or 21.8% of <code>streamed.resources</code>.</li>
+<li><strong>The descriptor contains more than just length.</strong> The <code>bsnf</code> includes Granule, Channels, Rate, and a <code>WAVEFORMATEX</code>. A replacement with a different channel count or sample rate requires including all of this. <em>Hypothesis</em>, how the engine reacts to contradictions: untested and unverifiable without starting the game.</li>
+</ol>
+<p><strong>What does not work:</strong> Part 2. There, such containers do not exist; the audio lies in Wwise Banks, which is a separate, unresolved topic.</p>
+<hr />
+<h2 id="8-what-remains-open">8. What remains open</h2>
+<ul>
+<li><strong>The other three languages.</strong> The descriptors know <code>french</code>, <code>italian</code>, and <code>spanish</code>; no installed files exist for them. Whether they lie alongside as <code>french.streamed</code> or similar is <em>speculation</em>.</li>
+<li><strong><code>voicetrack</code> (30,627 entries, 5,115 unique, <code>.bmvtr</code>).</strong> These demonstrably do <strong>not</strong> belong in these containers. Two independent reasons: first, after matching, every single stream is already claimed by a <code>sample</code> or a <code>samplepack</code>, leaving none for them. Second, their field at the same location where <code>sample</code> leads to the container offset (<code>+12+20</code>) contains the value <code>0x706C653F</code> for <strong>all 5,115</strong> — these are the ASCII characters <code>ple?</code>, i.e., remnants of a string, not an offset; <strong>0 out of 5,115 hit a stream start.</strong> The entry remainder in <code>voicetrack</code> is simply structured differently. What resides in their 310-byte blocks per language (<code>docs/audio.md</code> §2 speculates on lip-sync data) remains open — but it is <strong>not audio</strong>. This is an exclusion, not a finding.</li>
+<li><strong>The two empty <code>samplepack</code> placeholders</strong> (<code>1KPS</code> + <code>count = 0</code>, <code>inheritences/weapons/weapons_ai_dry_looping</code>, <code>…/weapons_ai_env_looping</code>). Their offset field contains ASCII (<code>0x706C653F</code>), pointing nowhere. <em>Speculation:</em> inheritance nodes without their own data, analogous to the <code>inheritences/*</code> sound decls.</li>
+<li><strong>Why exactly 16384.</strong> The grid is measured and applies universally, but the number itself appears nowhere in the EXE search this task covered. It is likely the sector size of the streaming reader. <em>Speculation.</em></li>
+<li><strong>The EXE section.</strong> <code>.text</code> is SteamStub-encrypted; the task did not allow unpacking. Therefore, an <code>idStreamedFile</code> class could not be reconciled with the finding. It was not necessary: the structure is fully populated from the data alone.</li>
+</ul>
+<hr />
+<h2 id="9-relation-to-docsaudiomd">9. Relation to <code>docs/audio.md</code></h2>
+<p><code>docs/audio.md</code> §3 was correct in every point and forms the basis of this work. What is added here:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th><code>Audio.md</code> §3</th>
+<th>here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Access</td>
+<td>via <code>sample</code> descriptors</td>
+<td>additionally without any index, directly through the file</td>
+</tr>
+<tr>
+<td>Streams</td>
+<td>14,454 + 5,091 slots</td>
+<td><strong>18,474 + 5,091 streams</strong></td>
+</tr>
+<tr>
+<td>Coverage</td>
+<td>not quantified</td>
+<td><strong>100.00 %</strong>, balance 0</td>
+</tr>
+<tr>
+<td>Padding</td>
+<td>"free space per slot"</td>
+<td><strong>proven pure zeros</strong>, 100%</td>
+</tr>
+<tr>
+<td><code>samplepack</code></td>
+<td>mentioned as type, content unknown</td>
+<td><strong>layout solved</strong>, 149 packs, 4,020 members</td>
+</tr>
+<tr>
+<td>Checksum</td>
+<td>—</td>
+<td><strong>all 362,152 Ogg pages CRC-checked, 0 errors</strong></td>
+</tr>
+<tr>
+<td>Decoder</td>
+<td>—</td>
+<td><strong>ffmpeg, PCM frames == Granule</strong></td>
+</tr>
+<tr>
+<td>Cross-check</td>
+<td>—</td>
+<td><strong>present, separates Magic / Arithmetic / CRC</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The one number that shifts: "14,454 occupied slots" were the grid-aligned blocks without packs. With the packs included, there are 14,603 blocks and 18,474 streams. Both numbers are correct; they count different things.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Audio.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Audio</a><a class="next" href="Asset-Loading-Paths.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Loading Paths: Loose Files Instead of Archive Rewriting?</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

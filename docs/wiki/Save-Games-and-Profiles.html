@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Save Games and Profiles for Both Wolfenstein Titles – Wolfenstein Modloader</title>
+<meta name="description" content="How both games store and protect save games and profiles, and which protections are already cracked.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#systems"><span class="en">Game systems</span><span class="de">Spielsysteme</span></a></p>
+<h1>Save Games and Profiles for Both Wolfenstein Titles</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Save-Games-and-Profiles"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-directories">1. Directories</a></li><li><a href="#2-gamedetails--plaintext">2. game.details — Plaintext</a></li><li><a href="#3-dat-files--4-byte-header-plus-plaintext-structure">3. .dat Files — 4-Byte Header plus Plaintext Structure</a></li><li><a href="#4-the-verify-files--verified-not-guessed">4. The .verify Files — Verified, Not Guessed</a></li><li><a href="#5-what-this-means-for-cheats">5. What This Means for Cheats</a></li><li><a href="#6-open-points">6. Open Points</a></li><li><a href="#7-tools">7. Tools</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page looks at where Wolfenstein: The New Order and The New Colossus keep their <span class="t" data-t="savegame">save games</span> and how they guard them against changes. The 4-byte <span class="t" data-t="checksum">checksum</span> at the start of each save file is solved: it is a folded MD5 hash, and 82 of 82 files match. The New Order encrypts nothing, so its saves are open for editing. The New Colossus adds encrypted profile files and 40-byte .verify files that cannot be recomputed without a key, but the game text suggests a mismatch makes it load the save in Developer Mode instead of rejecting it.</p><ul><li>The 4-byte save header is MD5 folded to 32 bits; 82 of 82 files match.</li><li>The New Order uses no encryption, so its save games can be edited and re-signed.</li><li>The New Colossus encrypts profile.bin and progression.bin with AES; the key is unknown.</li><li>Identical save files get different .verify files, so a random value is mixed in.</li><li>The checksum= value in game.details is still unsolved.</li></ul></div><div class="de"><p class="lede">Diese Seite untersucht, wo Wolfenstein: The New Order und The New Colossus ihre <span class="t" data-t="savegame">Spielstände</span> ablegen und wie sie sie vor Änderungen schützen. Die 4-Byte-<span class="t" data-t="checksum">Prüfsumme</span> am Anfang jeder Spielstanddatei ist gelöst: ein gefalteter MD5-Hash, und 82 von 82 Dateien passen. The New Order verschlüsselt nichts, seine Spielstände sind also frei bearbeitbar. The New Colossus hat zusätzlich verschlüsselte Profildateien und 40-Byte-.verify-Dateien, die ohne Schlüssel nicht nachzurechnen sind; laut Spieltext lädt es einen abweichenden Spielstand aber im Entwicklermodus, statt ihn abzulehnen.</p><ul><li>Der 4-Byte-Kopf der Spielstände ist ein auf 32 Bit gefalteter MD5-Wert; 82 von 82 Dateien passen.</li><li>The New Order nutzt keine Verschlüsselung; seine Spielstände lassen sich bearbeiten und neu signieren.</li><li>The New Colossus verschlüsselt profile.bin und progression.bin mit AES; der Schlüssel ist unbekannt.</li><li>Identische Spielstanddateien bekommen verschiedene .verify-Dateien; es fließt also ein Zufallswert ein.</li><li>Der Wert checksum= in game.details ist noch ungelöst.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Measured using <code>tools/probe_savegame.py</code> (read-only) against existing save games plus string analysis of both game executables. Everything claimed here is measured; where something remained open, it is explicitly noted.</p>
+<p>Summary:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>The New Order</th>
+<th>The New Colossus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Storage Location</td>
+<td><code>base/savegame/</code></td>
+<td><code>base/savegame.user/&lt;SteamID64&gt;/SLOT0..2/</code></td>
+</tr>
+<tr>
+<td>Save Game Data</td>
+<td>Plaintext binary, <strong>unencrypted</strong></td>
+<td>Plaintext binary, <strong>unencrypted</strong></td>
+</tr>
+<tr>
+<td>Profile/Progression</td>
+<td><code>profile.bin</code>, unencrypted</td>
+<td><code>profile.bin</code>, <code>progression.bin</code>, <strong>AES-encrypted</strong></td>
+</tr>
+<tr>
+<td>Integrity Protection</td>
+<td>4-byte header + <code>checksum=</code> in <code>game.details</code></td>
+<td>Additionally one 40-byte <code>.verify</code> per file</td>
+</tr>
+<tr>
+<td>Manipulation Detected?</td>
+<td>Checksum must match</td>
+<td><code>.verify</code> is tamper-proof, <strong>but blocks loading only if present</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="1-directories">1. Directories</h2>
+<h3 id="the-new-order">The New Order</h3>
+<pre><code>C:\Users\&lt;user&gt;\Saved Games\MachineGames\Wolfenstein The New Order\base\
+  wolfConfig.cfg                     Plaintext, Cvars
+  savegame\profile.bin               3950 B, Binary structure (H=4,08; zlib 30 %)
+  savegame\GAME-AUTOSAVE\
+    checkpoint0.dat                  26572 B
+    mapstart0.dat                    3002 B
+    game.details                     143 B, Plaintext
+</code></pre>
+<p>No <code>.verify</code> files, no <code>progression.bin</code>. TNO does not protect save games cryptographically — no cryptographic symbols appear in the Exe at all (<code>Blowfish</code>, <code>AES</code>, <code>SHA</code>, <code>HMAC</code>, <code>BCrypt</code>: zero hits).</p>
+<h3 id="the-new-colossus">The New Colossus</h3>
+<pre><code>base\savegame.user\‹steam-id›\
+  profile.bin        3976 B    encrypted      + no .verify
+  profile2.bin         72 B    encrypted      + profile2.bin.verify
+  migrated.bin         72 B    encrypted
+  SLOT0..SLOT2\
+    PROFILE\progression.bin   136472 B  encrypted  + .verify
+    PROFILE\progression2.bin    9800 B  encrypted  + .verify
+    GAME-AUTOSAVE0..2, GAME-HELM, GAME-TRANSITION, FC0-AUTOSAVE0..1\
+      checkpoint.dat           up to 564 kB   Plaintext binary  + .verify
+      checkpoint_mapstart.dat  ~700 B                       + .verify
+      checkpoint_alt.dat         4 B (empty)                 + .verify
+      game.details             ~400 B  Plaintext             + .verify
+      game_duration.dat        ~9,5 kB                      + .verify
+      level_duration.dat        167 B                       + .verify
+      level_duration_alt.dat     4 B (empty)                 + .verify
+    WOLFORG-SAVEDATA\HIGHSCOR.WL6   508 B  (Wolf3D-Highscores)  + .verify
+</code></pre>
+<p>Total of 99 <code>.verify</code> files, <strong>all exactly 40 bytes</strong>.</p>
+<hr />
+<h2 id="2-gamedetails--plaintext">2. <code>game.details</code> — Plaintext</h2>
+<p>Both games write a pure <code>key=value</code> text file:</p>
+<pre><code>checksum=213035449
+completionRation=50%
+date=1764620045
+difficulty=2
+gamePlayTime=2265
+gameVersion=1145896965
+mapName=game/wolf/submarine/submarine
+...
+</code></pre>
+<p><code>gameVersion</code> is a tag constant, not a date:</p>
+<ul>
+<li>TNO <code>1145896962</code> = <code>0x44490002</code> = <code>"DI"</code> + Version 2</li>
+<li>TNC <code>1145896965</code> = <code>0x44490005</code> = <code>"DI"</code> + Version 5</li>
+</ul>
+<p>The same pattern is embedded in the header of <code>.dat</code> files (see below) as <code>0x444D0005</code> = <code>"DM"</code> + Version 5.</p>
+<p><code>checksum</code> is a signed 32-bit value and <strong>not</strong> CRC-32 or Adler-32 over the rest of the file, nor over <code>mapName</code> (verified across all 13 files, no hits). It changes per save game even with the same map, depending on the save game content.</p>
+<hr />
+<h2 id="3-dat-files--4-byte-header-plus-plaintext-structure">3. <code>.dat</code> Files — 4-Byte Header plus Plaintext Structure</h2>
+<p>All <code>.dat</code> files from both games begin with 4 bytes, followed by the actual structure:</p>
+<pre><code>checkpoint.dat         fd a0 5e f3 | 05 00 4d 44 | 26 00 00 00 | 01 00 | 22 00 00 00 &quot;2018…&quot;
+game_duration.dat      7e d1 7e ca | 44 4d 00 05 | 00 00 00 26 | 01    | 1f 00 00 00 &quot;idGameL…&quot;
+checkpoint_mapstart.dat 2d c2 d7 7d | 00 60 ff cd | 00 00 00 03 | …
+checkpoint_alt.dat     3b 75 65 5e   (header only, body empty)
+</code></pre>
+<p>Notable: <code>checkpoint.dat</code> writes the inner header <strong>little-endian</strong> (<code>05 00 4d 44</code> = <code>0x444D0005</code>), while <code>*_duration.dat</code> writes the same value <strong>big-endian</strong> (<code>44 4d 00 05</code>). The subsequent strings are length-prefixed with LE lengths in both cases. Thus, two different serializers are used.</p>
+<h3 id="the-4-byte-header--solved-idlibs-md5_blockchecksum-big-endian">The 4-Byte Header — Solved: idLibs <code>MD5_BlockChecksum</code>, big-endian</h3>
+<pre><code class="language-python">def savehash(rumpf):
+    w = struct.unpack(&quot;&lt;4I&quot;, hashlib.md5(rumpf).digest())
+    return struct.pack(&quot;&gt;I&quot;, w[0] ^ w[1] ^ w[2] ^ w[3])
+</code></pre>
+<p>In other words: MD5 over the payload (everything from byte 4), reading the four 32-bit words of the digest <strong>little-endian</strong>, XORing them, and writing the result <strong>big-endian</strong> to the file. This is literally idLibs <code>MD5_BlockChecksum</code> — the same folding function id Software has used since Quake 3 for block checksums. Only the storage format is big-endian, while everything else in these files is little-endian; it was precisely this that caused the previous search to fail.</p>
+<p>The known empty value explains itself naturally: <code>MD5("")</code> is <code>d41d8cd9 8f00b204 e9800998 ecf8427e</code>; folding the four LE words yields <code>0x3B75655E</code>, which when written big-endian becomes the bytes <code>3b 75 65 5e</code> — interpreted as a u32 little-endian, this gives the frequently cited <code>0x5E65753B</code>.</p>
+<p><strong>Verified:</strong> <code>python tools/savehash.py pruefen</code> recalculates the header for every savegame file on this machine.</p>
+<blockquote>
+<p><strong>82 of 82 files match header, 0 deviations.</strong></p>
+</blockquote>
+<p>This covers both titles combined: 80 <code>.dat</code> files (The New Order and The New Colossus), <code>profile.bin</code> from The New Order, and <code>HIGHSCOR.WL6</code>. Payload lengths range from 0 to 1,165,441 bytes; 45 of them are pairwise distinct (44 non-empty). Neither <code>game.details</code> (pure text, starting with <code>checksum=</code>) nor the AES files from The New Colossus have such a header (the first 8 bytes there are the Nonce) — these are not included in the count and correctly fail.</p>
+<p>Regarding robustness: the formula was guessed from <strong>one</strong> data point (the empty value) and subsequently correctly predicts 44 further, mutually independent 32-bit values. Even generously calculated — say, a total of <code>2^40</code> formula variants were tried — the probability that one of them matches all 44 by chance is <code>2^40 / 2^(32·44) = 2^-1368</code>. The counter-check stands as an <code>assert</code> in <code>tools/savehash.py --selbsttest</code>: flipping a single bit results in a different header, one that none of the existing savegames possess.</p>
+<h3 id="what-the-header-is-provably-not">What the Header is Provably <em>Not</em></h3>
+<p>The path to this solution cleared an entire search space, which remains valuable even if the answer is already known. From the savegames themselves, this can be measured without starting the game: there are <strong>ten pairs of equal-length payloads with different content</strong> (lengths 402, 450, 735, 5829, 9465, 9717). For equal lengths, the Init and XorOut values of a CRC emerge from the difference, leaving</p>
+<pre><code>kopf₁ ⊕ kopf₂  ≡  (rumpf₁ ⊕ rumpf₂)(x) · x³²   (mod P)
+</code></pre>
+<p>This means: the sought polynomial <code>P</code> <strong>divides</strong> the known number <code>D(x) = (rumpf₁⊕rumpf₂)(x)·x³² + (kopf₁⊕kopf₂)(x)</code> over GF(2). The greatest common divisor of all ten <code>D</code>s must therefore contain <code>P</code>.</p>
+<blockquote>
+<p><strong>GCD = 1.</strong> Degree 0, no common factor of any degree.</p>
+</blockquote>
+<p>Thus, the header is <strong>not a CRC-32</strong> — for <em>no</em> polynomial, <em>no</em> start value, <em>no</em> XorOut, and neither of the two bit reflections. The same conclusion holds separately by file type (<code>checkpoint_mapstart.dat</code>, <code>game_duration.dat</code> — which use provably different serializers) and with 16 variants of the data stream (Byte-, 16-, 32-, 64-bit word order × Reflection × Header LE/BE) plus appended secrets of every length 0…512: everywhere degree &lt; 32. The solver is self-tested; it finds <code>0x04C11DB7</code> on synthetic data in both normal and reflected forms.</p>
+<p>Additionally rejected (Seed calculated from zero, checked against all 42 non-empty hulls, 6 frames each — 0 hits):
+xxHash32, MurmurHash3 x86_32, MurmurHash2, Jenkins lookup3/hashlittle, Jenkins one-at-a-time, FNV-1, FNV-1a, djb2, djb2-xor, sdbm, SuperFastHash, 32-bit word product, and word rotation XOR.</p>
+<p>The CRC tables in the Exes were cleanly extracted from <code>.rdata</code>/<code>.data</code> and recalculated against their polynomials (<code>.text</code> is SteamStub-encrypted in both Exes and remains unreadable):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Exe</th>
+<th>Address</th>
+<th>Polynomial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TNO</td>
+<td><code>0x141079F50</code> (.rdata), <code>0x1415BC670</code> (.data)</td>
+<td><code>0xEDB88320</code> CRC-32</td>
+</tr>
+<tr>
+<td>TNO</td>
+<td><code>0x14107A750</code> (.rdata)</td>
+<td><code>0xE1351B80</code></td>
+</tr>
+<tr>
+<td>TNC</td>
+<td><code>0x14209B400</code> (.rdata)</td>
+<td><code>0x82F63B78</code> CRC-32C</td>
+</tr>
+<tr>
+<td>TNC</td>
+<td><code>0x1425C9140</code>, <code>0x1425D0040</code> (.rdata), <code>0x142EE0FD0</code> (.data)</td>
+<td><code>0xEDB88320</code></td>
+</tr>
+<tr>
+<td>TNC</td>
+<td><code>0x1425D0840</code> (.rdata)</td>
+<td><code>0xE1351B80</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>So the tables do exist — they are simply not used for the game state header. <code>superscriptx64.dll</code> (TNO, unencrypted <code>.text</code>) contains no CRC table at all.</p>
+<h3 id="the-header-depends-only-on-content">The Header Depends Only on Content</h3>
+<p>80 <code>.dat</code> files, 43 different hulls. No hull carries two different headers, and no header belongs to two different hulls. The eleven content-identical <code>level_duration.dat</code> files are located in eleven different folders and carry the same header — <strong>the path does not matter</strong>, nor does the filename (<code>checkpoint_alt.dat</code> and <code>level_duration_alt.dat</code> are both empty and both carry <code>0x5E65753B</code>).</p>
+<p>A lucky find in the inventory is the pair
+<code>SLOT0/GAME-AUTOSAVE1/game_duration.dat</code> against
+<code>SLOT0/GAME-TRANSITION/game_duration.dat</code>: 9465-byte hulls that differ by <strong>exactly one byte</strong> (Offset 3900, <code>0x99</code> vs <code>0x00</code>), with a header difference of <code>0x6ACD75CB</code>. This is precisely the "change one byte and observe" experiment without needing to touch a save file.</p>
+<h3 id="content-of-checkpointdat-tnc">Content of <code>checkpoint.dat</code> (TNC)</h3>
+<p>Plain text, easy to read. At the start of the file is a string table with LE-u32 length prefixes, among which:</p>
+<pre><code>ammo/player/sp/handgun      weapon/player/sp/handgun
+ammo/player/sp/shotgun      weapon/player/sp/shotgun
+ammo/player/sp/lasergewehr  ammo/player/sp/ubergewehr_laser
+player/perkitem             unlocks/upgradekit          abilities/healthy
+</code></pre>
+<p>Important for expectations: This is the <strong>name table</strong>, not the values. Ammo counts and upgrade flags are located in the binary hull and are addressed via an index into this table. An ammo value cannot therefore be directly changed by searching for <code>ammo/player/sp/handgun</code> next to it; one must first disassemble the component blocks
+(<code>idGameLocal_CheckpointInfo:10</code>, <code>idGameMapMemoryManager:20/30</code>, …). This is feasible, but constitutes real format work.</p>
+<hr />
+<h2 id="4-the-verify-files--verified-not-guessed">4. The <code>.verify</code> Files — Verified, Not Guessed</h2>
+<p>The hypothesis "40 bytes = SHA-1 (20) plus remainder" was tested byte-for-byte: for all 99 <code>.verify</code> files, MD5, SHA-1, SHA-256, CRC-32 (LE and BE) were computed over</p>
+<ul>
+<li>the entire source file</li>
+<li>the source file without its 4-byte header</li>
+<li><code>filename‖content</code> and <code>content‖filename</code></li>
+<li><code>length(u32)‖content</code></li>
+</ul>
+<p>and each of these values was compared against the first n bytes, the last n bytes, both byte-swapped, and as a substring anywhere within the <code>.verify</code>.</p>
+<blockquote>
+<p><strong>Total hits: 0.</strong></p>
+</blockquote>
+<p>More significant is a second finding:</p>
+<blockquote>
+<p><strong>28 byte-identical source files result in 28 different <code>.verify</code> files.</strong>
+(Similarly, 11 identical <code>level_duration.dat</code> → 11 different <code>.verify</code>.)</p>
+</blockquote>
+<p>Same content, different checksum — this rules out every pure hash function and every deterministic encryption. A random value per write operation is embedded within it. This fits: across all 99 files, <strong>not a single</strong> 16-byte block repeats, and the entropy reaches 100% of the achievable 40 bytes.</p>
+<h3 id="what-the-exe-says-about-it">What the Exe Says About It</h3>
+<p><code>NewColossus_x64vk.exe</code> contains a complete crypto layer over Windows CNG (BCrypt):</p>
+<p>idSafeBCryptAlgorithmHandle: BCryptOpenAlgorithmProvider failed: %x
+idSecureHash::SetFunction: Invalid hashFunction value : %d
+idSecureHMAC::Initialize: Invalid hmacFunction value : %d
+idSecureBlockCipher::EncryptWithOSPadding: Not initialized
+idSecureAEADCipher::Encrypt: nonce must be exactly 12 bytes (bcrypt restriction)
+idSecureAEADCipher: BCryptSetProperty( BCRYPT_CHAINING_MODE ) failed: %x</p>
+<p>UTF-16 algorithm names listed alongside are <code>SHA1</code>, <code>SHA256</code>, <code>SHA384</code>, <code>SHA512</code>, <code>MD5</code>, <code>AES</code>, <code>ChainingModeGCM</code>, and <code>AuthTagLength</code>. File naming patterns include <code>%s.verify</code>, <code>%s.temp.verify</code>, and <code>*.verify</code>.</p>
+<p>The sizes confirm the pattern. <strong>Every</strong> encrypted file is ≡ 8 (mod 16):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>−8</th>
+<th>in 16-Byte Blocks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*.verify</code></td>
+<td>40</td>
+<td>32</td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>profile2.bin</code>, <code>migrated.bin</code></td>
+<td>72</td>
+<td>64</td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>profile.bin</code></td>
+<td>3976</td>
+<td>3968</td>
+<td>248</td>
+</tr>
+<tr>
+<td><code>progression2.bin</code></td>
+<td>9800</td>
+<td>9792</td>
+<td>612</td>
+</tr>
+<tr>
+<td><code>progression.bin</code></td>
+<td>136472</td>
+<td>136464</td>
+<td>8529</td>
+</tr>
+</tbody>
+</table></div>
+<p>Thus: <strong>8-byte header (random salt/nonce) + AES block cipher</strong>. For <code>.verify</code> files, this is exactly 2 AES blocks, fitting for a SHA-1 value (20 bytes) or MD5 (16 bytes) with padding. The key resides in the executable; without it, a <code>.verify</code> cannot be recalculated.</p>
+<h3 id="and-tno-does-not-have-this">And: TNO does not have this</h3>
+<p>The <code>profile.bin</code> from The New Order is <strong>not</strong> encrypted — entropy 4.08 bits/byte, zlib compresses it to 30%, with 129 repeated 8-byte blocks and per-row zeros. A normal binary structure.</p>
+<hr />
+<h2 id="5-what-this-means-for-cheats">5. What This Means for Cheats</h2>
+<p><strong>The most important finding lies not in the files, but in the executable:</strong></p>
+<pre><code>02686858  Skip entering developer mode when loading corrupted saves
+02686898  devMode_skipCorruptedSaves
+02686ed0  Loading Dev Mode or corrupted save game.
+026e0b98  SAVEGAME_E_CORRUPTED
+02981748  devMode_enable
+02981810  devMode_fatalErrorOnEnter
+026c12b8  +devMode_
+02794d58  DEVMODE_DEVELOPER   /  02794df0  DEVMODE_PRODUCTION
+</code></pre>
+<p>A save game whose <code>.verify</code> does not match is <strong>not rejected</strong> by The New Colossus, but instead loaded as "corrupted" — and the game enters Developer Mode in the process. The <code>.verify</code> is therefore not a loading barrier, but an Achievement/Dev-Mode flag.</p>
+<p>This flips the assessment:</p>
+<ol>
+<li><strong>The <code>.verify</code> is not a lock.</strong> A modified <code>checkpoint.dat</code> will be loaded. The question is only whether the 4-byte header of the file itself matches — and this is independent of the <code>.verify</code> and calculable since this measurement (<code>tools/savehash.py set</code>).</li>
+<li><strong>The actual lever is <code>+devMode_</code>.</strong> That the executable recognizes a command-line prefix <code>+devMode_</code> and exposes <code>devMode_enable</code> as a CVar is more interesting for the CVar lock than any save game hack. This should be pursued as its own thread (see <code>docs/limits.md</code>).</li>
+<li><strong>Profile/Progression remain locked.</strong> <code>progression.bin</code> and <code>profile.bin</code> (TNC) are AES-encrypted; permanent unlocks cannot be set there without the key.</li>
+<li><strong>For The New Order</strong>, nothing is encrypted, and the 4-byte header is calculable. Thus, the save game there is <strong>open</strong>: modify the body, run <code>tools/savehash.py set</code>, and you are done. The work shifts from cracking the checksum to deconstructing the component format within the body.</li>
+</ol>
+<h2 id="6-open-points">6. Open Points</h2>
+<ul>
+<li>Calculation method of the <code>checksum=</code> field in <code>game.details</code>. It is <strong>not</strong> an MD5 fold — tested against all 14 <code>game.details</code> entries against the text without the <code>checksum=</code> line, against <code>mapName</code>, against every sibling file (whole, body only, header only), and against the concatenation of all sibling headers, each folded, byte-rotated, and truncated to 4 bytes: 0 hits.</li>
+<li>Whether TNO also only warns or rejects the save game on checksum error — untested, as this would require starting the game.</li>
+<li>AES key and exact payload of the <code>.verify</code> (SHA-1 or MD5).</li>
+</ul>
+<h2 id="7-tools">7. Tools</h2>
+<pre><code>python tools/probe_savegame.py            # both titles
+python tools/probe_savegame.py tnc        # The New Colossus only
+
+python tools/savehash.py pruefen          # recalculate header of each file
+python tools/savehash.py kopf &lt;datei&gt;     # expected/actual header of a file
+python tools/savehash.py setzen &lt;ein&gt; &lt;aus&gt;   # recalculate header, write to NEW file
+python tools/savehash.py --selbsttest
+</code></pre>
+<p><code>probe_savegame.py</code> opens exclusively for reading and writes nothing. <code>savehash.py</code> also reads only; it writes solely to <code>setzen</code>, always to a new path — the target path must not be in the save game folder nor in the Steam library, otherwise it will abort. A corrupted save game costs real game progress.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Patch-Precedence.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Do <code>patch_*.resources</code> take precedence? — 670 MB against 300 KB</a><a class="next" href="Kiscule-Scripting.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Kiscule — The Script Layer of Wolfenstein II</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

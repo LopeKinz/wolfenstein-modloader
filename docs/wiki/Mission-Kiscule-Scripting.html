@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing Kiscule – Scripts for Custom Missions – Wolfenstein Modloader</title>
+<meta name="description" content="How to write new Kiscule mission scripts for TNC, with a validator and two ready-to-test builds.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#maps"><span class="en">Custom maps and missions</span><span class="de">Eigene Karten und Missionen</span></a></p>
+<h1>Writing Kiscule – Scripts for Custom Missions</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Mission-Kiscule-Scripting"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-format-and-round-trip">1. Format and Round-Trip</a></li><li><a href="#2-the-model-nodes-connections-edges-variables">2. The Model: Nodes, Connections, Edges, Variables</a></li><li><a href="#6-the-test-chunks-for-master-not-installed">6. The Test Chunks (for Master, not installed)</a></li><li><a href="#7-what-is-not-proven">7. What Is Not Proven</a></li><li><a href="#8-files">8. Files</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein II: The New Colossus runs its mission logic with <span class="t" data-t="kiscule">Kiscule</span> scripts: node graphs such as &quot;trigger entered, spawn a wave, count kills, complete objective&quot;. This page shows that all 3,162 script files of the game can be read and written back byte for byte. It builds a model of the node types, a validator and a first new script from scratch. The new script is structurally valid, but it has not yet been run in the game.</p><ul><li>All 3,162 script files in the install round-trip byte-exactly.</li><li>The model covers 83,812 nodes in 209 types; one simple edge rule holds for all 103,687 connections.</li><li>The validator accepts 2,927 of 2,977 retail scripts (the 50 rejects are known game defects) and rejects all 12 deliberately broken test scripts.</li><li>A new 11-node script is built: enter the area, a wave of 5 enemies spawns, and 1 second after the fifth kill the objective completes.</li><li>Two test archives for the Gestapo office map are ready. Runtime is unconfirmed: nothing has run in the game yet.</li></ul></div><div class="de"><p class="lede">Wolfenstein II: The New Colossus steuert seine Missionslogik mit <span class="t" data-t="kiscule">Kiscule</span>-Skripten: Knotengraphen wie „Trigger betreten, Welle spawnen, Kills zählen, Ziel erfüllen“. Diese Seite zeigt, dass sich alle 3.162 Skriptdateien des Spiels byte-genau lesen und zurückschreiben lassen. Sie baut ein Modell der Knotentypen, einen Validator und ein erstes neues Skript von Grund auf. Das neue Skript ist strukturell gültig, lief aber noch nicht im Spiel.</p><ul><li>Alle 3.162 Skriptdateien der Installation lassen sich byte-genau einlesen und zurückschreiben.</li><li>Das Modell umfasst 83.812 Knoten in 209 Typen; eine einfache Verbindungsregel gilt für alle 103.687 Verbindungen.</li><li>Der Validator akzeptiert 2.927 von 2.977 Original-Skripten (die 50 abgelehnten sind bekannte Fehler im Spiel) und lehnt alle 12 absichtlich kaputten Testskripte ab.</li><li>Ein neues Skript mit 11 Knoten entsteht: Bereich betreten, eine Welle von 5 Gegnern spawnt, und 1 Sekunde nach dem fünften Kill ist das Ziel erfüllt.</li><li>Zwei Testarchive für die Gestapo-Büro-Karte liegen bereit. Im Spiel ist nichts bestätigt: Es lief noch nichts.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Track <code>kiscule</code>, 2026-09-25. Tool: <code>tools/probe_kiscule_write.py</code>, output in <code>re_probes/missions/kiscule/</code>. The game was not started. Only read from <code>D:/SteamLibrary</code> and <code>Saved Games</code>; nothing was written.</p>
+<pre><code>python tools/probe_kiscule_write.py all      # 86 checks, 0 failures, exit 0  (lauf_all.log)
+</code></pre>
+<h2 id="summary">Summary</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+<th>Evidence (Check in <code>lauf_all.log</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read and write bit-exactly?</td>
+<td><strong>Yes.</strong> All 3162 extkisclule payloads of the installation run text-bit-exact and container-bit-exact: 3061 Retail, plus 101 in the Mod folder <code>dlc_0</code>. The path is compfile via <code>tnccrypt</code>, then <code>kiscule.Doc</code>.</td>
+<td>Round-Trip-Block, plus verification with a flipped byte</td>
+</tr>
+<tr>
+<td>The "3129" from the order?</td>
+<td>3129 = 3061 Retail + 68. The 68 are the dlc_2 copy, which was installed as <code>dlc_4</code> during the tnccrypt measurement. Today, <code>dlc_0</code> holds the Gestapo-Office file: 68 Retail-identical scripts and 33 new (<code>c2v1_custom_*</code>).</td>
+<td>own check, calculates the number</td>
+</tr>
+<tr>
+<td>Model?</td>
+<td>83,812 nodes in 209 types from 2,977 unique Retail scripts. The edge rule "out → in, impulse → impulse, value → value" holds for all 103,687 edges.</td>
+<td>Model-Block; <code>signatures.json</code></td>
+</tr>
+<tr>
+<td>Validator?</td>
+<td>Retail positive control: 2,927 of 2,977 scripts are clean. The 50 rejected lie exclusively in four known Retail defect classes. All 12 negative controls are rejected, <strong>including the hanging edge and the unknown node type</strong>.</td>
+<td>Validator-Block and Negative-Block</td>
+</tr>
+<tr>
+<td>New script from scratch?</td>
+<td>Yes. It has 11 nodes and 9 edges: Trigger → Wave → all dead → goal met → next goal. Every edge is a pattern found in Retail.</td>
+<td>Build-Block</td>
+</tr>
+<tr>
+<td>How does a script get executed?</td>
+<td>An entity of class <code>idKisculeEntity</code> has <code>externalKisculeDecl = "&lt;Decl-Name&gt;"</code>. This requires an extkisclule entry of the same name and a line in <code>.mapresources</code>. This holds without exception for all 3,020 Retail bindings.</td>
+<td>Binding-Block</td>
+</tr>
+<tr>
+<td>In-game?</td>
+<td><strong>Structurally valid, runtime unconfirmed.</strong> Two test chunks are ready (Section 6).</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="1-format-and-round-trip">1. Format and Round-Trip</h2>
+<p>An extkisclule entry consists of two layers:</p>
+<ol>
+<li><strong>compfile</strong> (<code>wolfsdk/tnccrypt.compfile_unwrap/wrap</code>). A 16-byte header <code>i64 usize, u64 csize</code>, followed by Kraken on LEVEL_NORMAL. Retail writes a file <strong>raw</strong> (usize &lt; 0) if Kraken does not make it smaller. This affects the 17 empty scripts. The tool applies the same rule (<code>wrap()</code>) and matches all 3,162 containers byte-exactly.</li>
+<li><strong>Decl plaintext.</strong> It begins with a line break and ends on NUL. Each line is either <code>key = {</code>, <code>}</code>, or <code>key = value;</code>, indented with a tab per depth. Line endings are LF or CRLF per file. Parser and emitter come from <code>tools/kiscule.py</code> (only imported).</li>
+</ol>
+<p>The check compares both levels, text and container. A verification flips a byte and requires the comparison to fail.</p>
+<h2 id="2-the-model-nodes-connections-edges-variables">2. The Model: Nodes, Connections, Edges, Variables</h2>
+<h3 id="21-structure">2.1 Structure</h3>
+<pre><code>edit = { kiscule = {
+    version = 6;                 Retail: 6 (2872), 5 (83), -1 (5), missing (17 empty)
+    nodes     = { num; item[i] = Node }
+    comments  = { num; ... }     Editor notes, no runtime effect
+    variables = { num; ... }     named graph variables
+} }
+</code></pre>
+<p>A node, here the Delay node from our script (abbreviated):</p>
+<p>item[8] = {
+    name = "idKisculeNodeDelay";              &lt;- Type = RTTI class of the EXE
+    id = 152245281;                           &lt;- unique in the file
+    nodePos = { x = 1500; y = 300; }          &lt;- editor layout only
+    parameters = {
+        class = "idKisculeNodeDelayParameters";
+        object = { delay = 1000; resetOnStart = false; }
+    }
+    connectionPoints = {
+        num = 17;
+        item[1] = {
+            name = "Start"; id = 1863508535; type = "InputRegular"; properties = 8; visible = true;
+            connections = { num = 1;
+                item[0] = { name = ""; id = 1103097362;
+                            endNodeID = 67139160;              &lt;- Counter
+                            endConnectionPointID = 536032890; } &lt;- its "Reached End"
+            }
+        }
+        ...</p>
+<pre><code>
+### 2.2 Rules, measured via Retail
+
+* **Connection types.** There are six. For the impulse (flow) they are `InputRegular`, `InputEvent` (one), `OutputRegular`, and `OutputNotification` (out). For values they are `InputVariable` (in) and `OutputVariable` (out). Measured edge types: Value→Value 41 180, Regular→Regular 33 156, Notification→Regular 29 339, plus 12 to `InputEvent`. Other combinations do **not** occur. This is the validator's edge rule.
+* **An edge exists at both ends.** The output carries the `endNodeID/endConnectionPointID` of the input and vice versa. The key is the pair (node-ID, connection-ID). The edge `id` is unsuitable for this; it is not identical at both ends (see `docs/kiscule.md` §3.3).
+* **Parameters.** Each parameter appears once in the node (`parameters.object`) and can additionally arrive from outside as an `InputVariable` of the same name. An example is `listenedEntities`, fed by an `EntityReference`. Thus, entities hang off event nodes.
+* **Actions pass the impulse further.** For every impulse input of an action (`Activate`, `ObjectiveComplete`, `Send` …) there is an `OutputRegular` of the same name. It fires after the action; chains are built over it. Retail uses this for example with `ActionMission.ObjectiveComplete → SendCustomEvent` (49 times).
+* **Variables.** The `variables` block contains `idKisculeGraphVariable{Bool 618, Int 279, EntityReference 69, Time 56, Float 35, ListEntityReference 27, EntityDef 2}`. Each variable has the fields `name`, `global`, `isCrossMap`, `defaultValue`, and `value`. It is read and written via `NamedVariable*` nodes with `variableName`. Of these, 2819 refer to a variable of the same file and 22 do not, thus cross-script.
+* **Events between scripts.** `SendCustomEvent{eventName, global=true}` → `GetCustomEvent{eventName}`. The mission logic of c2v1 is wired exactly like this (§4.2).
+* **Node type = class.** Each of the 209 Retail types is an RTTI class of the EXE. All 388 node and parameter class names appear verbatim in the runtime image `runtime_87400/module.bin`. Further 101 `idKisculeNode*` classes exist in the EXE but are not used in Retail. Whether the engine loads them is untested.
+
+### 2.3 Node types for missions
+
+The table was generated from `signatures.json`, measured across all Retail occurrences. &quot;Impulse out&quot; refers only to the true event outputs, excluding the pass-through outputs of the same name. &quot;Value in&quot; are the parameters; each can also be connected as an `InputVariable`.
+
+| Node | Role | Nodes/Scripts | Input Impulse | Output Impulse | Input Values (Parameters) |
+|---|---|---:|---|---|---|
+| `BeginGame` | Map/Script starts | 686/568 | - | OnBeginGame, OnBeginGameAlways | ignoreInitialFlag |
+| `TriggerNotification` | Entity enters/exits a Trigger Volume | 1617/533 | Reset | Empty, Out, Touching, Untouched | classFilter, enabled, listenedEntities, maxNotificationCount, waitingTime / Value from: activator |
+| `VolumeNotification` | Volume entry/exit | 934/478 | Reset | Empty, Enter, Leave, Out, Touching, Untouched | classFilter, enabled, listenedEntities, maxNotificationCount, waitingTime / Value from: activator |
+| `UseNotification` | Player uses an object | 486/398 | Reset | CancelUsed, Out, Used | classFilter, enabled, listenedEntities, maxNotificationCount, waitingTime / Value from: activator |
+| `PickupNotification` | Item picked up (&quot;Found Documents&quot;) | 77/71 | Reset | Out, Pickup | enabled, listenedEntities, maxNotificationCount, waitingTime / Value from: activator |
+| `AiKilledNotification` | Listed AI killed | 204/123 | Reset | DeathDone, Killed, Out | enabled, listenedEntities, maxNotificationCount, waitingTime / Value from: activator, attacker, victim |
+| `AINotification` | AI State | 136/83 | Reset | Entered Combat, Lost Vision Of Enemy, Noticed Something, Out, Spotted Enemy, Spotted Player | enabled, listenedEntities, maxNotificationCount, waitingTime |
+| `AIVolumeCountNotification` | Number of AIs in a volume | 54/41 | Reset | Count Reached, Out | enabled, listenedEntities, maxCount, maxNotificationCount, minCount, onlyAlive, onlyDead, types, waitingTime |
+| `DamageNotification` | Entity takes damage | 622/456 | Reset | Damaged, Out | enabled, filterDamageSource, filterDamageType, listenedEntities, maxNotificationCount, waitingTime |
+| `GetCustomEvent` | Receive named event | 8848/1672 | - | Received | enabled, eventName, global, maxNotificationCount |
+| `SendCustomEvent` | Send named event | 3159/899 | Send | - | eventName, global |
+| `Counter` | Counts to endCount → &quot;Reached End&quot; | 169/97 | Decrement, Increment, Reset | Out, Reached End | autoReset, currentCount, endCount, startCount |
+| `Gate` | Open/Closed | 3399/965 | Close, Open, Test, Toggle | Gate is Closed, Gate is Open, Out | autoCloseCount, isOpen |
+| `Delay` | Delay in ms | 4760/1360 | Pause, Reset, Resume, Start, Stop | Finished, Out | delay, resetOnStart |
+| `Relay` | Relay impulse | 328/162 | Out | - | - |
+| `ActionTrigger` | Entities trigger (idTarget_AISpawn → Wave) | 663/371 | Activate | - | activator, targetEntities |
+| `ActionAISpawn` | Spawn AI directly (Retail only 2×) | 2/2 | Activate, Deactivate, Spawn | Empty, Ended, Spawned, Started | AIs, enabled, interval, maxActiveAIs, maxNumOfSpawn, randomSpawn, spawnScenepoints |
+| `ActionShowHide` | Show/hide entities | 2195/1332 | Hide, Show, Toggle (+ Combinations) | Out | detachAnyAttachedObjectOnHide, hideEntities, showEntities, toggleEntities |
+| `ActionMission` | Start, fulfill, end mission/objective | 576/79 | MissionStart, MissionComplete, MissionEnd, ObjectiveStart, ObjectiveComplete, ObjectiveEnd, SetActiveObjective | Out | mission, objectives, player, showNotification, completeHides, keepMissionInJournal |
+| `ActionWorldMarker` | Show/hide objective marker | 449/115 | Hide, Show | - | entity, showHideEntity |
+| `ActionAutosave` | Autosave | 265/67 | Autosave | Out | persistToStorage, saveSlot, triggered |
+| `ActionNextMap` | Next map / Mission end | 99/88 | NextMap | Out | mapName, spawnSpot, mode, variation, layers, addTimelineLayer |
+| `ActionChronicle` | Complete DLC chapter | 10/10 | End | - | completed, player, returnToSas |
+| `ActionActivatable` | Activate/deactivate Scenepoints/Triggers/Volumes | 481/272 | Disable, Enable, Toggle | - | entities |
+| `ActionSoundPostEvent` | Play Wwise event | 1839/467 | Post | Out | soundEvent, entity, entities, distanceCull |
+| `ActionSoundVoiceOver2` | Voiceover | 3992/302 | Play, Stop | Approach fail, Approach play, Finished, Interrupted | voiceOver, soundEvent, fromWho, playFrom, subtitleOverride, … |
+| `ActionAIManipulate` | Set AI behavior | 407/145 | In | Out | ais, kill, perception, detectPlayer, searchPlayer, … |
+| `ActionRemove` | Remove entities | 516/332 | Remove | - | entities |
+| `EntityReference` | A map entity name | 17160/2745 | Set | - | value → Value from: value |
+| `ListEntityReference` | List of entity names | 1356/586 | Set | - | value → Value from: value |
+| `PlayerEnt` | The player | 1887/909 | - | - | Value from: Player |
+| `ActiveAIList` | All active AIs | 77/45 | - | - | Value from: AIs |
+
+**Assignment of Mission Components from the Order:**
+
+* *Trigger entered* → `TriggerNotification.Touching` with `classFilter = &quot;idPlayer&quot;`. The Trigger Entity is provided via `EntityReference` → `listenedEntities`. For volume, there is `VolumeNotification.Enter`.
+* *AI killed* → `AiKilledNotification.Killed`. It fires **per kill**, `victim` provides the corpse. Evidence: Retail counts this per `Counter` up to 22 (`c1v2_challenge`, 22 AI, `endCount` 22).
+* *Counter reached* → `Counter.Reached End`.
+* *Spawn* → `ActionTrigger.Activate` on an `idTarget_AISpawn` Entity. Retail does this 364 times. The wave consists of the Entities in whose `targets` list they appear. Alternatively, there is `ActionShowHide.Show` on AI (725 times).
+* *Objective update/complete/mission end* → `ActionMission` with `ObjectiveStart`, `ObjectiveComplete`, `SetActiveObjective`, `MissionComplete` or `MissionEnd`. For the chapter end in the DLC, `ActionChronicle.End` is added, for map switching `ActionNextMap`.
+* *Door open* → **In Retail there is no door node.** `idKisculeNodeDoorNotification` exists only as an RTTI class and is used nowhere. Doors are `idDynamicEntity`/`idProp2`, mostly with `idConstraint_Hinge`. Where Retail moves a door via script, it uses `ParametricTranslation.entity` (118 references to Entities with &quot;door&quot; in the name), `ActionRotateEntity.targets` (50), `KeyframedTranslation` (31), `ActionShowHide` (hide 95, show 92) or a Midnight sequence (`OpMidnightParametersControl.Door`, 18).
+* *Sound play* → `ActionSoundPostEvent.Post` with `soundEvent` (Wwise) to `entity`, for speech `ActionSoundVoiceOver2.Play`.
+
+## 3. The Validator
+
+`validate(text, db, entity_names)` in `tools/probe_kiscule_write.py` returns an error list. Empty means valid. It checks the following:
+
+* **Structure.** The grammar, every `num`/`item[]` count, and the NUL at the end. The emitter must deliver the same bytes (canonical). The block sequence is `version/nodes/comments/variables`, where version is a Retail value.
+* **Nodes.** At least one (otherwise the runtime message &quot;Kiscule entity '%s' is empty&quot; applies). Node IDs are unique. The type must be known to Retail, the parameter class appropriate, every connection (Name, Type) for this type known, connection IDs unique.
+* **Edges.** The target exists (Node and Connection). The edge is recorded at both ends. The Edge Rule Direction/Type applies.
+* **Map.** With `entity_names`, every value of an `EntityReference`/`ListEntityReference` must be present as `entityDef` in the target map.
+
+**Positive control.** Across all 2977 Retail scripts, 2927 are clean. The 50 rejections distribute as follows: 25 × edge to empty, 17 × empty, 7 × one-sided, 1 × duplicate connection ID. These are exactly the Retail defects from `docs/kiscule.md` §3.3. The check fails as soon as another class appears or less than 95% are clean.
+
+**Negative controls.** Every mutation of our script must be rejected:
+
+| Mutation | Message |
+|---|---|
+| **dangling edge, endNodeID is empty** | `Edge 28456371 points to empty: Node 424242 missing` |
+| **dangling edge, endConnectionPointID is empty** | `… Connection 424242 to Node 651609970 missing` |
+| **unknown node type** (`idKisculeNodeCounterX`) | `unknown node type idKisculeNodeCounterX [67139160]` |
+| Back of an edge deleted | `Edge … only one-sided` |
+| unknown connection (`ReachedEnd`) | `unknown connection ReachedEnd:OutputRegular` |
+| Input to output reversed | `Edge … connects OutputNotification with OutputRegular` |
+| `nodes.num` too high by 1 | `Structure: num = 12, but item[11] missing` |
+| Entity that does not exist in the map | `Entity 'c2v1_gibtsnicht' does not exist in the map` |
+| duplicate node ID | `duplicate node ID 509157573` |
+| empty graph | `no nodes …` |
+| NUL missing at end | `Structure: no NUL at end` |
+| Entity template without `externalKisculeDecl` | `Template does not match (1/0 replacements)` |
+
+## 4. The Minimal Script
+
+### 4.1 Graph (`mission_wave_c2v1.graph.txt`)
+
+</code></pre>
+<p>EntityReference "c2v1_combat_triggers_trigger_firstarea" ──value──▶ TriggerNotification.listenedEntities
+TriggerNotification (classFilter idPlayer, max 1) ──Touching──▶ ActionTrigger.Activate
+EntityReference "c2v1_combat_target_ai_spawn_firstarea" ──value──▶ ActionTrigger.targetEntities
+ListEntityReference [5 KI of the spawn list] ──value──▶ AiKilledNotification.listenedEntities
+AiKilledNotification (max 5) ──Killed──▶ Counter.Increment (0 → 5)
+Counter ──Reached End──▶ Delay.Start (1000 ms) ──Finished──▶ ActionMission.ObjectiveComplete
+PlayerEnt ──Player──▶ ActionMission.player
+ActionMission (mission_c2v1_main, obj_01_find, showNotification) ──ObjectiveComplete──▶ SendCustomEvent "start_obj_02" (global)</p>
+<pre><code>
+The script has 11 nodes, 9 edges, 30,591 bytes of text, and 3,361 bytes of payload (`mission_wave_c2v1.extkisclule`, sha256 `4eae4d81…d532`). The build is reproducible because the IDs are deterministically derived from a seed.
+
+**How it is created.** Every node is a copy of a real Retail node of the same type, with the most common connection count, full connection list, and `properties`/`visible` as in the game. New are IDs, parameters, and edges. The class `Script` (`add`, `link`, `render`) is the write API: `link()` records every edge at both ends.
+
+### 4.2 Why exactly so – Retail evidence, each as a test
+
+* **Each of the 9 edges is a Retail edge pattern**, counted as (Type.Connection → Type.Connection):
+  EntityReference→TriggerNotification 1562, Touching→ActionTrigger.Activate 176,
+  EntityReference→ActionTrigger.targetEntities 660, ListEntityReference→AiKilled 62,
+  Killed→Counter.Increment 43, Counter.Reached End→Delay.Start 16,
+  Delay.Finished→ActionMission.ObjectiveComplete 11, PlayerEnt→ActionMission.player 220,
+  ObjectiveComplete→SendCustomEvent 49. *The direct edge Counter→ObjectiveComplete does not exist in Retail (0). The check therefore failed in the first version, and the Delay node was included.*
+* **The Retail script `c2v1_combat_kiscule_firstarea` remains unchanged within it.** It consists of Trigger → Spawn target, with identical types, identical parameters, and 3 identical edges. Retail does exactly this at this point. We only attach the kill branch.
+* **The counting pattern originates from Retail.** `maxNotificationCount` = number of listed KIs = `Counter.endCount` appears in 10 Retail cases (`gp073 hangarfight` 2, `c1v1_combat` 4, `c1v2_challenge` 22, …).
+* **Spawn and death counting in the same script.** 13 Retail scripts fire an `idTarget_AISpawn` and listen for its KI via `AiKilledNotification` (`cb_kiscule_horton` 8 KIs, `combat_streets` 10, `c3v2_combat_enter_trainstation` 14, `c2v3_combat_kiscule` from the same DLC …). This is our pattern.
+* **The wave.** `c2v1_combat_target_ai_spawn_firstarea` is an `idTarget_AISpawn` with 5 KIs in `targets`. In the installed override, 3 of them are switched to `elite_heavy`, but remain `idAI2` with the same names. The kill notification goes via the name, so this fits.
+
+### 4.3 The Retail mission chain in c2v1 – and why the test would otherwise show nothing
+
+`sacramento_gameplay_kiscule_c2v1.decl` runs the mission. The following chain is measured and recorded as a check:
+
+</code></pre>
+<p>BeginGame → Delay 500 → ActionMission.MissionStart (4 targets)
+          → Delay 4100 → Send "start_obj_01" → Get → ActionMission.ObjectiveStart(obj_01_find)
+Trigger "sacramento_gameplay_triggers_obj_1_complete".Touching → Send "end_obj_01"
+          → Get → ActionMission.ObjectiveComplete(obj_01_find) → Send "start_obj_02" → …</p>
+<pre><code>
+This Retail trigger is located at (−4.75, −193.75), **approximately 11 units** next to our wave trigger at (−14.45, −199.30). The enemies stand behind it (y −172 … −193). The player would thus fulfill &quot;Enter the offices&quot; already upon entering before the wave is dead, and our script would remain invisible.
+
+**Therefore both candidates contain a second, minimal intervention.** In the mission script, exactly one `TriggerNotification` node (ID 1728583878) is set from `enabled = true` to `enabled = false`. Only this single line changes, which has been verified. Our script takes over the continuation that Retail makes at that same point: after `ObjectiveComplete`, it sends `start_obj_02`. It has also been verified across all scripts binding the c2v1 map:
+
+* `end_obj_01` is sent by only this single node and receives only from the Retail fulfiller. No other script loses anything.
+* `start_obj_02` listens only to the mission script.
+* After the intervention, the Retail path is dead, and **our script is the only active fulfiller of obj_01**. This is read in the built chunk.
+* A second disabling is rejected as a negative control.
+
+(Initially, the check also counted scripts from other maps, `c2v2` and `c2v1_custom`, and failed. Now it counts only scripts binding the map via `externalKisculeDecl`.)
+
+## 5. Name binding: how a script comes to execution
+
+Across all 39 Retail `.entities`:
+
+* All **3020** `idKisculeEntity` entities reference a script via `edit.externalKisculeDecl`. Inline Kiscule does not occur, nor do `targets`.
+* Each reference resolves to exactly one extkisclule entry: 3000 exact matches, 20 case-insensitive. The entry name is the Decl name.
+* Per map (36/36 with readable `.mapresources`), the extkisclule lines in `.mapresources` are precisely the lowercase references. A new script therefore requires **one new MRL line**.
+* The 24-byte field of each MRL line is the layer mask of the binding entity (2761/2761). Bit i corresponds to Layer i of the MRL layer list. Without a layer, only bit 191 is set (`…80`), causing the script to always load.
+
+A new script binds using this entity (`entity_binding_example.txt`). It is the Retail entity `c2v1_combat_kiscule_firstarea`, with only Name and Decl changed:
+
+</code></pre>
+<p>entity {
+    entityDef mission_kiscule_wave_1 {
+    inherit = "kiscule";
+    class = "idKisculeEntity";
+    expandInheritance = false;
+    poolType = "POOLTYPE_NONE";
+    poolGranularity = 2;
+    edit = {
+        soundParms = { enableQuickSave = true; noOcclusion = true; }
+        spawnPosition = { x = -1.1000000238; y = -195.200088501; }
+        externalKisculeDecl = "maps/game/dlc/c02/c2v1_mission/kiscules/mission_kiscule_wave_1.decl";
+    }
+}
+}</p>
+<p>```</p>
+<p>This includes an extkisclule entry with exactly this name (lowercase) and the MRL line <code>(extkisclule, &lt;name&gt;, LayerMask)</code> in <code>generated/buildgame/game/dlc/c02/c2v1.mapresources</code>.</p>
+<h2 id="6-the-test-chunks-for-master-not-installed">6. The Test Chunks (for Master, not installed)</h2>
+<p>Both are built from the installed, playable file:
+<code>re_probes/dlc4_override/chunk_22.resources</code> (sha256 <code>cadfbfce…b2f5</code>, identical to <code>dlc/dlc_0/base/chunk_22.resources</code>). Both pass <code>probe_idclhash</code> and <code>probe_datahash</code>. Before <code>finalize</code>, <code>stale_data_hashes</code> reports exactly the changed entries; for A, <code>probe_idclhash</code> additionally rejects. This is the cross-check.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Candidate A (recommended first)</th>
+<th>Candidate B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File</td>
+<td><code>re_probes/missions/kiscule/chunk_22.resources</code></td>
+<td><code>re_probes/missions/kiscule/neu/chunk_22.resources</code></td>
+</tr>
+<tr>
+<td>sha256</td>
+<td><code>847bdc99d88b93d632ec37917fd3b2cdd9a67113a5d903589f58be5d6508c82f</code></td>
+<td><code>1e2678737af38a03e12d4f95180e9272ae072544ed768a7fdd3dcf0b06f1d102</code></td>
+</tr>
+<tr>
+<td>Size</td>
+<td>151 706 115 bytes, 7128 entries</td>
+<td>151 705 441 bytes, 7129 entries</td>
+</tr>
+<tr>
+<td>Path</td>
+<td>our script <strong>under the Retail name</strong> <code>c2v1_combat_kiscule_firstarea.decl</code></td>
+<td><strong>new name</strong> <code>c2v1_mission/kiscules/mission_kiscule_wave_1.decl</code>, new entity <code>mission_kiscule_wave_1</code> at the position of the firstarea entity, new MRL line</td>
+</tr>
+<tr>
+<td>Changed</td>
+<td>Entries 927 (firstarea) and 934 (Mission script), only size/hash (+0x40/+0x48/+0x50)</td>
+<td><code>.entities</code>, <code>.mapresources</code>, Mission script; new entry at the end (with <code>write_archive</code>, like the 143 alias entries of the installed container); all other 7125 payloads byte-identical; all 1462 images +0x60 unchanged</td>
+</tr>
+<tr>
+<td>Tested</td>
+<td>whether the content of a script is interchangeable</td>
+<td>additionally, whether a <strong>new</strong> entity plus new Decl name executes, thus the path for custom missions</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Installation (Master):</strong> the chosen file as <code>dlc/dlc_0/base/chunk_22.resources</code>, nothing else. The remaining dlc_0 files remain unchanged.</p>
+<p><strong>What should be visible in-game</strong> (normal mission start c2v1):</p>
+<ol>
+<li>After approximately 4.6 s, "Enter the offices" appears as usual.</li>
+<li>Enter the first area. The wave appears as in Retail; there are five firstarea enemies.</li>
+<li>Upon entering the offices, the objective is <strong>no longer</strong> fulfilled.</li>
+<li>Approximately 1 s after the <strong>fifth</strong> kill of the wave, "Enter the offices" is fulfilled, and the next objective (obj_02) begins.</li>
+</ol>
+<p><strong>Evaluation:</strong> Point 4 confirms Script Binding, AiKilled/Counter, and ActionMission. If the objective is never fulfilled, our script did not run, or the branch under AiKilled does not contribute, and the mission remains stuck at Objective 1. If the wave does not appear, the trigger part did not run already. If the objective is fulfilled upon entering the offices, the intervention into the mission script was not loaded. Test B only if A works. Then B separates "Exchange Content" from "Bind New Script".</p>
+<h2 id="7-what-is-not-proven">7. What Is Not Proven</h2>
+<ul>
+<li><strong>Runtime.</strong> None of this ran in-game. All statements are structural or derived from Retail patterns.</li>
+<li><code>ObjectiveComplete</code> on an objective that has not yet started. The objective starts 4.6s after map start; killing five enemies in less than 3.6s is hardly possible. What the engine does in that case is unmeasured.</li>
+<li><code>version = 5/6/-1</code>, the <code>properties</code> bits 1/4/32, and the edge <code>id</code>. They are copied from templates; their meaning is open (see <code>docs/kiscule.md</code> §9).</li>
+<li>The 101 unused node classes of the EXE (including <code>DoorNotification</code>, <code>LogicGateAnd</code>, <code>HudTimer</code>). Whether the engine loads them is untested.</li>
+<li><strong>Custom Objective Text/Objectives</strong> ("Eliminate the officers") require new <code>missionobj</code> Decls and Strings. This is not part of this track; see <code>re_probes/missions/text/</code>. Our script uses the existing objective <code>cobalt/c2v1/mission_c2v1_main_obj_01_find</code>.</li>
+<li>3 Retail maps have a <code>.mapresources</code> in a different layout. The binding rule was not recalculated there.</li>
+</ul>
+<h2 id="8-files">8. Files</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tools/probe_kiscule_write.py</code></td>
+<td>Round-Trip, Model, Validator, Binding, Script Build, both candidates; <code>all</code> = everything</td>
+</tr>
+<tr>
+<td><code>lauf_all.log</code>, <code>manifest_all.json</code></td>
+<td>Last full run (86 OK, 0 FAIL, exit 0) with all numbers and hashes</td>
+</tr>
+<tr>
+<td><code>signatures.json</code></td>
+<td>Signature DB: per node type connections, parameters, classes, RTTI bases</td>
+</tr>
+<tr>
+<td><code>mission_wave_c2v1.decl</code> / <code>.extkisclule</code> / <code>.graph.txt</code></td>
+<td>The new script: Text, Archive Payload, readable graph</td>
+</tr>
+<tr>
+<td><code>entity_binding_example.txt</code></td>
+<td>The binding entity for Path B</td>
+</tr>
+<tr>
+<td><code>chunk_22.resources</code>, <code>neu/chunk_22.resources</code></td>
+<td>Candidate A and B</td>
+</tr>
+</tbody>
+</table></div></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Mission-Anatomy.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Mission Anatomy: How Wolfenstein II Builds a Mission (c2v1 &quot;Gestapo Office&quot;)</a><a class="next" href="Mission-Text.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Mission Text Sources: Where Goal and HUD Text Comes From and What a DLC Folder Can Change</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>`entry+0x50` (data_hash) and `entry+0x60` (hash_0x60) — from the code – Wolfenstein Modloader</title>
+<meta name="description" content="How Wolfenstein II checks each archive entry&#x27;s content hash, and how a mod builder can compute it.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1><code>entry+0x50</code> (data_hash) and <code>entry+0x60</code> (hash_0x60) — from the code</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Datahash"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-entry0x50--solved">1. entry+0x50 — solved</a></li><li><a href="#2-is-0x50-checked-on-load--yes-but-only-with-cvar-enabled">2. Is +0x50 checked on load? — Yes, but only with CVar enabled</a></li><li><a href="#3-positive-and-negative-controls">3. Positive and Negative Controls</a></li><li><a href="#4-entry0x60--default-hash">4. entry+0x60 — &quot;default hash&quot;</a></li><li><a href="#5-correction-0x60-is-not-the-texdb-key">5. Correction: +0x60 is not the TexDB Key</a></li><li><a href="#6-what-was-not-found-honestly-labeled">6. What was not found (honestly labeled)</a></li><li><a href="#7-guide-for-the-builder">7. Guide for the Builder</a></li><li><a href="#8-artifacts">8. Artifacts</a></li><li><a href="#9-for-other-owners">9. For Other Owners</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Every file entry in a Wolfenstein II: The New Colossus archive carries two 64-bit values. This report reads the game code and shows that the first one is a MurmurHash64B <span class="t" data-t="hash">hash</span> of the unpacked content with a fixed seed, which a mod tool can now compute. The game only checks it when a hidden setting is on (off by default), and then a wrong value causes a crash. The second value is never recalculated from the content by the game, so builders just need to keep it consistent, meaning self-built archives with changed or new files are possible.</p><ul><li>Formula confirmed on 4,499 of 4,499 sampled entries from five archives.</li><li>The check runs only when resourceStorage_checkDataCheckSum is on; its default is 0 (off). With it on, a wrong value is a hard crash.</li><li>7 of 7 deliberately wrong variants fail as expected.</li><li>The second value equals the first for almost all normal entries (59,630 of 59,662); for images and a few other types it is a separate build value whose origin is unknown.</li><li>An earlier guess that the second value is the texture database key was measured and is wrong (only about 5% match).</li></ul></div><div class="de"><p class="lede">Jeder Dateieintrag in einem Archiv von Wolfenstein II: The New Colossus trägt zwei 64-Bit-Werte. Dieser Bericht liest den Spielcode und zeigt, dass der erste ein MurmurHash64B-<span class="t" data-t="hash">Hash</span> über den entpackten Inhalt mit festem Startwert ist, den ein Mod-Werkzeug jetzt berechnen kann. Das Spiel prüft ihn nur, wenn eine versteckte Einstellung an ist (standardmäßig aus), und dann führt ein falscher Wert zum Absturz. Den zweiten Wert berechnet das Spiel nie aus dem Inhalt nach; ein Werkzeug muss ihn nur stimmig setzen. Eigene Archive mit geänderten oder neuen Dateien sind damit möglich.</p><ul><li>Formel bestätigt an 4.499 von 4.499 Stichproben-Einträgen aus fünf Archiven.</li><li>Die Prüfung läuft nur, wenn resourceStorage_checkDataCheckSum an ist; Standardwert ist 0 (aus). Ist sie an, führt ein falscher Wert zum harten Absturz.</li><li>7 von 7 absichtlich falschen Varianten scheitern wie erwartet.</li><li>Der zweite Wert ist bei fast allen normalen Einträgen gleich dem ersten (59.630 von 59.662); bei Bildern und wenigen anderen Typen ist er ein eigener Build-Wert unbekannter Herkunft.</li><li>Die frühere Annahme, der zweite Wert sei der Schlüssel der Texturdatenbank, wurde gemessen und ist falsch (nur etwa 5 % Treffer).</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p><strong>Short answer to Question 4: Yes. A self-built Chunk can contain MODIFIED and NEW Payloads and still mount and load — provided the Builder recalculates <code>entry+0x50</code> (formula below, 4499/4499 verified) and sets <code>entry+0x60</code> consistently. No single verification path compares <code>+0x60</code> with newly calculated content.</strong></p>
+<p>A limitation that is not a mount-blocker but should be documented: for <code>image</code> entries with <code>$streamed</code>, <code>+0x60</code> does <strong>not</strong> provide the TexDB key — the previous assumption <code>hash_0x60 &lt;&lt; 4 | level</code> is measurably false (Section 5). Textures therefore remain a separate, unsolved problem, but not because of <code>+0x50</code>/<code>+0x60</code>.</p>
+<hr />
+<h2 id="1-entry0x50--solved">1. <code>entry+0x50</code> — solved</h2>
+<pre><code class="language-python">data_hash = murmur64b(uncompressed_payload, seed=0xDEADBEEF)
+</code></pre>
+<ul>
+<li><strong>Algorithm:</strong> MurmurHash64B (the 32-bit variant with two accumulators), <code>m = 0x5BD1E995</code>, <code>r = 24</code>, <code>h1 = seed ^ len</code>, <code>h2 = 0</code>, result <code>(h1 &lt;&lt; 32) | h2</code>. Function <code>.text 0x12BB970</code>–<code>0x12BBA77</code> (<code>.pdata</code> boundaries), reconstructed instruction-by-instruction in <code>tools/probe_datahash.py::murmur64b()</code>.</li>
+<li><strong>Which stream:</strong> over the <strong>decompressed</strong> Payload.</li>
+<li><strong>Length:</strong> <code>usize</code> (<code>entry+0x48</code>), specifically only the lower 32 bits — <code>mov edx, [rbx+0x48]</code>.</li>
+<li><strong>What else flows in:</strong> nothing. No name, no type, no offset, no metadata.</li>
+</ul>
+<p>The evidence is in the <strong>Reader</strong>, not the Writer. <code>WriteContainer</code> (<code>0xAC9BD0</code>–<code>0xACADD4</code>) fills the 144-byte entry in the loop at <code>0xACA340</code> with two 16-byte moves from a generator structure:</p>
+<pre><code>aca3a2  movups xmm0, [r13+0x10]      ; -&gt; entry+0x48 (usize) and entry+0x50
+aca3a7  movups [r12+0x48], xmm0
+aca3ad  movups xmm1, [r13+0x20]      ; -&gt; entry+0x58 (time) and entry+0x60
+aca3b2  movups [r12+0x58], xmm1
+</code></pre>
+<p>The Writer <strong>copies</strong> both fields and proves nothing via the algorithm. The derivation comes from <code>idResourceStorage::ReadResourceData</code>, <code>.text 0xACD7C0</code>–<code>0xACDCFD</code>:</p>
+<pre><code>acda76  movzx eax,[r8+0x70]          ; compression
+acda7b  test  al,al
+acda7d  je    0xacdb19               ; mode 0: raw buffer is already the payload
+        ... Allocation of entry+0x48 bytes, call 0xAC64F0 (Oodle) ...
+acdb16  mov   r15, rdi               ; r15 = DECOMPRESSED buffer
+acdb19  test  r12b, r12b             ; 3. Argument &quot;verify&quot;
+acdb1c  je    0xacdb64               ; ... otherwise skipped
+acdb1e  mov   rbx,[rsi+0x1a8]        ; Entry table
+acdb25  add   rbx, r14               ; + 144*index
+acdb28  mov   r8d, 0xdeadbeef        ; Seed
+acdb2e  mov   edx,[rbx+0x48]         ; Length = usize
+acdb31  mov   rcx, r15
+acdb34  call  0x12bb970              ; MurmurHash64B
+acdb39  mov   rcx,[rbx+0x50]         ; stored data_hash
+acdb3d  cmp   rax, rcx
+acdb40  je    0xacdb64               ; ok
+        -&gt; Warning &quot;resource %s:%s data integrity checksum failure,
+                    has: 0x%llx, wants 0x%llx&quot; and return NULL
+</code></pre>
+<h2 id="2-is-0x50-checked-on-load--yes-but-only-with-cvar-enabled">2. Is <code>+0x50</code> checked on load? — Yes, but only with CVar enabled</h2>
+<p>The check block is hooked to the third argument. There are exactly three callers of <code>0xACD7C0</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Caller</th>
+<th>3rd Argument</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0xACD761</code> (Wrapper <code>0xACD730</code>)</td>
+<td><code>cvar != 0</code></td>
+<td><strong>the normal load path</strong></td>
+</tr>
+<tr>
+<td><code>0xACE430</code></td>
+<td><code>1</code></td>
+<td>Verify pass <code>0xACE3F0</code>–<code>0xACE6C0</code></td>
+</tr>
+<tr>
+<td><code>0xACE5D8</code></td>
+<td><code>1</code></td>
+<td>same Verify pass</td>
+</tr>
+</tbody>
+</table></div>
+<pre><code>acd754  cmp   dword [rip+0x2485dc5], 0    ; -&gt; .data 0x2F53520
+acd75d  setne r8b
+acd761  call  0xacd7c0
+</code></pre>
+<p><code>.data 0x2F53520</code> is offset <code>+0x60</code> of the CVar object at <code>.data 0x2F534C0</code> (object size 0x90). Its pointers at <code>+0x78/+0x80/+0x88</code> read in runtime capture:</p>
+<pre><code>+0x78 -&gt; .rdata 0x26D02F8  &quot;resourceStorage_checkDataCheckSum&quot;
++0x80 -&gt; .rdata 0x25FC350  &quot;0&quot;                       &lt;- Default value
++0x88 -&gt; .rdata 0x26D02C8  &quot;check resource data checksums on resource load&quot;
+</code></pre>
+<p>In the running process shown in the capture, it is <strong>0</strong>. The static constructor <code>0x146B8E</code> also writes 0 into it.</p>
+<p><strong>When checked:</strong> not at mount, but <strong>on every access to the payload of an entry</strong> — precisely in the function that retrieves and unpacks the bytes from disk. An entry whose payload is never read will also never be checked.</p>
+<p><strong>What happens on mismatch — and this is sharper than a warning:</strong>
+<code>ReadResourceData</code> returns <code>NULL</code>. The wrapper <code>0xACD730</code> catches this:</p>
+<pre><code>acd766  test rax, rax
+acd769  jne  ok
+        ... retrieve names from the entry table ...
+acd7af  lea  rcx,[rip+0x1c03a2a]     ; &quot;Get entry of %s:%s from %s failed&quot;
+acd7b6  call 0x12386b0               ; FatalError
+acd7bb  int3
+</code></pre>
+<p>So: <strong>CVar out (Retail-Default) → no test. CVar in → a false +0x50 is a hard crash, not a warning.</strong> Both statements hold true; they do not contradict each other.</p>
+<h2 id="3-positive-and-negative-controls">3. Positive and Negative Controls</h2>
+<p><code>re_probes/datahash/derive_retail.txt</code>:</p>
+<pre><code>chunk_8.resources                    900/900    (0 of 1562 skipped)
+gameresources.resources              900/900    (0 of 50839)
+patch_4.resources                    900/900    (0 of 2649)
+chunk_20.resources                   899/899    (1 of 13366)
+chunk_22.resources                   900/900    (0 of 6985)
+
++0x50  4499/4499
+</code></pre>
+<p><strong>4499/4499</strong> across five archives from three build stages: Retail base chunk, <code>gameresources</code>, a patch, and two DLC chunks. Sample size of 900 entries per archive, random selection with a fixed seed (reproducible). The one skipped entry is compression mode 4, for which we have no decoder.</p>
+<p><code>re_probes/datahash/negative_controls.txt</code> — every line must fail:</p>
+<pre><code>flipped byte 0 of the payload                     0/20 failed as expected
+flipped last byte of the payload                  0/20 failed as expected
+compressed stream instead of uncompressed         0/20 failed as expected
+truncated to csize instead of usize               0/20 failed as expected
+seed 0 instead of 0xDEADBEEF                      0/20 failed as expected
+seed 0xDEADBEEF but payload read at offset+16     0/20 failed as expected
+data hash used for entry+0x60 (image)             0/5  failed as expected
+</code></pre>
+<p>The two controls required by the order (a flipped byte, false stream) are listed below; <code>python tools/probe_datahash.py --negative</code> yields an exit code ≠ 0 if either of them somehow passes.</p>
+<h2 id="4-entry0x60--default-hash">4. <code>entry+0x60</code> — "default hash"</h2>
+<p>The name is not guessed; it appears in the binary. Two format strings in the container comparison function <code>0xACE750</code>–<code>0xACE8E9</code> name both fields:</p>
+<pre><code>.rdata 0x26D1978  &quot;entries has different data hash: %llx - %llx&quot;      &lt;- +0x50
+.rdata 0x26D18F0  &quot;entries has different default hash: %llx - %llx&quot;   &lt;- +0x60
+</code></pre>
+<p><strong>Empirically</strong> (<code>re_probes/datahash/hash60_survey.txt</code>, all entries, not just a sample):</p>
+<pre><code>chunk_8          1562 entries   +0x60==+0x50: 1384   differing: 178
+gameresources   50839            +0x60==+0x50: 39220  differing: 11619
+patch_4          2649            +0x60==+0x50: 2635   differing: 14
+chunk_20        13366            +0x60==+0x50: 12093  differing: 1273
+chunk_22         6985            +0x60==+0x50: 5689   differing: 1296
+</code></pre>
+<p>The differences are almost entirely restricted to four types: <code>image</code> (11545 of 11619 in <code>gameresources</code>), <code>extkisclule</code>, <code>cfile</code>, <code>compfile</code>. Across all five archives combined, <strong>excluding</strong> these four types:</p>
+<pre><code>59662 entries   +0x60 == +0x50: 59630   differing: 32
+</code></pre>
+<p>The 32 exceptions are exclusively <code>cm</code> entries with empty payloads (<code>usize == csize == 0</code>, <code>version 21</code>); they carry the sentinel value <code>1</code> at <code>+0x60</code>, while <code>+0x50</code> correctly holds <code>murmur64b(b"", 0xDEADBEEF) == 0x42F683B123F895E6</code> — which incidentally confirms the derivation on the edge case of length 0.</p>
+<p><strong>Origin of the Value:</strong> It is assigned by the build tool, not derived. For types where <code>+0x60 == +0x50</code>, it is simply the data hash. For <code>image</code> entries, it is a distinct value that is <strong>not</strong> present in the payload (byte search for LE-u64 in unpacked <code>.bimage</code> data: 0 hits in 6 of 6 samples) and cannot be reproduced as a hash of the name (sweep over <code>name</code>, <code>name+NUL</code>, name before <code>$</code>, <code>type:name</code>, lowercase × MurmurHash64B/FarmHash64/CityHash64 × raw/<code>&gt;&gt;4</code>/<code>&lt;&lt;4</code>: 0 of 40 hits).</p>
+<p><strong>Who reads <code>+0x60</code></strong> — complete list, generated by a scan over <code>.text</code> that tracks every register chain <code>mov/add R, [X+0x1a8]</code> (entry table) plus 144-indexing and logs all field accesses:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>RVA</th>
+<th>What happens there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0xAB6DF7</code>, <code>0xAB6FEC</code></td>
+<td>Copy to <code>resource+0x28</code> (runtime object)</td>
+</tr>
+<tr>
+<td><code>0xAB6A8D</code></td>
+<td>Getter, writes to <code>[rdi]</code></td>
+</tr>
+<tr>
+<td><code>0xAB8402</code>, <code>0xAB841F</code></td>
+<td><code>Resource_GetEmbeddedStreamingFile</code>: <code>cmp r9, entry+0x60</code>, where <code>r9 = res+0x28</code>, so <strong>the same previously copied value</strong></td>
+</tr>
+<tr>
+<td><code>0xABC2B9</code></td>
+<td>Output</td>
+</tr>
+<tr>
+<td><code>0xAC94AE</code>, <code>0xAC9563</code>, <code>0xAC95A6</code></td>
+<td>Generator: writes <code>+0x60</code> as hash into Dependency Records (<code>call 0xAC78A0</code>)</td>
+</tr>
+<tr>
+<td><code>0xACD18C</code>, <code>0xACD665</code></td>
+<td>Stale-Check <code>0xACCC70</code>: <code>cmp entry+0x60, dep+0x18</code></td>
+</tr>
+<tr>
+<td><code>0xACE3A8</code></td>
+<td>Same, Dependency-Iteration <code>0xACE215</code></td>
+</tr>
+<tr>
+<td><code>0xACE836</code></td>
+<td>Container-Diff (Dev tool)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>This is the critical point:</strong> every single comparison location compares <code>entry+0x60</code> against a <strong>different stored field</strong> — against the hash of a Dependency Record (<code>dep+0x18</code>), against the previously copied runtime value from the same field, or against <code>+0x60</code> of a second container.
+<strong>No location calculates <code>+0x60</code> from content afterwards.</strong> A builder that enters the same value at both ends passes through.</p>
+<p>For <code>+0x50</code>, the same scan yields exactly seven read locations, four of which are false positives in foreign structures; the real ones are <code>0xACDB39</code> (the test from Section 1) and <code>0xACE7D2</code>/<code>0xACE7D6</code> (Container-Diff, Dev tool).</p>
+<h2 id="5-correction-0x60-is-not-the-texdb-key">5. Correction: <code>+0x60</code> is not the TexDB Key</h2>
+<p>The task specifies as preliminary finding <code>TexDB-Key = hash_0x60 &lt;&lt; 4 | level</code>. This does not hold up to measurement. Across all 24 base <code>.texdb</code> files, there are 24,713 different texture IDs (<code>key &gt;&gt; 4</code>); the comparison against the <code>image</code> entries of the same chunks:</p>
+<pre><code>chunk_8        138 images   hash_0x60 as TexDB-ID:    4
+gameresources 12194 images  hash_0x60 as TexDB-ID:  650
+chunk_1         732 images  hash_0x60 as TexDB-ID:   38
+chunk_16        357 images  hash_0x60 as TexDB-ID:   20
+</code></pre>
+<p>Approximately 5%, not 100%. Notable is that <code>chunk_8.texdb</code> has exactly 106 different IDs and <code>chunk_8.resources</code> has exactly 107 <code>$streamed</code> images — the 1:1 mapping exists, but <code>+0x60</code> is not their key. Control: <code>+0x50</code> appears as a TexDB-ID in 0 cases, so the hit was not generated by counting. Reproducible with
+<code>python tools/probe_datahash.py --hash60</code>.</p>
+<p>This leaves the origin of the TexDB key <strong>open</strong>; it does not belong to this task, and <code>re_probes/agent_reports/texdb_rewrite.md</code> had already marked it as unsolved. This measurement confirms that assessment and refutes the temporarily assumed formula.</p>
+<h2 id="6-what-was-not-found-honestly-labeled">6. What was not found (honestly labeled)</h2>
+<ul>
+<li><strong>No Reader for <code>+0x50</code> at Mount.</strong> Searched in <code>idResourceStorage::OpenContainer</code> <code>0xACB780</code>–<code>0xACC441</code> (fully disassembled; the function copies only the 0x78 header into the Container object at <code>+0x140</code> and holds the metadata block, it does not iterate the entries) and via the described <code>.text</code>-wide field scan. Therefore: <strong>no Mount-time Reader found; the search was conducted in OpenContainer and across the full <code>.text</code> scan of the entry table.</strong></li>
+<li><strong>No derivation for <code>image</code> <code>+0x60</code>.</strong> Attempted and failed: Byte search in the unpacked payload (Offsets 0..usize-8), Hash over the name in six variants × three hash functions × three shift forms. Therefore: <strong>Origin unknown, not "arbitrarily selectable because unverified"</strong> — it is freely selectable because no Reader recomputes it (Section 4), not because we failed to find it.</li>
+<li><strong>Compression Mode 4</strong> (25 entries total in the game) remains undecoded; consequently, one entry from the sample was missed. The code paths at <code>0xACD8DB</code> show that Mode 4 runs via a separate streaming path for <code>usize &gt; 0x2000000</code>, which never reaches <code>ReadResourceData</code> — thus the checksum test does not apply there anyway.</li>
+</ul>
+<h2 id="7-guide-for-the-builder">7. Guide for the Builder</h2>
+<ol>
+<li>Write payload (raw or Kraken-compressed).</li>
+<li><code>entry+0x40 = csize</code>, <code>entry+0x48 = usize</code>.</li>
+<li><code>entry+0x50 = murmur64b(uncompressed_bytes, 0xDEADBEEF)</code> — <code>from tools.probe_datahash import murmur64b</code>.</li>
+<li><code>entry+0x60</code>:<ul>
+<li>Type ≠ <code>image</code>/<code>extkisclule</code>/<code>cfile</code>/<code>compfile</code>: <strong>enter the same value as</strong> <code>+0x50</code>. This is exactly what the Retail Generator does (59630 of 59662 across five archives; the 32 exceptions are empty <code>cm</code> payloads with the sentinel <code>1</code>).</li>
+<li>Type <code>image</code> and similar: either adopt the Retail value (if the name is unchanged), or choose freely — but then <strong>enter the same value at</strong> <code>dep+0x18</code> in every Dependency Record pointing to this entry, otherwise the Stale Check reports <code>"...is stale: embedded resource %s:%s hash mismatch"</code>.</li>
+</ul>
+</li>
+<li>Finalize metadata block, then <code>header[0x20]</code>, then <code>header[0x08]</code> per <code>re_probes/agent_reports/idclhash.md</code>. Both entry fields flow as bytes into the metadata, so <strong>finalize the entry table first, then the header hashes</strong>.</li>
+</ol>
+<h2 id="8-artifacts">8. Artifacts</h2>
+<ul>
+<li><code>tools/probe_datahash.py</code> — Derivation, Positive/Negative controls, <code>+0x60</code> collection, TexDB comparison (Py 3.11, stdlib + <code>wolfsdk.oodle</code>)</li>
+<li><code>re_probes/datahash/derive_retail.txt</code> — 4499/4499</li>
+<li><code>re_probes/datahash/negative_controls.txt</code> — 7 controls, all failed</li>
+<li><code>re_probes/datahash/hash60_survey.txt</code> — <code>+0x60</code> collection and TexDB comparison</li>
+<li><code>re_probes/datahash/disasm_datahash.txt</code> — Disassembly evidence (Writer, Reader, Gate, Hash function, all comparison points, strings)</li>
+</ul>
+<h2 id="9-for-other-owners">9. For Other Owners</h2>
+<p><code>wolfsdk/idcl.py</code> (foreign Ownership) still contains in its Docstring <em>"data_hash is content-derived ... but it matches none of crc32 ... MurmurHash64A ..."</em> and <em>"A written entry therefore keeps the hash it had."</em> The Sweep tested MurmurHash64<strong>A</strong>, not <strong>64B</strong>, and did not test a Seed ≠ 0 — hence the failure. This is now resolved: <code>+0x50</code> is computable, and <code>Entry.hash_0x60</code> may be set to <code>data_hash</code> for all non-<code>image</code> types.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Cvartable.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC Cvar Catalog – Runtime Image Analysis</a><a class="next" href="Research-Report-Dlc-Primary.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>DLC-/Patch Container as Primary Source — Static Finding</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

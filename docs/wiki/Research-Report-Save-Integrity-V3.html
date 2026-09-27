@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offline Save Repair v3 – Wolfenstein Modloader</title>
+<meta name="description" content="Short report: offline repair (v3) of a custom-map save game for Wolfenstein II, checksum solved.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Offline Save Repair v3</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Save-Integrity-V3"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This short report covers version 3 of the offline repair of a custom-map <span class="t" data-t="savegame">save game</span> for Wolfenstein II: The New Colossus. The checksum in game.details turned out to be a <span class="t" data-t="crc">CRC32</span> and matches all tested original files. Six outdated map length values were found and fixed. The repaired save was not written to the real save folder, so whether the game accepts it is still open.</p><ul><li>The game.details CRC32 matches 26 original files with 21 different contents.</li><li>Six outdated map-start length values were reproduced and fixed.</li><li>Unchanged, longer and shorter name rebuilds are byte-exact.</li><li>Negative tests catch wrong lengths even when the file hashes look valid.</li><li>.verify files were left unchanged; acceptance in the running game is not yet tested.</li></ul></div><div class="de"><p class="lede">Dieser Kurzbericht behandelt Version 3 der Offline-Reparatur eines <span class="t" data-t="savegame">Spielstands</span> für eine eigene Karte in Wolfenstein II: The New Colossus. Die Prüfsumme in game.details ist ein <span class="t" data-t="crc">CRC32</span> und passt zu allen getesteten Originaldateien. Sechs veraltete Längenwerte für Kartennamen wurden gefunden und korrigiert. Der reparierte Spielstand wurde nicht in den echten Speicherordner geschrieben; ob das Spiel ihn annimmt, ist daher noch offen.</p><ul><li>Die CRC32 in game.details passt zu 26 Originaldateien mit 21 verschiedenen Inhalten.</li><li>Sechs veraltete Längenwerte im Kartenstart wurden nachgestellt und korrigiert.</li><li>Neubau mit unverändertem, längerem und kürzerem Namen ist byte-genau.</li><li>Gegentests erkennen falsche Längen, auch wenn die Datei-Hashes gültig aussehen.</li><li>.verify-Dateien blieben unverändert; die Annahme im laufenden Spiel ist noch nicht getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>The original worker was terminated due to a usage limit. Astra resumed the work and verified it locally. The <code>game.details</code> CRC32 matches 26 original file paths / 21 distinct contents. Six stale map start lengths were reproduced and fixed. Identity and longer/shorter roundtrips are byte-exact; negative controls detect false lengths despite valid DAT hashes and stale CRCs.</p>
+<p>Code: <code>tools/probe_details_checksum.py</code>, <code>tools/build_custom_save_candidate.py</code>, <code>tools/verify_custom_save_candidate.py</code>. Isolated result: <code>re_probes/custom_save_candidates/FC2-WOLF0-c2v1_custom_v3</code>.</p>
+<p>No live save written. <code>.verify</code> unchanged, runtime acceptance open. Overall finding: <code>docs/tnc_astra_findings_20260923.md</code>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Missions.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Mission Builder Kit: Custom Missions for the Gestapo Office Map (c2v1)</a><a class="next" href="Research-Report-Save-Load-Route.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC Save-/Menu Load Path (Static Research)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

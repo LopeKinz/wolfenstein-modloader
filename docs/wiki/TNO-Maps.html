@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 25 Cards from Wolfenstein: The New Order – Wolfenstein Modloader</title>
+<meta name="description" content="Catalog of TNO&#x27;s 25 map entity files: what they contain and how much you can change without rebuilding archives.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tno"><span class="en">The New Order</span><span class="de">The New Order</span></a></p>
+<h1>The 25 Cards from Wolfenstein: The New Order</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNO-Maps"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-what-an-entities-file-is">1. What an .entities File Is</a></li><li><a href="#2-what-is-in-the-cards">2. What Is in the Cards</a></li><li><a href="#3-the-cost-question">3. The Cost Question</a></li><li><a href="#4-the-length-preserving-change">4. The length-preserving change</a></li><li><a href="#5-open-risks">5. Open Risks</a></li><li><a href="#6-tool">6. Tool</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Every level in Wolfenstein: The New Order has a text file that lists where enemies, weapons, ammo, health packs and collectibles are placed. This page catalogs all 25 of these map files and calculates how much each one can be edited while still fitting into its old slot in the game <span class="t" data-t="archive">archive</span>. Small same-length swaps fit; adding anything new forces a rewrite of a whole archive file of 73 to 466 MB. None of this has been tested in the game.</p><ul><li>The 25 maps hold 69,951 entities, including 1,167 enemies, 467 weapons, 333 ammo, 569 health items and 284 secrets.</li><li>Seven maps contain no enemies at all (intro, intermission and transition sections).</li><li>On 15 of 25 maps an enemy type can be swapped for one with an equally long name without a rebuild (size change between −8 and +56 bytes).</li><li>Adding even one enemy never fits: one enemy block compresses to 1,700–2,900 bytes, more than the largest free space of 1,185 bytes.</li><li>Not tested in the game: whether the engine accepts a modified map file at all.</li></ul></div><div class="de"><p class="lede">Jedes Level von Wolfenstein: The New Order hat eine Textdatei, die festlegt, wo Gegner, Waffen, Munition, Medipacks und Sammelobjekte stehen. Diese Seite katalogisiert alle 25 dieser Kartendateien und berechnet, wie stark sich jede ändern lässt, ohne den alten Platz im Spiel-<span class="t" data-t="archive">Archiv</span> zu sprengen. Kleine Tausche mit gleicher Länge passen; alles Neue erzwingt das Neuschreiben einer ganzen Archivdatei von 73 bis 466 MB. Nichts davon wurde im Spiel getestet.</p><ul><li>Die 25 Karten enthalten 69.951 Entities, darunter 1.167 Gegner, 467 Waffen, 333 Munitionspakete, 569 Heilgegenstände und 284 Geheimnisse.</li><li>Sieben Karten enthalten gar keine Gegner (Intro-, Zwischen- und Übergangsabschnitte).</li><li>Auf 15 von 25 Karten lässt sich ein Gegnertyp ohne Neubau gegen einen mit gleich langem Namen tauschen (Größenänderung zwischen −8 und +56 Byte).</li><li>Schon ein einziger zusätzlicher Gegner passt nie: Ein Gegnerblock braucht komprimiert 1.700–2.900 Byte, mehr als der größte freie Platz von 1.185 Byte.</li><li>Nicht im Spiel getestet: ob die Engine eine geänderte Kartendatei überhaupt annimmt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>All data here is measured against Retail files (Steam, id Tech 5, <code>.index</code>/<code>.resources</code>). Tool used: <code>tools/entities.py</code>. Reading occurs exclusively from <code>base/_wolfsdk_backup/</code> — the installation is patched, and therefore <code>pristine()</code> from <code>tools/build_gore_deep.py</code> provides the originals. Statements without measurement are marked as <strong>unverified</strong>.</p>
+<blockquote>
+<p><strong>Read-only.</strong> This document describes no write operation. No mod was created, nothing applied, nothing reset. The cost accounting in Section 3 is purely theoretical: the modified card bytes were compressed and measured in memory, never written to disk.</p>
+</blockquote>
+<hr />
+<h2 id="1-what-an-entities-file-is">1. What an <code>.entities</code> File Is</h2>
+<p>Each card lies as a <code>file</code> asset in the archive, uncompressed plaintext in Decl dialect:</p>
+<pre><code>Version 3
+entity {
+    entityDef pick_up_prop_weapon_shotgun_1 {
+    inherit = &quot;prop/weapon/shotgun&quot;;
+    class = &quot;idItem&quot;;
+    expandInheritance = false;
+    edit = {
+        spawnPosition = { x = -23388.927734375; y = -396.16; z = 2403.78; }
+    }
+}
+}
+</code></pre>
+<p>Three fields carry the entire placement information:</p>
+<ul>
+<li><code>inherit</code> — <strong>what</strong> is there. <code>ai/…</code> an enemy, <code>prop/weapon/…</code> a weapon, <code>prop/ammo/…</code> ammunition, <code>prop/health/…</code> a medipack, <code>prop/secret/…</code> a collectible, <code>player/start</code> a spawn point.</li>
+<li><code>class</code> — the engine class that instantiates the block (<code>idAI</code>, <code>idItem</code>, <code>idLight</code>, <code>idTarget_Count</code>, …).</li>
+<li><code>edit.spawnPosition</code> — <strong>where</strong>. If an axis is missing, it does not appear in the file; <code>tools/entities.py</code> displays it as <code>?</code>. That the engine reads a missing axis as 0 is plausible but <strong>unverified</strong>.</li>
+</ul>
+<h3 id="parsing-with-wolfsdkdeclpy--no-second-parser-needed">Parsing with <code>wolfsdk/decl.py</code> — No Second Parser Needed</h3>
+<p>The dialect is identical to that of the <code>entityDef</code> decls which <code>Decl</code> already handles. Three places deviate, and <code>Decl</code> tolerates all three instead of aborting:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Place</th>
+<th>What <code>Decl</code> Makes From It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Version 3</code> as first line</td>
+<td>a scalar <code>Version</code> = <code>3</code></td>
+</tr>
+<tr>
+<td><code>renderModelInfo = ! { … }</code></td>
+<td>the <code>!</code> becomes a scalar, the block following is flattened</td>
+</tr>
+<tr>
+<td><code>"float" gravity = 1066.0;</code></td>
+<td>typed keys shift around one token</td>
+</tr>
+</tbody>
+</table></div>
+<p>None of these places lie on the path to <code>inherit</code>, <code>class</code>, or <code>spawnPosition</code>, and the <strong>block boundaries remain intact</strong> because <code>Decl</code> delimits blocks by bracket depth, not grammar. Verification: count the line starts <code>entity {</code> in raw text and the blocks provided by the parser — <strong>identical across all 25 cards</strong> (<code>--summary</code> outputs the line "Block Count Verification"). The parser swallows nothing.</p>
+<p>Cost: <code>c01p1.entities</code> (2,356,914 B) yields 70,683 paths in 3.4 s with ~78 MB peak memory. All 25 cards combined: <strong>25 s</strong>. Anyone wishing to byte-exactly address the <code>edit</code> internals would need to extend <code>Decl</code> with <code>!</code> and typed keys — not with a custom parser.</p>
+<hr />
+<h2 id="2-what-is-in-the-cards">2. What Is in the Cards</h2>
+<pre><code>python tools/entities.py --summary
+</code></pre>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Map</th>
+<th>Chunk</th>
+<th style="text-align: right;">usize</th>
+<th style="text-align: right;">csize</th>
+<th style="text-align: right;">Entities</th>
+<th style="text-align: right;">ai</th>
+<th style="text-align: right;">Weapons</th>
+<th style="text-align: right;">Ammo</th>
+<th style="text-align: right;">Health</th>
+<th style="text-align: right;">Secrets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>c01p1</td>
+<td>chunk1</td>
+<td style="text-align: right;">2 356 914</td>
+<td style="text-align: right;">159 750</td>
+<td style="text-align: right;">4 106</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>c01p2</td>
+<td>chunk2</td>
+<td style="text-align: right;">4 334 134</td>
+<td style="text-align: right;">289 855</td>
+<td style="text-align: right;">5 553</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>c01p3</td>
+<td>chunk2</td>
+<td style="text-align: right;">3 223 959</td>
+<td style="text-align: right;">229 143</td>
+<td style="text-align: right;">3 815</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>c01p4</td>
+<td>chunk2</td>
+<td style="text-align: right;">1 010 142</td>
+<td style="text-align: right;">81 599</td>
+<td style="text-align: right;">1 724</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>c02p0</td>
+<td>chunk3</td>
+<td style="text-align: right;">63 775</td>
+<td style="text-align: right;">6 763</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>c02p1</td>
+<td>chunk3</td>
+<td style="text-align: right;">1 882 208</td>
+<td style="text-align: right;">131 026</td>
+<td style="text-align: right;">2 024</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr>
+<td>c03p1</td>
+<td>chunk4</td>
+<td style="text-align: right;">113 418</td>
+<td style="text-align: right;">14 460</td>
+<td style="text-align: right;">205</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>c03p2</td>
+<td>chunk4</td>
+<td style="text-align: right;">3 871 412</td>
+<td style="text-align: right;">246 251</td>
+<td style="text-align: right;">4 867</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr>
+<td>c03p3</td>
+<td>chunk4</td>
+<td style="text-align: right;">617 856</td>
+<td style="text-align: right;">42 608</td>
+<td style="text-align: right;">1 042</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td>c04p1</td>
+<td>chunk5</td>
+<td style="text-align: right;">774 449</td>
+<td style="text-align: right;">65 686</td>
+<td style="text-align: right;">1 305</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>c04p2_3</td>
+<td>chunk5</td>
+<td style="text-align: right;">4 855 203</td>
+<td style="text-align: right;">315 550</td>
+<td style="text-align: right;">6 475</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>c05_07_09</td>
+<td>chunk6</td>
+<td style="text-align: right;">4 037 943</td>
+<td style="text-align: right;">287 281</td>
+<td style="text-align: right;">5 332</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr>
+<td>c06p1</td>
+<td>chunk7</td>
+<td style="text-align: right;">4 027 482</td>
+<td style="text-align: right;">271 631</td>
+<td style="text-align: right;">4 915</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>c06p2</td>
+<td>chunk7</td>
+<td style="text-align: right;">1 760 060</td>
+<td style="text-align: right;">127 545</td>
+<td style="text-align: right;">2 336</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td>c08p1_2</td>
+<td>chunk8</td>
+<td style="text-align: right;">2 826 712</td>
+<td style="text-align: right;">188 846</td>
+<td style="text-align: right;">3 700</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td>c10p1</td>
+<td>chunk9</td>
+<td style="text-align: right;">2 411 984</td>
+<td style="text-align: right;">171 854</td>
+<td style="text-align: right;">3 298</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">27</td>
+</tr>
+<tr>
+<td>c11p1</td>
+<td>chunk10</td>
+<td style="text-align: right;">1 588 739</td>
+<td style="text-align: right;">92 545</td>
+<td style="text-align: right;">1 853</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr>
+<td>c11p2</td>
+<td>chunk10</td>
+<td style="text-align: right;">821 903</td>
+<td style="text-align: right;">60 772</td>
+<td style="text-align: right;">1 397</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>c12p1</td>
+<td>chunk11</td>
+<td style="text-align: right;">305 362</td>
+<td style="text-align: right;">12 906</td>
+<td style="text-align: right;">607</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>c12p2</td>
+<td>chunk11</td>
+<td style="text-align: right;">2 803 240</td>
+<td style="text-align: right;">196 016</td>
+<td style="text-align: right;">3 090</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">23</td>
+</tr>
+<tr>
+<td>c13p1</td>
+<td>chunk12</td>
+<td style="text-align: right;">4 303 907</td>
+<td style="text-align: right;">247 721</td>
+<td style="text-align: right;">5 380</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">29</td>
+</tr>
+<tr>
+<td>c14p1</td>
+<td>chunk12</td>
+<td style="text-align: right;">1 857 951</td>
+<td style="text-align: right;">128 742</td>
+<td style="text-align: right;">2 288</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr>
+<td>c16p0</td>
+<td>chunk13</td>
+<td style="text-align: right;">112 693</td>
+<td style="text-align: right;">12 293</td>
+<td style="text-align: right;">243</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>c16p1</td>
+<td>chunk13</td>
+<td style="text-align: right;">2 239 929</td>
+<td style="text-align: right;">124 375</td>
+<td style="text-align: right;">2 930</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>c16p2</td>
+<td>chunk13</td>
+<td style="text-align: right;">909 123</td>
+<td style="text-align: right;">73 922</td>
+<td style="text-align: right;">1 354</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td><strong>25 Maps</strong></td>
+<td></td>
+<td style="text-align: right;"><strong>53 110 498</strong></td>
+<td style="text-align: right;"><strong>3 579 140</strong></td>
+<td style="text-align: right;"><strong>69 951</strong></td>
+<td style="text-align: right;"><strong>1 167</strong></td>
+<td style="text-align: right;"><strong>467</strong></td>
+<td style="text-align: right;"><strong>333</strong></td>
+<td style="text-align: right;"><strong>569</strong></td>
+<td style="text-align: right;"><strong>284</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The category sums match exactly with <code>docs/moddingflaeche-tno.md</code>
+(1 167 / 467 / 333 / 569 / 284). The total number of blocks is <strong>69 951</strong>,
+not 69 952 — the difference is a counting error in the earlier survey, which
+Section 1's cross-check confirms as 69 951.</p>
+<p><strong>Seven maps contain no enemies at all</strong> (c01p1, c02p0, c03p1,
+c03p3, c11p2, c12p1, c16p0). These are the intro, intermission, and
+transition sections. Anyone wanting to move enemies around is working on the
+remaining 18.</p>
+<p><strong>c16p2 is the exception in the other direction</strong>: 53 weapon spawn points with
+only 10 enemies — the final chapter dispenses supplies, no foes.</p>
+<h3 id="what-a-single-map-yields">What a single map yields</h3>
+<pre><code>python tools/entities.py --map c12p2 --stats
+</code></pre>
+<p>provides entity count, categories, the ten most frequent engine classes, and
+the complete species list for enemies, weapons, ammo, health, and secrets.
+Example c12p2:</p>
+<pre><code>Enemy species (89 items, 8 types)
+   ai/tungsten/c12/part_02/infantry_1960                32
+   ai/tungsten/c12/part_02/infantry_1960_snipertrains   31
+   ai/tungsten/c12/part_02/rocket_trooper                7
+   ai/tungsten/c12/part_02/supersoldat                   6
+   ...
+Weapon spawn points (48 items, 7 types)
+   prop/weapon/handgrenadeemp                           25
+   prop/weapon/assaultrifle1960                          8
+   ...
+</code></pre>
+<h3 id="finding-individual-entities">Finding individual entities</h3>
+<pre><code>python tools/entities.py --map c06p1 --find prop/weapon
+python tools/entities.py --map c16p2 --find &quot;^ai/&quot;
+</code></pre>
+<p>The pattern is a regex and runs against <code>inherit</code>, the entity name, and the
+class. Output includes Name, <code>inherit</code>, the <strong>length of <code>inherit</code></strong>, and
+<code>spawnPosition</code>. The length column isn't there for show — it's the key to
+Section 4.</p>
+<hr />
+<h2 id="3-the-cost-question">3. The Cost Question</h2>
+<p><code>Installation.apply</code> knows two ways to write back a modified asset (<code>wolfsdk/patch.py</code>):</p>
+<ol>
+<li><strong>In-Place.</strong> <code>Archive.write_in_place</code> compresses the new content with <code>deflate_exact</code> to <strong>exactly the old <code>csize</code></strong> and overwrites the slot. Offset and <code>csize</code> remain untouched; only <code>usize</code> in the index moves. Cost: one <code>seek</code> and a few hundred thousand bytes.</li>
+<li><strong>Rebuild.</strong> If the new content does not fit into <code>csize</code>, <code>Archive.rebuild</code> is called and the <strong>entire <code>chunkN.resources</code> is rewritten</strong>, all entries are realigned, and the index is refilled.</li>
+</ol>
+<p>The boundary between the two is a single number:</p>
+<blockquote>
+<p><strong>free = csize − length(our own Deflate of the original)</strong></p>
+</blockquote>
+<p>As many compressed bytes the modified card may grow. If the number is exceeded, <code>apply</code> falls back to the Rebuild path.</p>
+<pre><code>python tools/entities.py --cost
+</code></pre>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Card</th>
+<th>Chunk</th>
+<th style="text-align: right;">csize</th>
+<th style="text-align: right;">Rebuild writes</th>
+<th style="text-align: right;">free</th>
+<th style="text-align: right;">Slot</th>
+<th>+1 char raw→comp.</th>
+<th>one Entity-Block raw→comp.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>c01p1</td>
+<td>chunk1</td>
+<td style="text-align: right;">159 750</td>
+<td style="text-align: right;">73 MB</td>
+<td style="text-align: right;"><strong>428</strong></td>
+<td style="text-align: right;">438</td>
+<td>—</td>
+<td>234 → 71</td>
+</tr>
+<tr>
+<td>c01p2</td>
+<td>chunk2</td>
+<td style="text-align: right;">289 855</td>
+<td style="text-align: right;">368 MB</td>
+<td style="text-align: right;"><strong>727</strong></td>
+<td style="text-align: right;">728</td>
+<td>+11 → +2</td>
+<td>580 → 194</td>
+</tr>
+<tr>
+<td>c01p3</td>
+<td>chunk2</td>
+<td style="text-align: right;">229 143</td>
+<td style="text-align: right;">368 MB</td>
+<td style="text-align: right;"><strong>279</strong></td>
+<td style="text-align: right;">288</td>
+<td>+42 → +12</td>
+<td>9 589 → 2 647</td>
+</tr>
+<tr>
+<td>c01p4</td>
+<td>chunk2</td>
+<td style="text-align: right;">81 599</td>
+<td style="text-align: right;">368 MB</td>
+<td style="text-align: right;"><strong>34</strong></td>
+<td style="text-align: right;">35</td>
+<td>+11 → +52</td>
+<td>1 074 → 247</td>
+</tr>
+<tr>
+<td>c02p0</td>
+<td>chunk3</td>
+<td style="text-align: right;">6 763</td>
+<td style="text-align: right;">121 MB</td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td style="text-align: right;">5</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>c02p1</td>
+<td>chunk3</td>
+<td style="text-align: right;">131 026</td>
+<td style="text-align: right;">121 MB</td>
+<td style="text-align: right;"><strong>711</strong></td>
+<td style="text-align: right;">725</td>
+<td>+31 → +4</td>
+<td>9 533 → 2 811</td>
+</tr>
+<tr>
+<td>c03p1</td>
+<td>chunk4</td>
+<td style="text-align: right;">14 460</td>
+<td style="text-align: right;">159 MB</td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td style="text-align: right;">4</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>c03p2</td>
+<td>chunk4</td>
+<td style="text-align: right;">246 251</td>
+<td style="text-align: right;">159 MB</td>
+<td style="text-align: right;"><strong>1 071</strong></td>
+<td style="text-align: right;">1 076</td>
+<td>+20 → +0</td>
+<td>10 055 → 2 751</td>
+</tr>
+<tr>
+<td>c03p3</td>
+<td>chunk4</td>
+<td style="text-align: right;">42 608</td>
+<td style="text-align: right;">159 MB</td>
+<td style="text-align: right;"><strong>54</strong></td>
+<td style="text-align: right;">54</td>
+<td>—</td>
+<td>151 → 42</td>
+</tr>
+<tr>
+<td>c04p1</td>
+<td>chunk5</td>
+<td style="text-align: right;">65 686</td>
+<td style="text-align: right;">233 MB</td>
+<td style="text-align: right;"><strong>61</strong></td>
+<td style="text-align: right;">71</td>
+<td>+1 → +0</td>
+<td>9 821 → 2 559</td>
+</tr>
+<tr>
+<td>c04p2_3</td>
+<td>chunk5</td>
+<td style="text-align: right;">315 550</td>
+<td style="text-align: right;">233 MB</td>
+<td style="text-align: right;"><strong>774</strong></td>
+<td style="text-align: right;">776</td>
+<td>+24 → +4</td>
+<td>6 350 → 1 910</td>
+</tr>
+<tr>
+<td>c05_07_09</td>
+<td>chunk6</td>
+<td style="text-align: right;">287 281</td>
+<td style="text-align: right;">278 MB</td>
+<td style="text-align: right;"><strong>393</strong></td>
+<td style="text-align: right;">408</td>
+<td>+31 → +3</td>
+<td>376 → 91</td>
+</tr>
+<tr>
+<td>c06p1</td>
+<td>chunk7</td>
+<td style="text-align: right;">271 631</td>
+<td style="text-align: right;">204 MB</td>
+<td style="text-align: right;"><strong>476</strong></td>
+<td style="text-align: right;">477</td>
+<td>+51 → +12</td>
+<td>6 210 → 1 740</td>
+</tr>
+<tr>
+<td>c06p2</td>
+<td>chunk7</td>
+<td style="text-align: right;">127 545</td>
+<td style="text-align: right;">204 MB</td>
+<td style="text-align: right;"><strong>372</strong></td>
+<td style="text-align: right;">379</td>
+<td>+7 → +5</td>
+<td>933 → 276</td>
+</tr>
+<tr>
+<td>c08p1_2</td>
+<td>chunk8</td>
+<td style="text-align: right;">188 846</td>
+<td style="text-align: right;">161 MB</td>
+<td style="text-align: right;"><strong>506</strong></td>
+<td style="text-align: right;">508</td>
+<td>+30 → +2</td>
+<td>657 → 204</td>
+</tr>
+<tr>
+<td>c10p1</td>
+<td>chunk9</td>
+<td style="text-align: right;">171 854</td>
+<td style="text-align: right;">204 MB</td>
+<td style="text-align: right;"><strong>436</strong></td>
+<td style="text-align: right;">438</td>
+<td>+6 → +1</td>
+<td>9 419 → 2 792</td>
+</tr>
+<tr>
+<td>c11p1</td>
+<td>chunk10</td>
+<td style="text-align: right;">92 545</td>
+<td style="text-align: right;">172 MB</td>
+<td style="text-align: right;"><strong>281</strong></td>
+<td style="text-align: right;">296</td>
+<td>+6 → +1</td>
+<td>9 266 → 2 881</td>
+</tr>
+<tr>
+<td>c11p2</td>
+<td>chunk10</td>
+<td style="text-align: right;">60 772</td>
+<td style="text-align: right;">172 MB</td>
+<td style="text-align: right;"><strong>24</strong></td>
+<td style="text-align: right;">36</td>
+<td>—</td>
+<td>151 → 40</td>
+</tr>
+<tr>
+<td>c12p1</td>
+<td>chunk11</td>
+<td style="text-align: right;">12 906</td>
+<td style="text-align: right;">140 MB</td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td style="text-align: right;">6</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>c12p2</td>
+<td>chunk11</td>
+<td style="text-align: right;">196 016</td>
+<td style="text-align: right;">140 MB</td>
+<td style="text-align: right;"><strong>567</strong></td>
+<td style="text-align: right;">567</td>
+<td>+32 → +7</td>
+<td>355 → 134</td>
+</tr>
+<tr>
+<td>c13p1</td>
+<td>chunk12</td>
+<td style="text-align: right;">247 721</td>
+<td style="text-align: right;">466 MB</td>
+<td style="text-align: right;"><strong>1 185</strong></td>
+<td style="text-align: right;">1 192</td>
+<td>+71 → +9</td>
+<td>10 148 → 2 679</td>
+</tr>
+<tr>
+<td>c14p1</td>
+<td>chunk12</td>
+<td style="text-align: right;">128 742</td>
+<td style="text-align: right;">466 MB</td>
+<td style="text-align: right;"><strong>383</strong></td>
+<td style="text-align: right;">393</td>
+<td>+12 → +2</td>
+<td>10 138 → 2 792</td>
+</tr>
+<tr>
+<td>c16p0</td>
+<td>chunk13</td>
+<td style="text-align: right;">12 293</td>
+<td style="text-align: right;">208 MB</td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td style="text-align: right;">11</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>c16p1</td>
+<td>chunk13</td>
+<td style="text-align: right;">124 375</td>
+<td style="text-align: right;">208 MB</td>
+<td style="text-align: right;"><strong>676</strong></td>
+<td style="text-align: right;">685</td>
+<td>+30 → +2</td>
+<td>448 → 143</td>
+</tr>
+<tr>
+<td>c16p2</td>
+<td>chunk13</td>
+<td style="text-align: right;">73 922</td>
+<td style="text-align: right;">208 MB</td>
+<td style="text-align: right;"><strong>77</strong></td>
+<td style="text-align: right;">91</td>
+<td>+7 → +6</td>
+<td>7 317 → 2 337</td>
+</tr>
+</tbody>
+</table></div>
+<p>Rebuild costs per Chunk — treating a single card as "rebuilding" means rewriting the entire file, and <code>revert</code> must fully restore it afterwards:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chunk</th>
+<th style="text-align: right;">Size</th>
+<th>affected cards</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chunk12</td>
+<td style="text-align: right;">466 MB</td>
+<td>c13p1, c14p1</td>
+</tr>
+<tr>
+<td>chunk2</td>
+<td style="text-align: right;">368 MB</td>
+<td>c01p2, c01p3, c01p4</td>
+</tr>
+<tr>
+<td>chunk6</td>
+<td style="text-align: right;">278 MB</td>
+<td>c05_07_09</td>
+</tr>
+<tr>
+<td>chunk5</td>
+<td style="text-align: right;">233 MB</td>
+<td>c04p1, c04p2_3</td>
+</tr>
+<tr>
+<td>chunk13</td>
+<td style="text-align: right;">208 MB</td>
+<td>c16p0, c16p1, c16p2</td>
+</tr>
+<tr>
+<td>chunk7</td>
+<td style="text-align: right;">204 MB</td>
+<td>c06p1, c06p2</td>
+</tr>
+<tr>
+<td>chunk9</td>
+<td style="text-align: right;">204 MB</td>
+<td>c10p1</td>
+</tr>
+<tr>
+<td>chunk10</td>
+<td style="text-align: right;">172 MB</td>
+<td>c11p1, c11p2</td>
+</tr>
+<tr>
+<td>chunk8</td>
+<td style="text-align: right;">161 MB</td>
+<td>c08p1_2</td>
+</tr>
+<tr>
+<td>chunk4</td>
+<td style="text-align: right;">159 MB</td>
+<td>c03p1, c03p2, c03p3</td>
+</tr>
+<tr>
+<td>chunk11</td>
+<td style="text-align: right;">140 MB</td>
+<td>c12p1, c12p2</td>
+</tr>
+<tr>
+<td>chunk3</td>
+<td style="text-align: right;">121 MB</td>
+<td>c02p0, c02p1</td>
+</tr>
+<tr>
+<td>chunk1</td>
+<td style="text-align: right;">73 MB</td>
+<td>c01p1</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="what-the-numbers-mean">What the numbers mean</h3>
+<p>The available space is better than "0–428 bytes" sounds — but only for the right kind of change. <code>frei</code> counts <em>compressed</em> bytes. Card text compresses extremely well because it consists of tens of thousands of nearly identical blocks. The "+1 character" column measures the exchange rate: if the most common enemy name becomes one character longer in <strong>all</strong> its occurrences, that costs 71 raw bytes on <code>c13p1</code>, but only <strong>9 compressed</strong>. The rate varies by card between <strong>1:1 and 15:1</strong>, with a median of about 6:1 — including an outlier in the opposite direction (<code>c01p4</code>, see below).</p>
+<p>Given this, for a typical card with 400 bytes of available space: <strong>Text changes on the order of 2,000 characters fit without a rebuild.</strong> This is sufficient for dozens of reordered <code>inherit</code> targets or shifted coordinates. The number is a rule of thumb — for the specific change, continue to measure.</p>
+<p><strong>But a single additional enemy fits nowhere.</strong> The last column shows why. A real <code>ai/</code> block from later cards is <strong>6,000 to 10,000 bytes raw and 1,700 to 2,900 bytes compressed</strong> — these blocks drag entire <code>edit</code> sections with Scene Points, patrol paths, and animation bindings. Even the largest measured space (<code>c13p1</code>, 1,185 B) lies below that. <strong>Adding entities always means a rebuild.</strong> Only in enemy-free cards with small blocks (<code>c01p1</code>: 234 B/block) do additional entries fit — but there is nothing there one would want to add.</p>
+<p><strong>Four cards have exactly zero space:</strong> <code>c02p0</code>, <code>c03p1</code>, <code>c12p1</code>, <code>c16p0</code>. There, our Deflate hits the delivered <code>csize</code> byte-for-byte. Any change costing even a single byte forces a rebuild. All four are enemy-free and uninteresting for placement mods anyway.</p>
+<p><strong>The Slot column is a footnote.</strong> <code>Archive.slot_size</code> assigns each entry its <code>csize</code> plus up to 15 bytes of alignment padding. These 0–15 bytes would theoretically be additionally available, but <code>Archive.write_in_place</code> does not use them — it keeps <code>csize</code> intentionally constant because a gap in the data stream causes the engine to misaddress entries later (<code>No address, error: 487</code>). The column exists only to make visible that nothing can be retrieved there.</p>
+<h3 id="ranking-which-card-is-cheap">Ranking: which card is cheap?</h3>
+<p>Cheap means: lots of space <strong>and</strong> a small chunk if a rebuild does occur anyway.</p>
+<ol>
+<li><strong>c02p1</strong> — 711 B free, rebuild only 121 MB. The cheapest card with enemies at all. 46 <code>ai/</code>, 8 weapons.</li>
+<li><strong>c12p2</strong> — 567 B free, 140 MB. 89 enemies, 48 weapon locations: the best ratio of content to cost in the entire game.</li>
+<li><strong>c03p2</strong> — 1,071 B free, 159 MB. 90 enemies, 37 weapons.</li>
+<li><strong>c08p1_2</strong> — 506 B free, 161 MB.</li>
+<li><strong>c11p1</strong> — 281 B free, 172 MB.</li>
+</ol>
+<p>Expensive:</p>
+<ul>
+<li><strong>c13p1 and c14p1</strong> both lie in chunk12 — <strong>466 MB per rebuild</strong>, the highest costs in the game, although <code>c13p1</code> has the largest space at 1,185 B. Whoever can change <code>c13p1</code> in-place saves the most here.</li>
+<li><strong>c01p2, c01p3, c01p4</strong> in chunk2 — 368 MB. <code>c01p4</code> has only 34 B free for that.</li>
+<li><strong>c16p2</strong> — 77 B free at 208 MB Chunk: 53 weapon locations, but little room to move.</li>
+</ul>
+<hr />
+<h2 id="4-the-length-preserving-change">4. The length-preserving change</h2>
+<p>The pattern is defined as <code>_same_width()</code> in <code>tools/build_gore_deep.py</code>: a number reformatted so that it keeps exactly the same number of characters. Translated to cards means swapping an enemy type against one of <strong>equal length</strong>.</p>
+<p><strong>Important: equal length guarantees nothing.</strong> Deflate depends on content, not just length — two texts of equal length compress differently. Equal length keeps the difference only <em>small</em>. Therefore, it was actually measured for each card: apply swap, re-compress, read the difference from the original.</p>
+<p><code>tools/entities.py --cost</code> searches for this by finding the most common <code>ai/</code> type per card, taking another with an identical character count (different case of the same name does not count — that would not be a swap), replacing <strong>all</strong> occurrences, and measuring again.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Card</th>
+<th>Swap</th>
+<th style="text-align: right;">Occurrence</th>
+<th style="text-align: right;">Δ Deflate</th>
+<th>Fits in <code>free</code>?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>c01p2</td>
+<td><code>…/soldier_trenches_var2</code> → <code>…_var3</code></td>
+<td style="text-align: right;">11×</td>
+<td style="text-align: right;"><strong>−2 B</strong></td>
+<td>yes (727)</td>
+</tr>
+<tr>
+<td>c01p3</td>
+<td><code>c01/part_03/soldier</code> → <code>kamphund/kamphund46</code></td>
+<td style="text-align: right;">42×</td>
+<td style="text-align: right;">+56 B</td>
+<td>yes (279)</td>
+</tr>
+<tr>
+<td>c02p1</td>
+<td><code>…/drone/ranged_drone</code> → <code>…/pistol/commander60</code></td>
+<td style="text-align: right;">5×</td>
+<td style="text-align: right;">+5 B</td>
+<td>yes (711)</td>
+</tr>
+<tr>
+<td>c03p2</td>
+<td><code>…/blackguard</code> → <code>…/soldier_02</code></td>
+<td style="text-align: right;">20×</td>
+<td style="text-align: right;">+2 B</td>
+<td>yes (1 071)</td>
+</tr>
+<tr>
+<td>c04p1</td>
+<td><code>…/rifle/prisonguard01</code> → <code>…/baton/prisonguard02</code></td>
+<td style="text-align: right;">1×</td>
+<td style="text-align: right;">−8 B</td>
+<td>yes (61)</td>
+</tr>
+<tr>
+<td>c04p2_3</td>
+<td><code>part_03/rifle/prisonguard01</code> → <code>part_02/baton/…</code></td>
+<td style="text-align: right;">24×</td>
+<td style="text-align: right;">+12 B</td>
+<td>yes (774)</td>
+</tr>
+<tr>
+<td>c05_07_09</td>
+<td><code>c15/part_01/blackguard</code> → <code>…/panzerhund</code></td>
+<td style="text-align: right;">26×</td>
+<td style="text-align: right;">+8 B</td>
+<td>yes (393)</td>
+</tr>
+<tr>
+<td>c06p1</td>
+<td><code>…/drone/drone_moon</code> → <code>…/robot/guardrobot</code></td>
+<td style="text-align: right;">6×</td>
+<td style="text-align: right;">+15 B</td>
+<td>yes (476)</td>
+</tr>
+<tr>
+<td>c06p2</td>
+<td><code>…/rifle/airforce_02</code> → <code>…_03</code></td>
+<td style="text-align: right;">2×</td>
+<td style="text-align: right;">−2 B</td>
+<td>yes (372)</td>
+</tr>
+<tr>
+<td>c08p1_2</td>
+<td><code>…/camp_guard_reception_03</code> → <code>…_02</code></td>
+<td style="text-align: right;">4×</td>
+<td style="text-align: right;">−4 B</td>
+<td>yes (506)</td>
+</tr>
+<tr>
+<td>c10p1</td>
+<td><code>…/rifle/infantry60_07</code> → <code>…_01</code></td>
+<td style="text-align: right;">4×</td>
+<td style="text-align: right;">±0 B</td>
+<td>yes (436)</td>
+</tr>
+<tr>
+<td>c11p1</td>
+<td><code>…/open_area_04</code> → <code>…_02</code></td>
+<td style="text-align: right;">6×</td>
+<td style="text-align: right;">±0 B</td>
+<td>yes (281)</td>
+</tr>
+<tr>
+<td>c14p1</td>
+<td><code>…/rifle/airforce_02</code> → <code>…_03</code></td>
+<td style="text-align: right;">5×</td>
+<td style="text-align: right;">−2 B</td>
+<td>yes (383)</td>
+</tr>
+<tr>
+<td>c16p1</td>
+<td><code>…/fire/firetrooper</code> → <code>…/robot/guardrobot</code></td>
+<td style="text-align: right;">5×</td>
+<td style="text-align: right;">+6 B</td>
+<td>yes (676)</td>
+</tr>
+<tr>
+<td>c16p2</td>
+<td><code>…/mecha_deathshead_stage2</code> → <code>…_stage3</code></td>
+<td style="text-align: right;">1×</td>
+<td style="text-align: right;">+1 B</td>
+<td>yes (77)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>15 of 25 cards can be changed this way without a rebuild.</strong> The difference lies between −8 and +56 bytes and remained within the margin in every single case. Notable: <strong>four swaps make the file even smaller.</strong></p>
+<p>The other ten fail not due to size, but due to the lack of a partner: seven cards have no <code>ai/</code> spawns at all (c01p1, c02p0, c03p1, c03p3, c11p2, c12p1, c16p0), and in c01p4, c12p2, and c13p1 there are no two enemy types with the same character count among the 5 to 9 existing ones. The solution there is: use another enemy type from a <strong>different</strong> card with matching length — the <code>inherit</code> path is a global Decl name and not bound to the card. Whether the engine loads an enemy from Chapter 6 into Chapter 12 without the associated models and animations is <strong>unconfirmed</strong>.</p>
+<p>The length column in <code>--find</code> is exactly for that purpose:</p>
+<pre><code>python tools/entities.py --map c16p2 --find &quot;^ai/&quot;
+
+   Name                                  inherit                                len  spawnPosition
+   cb_ai_mecha_deathshead_stage2         ai/…/mecha_deathshead_stage2            47  (? 1792 ?)
+   cb_ai_mecha_deathshead_stage3         ai/…/mecha_deathshead_stage3            47  (224 192 -512)
+   cb_ai_prototyperobot                  ai/…/prototyperobot                     38  (-111.78 3886.07 ?)
+   cb_ai_scriptedanimweb_mdh_stagger     ai/scriptedanimweb                      18  (-192 -1472 -342)
+</code></pre>
+<p>Same number in <code>len</code> = swappable without growth.</p>
+<h3 id="what-else-works-with-length-preservation">What else works with length preservation</h3>
+<ul>
+<li><strong>Coordinates with the same digit count.</strong> <code>x = -23388.927734375</code> has 17 digits; any other 17-digit number fits. That is exactly what <code>_same_width()</code> is written for — it sacrifices decimal places before letting the file grow. Moving a pickup a few meters costs zero bytes this way.</li>
+<li><strong>Weapons against weapons of equal length.</strong> Counted: <code>prop/weapon/shotgun</code> ↔ <code>prop/weapon/handgun</code> (both 19 characters), <code>prop/weapon/ar60marksman</code> ↔ <code>prop/weapon/kitchenknife</code> (both 24). <code>prop/weapon/knife</code> (17), <code>prop/weapon/handgrenadeemp</code> (26), and <code>prop/weapon/assaultrifle1960</code> (28) stand alone. The lengths are listed in <code>--find</code>.</li>
+<li><strong>Ammo counts</strong>, provided they appear as a number within the block and the digit count remains the same (<code>5</code> → <code>9</code>, not <code>5</code> → <code>10</code>).</li>
+</ul>
+<h3 id="what-does-not-work">What does not work</h3>
+<ul>
+<li><strong>Add or remove entities.</strong> Adding destroys every room (Section 3). Removing makes the file <em>smaller</em> — it always fits in <code>csize</code>, because <code>deflate_exact</code> fills the remainder with a <code>//</code> comment. <strong>Whether the engine's Entities parser accepts <code>//</code> is unconfirmed</strong> and was not tested here; the Decl parser does.</li>
+<li><strong>Extend names.</strong> The 5:1 exchange rate works in both directions, but <code>c01p4</code> shows the outlier: +11 raw bytes cost <strong>+52 compressed</strong> there — more than the 34 bytes of room. A well-compressed file can react to a small change with a large jump if it causes a Deflate block to be re-partitioned. Measure, not estimate.</li>
+</ul>
+<hr />
+<h2 id="5-open-risks">5. Open Risks</h2>
+<ul>
+<li><strong>None of this has been tested in-game.</strong> The cost calculation is byte-exact and reproducible; whether the engine accepts a modified <code>.entities</code> file is not demonstrated. From particle experiences in <code>tools/build_gore_deep.py</code>, it is known that streamed resources are silently rejected if something is wrong when their pre-calculated size does not match. For <code>.entities</code>, <strong>it is unconfirmed</strong> whether they follow the same streaming path.</li>
+<li><strong>The <code>//</code> padding mechanism of <code>deflate_exact</code></strong> depends on the reader skipping comments. For Decls, this is confirmed; for <code>.entities</code>, <strong>it is unconfirmed</strong>.</li>
+<li><strong>Rebuild is slow and risky.</strong> Writing 466 MB anew, and <code>revert</code> must copy back the same amount. An interruption mid-way leaves a half-written <code>.resources</code> file — <code>Archive.rebuild</code> writes to a <code>.wolfsdk_tmp</code> file and replaces it only at the end, which covers this case.</li>
+<li><strong>Enemies from foreign chapters</strong> (the solution for the ten maps without an equally long partner) assume that models, animations, and sounds are in the same chunk or loaded subsequently. <strong>Unconfirmed.</strong></li>
+</ul>
+<hr />
+<h2 id="6-tool">6. Tool</h2>
+<pre><code>python tools/entities.py                      # Card list
+python tools/entities.py --summary            # all 25, ~25 s
+python tools/entities.py --map c12p2 --stats  # what is inside
+python tools/entities.py --map c12p2 --find &quot;prop/weapon&quot; [--limit N]
+python tools/entities.py --cost               # Cost calculation, ~2 min
+</code></pre>
+<p>All read-only. The tool does not open any file for writing and creates no mods.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNO-Modding-Surface.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Modding Surface: Wolfenstein — The New Order</a><a class="next" href="TNO-Virtual-Textures.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Virtual Textures — the <code>.pages</code> Format of Wolfenstein: The New Order</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

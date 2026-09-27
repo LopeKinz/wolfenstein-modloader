@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Idclhash – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: find out from the game code what the unknown archive header field +0x08 in Wolfenstein II means.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Idclhash</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Idclhash"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is a task description for Wolfenstein II: The New Colossus. The game&#x27;s archive files (IDCL) have a value at position +0x08 in their <span class="t" data-t="header">header</span> that nobody could explain, so every custom map bundle so far had to copy an original archive. The worker was asked to find where the game code reads this value and whether a self-built archive can produce a correct one. Earlier tries ruled out several common checksums; the brief demands proof from the code, not guessing via hash sweeps.</p><ul><li>Field +0x08 was the last blocker for building a custom archive chunk.</li><li>Known: it is not a checksum of the metadata; two files share it while differing elsewhere.</li><li>Positive control required: re-derive the already understood field +0x20 for at least 3 archives.</li><li>Negative control: analysis against a shuffled or shifted image must fail.</li><li>Game launch and changes to the Steam installation were forbidden.</li></ul></div><div class="de"><p class="lede">Diese Seite ist eine Aufgabenbeschreibung für Wolfenstein II: The New Colossus. Die Archivdateien des Spiels (IDCL) haben an Position +0x08 im <span class="t" data-t="header">Header</span> einen Wert, den niemand erklären konnte, deshalb musste jedes bisherige eigene Kartenpaket ein Originalarchiv kopieren. Der Worker sollte finden, wo der Spielcode diesen Wert liest und ob ein selbst gebautes Archiv einen gültigen Wert erzeugen kann. Frühere Versuche hatten mehrere gängige Prüfsummen ausgeschlossen; der Auftrag verlangt Belege aus dem Code statt Raten per Hash-Durchlauf.</p><ul><li>Feld +0x08 war die letzte Hürde für einen selbst gebauten Archiv-Chunk.</li><li>Bekannt: Es ist keine Prüfsumme der Metadaten; zwei Dateien teilen den Wert, obwohl sie sich anderswo unterscheiden.</li><li>Positivkontrolle gefordert: das bereits verstandene Feld +0x20 für mindestens 3 Archive nachrechnen.</li><li>Gegenprobe: Die Analyse gegen ein verschobenes oder gemischtes Abbild muss fehlschlagen.</li><li>Spielstart und Änderungen an der Steam-Installation waren verboten.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-idclhash-a1; task idclhash; research (read-only RE).
+Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Parallel workers on other hosts: astra-map-v3 (map bundle), astra-save-v3 (save
+serialization), w-cmdtable-a1 (command table), w-saveverify-a1 (.verify crypto).
+w-cmdtable-a1 and w-saveverify-a1 read the same image file read-only. Stay in your lane.</p>
+<h1 id="objective">Objective</h1>
+<p>Settle the IDCL header field <code>+0x08</code> from CODE, not from hash sweeps.
+It is the last blocker for building a custom TNC archive chunk: without a
+correct <code>+0x08</code> no self-built chunk can be trusted, which is why every custom
+map bundle so far had to copy or hardlink a retail chunk.</p>
+<p>Answer three questions with evidence:</p>
+<ol>
+<li>Where does the engine READ <code>+0x08</code>, and what does it compare it against?</li>
+<li>Is the value computed from the container, supplied by the mount manifest
+   (packagemapspec/dlcinfo), or a fixed package identity?</li>
+<li>Given that, can a self-built chunk produce an accepted <code>+0x08</code>? If yes, give
+   the exact derivation and a working implementation. If no, name the input the
+   engine expects and where it comes from.</li>
+</ol>
+<h1 id="what-is-already-measured---do-not-contradict-it-without-evidence">What is already measured - do not contradict it without evidence</h1>
+<p>re_probes/agent_reports/hash08.md is the prior static attempt. Its key result is
+a DIFFERENTIAL COUNTEREXAMPLE, and it is solid: chunk_26_hash1 and
+chunk_26_oracle share the identical <code>+0x08</code> (3533df45c7f9b1d2) while differing
+at <code>+0x20</code> and in metadata bytes [0x698,0x69c). So <code>+0x08</code> is NOT a checksum of
+the metadata. Excluded by that report: unseeded FarmHash64/CityHash64/XXH64,
+MD5/SHA truncations, filename/path spellings. NOT excluded: seeded/keyed
+variants, CRC64 forms, and a manifest/VFS-supplied identifier.
+<code>+0x20</code> is known to be FarmHash over the metadata - use it as a positive control
+for your tooling, because you must be able to re-derive a value that is already
+understood before claiming anything about one that is not.</p>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li>re_probes/runtime_87400/module.bin - 92,188,672 bytes, read-only capture of the
+  RUNNING, SteamStub-unpacked NewColossus_x64vk.exe. Layout "virtual RVA": file
+  offset == RVA. manifest.json lists all sections (.text rva 0x1000,
+  .rdata rva 0x1E62000, .data rva 0x2E39000, .pdata rva 0x50E2000).
+  Image base is in manifest.json; for an absolute pointer, RVA = VA - base.
+  This is the decisive new capability: previous work only had the packed EXE.</li>
+<li>.pdata is a RUNTIME_FUNCTION table - use it to enumerate function boundaries
+  cheaply instead of linear-sweeping 31 MB of .text.</li>
+<li>Entry point: the four-byte magic IDCL (0x4C434449) appears as an immediate
+  in the header validation code. Find those compares, and you are inside the
+  archive header parser; from there follow the loads at struct offsets +0x08 and
+  +0x20. Cross-check with the known FarmHash call for +0x20.</li>
+<li>capstone 5.0.7 is vendored: PYTHONPATH=re_probes/python_deps python ...</li>
+<li>wolfsdk/idcl.py (our parser, read-only), re_probes/hash08_scratch/inspect.py
+  (prior probe, read-only), docs/moddingflaeche-tnc.md.</li>
+<li>Retail archives to test against, READ ONLY:
+  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/probe_idclhash.py (new), re_probes/idclhash/ (new dir), and
+re_probes/agent_reports/idclhash.md (new).</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No game launch, no process attach, no writes anywhere under the Steam install or
+"C:/Users/‹user›/Saved Games". Do not touch files owned by others:
+tools/probe_cmdtable.py, re_probes/cmdtable/, tools/probe_saveverify.py,
+re_probes/saveverify/, tools/build_tnc_map_alias_v3.py,
+tools/verify_tnc_map_alias_v3.py, re_probes/map_alias_v3/,
+tools/build_custom_save_candidate.py, tools/probe_details_checksum.py,
+tools/verify_custom_save_candidate.py, re_probes/custom_save_candidates/,
+tools/vtpixel.py, docs/<em>, wolfsdk/</em>, config.json. No pip install.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib plus vendored capstone. Reproducible from the command line,
+no running game required.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li>A named function RVA in .text that provably touches header+0x08, with the
+  disassembly excerpt that shows it and the path by which you reached it.</li>
+<li>A statement of what the value IS, backed by that code.</li>
+<li>Positive control: your tooling re-derives the already-understood <code>+0x20</code>
+  FarmHash for at least three distinct retail archives. If it cannot reproduce
+  the KNOWN field, no claim about the unknown field is credible.</li>
+<li>Negative control: the same analysis run against a wrong section base or a
+  shuffled image must fail to produce the result, not produce a different
+  plausible one.</li>
+<li>If the answer is "supplied by the manifest", say exactly which file and field,
+  and verify it against at least three retail chunks with different IDs.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Every important assurance needs a check designed to FAIL if the assurance is
+false. A byte pattern that merely "looks like" a hash constant table is not
+evidence; a cross-reference from the IDCL validation path is. Do not promote a
+plausible candidate function to "the" function without an xref chain.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>A clean negative with exact offsets and a named obstacle is a good result and is
+more useful to the other workers than an optimistic guess. Report failed
+hypotheses explicitly. Do not repeat the brute-force hash sweep that
+hash08.md already exhausted - that path is closed, go through the code.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones (header parser located; +0x08 read site found;
+controls passed). Publish a bus fact as soon as the verdict is known, because
+astra-map-v3 is building a chunk bundle and this decides whether a self-built
+chunk is possible at all. Concise German report in
+re_probes/agent_reports/idclhash.md. Finish the bus task when done.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Hash08.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Investigation Task: IDCL Header Hash at +0x08</a><a class="next" href="Research-Brief-Idclwriter.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Idclwriter</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

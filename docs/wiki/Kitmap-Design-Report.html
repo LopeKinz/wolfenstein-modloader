@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitmap c2v1: Level Design &quot;Atriumhall&quot; – Wolfenstein Modloader</title>
+<meta name="description" content="Design of a new small level &#x27;Atriumhall&#x27; built from existing parts for a Wolfenstein II DLC map.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#maps"><span class="en">Custom maps and missions</span><span class="de">Eigene Karten und Missionen</span></a></p>
+<h1>Kitmap c2v1: Level Design &quot;Atriumhall&quot;</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Kitmap-Design-Report"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#the-flow-approx-36-minutes">The Flow (approx. 3–6 minutes)</a></li><li><a href="#rooms">Rooms</a></li><li><a href="#why-the-hall-is-an-atrium-with-a-gallery-ring">Why the hall is an atrium with a gallery ring</a></li><li><a href="#footprint-and-heights">Footprint and Heights</a></li><li><a href="#enemies-and-the-floor-they-rely-on">Enemies and the Floor They Rely On</a></li><li><a href="#components">Components</a></li><li><a href="#lights-12">Lights (12)</a></li><li><a href="#pickups-12">Pickups (12)</a></li><li><a href="#tests">Tests</a></li><li><a href="#for-the-master-reading-layoutjson">For the Master: reading layout.json</a></li><li><a href="#risks-and-open-points">Risks and open points</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report describes a new small level, &#x27;Atriumhall&#x27;, built from existing wall, floor and prop pieces to replace a DLC map (c2v1) in Wolfenstein II (TNC). A design tool places the pieces plus enemies, pickups and lights, and automatic checks confirm the layout is walkable, closed and fits the original map&#x27;s footprint. The level is structurally valid, but none of it has been loaded in the game yet.</p><ul><li>Layout: entrance, an 8.5 m tall atrium with a red monolith and gallery ring, a corridor, two offices and a courtyard.</li><li>The latest build has 927 kit placements plus 9 enemies, 12 pickups and 12 lights.</li><li>Enemies stand only where the original <span class="t" data-t="navmesh">navigation mesh</span> exists, because it can only be reused.</li><li>All checks pass, and 13 deliberately broken layouts are caught.</li><li>Open: enemies have no spawners, there is no level end without a new script, and nothing is tested in the game.</li></ul></div><div class="de"><p class="lede">Der Bericht beschreibt ein neues kleines Level, „Atriumhall“, das aus vorhandenen Wand-, Boden- und Möbelteilen gebaut ist und eine DLC-Karte (c2v1) in Wolfenstein II (TNC) ersetzt. Ein Design-Werkzeug platziert die Teile samt Gegnern, Pickups und Lichtern, und automatische Prüfungen bestätigen, dass der Grundriss begehbar, geschlossen und innerhalb der Originalkarte ist. Das Level ist strukturell gültig, wurde aber noch nie im Spiel geladen.</p><ul><li>Aufbau: Eingang, ein 8,5 m hohes Atrium mit rotem Monolithen und Galerie-Ring, ein Korridor, zwei Büros und ein Hof.</li><li>Der neueste Stand hat 927 Bauteil-Platzierungen plus 9 Gegner, 12 Pickups und 12 Lichter.</li><li>Gegner stehen nur dort, wo das originale <span class="t" data-t="navmesh">Navigationsnetz</span> liegt, weil es nur wiederverwendet werden kann.</li><li>Alle Prüfungen bestehen, und 13 absichtlich kaputte Varianten werden erkannt.</li><li>Offen: Gegner haben keine Spawner, ohne neues Skript gibt es kein Levelende, und im Spiel ist nichts getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Date 2026-09-24. Generated by <code>tools/design_kitmap.py</code>. Outputs: <code>layout.json</code> (each part, each entity, all checker results) and <code>plan.svg</code> (top view of both levels with legend).</p>
+<p><strong>Status: structurally valid, runtime unconfirmed.</strong> None of this has been loaded in the game.</p>
+<blockquote>
+<p><strong>Addendum 2 (Build <code>d5867113…</code>, replacing refuted <code>6ea27aec…</code>):</strong>
+- <strong>Wall Base:</strong> Retail places the skirting board (local y −0.25) on the floor edge, while the cornice (−0.4) projects 0.15 m into the room (172 of 209 c2v1 walls). Every exterior wall now has its pivot point 0.25 m behind the floor edge. Previously, the cornice stood on the edge, and the skirting lay 0.15 m behind it over nothing. <code>base_gap_check</code> verifies this by shooting rays downward, 2 cm before every skirting board; in the old layout it finds 38 modules (304 samples).
+- <strong>Gallery Level:</strong> The exterior walls of the galleries stand at 0 m (0–4 m below the roof), no longer at −0.5 m. The coverings at 3.5 m and the north covering under the gallery are removed. Consequently, there is no gap anymore between the gallery floor and the wall.
+- <strong>Corners and Wall Ends:</strong> At every visible wall end stands a pilaster <code>man_pillar_50x400_b</code> (24 pieces), centered on the skirting line like retail <code>c2v1_geo_lobby_func_staticinstance_3962/3964</code>, or at double walls, centered on the pivot line. <code>junction_check</code> shoots 2D rays just past the module end; in the old layout there are 40 open ends, now 0 of 54.
+- <strong>Corridor Ends:</strong> The partition wall Gallery|Corridor is now at y −166.175, and the partition wall Offices|Courtyard at −145.825. Thus, the rearmost surface of the frame or wall lies exactly where the corridor and office walls end, and the corners are without pilasters. In the 4 m wide Retail neck, a pilaster would not fit.
+- <strong>Shutters in Air Space (z-fighting):</strong> North and South shutters sit like retail 2142 with the pivot on the edge. The last floor row is <code>man_floor_175x200_a</code> (1.75 m, hole-free per Mesh) and ends at the inner edge of the shutter. <code>cap_floor_check</code>: 0 coplanar pairs, in the old layout 26.
+- <strong>Office East:</strong> The east wall stands at x 11.0 (skirting 10.75), so that the corner pilaster remains in the Retail footprint.
+- <strong>Threshold of Closed Door:</strong> The door leaf sits retail-compliant at frame-local y −0.1, i.e., 0.15 m behind the floor edge. A <code>man_floor_200x50</code> closes the floor up to under the leaf. <code>base_gap_check</code> therefore also scans every door opening down to the leaf level (counter-check: strip removed).
+- <strong>Bookcases:</strong> <code>bookcase_100cm_c</code> is open at its end local x = 0; retail places them in rows, mirrored in 5 of 10 cases. Per office there are now two bookcases in a row: the open end 1 cm before the skirting line, the second at the closed end of the first.
+- <strong>Dog (<code>kitmap_ai_6</code>):</strong> It stands now in the corridor at (1.2 / −161.5) in front of the gallery door. Office East has no Navmesh that connects via walkable floor with the start (0 of 48.5 m²).
+- <strong><code>navmesh_check</code>:</strong> now floods cell by cell (0.1 m) over Navmesh on new walkable floor. An area that passes under a wall thus connects nothing anymore. Connected from start: Corridor 30.5/30.5 m², Office West 56.1/56.1, Galleries fully, Courtyard 53.1/182.7, Office East 0/48.5.
+- <strong>New Counter-tests:</strong> Wall 0.15 m outward, threshold strips removed, pilasters removed, shutter back on floor, dog back into Office East. All new tests run on the refuted layout <code>old_layout_6ea27aec.json</code>; each fails.
+- 927 Kit placements: 362 Floor, 308 Ceiling, 132 Wall, 24 Pilasters, 14 Shutters, 13 Door frames, 38 Props, 36 Stairs/Railings/Door.</p>
+<p><strong>Addendum (Fix Round, Build <code>6ea27aec…</code>):</strong> The sections below describe the refuted build <code>d60640b0</code> and are superseded in these points:
+- Walls: every room wall shows its lit side into the room, partitions are doubled (<code>facing_check</code>, 0 back sides; in old layout 86).
+- Door frames sit on the pivot line of their neighbor walls (0.000 m instead of −0.048 m). The door leaf sits like retail at an unmirrored frame: (1.4 / −0.1), unmirrored.
+- Gallery floor: <code>man_floor_200x200_a</code> instead of <code>man_floor_200x200_b</code>, i.e., without hole.
+- The 4 retail sky entities are taken over unchanged.
+- Stairs: It is now the retail stairs at its retail location, with <code>man_stairs_layout_d</code>. In addition comes the retail back wall <code>man_wall_400x400_d</code> at y −170 and shutters (<code>man_cap_400x50_a</code>) at the gallery edges. The gallery ceilings lie at −0.5 m like retail. The space under the side runs and under the north gallery is sealed like retail: the hall ends down at y −174.4. <code>stair_flank_check</code> verifies that every stair flank which retail seals is also sealed here.
+- Enemies stand on Navmesh component 0 (component of start), on real new floor (<code>navmesh_check</code>).
+- New are: 928 Kit placements, 9 enemies and 12 pickups. The numbers below (915 parts, "Enemies do not climb the stairs", Oversoldier Navmesh) no longer apply.
+- All counter-tests stand in <code>layout.json</code> → <code>checks.negative_controls</code>.</p>
+</blockquote>
+<h2 id="summary">Summary</h2>
+<p>The level is newly built and replaces the contents of <code>game/dlc/c02/c2v1</code>. It consists of:</p>
+<ul>
+<li>a Windfang serving as the player spawn area</li>
+<li>an 8.5 m high atrium hall with a red monolith and a gallery ring at 0 m</li>
+<li>a two-sided staircase</li>
+<li>a green-lit corridor</li>
+<li>two offices</li>
+<li>an open courtyard with a locked door</li>
+</ul>
+<p>Only kit parts from <code>re_probes/kitmap/kit/kit.json</code> are used: 915 placements from 26 models. This is supplemented by 4 custom boxes (Monolith, Base, 2 Obelisks). The boxes carry a <code>CLIPMODEL_BOX</code> and therefore do not require cm files.</p>
+<p>Placed items include:</p>
+<ul>
+<li>3 player spawns: the two retained from the Skeleton and the recommended clone, all at the same location</li>
+<li>9 enemies</li>
+<li>12 pickups</li>
+<li>12 lights</li>
+<li>1 invisible "locked" hint</li>
+</ul>
+<p>All tests are green, all 13 control samples pass, and the 1.0 m positive control succeeds.</p>
+<h2 id="the-flow-approx-36-minutes">The Flow (approx. 3–6 minutes)</h2>
+<ol>
+<li><strong>Windfang</strong> (10 × 4 m, −4.5 m): The player starts facing North. In front lies a 2 m wide passage; to the left and right are ammunition and armor, with cold-white lighting. Here, the player is safe.</li>
+<li><strong>Atrium hall</strong> (20 × 28 m, −4.5 m, 8.5 m high): The line of sight leads to the <strong>red monolith</strong>. It is 7 m high, stands on a black base over the floor mosaic, and is flanked by two black obelisks. Two red strip lights illuminate it from below. Above the hall runs a <strong>gallery ring</strong> at 0 m around an open air space of 12 × 20 m.<ul>
+<li>Below the hall: two light soldiers and one heavy soldier under the North gallery.</li>
+<li>Above: the Nagler on the West gallery and a light soldier on the East gallery. They shoot down into the hall.</li>
+</ul>
+</li>
+<li><strong>Staircase</strong>: Two sides along the East edge of the air space, −4.5 → Podest −2.25 → 0 m. At the top, one arrives at the North gallery. MP ammunition is located at the staircase, MP at the West end.</li>
+<li><strong>Corridor</strong> (4 × 20 m, 0 m): The door in the North wall of the gallery leads into a hallway with pale green lighting. Side doors lead to both offices.</li>
+<li><strong>West Office</strong> with warm lighting: one heavy soldier, large medikit, helmet. <strong>East Office</strong> with cold lighting: one combat dog and the combat rifle.</li>
+<li><strong>Courtyard</strong> (20 × 20 m, open, moonlight): It is accessible via three doors, from the corridor and from both offices. This creates a loop: Office – Courtyard – Office – Corridor.<ul>
+<li>Enemies: the <strong>Overseer with Cannon</strong> and an Elite soldier.</li>
+<li>Cover: four columns and crates.</li>
+<li>On the North wall hangs a static door under red alarm light. It bears a "locked" hint; retail has no door in c2v1 that opens.</li>
+</ul>
+</li>
+</ol>
+<p>There is no level end. The Skeleton removes mission scripts, so it is missing until a new script is written.</p>
+<h2 id="rooms">Rooms</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Room</th>
+<th>Rectangle x0,y0 – x1,y1 (m)</th>
+<th>Floor z</th>
+<th>Accessible (m², 0.8-m body)</th>
+<th>Retail floor / free at this height</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windfang</td>
+<td>−5,−194 – 5,−190</td>
+<td>−4.5</td>
+<td>29.9</td>
+<td>98 % / 68 %</td>
+</tr>
+<tr>
+<td>Entrance hall (without Windfang)</td>
+<td>−9,−194 – 11,−166</td>
+<td>−4.5</td>
+<td>406.4</td>
+<td>98 % / 69 %</td>
+</tr>
+<tr>
+<td>Staircase podest</td>
+<td>3,−178.5 – 7,−174.5</td>
+<td>−2.25</td>
+<td>14.0</td>
+<td>0 % (player only)</td>
+</tr>
+<tr>
+<td>North gallery</td>
+<td>−9,−170 – 11,−166</td>
+<td>0</td>
+<td>57.8</td>
+<td>98 % / 65 %</td>
+</tr>
+<tr>
+<td>West gallery</td>
+<td>−9,−190 – −5,−170</td>
+<td>0</td>
+<td>62.0</td>
+<td>94 % / 67 %</td>
+</tr>
+<tr>
+<td>East gallery</td>
+<td>7,−190 – 11,−170</td>
+<td>0</td>
+<td>62.0</td>
+<td>100 % / 70 %</td>
+</tr>
+<tr>
+<td>South gallery</td>
+<td>−9,−194 – 11,−190</td>
+<td>0</td>
+<td>62.6</td>
+<td>98 % / 63 %</td>
+</tr>
+<tr>
+<td>Corridor</td>
+<td>−1,−166 – 3,−146</td>
+<td>0</td>
+<td>51.5</td>
+<td>44 % / 34 %</td>
+</tr>
+<tr>
+<td>West office</td>
+<td>−9,−162 – −1,−146</td>
+<td>0</td>
+<td>90.9</td>
+<td>61 % / 41 %</td>
+</tr>
+<tr>
+<td>East office</td>
+<td>3,−162 – 11,−146</td>
+<td>0</td>
+<td>92.3</td>
+<td>54 % / 36 %</td>
+</tr>
+<tr>
+<td>Courtyard (open)</td>
+<td>−9,−146 – 11,−126</td>
+<td>0</td>
+<td>344.8</td>
+<td>65 % / 42 %</td>
+</tr>
+</tbody>
+</table></div>
+<p>All passages are kit door frames. Their clear width was measured from collision (cm), not from the name:</p>
+<ul>
+<li>5 × Frame <code>c</code> with 2.0 m (Windfang → Hall, Gallery → Corridor, Corridor → both offices, Corridor → Courtyard)</li>
+<li>2 × Frame <code>b</code> with 1.6 m (Offices → Courtyard)</li>
+<li>1 × Frame <code>a</code> with 1.2 m (the locked door)</li>
+</ul>
+<h2 id="why-the-hall-is-an-atrium-with-a-gallery-ring">Why the hall is an atrium with a gallery ring</h2>
+<p>The Navmesh can only be reused (see mapmanifest.md). Enemies run only where the retail floor existed. The retail collision for c2v1 shows a ring exactly at 0 m above the lobby surrounding an air space (x −5…7, y −190,5…−170) with no floor above it.</p>
+<p>The first version had only a North Gallery. The new <code>navmesh_islands</code> measurement showed there <strong>163 m² of "Phantom Floor"</strong>: retail Navmesh at 0 m where the new level has air. Enemies viewed from above would want to "run" across the hall. With the ring, that is <strong>3 m²</strong>, a 0.5–1 m wide remainder behind the railings.</p>
+<p>The hall therefore deliberately follows the retail ring. Everything else is new floor plan:</p>
+<ul>
+<li>Windfang</li>
+<li>Monolith Axis</li>
+<li>Staircase in the air space</li>
+<li>Corridor</li>
+<li>Offices</li>
+<li>Courtyard</li>
+</ul>
+<p>These rooms lie where retail had completely different walls.</p>
+<h2 id="footprint-and-heights">Footprint and Heights</h2>
+<ul>
+<li>The entire level was shifted 1 m west compared to the first draft. The offices begin at y −162 and the corridor walls stand inside. The reason: the retail footprint (floor at any height) ends at x 12 (lobby) and at x 11 (north block). Between them, it has only a 4 m wide neck at y −166…−163 (x −1…3).</li>
+<li>Now <strong>every</strong> part, every box, and every entity lies above retail floor. The list <code>outside_retail_footprint</code> is empty, and everything lies within the retail core bbox.</li>
+<li>Floor heights: −4.5 m has 546.8 m² of retail floor in the level rectangle, 0 m has 763.3 m². The platform at −2.25 m is explicitly only for the player (<code>PLAYER_ONLY_HEIGHTS</code>). No enemy stands there; this is checked.</li>
+</ul>
+<h2 id="enemies-and-the-floor-they-rely-on">Enemies and the Floor They Rely On</h2>
+<p>All defs come from retail-c2v1-Entities (Donor blocks, <code>drop_refs</code> = references to removed scene points that must be deleted upon cloning). Retail has <code>hide = true</code> for all of them (they are generated by spawners). We set <code>hide = false</code>; precedent is the c2v2 Takedown Dummy.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Def</th>
+<th>Location (x, y, z), View</th>
+<th>Relies On</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>soldier_light</td>
+<td>Hall −4, −177.5, −4.5</td>
+<td>Hall South: retail island 251 m², completely on our floor</td>
+</tr>
+<tr>
+<td>2</td>
+<td>soldier_light</td>
+<td>Hall 9.5, −180, −4.5 (under East Gallery)</td>
+<td>same island</td>
+</tr>
+<tr>
+<td>3</td>
+<td>soldier_heavy</td>
+<td>Hall −4, −169.5, −4.5 (under North Gallery)</td>
+<td>Hall North: island 131 m²</td>
+</tr>
+<tr>
+<td>4</td>
+<td>soldier_nailgun</td>
+<td>West Gallery −7, −184, 0</td>
+<td>Ring + Corridor Neck + Offices + West Courtyard: island 377.5 m², of which 370.8 m² is on our floor</td>
+</tr>
+<tr>
+<td>5</td>
+<td>soldier_heavy</td>
+<td>West Office −2.5, −158, 0</td>
+<td>same island</td>
+</tr>
+<tr>
+<td>6</td>
+<td>kampfhund</td>
+<td>East Office 5.5, −157, 0</td>
+<td>same island</td>
+</tr>
+<tr>
+<td>7</td>
+<td>ubersoldat_cannon</td>
+<td>Courtyard 8, −143.5, 0</td>
+<td>East strip of courtyard (x 5.5…11): own island</td>
+</tr>
+<tr>
+<td>8</td>
+<td>elite_heavy</td>
+<td>Courtyard −5, −144, 0</td>
+<td>Island like 4</td>
+</tr>
+<tr>
+<td>9</td>
+<td>soldier_light</td>
+<td>East Gallery 9, −181, 0</td>
+<td>Island like 4</td>
+</tr>
+</tbody>
+</table></div>
+<p>What this means for the game:</p>
+<ul>
+<li>Retail separates the hall at y ≈ −174.5 with a continuous barrier. Therefore, for enemies it breaks into a South island (1, 2) and a North island (3). The player can pass freely.</li>
+<li>Enemies do not climb up or down the new staircase; the staircase and platform have no Navmesh. Above and below they fight over the air space at range.</li>
+<li>The Uber Soldier (7) cannot run to the west part of the courtyard. The center of the courtyard has no retail Navmesh at 0 m, making it cover for the player.</li>
+<li>New obstacles on retail Navmesh:</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Area</th>
+<th>What is there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hall South</td>
+<td>28.75 m²</td>
+<td>lower staircase run 15 m², plinth 9 m², desks 3 m², Windfang door frame, obelisks</td>
+</tr>
+<tr>
+<td>above</td>
+<td>12.25 m²</td>
+<td>desks, chairs, bench, radiator, pillar, door frame posts</td>
+</tr>
+<tr>
+<td>Courtyard East</td>
+<td>6.25 m²</td>
+<td>pillars, furniture</td>
+</tr>
+</tbody>
+</table></div>
+<p>Enemies can collide there.</p>
+<h2 id="components">Components</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Count</th>
+<th>Models</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Floor</td>
+<td>400</td>
+<td><code>man_floor_200x200_a/b</code>, neumond <code>floor_200x200cm_d</code> (Offices), studio <code>floor_200x200cm_a</code> (Courtyard), 1 × <code>man_floor_mural_b</code> (6 × 6 m under the Monolith)</td>
+</tr>
+<tr>
+<td>Ceiling</td>
+<td>308</td>
+<td><code>man_ceiling_200x200cm_a</code>, Scale z = −1 like retail (only there does it have a cm)</td>
+</tr>
+<tr>
+<td>Wall</td>
+<td>110</td>
+<td><code>man_wall_400x400_b</code>, <code>_300x400_a</code>, <code>_200x400_a</code></td>
+</tr>
+<tr>
+<td>Cover</td>
+<td>30</td>
+<td><code>man_cap_400x50_a</code>, <code>man_cap_100x50_a</code></td>
+</tr>
+<tr>
+<td>Railing</td>
+<td>16</td>
+<td><code>man_railing_400x100_a</code> around the air space and at the platform</td>
+</tr>
+<tr>
+<td>Door Frame</td>
+<td>8</td>
+<td><code>man_door_frame_400x400_a/b/c</code></td>
+</tr>
+<tr>
+<td>Stairs</td>
+<td>2 + 2 Runners</td>
+<td><code>man_stairs_225x450_a</code> + <code>man_stairs_carpet_225x450</code></td>
+</tr>
+<tr>
+<td>Door Leaf</td>
+<td>1</td>
+<td><code>man_door_a</code></td>
+</tr>
+<tr>
+<td>Props</td>
+<td>38</td>
+<td>Desks, Chairs, Bookshelves, Benches, Radiators, Boxes, Cartons, 4 Columns</td>
+</tr>
+</tbody>
+</table></div>
+<p>Additions to the Components:</p>
+<ul>
+<li>All parts have a cm at their scale.</li>
+<li>25 of the 26 models are located in <code>chunk_22.resources</code>, with the carton in <code>gameresources.resources</code>. A newly built chunk_22 must retain these entries.</li>
+<li>For 3 models, c2v1 lacks an example block: studio <code>floor_200x200cm_a</code>, <code>man_cap_100x50_a</code>, <code>man_door_frame_400x400_c</code>. The block type is the same (<code>func/staticinstance</code>): Take an example of a sibling part and swap the model name.</li>
+</ul>
+<p><strong>Door Group:</strong> The door leaf and sign sit exactly as retail sets them. The test reads the viewer data:</p>
+<ul>
+<li>The leaf sits at Frame + local (1,4; 0,1), same yaw angle, scale (1, −1, 1). 7 of 40 retail <code>man_door_a</code> stand exactly like this.</li>
+<li>The sign sits at Leaf + local (0,6; 0,06; 1,23), yaw angle −90°, like <code>sacramento_gameplay_prop_doors_locked_7</code>.</li>
+</ul>
+<p><strong>Custom Boxes:</strong> <code>func/dynamic</code> with <code>CLIPMODEL_BOX</code> (size + offset), Precedent <code>submarine.entities gp_func_dynamic_2_715006291</code>. The boxes are built via <code>probe_meshfmt.build_box</code> and pass <code>check_geometry</code> and the Byte Round-trip (1502–1508 Bytes). Materials: <code>textures/common/flatcolour/red|black</code>, both present in c2v1-Mount.</p>
+<p>Alternative path if new model entries fail: <code>models/editor/box.lwo</code> with <code>customMaterial</code>, like retail <code>c2v1_geo_lobby_func_staticinstance_1</code>. The scale is stored in <code>fallback_render.scale</code> (Box is 1 m).</p>
+<h2 id="lights-12">Lights (12)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Light</th>
+<th>Type</th>
+<th>Color</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>monolith_w / monolith_e</td>
+<td>Spot</td>
+<td>Red (1, 0,08, 0,05)</td>
+<td>Strip light from below onto the Monolith</td>
+</tr>
+<tr>
+<td>hall_fill</td>
+<td>Point</td>
+<td>Warm White</td>
+<td>Base lighting of the hall</td>
+</tr>
+<tr>
+<td>windfang</td>
+<td>Point</td>
+<td>Cool White</td>
+<td>Safe start</td>
+</tr>
+<tr>
+<td>galerie / galerie_s</td>
+<td>Point</td>
+<td>Amber</td>
+<td>North and South Gallery</td>
+</tr>
+<tr>
+<td>korridor_s / korridor_n</td>
+<td>Point</td>
+<td>Pale Green</td>
+<td>"Interrogation Corridor"</td>
+</tr>
+<tr>
+<td>buero_w</td>
+<td>Point</td>
+<td>Warm</td>
+<td>Desk lamp</td>
+</tr>
+<tr>
+<td>buero_o</td>
+<td>Point</td>
+<td>Cool Blue</td>
+<td>Filing cabinet light</td>
+</tr>
+<tr>
+<td>hof_mond</td>
+<td>Spot</td>
+<td>Blue, from above</td>
+<td>Moonlight</td>
+</tr>
+<tr>
+<td>hof_alarm</td>
+<td>Point</td>
+<td>Red</td>
+<td>Above the locked door</td>
+</tr>
+</tbody>
+</table></div>
+<p>Donor blocks are the retail lights <code>c2v1_lights_lights_light_point_1603252612</code> and <code>…_spot_1557246881</code>.</p>
+<h2 id="pickups-12">Pickups (12)</h2>
+<ul>
+<li>Windfang: Small armor, Medium pistol ammo</li>
+<li>Hall: Medium medkit, Small pistol ammo</li>
+<li>North Gallery: MP, MP Ammo</li>
+<li>Corridor: Small medkit</li>
+<li>West Office: Large medkit, Helmet</li>
+<li>East Office: Assault Rifle</li>
+<li>Courtyard: Medium medkit, Small armor</li>
+</ul>
+<h2 id="tests">Tests</h2>
+<p><code>python tools/design_kitmap.py</code> builds, checks, and writes the output in approximately 25 seconds; the result is <code>OK: 0 failure(s), negatives all caught</code>. It checks the following, and each point fails if it is incorrect:</p>
+<ul>
+<li>No two wall parts (wall, cover, jamb/post/overhang, door leaf, railing, columns, own boxes) overlap in volume; floors do not overlap with each other; props do not intersect walls.</li>
+<li>Every cell of every room (0,1-m grid, 0.25 m inset) has a floor part at room height.</li>
+<li>Every room is reachable from the player start for an 0.8 m wide body; stairs count as ramps, steps are at most 0.35 m high. This allows passing every gap ≥ 1.0 m and prevents gaps ≤ 0.8 m.</li>
+<li>Player start, enemies, and pickups stand on a floor part and are reachable.</li>
+<li>Everything lies within the retail core bbox and above the retail floor footprint; floor heights are retail floor heights.</li>
+<li>Every enemy stands on retail-free floor of its height, with ≥ 6 m² contiguous area in the room.</li>
+<li>Every part has a cm at its scale.</li>
+<li>6–12 lights and 6–10 enemies; no duplicate names.</li>
+<li>Game cross-section, read-only:<ul>
+<li>The defs of all 41 entities (including own boxes) are mounted entityDefs; all donors exist in retail c2v1 with the same def.</li>
+<li>Frame openings exist in the cm (cuts at z 1.0 and at the overhang).</li>
+<li>Materials and own boxes are correct.</li>
+</ul>
+</li>
+<li><strong>Skeleton fallback path:</strong> If retail <code>world.hkshape</code> remains, 6 of its invisible blockers are in our rooms: on Gallery West, Gallery South, in the corridor, and 3 areas above head height. All rooms and entities remain reachable nonetheless.</li>
+</ul>
+<p>Negative tests (<code>--negative</code>, 13 items, all detected), plus a positive control:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Negative Test</th>
+<th>Expected Message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wall before the only door Gallery → Corridor</td>
+<td>"korridor is not reachable"</td>
+</tr>
+<tr>
+<td>Floating enemy (+2 m)</td>
+<td>"does not stand on a floor piece"</td>
+</tr>
+<tr>
+<td>Double, offset wall</td>
+<td>"wall overlap"</td>
+</tr>
+<tr>
+<td>Missing floor slab</td>
+<td>"cells without a floor piece"</td>
+</tr>
+<tr>
+<td>Passage narrowed to 0.8 m</td>
+<td>"korridor is not reachable"</td>
+</tr>
+<tr>
+<td>Enemy on retail-adjusted floor</td>
+<td>"retail had no clear floor"</td>
+</tr>
+<tr>
+<td>Pickup at x −30</td>
+<td>"outside the retail core bbox"</td>
+</tr>
+<tr>
+<td>Floor slab in retail neck at x 5</td>
+<td>"outside the retail floor footprint"</td>
+</tr>
+<tr>
+<td>Floor slab at −3.0 m</td>
+<td>"not a retail floor height"</td>
+</tr>
+<tr>
+<td>Ceiling at scale 1</td>
+<td>"has no cm at scale"</td>
+</tr>
+<tr>
+<td>Additional hkshape blocker before corridor door</td>
+<td>unreachable in fallback check</td>
+</tr>
+<tr>
+<td>Door leaf offset by 10 cm</td>
+<td>no retail equivalent</td>
+</tr>
+<tr>
+<td>Sign 23 cm lower</td>
+<td>deviates from donor</td>
+</tr>
+</tbody>
+</table></div>
+<p>Positive Control: The same passage narrowed to exactly 1.0 m remains passable.</p>
+<p><code>python tools/design_kitmap.py --check</code> re-checks the written <code>layout.json</code> with 0 errors.</p>
+<h2 id="for-the-master-reading-layoutjson">For the Master: reading layout.json</h2>
+<ul>
+<li><code>pieces[]</code>: <code>kit</code> (model name from kit.json), <code>pos</code>, <code>yaw</code> (degrees), <code>scale</code>, <code>aabb</code>, <code>room</code>, <code>role</code>. Each part becomes an <code>idStaticInstanceEntity</code> (inherits <code>func/staticinstance</code>) after the <code>example_entity</code> from kit.json. Formula: World = t + x·A0 + y·A1 + z·A2, A_i = scale_i · mat[i], mat[0] = (cos, sin, 0), mat[1] = (−sin, cos, 0).</li>
+<li><code>authored[]</code>: own boxes with model name, material, box dimensions, generating <code>properties</code> and the alternate path.</li>
+<li><code>entities[]</code>: <code>def</code>, <code>class</code>, <code>pos</code>, <code>yaw</code>, <code>properties</code> (spawnPosition, spawnOrientation, light color/intensity/radius or target), <code>donor</code> (retail block as template) and <code>drop_refs</code>.</li>
+<li><code>checks</code>: This section contains all check results:<ul>
+<li><code>navmesh_proxy</code> and <code>navmesh_islands</code></li>
+<li><code>retail_hkshape_fallback</code></li>
+<li><code>game.retail_door_relation</code></li>
+<li>the negative tests</li>
+</ul>
+</li>
+</ul>
+<h2 id="risks-and-open-points">Risks and open points</h2>
+<ul>
+<li><strong>Unconfirmed at runtime.</strong> Nothing has been loaded in the game.</li>
+<li><strong>Enemies without spawners and without scripts</strong> (<code>hide = false</code>): Whether they perceive and attack is only shown by testing. Retail sets all enemies in c2v1 via spawners.</li>
+<li><strong>Navmesh:</strong><ul>
+<li>The obstacle and phantom counts are an offline substitute from retail collision (0.5m grid), not the real Navmesh.</li>
+<li>Enemies can get stuck on new obstacles, especially on the lower staircase.</li>
+<li>The sergeant has 609 m² of Navmesh beyond our walls. He could run against the courtyard wall if he does not reach the player.</li>
+</ul>
+</li>
+<li><strong>New model entries</strong> (own boxes) require a tool that adds entries to the container. Such a tool does not yet exist; currently, only rebuild replaces them. The alternative is the replacement path <code>models/editor/box.lwo</code>.</li>
+<li><strong>megatexturedModel:</strong> All retail instances have <code>true</code>. Whether new instance names need data for this is open (kit risk).</li>
+<li><strong>Blocker:</strong> Does the master retain retail <code>world.hkshape</code>? There are 3 invisible crates on walkable areas, on Gallery West, Gallery South, and in the corridor. The path remains free everywhere, but one bumps into them. Exchanging against c06p2 from the Skeleton report is recommended.</li>
+<li><strong>No level end</strong> without a new mission script.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Kitmap-Map-Skeleton.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Skeleton for a new map in c2v1</a><a class="next" href="Mission-Anatomy.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Mission Anatomy: How Wolfenstein II Builds a Mission (c2v1 &quot;Gestapo Office&quot;)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

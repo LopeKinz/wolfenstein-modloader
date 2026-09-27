@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Vtrest – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: finish decoding the last two parts of TNO&#x27;s virtual texture pixel data.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Vtrest</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Vtrest"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This is an assignment, not a result. It asks a worker to finish the page decoder for the virtual textures of Wolfenstein: The New Order, which would turn the huge world textures into readable pixels. Two pieces are still unsolved: block 0 (a three-channel color block) and the second channel of block 1. Two earlier attempts ended without result, and the brief demands measurable proof over the full test set, not one good-looking image.</p><ul><li>Open part 1: block 0 decodes wrong already at the second image block; it currently works on only 1 of 4,256 pages.</li><li>Open part 2: in block 1, channel 0 lines up at tile edges but channel 1 does not.</li><li>Progress must be shown as numbers over the same set of pages and confirmed by a seam (tile edge) check.</li><li>A compiled JPEG XR library, calibrated against Windows, should serve as the reference instead of reimplementing it.</li><li>If it fails again, the worker should explain clearly why, with numbers, so the next attempt does not start from zero.</li></ul></div><div class="de"><p class="lede">Dies ist ein Auftrag, kein Ergebnis. Er verlangt, den Kacheldecoder für die virtuellen Texturen von Wolfenstein: The New Order fertigzustellen, damit die riesigen Welttexturen zu lesbaren Pixeln werden. Zwei Teile sind noch ungelöst: Block 0 (ein dreikanaliger Farbblock) und der zweite Kanal von Block 1. Zwei frühere Versuche endeten ohne Ergebnis, und der Auftrag verlangt messbare Belege über den ganzen Testbestand statt eines einzelnen gut aussehenden Bildes.</p><ul><li>Offener Teil 1: Block 0 wird schon ab dem zweiten Bildblock falsch dekodiert; er klappt derzeit nur bei 1 von 4.256 Kacheln.</li><li>Offener Teil 2: In Block 1 passt Kanal 0 an den Kachelrändern, Kanal 1 nicht.</li><li>Fortschritt muss als Zahl über denselben Kachelbestand gezeigt und durch eine Nahtprüfung an den Kachelrändern bestätigt werden.</li><li>Eine kompilierte JPEG-XR-Bibliothek, abgeglichen mit Windows, soll als Referenz dienen, statt sie nachzubauen.</li><li>Scheitert es wieder, soll der Bearbeiter mit Zahlen klar erklären, warum – damit der nächste Versuch nicht bei null anfängt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-vtrest-a2</code>; task <code>vtrest</code> (retry, attempt 3 of 3 - the previous two attempts ended when their host session died, not on technical grounds).
+Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
+Four other workers run on the TNC custom-map front. Your lane is Virtual Textures and touches none of theirs.</p>
+<h1 id="objective">Objective</h1>
+<p>Finish the virtual-texture page decoder for Wolfenstein: The New Order. Two things are open, and they are the last ones:</p>
+<ol>
+<li><strong>Block 0</strong> (<code>INTERNAL_CLR_FMT = YUV_444</code>, 3 channels) is not solved - already macroblock 1 decodes wrong.</li>
+<li><strong>Block 1, second channel</strong> (<code>NCOMPONENT</code>) - channel 0 butts up correctly at the seam, channel 1 does not.
+Solving these turns the megatexture into readable pixels, which is what stands between this project and real surface-texture modding for part 1.</li>
+</ol>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<p>READ <code>Virtual-Texture-Planes.md</code> FIRST, in particular section 8 ("What Remains Open, and the Next Meaningful Step") and section 9 (9.4 "The Seam", 9.5 "The Shape").
+It is a careful document: it records which hypotheses died and on what numbers, so you do not repeat them. Section 7 narrows the remaining search space; section 6 lists the hypotheses already killed arithmetically (alpha plane - no room; tiling - 0 hits over 80 pages; wrong colour format - no reading above noise for block 0). Do not resurrect those without new evidence.
+Per 9.1 a compiled <code>jxrlib</code> is already available locally and per 9.2 it is calibrated against WIC - use it as the oracle instead of reimplementing.
+Existing tools, yours to use: <code>tools/vtplanes.py</code> (has a <code>seam</code> mode - the seam statistic is the honest quality measure here, not eyeballing), <code>tools/vtdecode.py</code>, <code>tools/vtpixel.py</code> (yours to edit), <code>docs/virtualtextures.md</code>.
+Game data, READ ONLY:
+<code>D:/SteamLibrary/steamapps/common/Wolfenstein.The.New.Order</code></p>
+<h1 id="ownership">Ownership</h1>
+<p><code>tools/vtpixel.py</code> and <code>docs/vt-planes.md</code> (both pre-existing - extend them, keep what is already established, do not rewrite the document's history of failed hypotheses away). Scratch artifacts under <code>re_probes/vtrest/</code> if you need them.</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No writes to the game install. Do not touch files owned by others:
+<code>tools/probe_cmdtable.py</code>, <code>tools/probe_idclhash.py</code>, <code>tools/probe_saveverify.py</code>,
+<code>re_probes/cmdtable/</code>, <code>re_probes/idclhash/</code>, <code>re_probes/saveverify/</code>,
+<code>re_probes/map_alias_v3/</code>, <code>re_probes/custom_save_candidates/</code>,
+<code>tools/build_*.py</code>, <code>tools/verify_*.py</code>, <code>wolfsdk/*</code>, <code>config.json</code>, any other <code>docs/*</code> file than <code>Virtual-Texture-Planes.md</code>. No pip install, no new dependency.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib plus what the repository already uses. Keep the existing self-test working. Corpus runs must stay reproducible from the command line.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li>Measurable improvement stated in the document's own terms: block 0 currently lands 1x over 4256 pages, block 1 channel 0 lands but channel 1 does not. Any claim of progress must be a number over the same corpus, not one good page.</li>
+<li>The seam check (<code>tools/vtplanes.py</code> seam) must corroborate it. Section 9.4 shows the seam catching a wrong channel that otherwise looked fine - so a decode that improves a landing count but not the seam is not a solution.</li>
+<li><code>docs/vt-planes.md</code> updated with what changed, including the numbers that support it and any hypothesis that died on the way.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Every important assurance needs a counterexample check. The document's own standard is high - keep it. A decoder that produces a plausible image is not evidence; matching the <code>jxrlib</code>/WIC oracle bit-for-bit, or a seam statistic that cannot be explained by chance, is. State sample sizes.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>Two attempts already ended without result. If block 0 does not yield, the most valuable deliverable is a sharpened statement of WHY, with the numbers, so the next attempt does not start from zero. Say which hypotheses you killed and how. Do not claim a partial decode as a solution.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones. A bus fact only if you establish something another
+worker would need - this lane is largely self-contained, so expect few.
+Report in the document itself; a short summary at finish is enough.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Texdbkey.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Texdbkey</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

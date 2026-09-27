@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Gore-Runtime: Findings and Next Test Path – Wolfenstein Modloader</title>
+<meta name="description" content="Why replacing Wolfenstein II&#x27;s gore settings wholesale crashes the game, and a safer small test to try next.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>TNC Gore-Runtime: Findings and Next Test Path</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Gore-Runtime"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#results">Results</a></li><li><a href="#static-cross-checks">Static Cross-Checks</a></li><li><a href="#negative-checks">Negative Checks</a></li><li><a href="#concrete-next-step">Concrete Next Step</a></li><li><a href="#context-for-custom-maps">Context for Custom Maps</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">For Wolfenstein II: The New Colossus, the researchers tried to change how often gore effects happen. Replacing all 24 standard gore definitions at once was read correctly by the game but crashed it at startup, so being readable does not prove it works. The safer route proposed is to change only existing probability values and leave everything else untouched, starting with the pistol. This next test has not been run yet.</p><ul><li>Full replacement of 24 gore definitions (<span class="t" data-t="decl">decls</span>) crashes the game at startup.</li><li>Retail TNC contains 41 gore behaviour definitions; the standard ones are real, not leftovers from TNO.</li><li>Gore settings in the console are locked, so a settings-only gore mod is not an option.</li><li>Next step: a single probe that raises the two pistol probabilities to 0.95.</li><li>If it starts, add smg, rifle and heavy step by step.</li></ul></div><div class="de"><p class="lede">Für Wolfenstein II: The New Colossus wurde versucht zu ändern, wie oft Gore-Effekte auftreten. Alle 24 Standard-Gore-Definitionen auf einmal zu ersetzen wurde vom Spiel zwar korrekt gelesen, ließ es aber beim Start abstürzen, lesbar heißt also nicht funktionsfähig. Als sicherer Weg wird vorgeschlagen, nur vorhandene Wahrscheinlichkeitswerte zu ändern und alles andere unangetastet zu lassen, beginnend mit der Pistole. Dieser nächste Test wurde noch nicht durchgeführt.</p><ul><li>Kompletter Austausch von 24 Gore-Definitionen (<span class="t" data-t="decl">Decls</span>) lässt das Spiel beim Start abstürzen.</li><li>Das Original-TNC enthält 41 Gore-Verhaltensdefinitionen; die Standard-Einträge sind echt, keine TNO-Reste.</li><li>Gore-Einstellungen in der Konsole sind gesperrt, eine reine Einstellungs-Mod geht also nicht.</li><li>Nächster Schritt: eine einzelne Probe, die die zwei Pistolen-Wahrscheinlichkeiten auf 0,95 setzt.</li><li>Startet das Spiel, werden smg, rifle und heavy schrittweise ergänzt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><h2 id="results">Results</h2>
+<p>Direct full replacement of the 24 <code>goreBehavior:standard/*</code> assets is not viable as a runtime path: it is parseable but crashes the TNC start. The more likely safe route is a surgical <code>set</code> patch on existing scalar <code>probability</code> fields, leaving the Decl structure, <code>woundType</code> lists, <code>inherit</code> chains, and the number of array entries from Retail unchanged.</p>
+<h2 id="static-cross-checks">Static Cross-Checks</h2>
+<ul>
+<li>Retail TNC actually contains 41 <code>goreBehavior</code> Decls; the relevant <code>standard/*</code> Decls are not just TNO artifacts.</li>
+<li><code>standard/pistol</code> has two existing paths:
+  <code>edit.probability.item[0].probability = 0.200000003</code> and
+  <code>edit.probability.item[1].probability = 0.1</code>.</li>
+<li><code>standard/smg</code>, <code>rifle</code>, and <code>heavy</code> each have three existing probability fields. Several specialized Decl children inherit from <code>standard/heavy</code> or <code>standard/explosive</code>; this inheritance should not be rebuilt by a new full-replacement file.</li>
+<li>The Engine already knows the Gore types used in Retail: <code>GORETYPE_SMALL_WOUND</code>, <code>BIG_WOUND</code>, <code>HEAD_SHOT</code>, <code>LIMBLOSS</code>, <code>FULL_BODY_GIBS</code>, <code>SIGNATURE_DEATH1/2/3</code>, <code>REALLY_BIG_WOUND</code>, and <code>EXPLOSIVE</code>. Therefore, there is no reason to introduce new tokens for the first runtime probe.</li>
+</ul>
+<h2 id="negative-checks">Negative Checks</h2>
+<ul>
+<li>The previous 24-asset full replacement crashed at startup despite successful <code>Decl</code> parsing during start; parseability is thus explicitly not a runtime proof.</li>
+<li>A new Gore type/combined <code>woundType</code> token is excluded as a probe: TNC Decls use multiple existing tokens, but an unknown or unresolvable type for the target model is an unnecessary crash/no-op candidate.</li>
+<li><code>g_EnableGore</code>, <code>g_debugGore</code>, and <code>g_goreBloodyMess</code> are locked Cvars in the existing Retail measurement; therefore, a Cvar-only Gore mod is not an option.</li>
+<li><code>resource_dlcDbgSearchPath</code> was rejected as <code>Unknown command</code> in the real TNC log; an external DLC search path is not a viable substitute for the Decl patch.</li>
+</ul>
+<h2 id="concrete-next-step">Concrete Next Step</h2>
+<p>Build an isolated probe mod with <strong>only</strong>
+<code>goreBehavior:standard/pistol</code> and two <code>set</code> values:</p>
+<pre><code class="language-json">{
+  &quot;goreBehavior:standard/pistol&quot;: {
+    &quot;set&quot;: {
+      &quot;edit.probability.item[0].probability&quot;: 0.95,
+      &quot;edit.probability.item[1].probability&quot;: 0.95
+    }
+  }
+}
+</code></pre>
+<p>Before a game start: Dry-run on a clean TNC backup, then activate only <code>tnc_erste</code> plus this single probe. Retail start is the actual gate; upon success, gradually add <code>smg/rifle/heavy</code> and finally the inherited special Decls. Upon failure, the next suspicion is the handling of compressed Gore entries in the Resource rebuild, not the Gore syntax.</p>
+<h2 id="context-for-custom-maps">Context for Custom Maps</h2>
+<p>The Map Canary and Gore are separate runtime risks. The Gore probe should run without a Map prototype. Only when the single-asset Gore probe starts, enable the Map Entity Canary individually; a new Map ID/geometry is still unproven.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Explosivpistole-Diag.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Explosive Pistol Does Not Explode: Diagnosis</a><a class="next" href="Research-Report-Hash08.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Hash08 static probe report</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

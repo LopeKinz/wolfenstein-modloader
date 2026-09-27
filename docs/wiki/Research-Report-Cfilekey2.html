@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>`cfile` — Key derivation found, corpus decrypted, round-trip byte-exact – Wolfenstein Modloader</title>
+<meta name="description" content="How TNC&#x27;s encrypted cfile resources are keyed: found in the game code, all 67 files decrypted and rebuilt exactly.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1><code>cfile</code> — Key derivation found, corpus decrypted, round-trip byte-exact</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Cfilekey2"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-route-into-the-module">1. Route into the Module</a></li><li><a href="#2-the-kdf-0x00aa2690">2. The KDF (0x00aa2690)</a></li><li><a href="#3-the-container-format-0x00aa20f0-and-0x012c7040">3. The Container Format (0x00aa20f0 and 0x012c7040)</a></li><li><a href="#4-acceptance-test">4. Acceptance Test</a></li><li><a href="#5-the-new-payload">5. The New Payload</a></li><li><a href="#6-discarded-or-corrected-hypotheses">6. Discarded or Corrected Hypotheses</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein II: The New Colossus stores some files, such as language texts and config scripts, as encrypted &quot;cfile&quot; resources. This report found in the game&#x27;s code how the <span class="t" data-t="key">key</span> is made: a SHA-256 over a random salt from the file, the fixed text &quot;swapTeam&quot; and the resource name. No value from the running game is needed, so modders can decrypt these files and build new ones offline. A test config file was built, but not yet tried in the game.</p><ul><li>The container is AES-128-CBC <span class="t" data-t="encryption">encryption</span> with a 32-byte HMAC tag at the end; the old documentation had the layout partly wrong.</li><li>67 of 67 retail cfile payloads decrypt with a valid tag; 50 of 50 language files unpack to the exact expected length.</li><li>67 of 67 files are re-encrypted byte for byte identical to the originals.</li><li>7 of 7 negative controls (wrong key, flipped bytes, wrong mode) fail as they should.</li><li>The key is tied to the resource name; a new 96-byte test file that loads a custom map was built but not tested in the game.</li></ul></div><div class="de"><p class="lede">Wolfenstein II: The New Colossus speichert manche Dateien, etwa Sprachtexte und Konfigurationsskripte, als verschlüsselte „cfile“-Ressourcen. Dieser Bericht fand im Spielcode, wie der <span class="t" data-t="key">Schlüssel</span> entsteht: ein SHA-256 über ein zufälliges Salt aus der Datei, den festen Text „swapTeam“ und den Ressourcennamen. Kein Wert aus dem laufenden Spiel wird gebraucht. Modder können diese Dateien also offline entschlüsseln und neue bauen. Eine Test-Konfigurationsdatei wurde gebaut, aber noch nicht im Spiel ausprobiert.</p><ul><li>Der Container nutzt AES-128-CBC-<span class="t" data-t="encryption">Verschlüsselung</span> mit einem 32-Byte-HMAC-Tag am Ende; die alte Doku hatte den Aufbau teilweise falsch.</li><li>67 von 67 Original-cfile-Daten entschlüsseln mit gültigem Tag; 50 von 50 Sprachdateien entpacken exakt auf die erwartete Länge.</li><li>67 von 67 Dateien werden byte-genau identisch zum Original neu verschlüsselt.</li><li>7 von 7 Gegenproben (falscher Schlüssel, gekippte Bytes, falscher Modus) schlagen wie gewollt fehl.</li><li>Der Schlüssel hängt am Ressourcennamen; eine neue 96-Byte-Testdatei, die eine eigene Karte lädt, ist gebaut, aber nicht im Spiel getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Source: <code>re_probes/runtime_87400/module.bin</code> (running, SteamStub-unpacked <code>NewColossus_x64vk.exe</code>, Layout "virtual RVA", FileOffset == RVA).
+All addresses are RVAs in this image; function boundaries from <code>.pdata</code>.
+Tool: <code>tools/probe_cfilekey.py</code> (Python 3.11, stdlib + <code>ctypes</code>→<code>bcrypt.dll</code>).
+Corpus: the 67 unique <code>cfile</code> payloads from <code>base/*.resources</code>, read-only.</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<ol>
+<li><strong>The key depends on NO runtime value.</strong> Unlike <code>.verify</code>-HMAC (<code>saveverify.md</code> §5), all inputs are available offline: a salt from the file, a string constant from <code>.rdata</code>, and the resource name. The <code>resourceExec</code> route is therefore viable.</li>
+<li><strong>The derivation:</strong>
+   <code>digest = SHA256( salt(12) || b"swapTeam\n\x00" || resourceName )
+   AES-Key  = digest[:16]      AES-128-CBC, PKCS7 (BCRYPT_BLOCK_PADDING)
+   HMAC-Key = digest           HMAC-SHA256 over salt || iv || ciphertext</code>
+   The secret is the string constant <code>.rdata:0x026097e8</code> = <code>"swapTeam\n"</code>, length 0xa <strong>including NUL</strong> — same construction as <code>"CYBERDEMON"</code> with length 0xb in the game state path.</li>
+<li><strong>The format is larger than previously assumed.</strong> <code>docs/cfile.md</code> had 8-byte header and "Salt 8 or Salt 8 + IV 16" as an open alternative. Correct is: 4 bytes <code>declen</code>, 12 bytes Salt, 16 bytes IV, Ciphertext, <strong>32-byte HMAC tag at the end</strong>. The "Unix timestamp at 0x04" is not a separate field but the first 4 bytes of the salt: the writer overwrites them after <code>BCryptGenRandom</code> with the file modification time (0x00aa23dd).</li>
+<li><strong>Measured, not guessed:</strong> 67/67 payloads with correct HMAC tag and valid PKCS7; 50/50 <code>strings/*.lang</code> decrypted, Oodle-unpacked, exactly to the expected length and starting with <code>EF BB BF // string table</code>; <strong>67/67 re-encrypted byte-identically</strong>; 7/7 counter checks fail.</li>
+</ol>
+<hr />
+<h2 id="1-route-into-the-module">1. Route into the Module</h2>
+<p>The Xrefs that <code>docs/cfile.md</code> could not take because <code>.text</code> was still packed there. Searched for RIP-relative <code>lea</code> references to known <code>.rdata</code> addresses:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>String</th>
+<th><code>.rdata</code></th>
+<th>Xref in <code>.text</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>could not derive key</code></td>
+<td>0x026c9688</td>
+<td>0x00aa217e</td>
+</tr>
+<tr>
+<td><code>decryption failed(%d)</code></td>
+<td>0x026c9568</td>
+<td>0x00aa21d3</td>
+</tr>
+<tr>
+<td><code>decompress failed</code></td>
+<td>0x026c9550</td>
+<td>0x00aa2214</td>
+</tr>
+<tr>
+<td><code>Failed to generate salt</code></td>
+<td>0x026c9598</td>
+<td>0x00aa23c2</td>
+</tr>
+<tr>
+<td><code>Failed to derive key</code></td>
+<td>0x026c9580</td>
+<td>0x00aa2403</td>
+</tr>
+<tr>
+<td><code>Failed to encrypt (%d)</code></td>
+<td>0x026c9630</td>
+<td>0x00aa25d1</td>
+</tr>
+<tr>
+<td><code>idEncryptedFileResource</code></td>
+<td>0x026c9650</td>
+<td>0x0013c204</td>
+</tr>
+</tbody>
+</table></div>
+<p>From this, two functions and their helpers via <code>.pdata</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>RVA</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0x00aa20f0</strong></td>
+<td>Reader: reads <code>declen</code> + Salt, derives, decrypts, decompresses</td>
+</tr>
+<tr>
+<td><strong>0x00aa22f0</strong></td>
+<td>Writer: generates salt, derives, packs, writes, encrypts</td>
+</tr>
+<tr>
+<td><strong>0x00aa2690</strong></td>
+<td><strong>the KDF</strong></td>
+</tr>
+<tr>
+<td>0x012c69d0</td>
+<td><code>idSecureHash::Hash(Buffer list, out)</code> — SHA-Index 4 = SHA256</td>
+</tr>
+<tr>
+<td>0x012c6910</td>
+<td><code>BCryptGenRandom</code> wrapper</td>
+</tr>
+<tr>
+<td>0x012c6b10</td>
+<td><code>Encrypt(file, data, salt, key)</code></td>
+</tr>
+<tr>
+<td>0x012c7040</td>
+<td><code>Decrypt(file, out, salt, key)</code></td>
+</tr>
+<tr>
+<td>0x012c5960 / 0x012c5ec0</td>
+<td>Oodle Compress / Decompress</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="2-the-kdf-0x00aa2690">2. The KDF (0x00aa2690)</h2>
+<p>Signature: <code>bool DeriveKey(const char* name, Buffer* salt, Buffer* keyOut)</code>.
+Constructed is a list of three <code>{void* ptr; int64 len; bool owned}</code> buffers, which <code>idSecureHash::Hash</code> concatenates in index order:</p>
+<p>00aa26a6  lea  rax, [r11 - 0x48]          ; Element array
+00aa26ae  mov  qword [r11 - 0x28], 3      ; 3 elements
+00aa26bb  mov  qword [r11 - 0x48], rdx    ; [0] = Caller's Salt buffer
+00aa26bf  lea  rax, [rip + 0x1b67122]     ; .rdata:026097e8  "swapTeam\n"
+00aa26ca  mov  qword [r11 - 0x58], 0xa    ;     Length 10 -&gt; NUL counts with
+00aa26db  mov  qword [r11 - 0x40], rax    ; [1]
+00aa26e1..00aa26f9                        ; strlen(name)
+00aa26fb  mov  qword [rsp + 0x20], r9     ; [2] = name
+00aa2703  mov  qword [rsp + 0x28], rax    ;     Length = strlen, WITHOUT NUL
+00aa2712  mov  qword [rsp + 0x60], rax    ;     == [r11 - 0x38]
+00aa271f  call 0x12c69d0                  ; SHA256 over [0]||[1]||[2] -&gt; keyOut</p>
+<p>The bytes at 0x026097e8 are <code>73 77 61 70 54 65 61 6d 0a 00</code> — exactly
+<code>b"swapTeam\n\x00"</code>. This is clearly a reused multiplayer command string (neighbors:
+<code>apwithlobby\n</code>, <code>Unknown dialog command</code>), not a byte array recognizable as key material.
+That is precisely why <code>--scan-strings</code> in <code>docs/cfile.md</code> did not find it: there, only
+<code>hash(string+salt)</code> and <code>hash(salt+string)</code> were attempted, without the name as a third component
+and without the NUL terminator.</p>
+<p><code>0x12c69d0</code> is the same helper described in <code>saveverify.md</code> for the <code>.verify</code> key:
+<code>idSecureHash::Initialize(4)</code> → table <code>.rdata:0x25c8918</code> → <code>SHA256</code>, then per element
+<code>BCryptHashData(ptr, (u32)len)</code>, finally <code>BCryptFinishHash</code> → 32 bytes.</p>
+<hr />
+<h2 id="3-the-container-format-0x00aa20f0-and-0x012c7040">3. The Container Format (0x00aa20f0 and 0x012c7040)</h2>
+<pre><code>0x00   u32    declen        uncompressed length; 0xFFFFFFFF = not packed
+0x04   12     salt          u32 timestamp (LE) + 8 bytes BCryptGenRandom
+0x10   16     iv            BCryptGenRandom, = BlockLength of AES object
+0x20   n*16   ciphertext    AES-128-CBC, PKCS7
+end-32 32    tag           HMAC-SHA256
+</code></pre>
+<p>Evidence in the reader:</p>
+<pre><code>00aa212b  mov  qword [rbp - 9], 0xc       ; Salt buffer, length 12
+00aa2146  mov  edi, 4
+00aa2155  call [rax + 0x28]               ; Read(&amp;declen, 4)
+00aa2166  call [rax + 0x28]               ; Read(salt, 12)
+00aa2175  call 0xaa2690                   ; DeriveKey([rsi+8] = Resource name, salt, key)
+00aa21bb  call 0x12c7040                  ; Decrypt(file, out, salt, key)
+00aa21e7  test edx, edx / jle             ; declen &lt;= 0 (also 0xFFFFFFFF) -&gt; do not unpack
+00aa220b  call 0x12c5ec0                  ; else Oodle, [rsp+0x20] = 8
+</code></pre>
+<p>Evidence in the decryptor <code>0x012c7040(file, out, salt, key)</code>:</p>
+<pre><code>012c709d  lea  edx, [r15 + 4]             ; idSecureHMAC::Initialize(4) = SHA256
+012c70b2  mov  r9d, [rbx + 8]             ; HMAC-Secret = key.len = 32
+012c70b6  mov  r8,  [rbx]                 ;               key.ptr
+012c70f2  call [BCryptHashData]           ; HMAC &lt;&lt; salt (12)
+012c7126  mov  edx, edi                   ; idSecureBlockCipher::Initialize(1) = AES
+012c7144  lea  r9d, [rdi + 0xf]           ; 0x10  -&gt; GenerateSymmetricKey(key, 16)
+012c714b  mov  r8,  [rbx]                 ;            AES-128, not AES-256!
+012c71ac  call [rax + 0x28]               ; Read(iv, BlockLength = 16)
+012c71e7  call [BCryptHashData]           ; HMAC &lt;&lt; iv (16)
+012c71fb  call [rax + 0x60]               ; Length()
+012c7201  sub  rbx, rsi                   ;   - 32 (Digest length)
+012c720a  call [rdx + 0x70]               ;   - Tell()      = Ciphertext length
+012c7280  call [BCryptHashData]           ; HMAC &lt;&lt; ciphertext
+012c73a9  call [BCryptFinishHash]
+012c73e0..012c73f8                        ; byte-wise comparison against the last 32 bytes
+012c7452  mov  dword [rsp + 0x48], edi    ; dwFlags = 1 = BCRYPT_BLOCK_PADDING
+012c7472  mov  rax, [rbp + 0x98]          ; pbIV  = the read IV
+012c748b  call [BCryptDecrypt]
+</code></pre>
+<p><code>BCryptSetProperty(ChainingMode)</code> is never called — so the CNG default <strong>CBC</strong> applies.
+The conjecture in <code>docs/cfile.md</code> §2.2 was correct; it has now been measured via a round-trip
+and not just reverse-engineered.</p>
+<p>Evidence in the writer (0x00aa22f0), relevant for building new files:</p>
+<pre><code>00aa23a6  mov  qword [rsp + 0x60], 0xc    ; 12 Byte
+00aa23b9  call 0x12c6910                  ; BCryptGenRandom -&gt; &quot;Failed to generate salt&quot;
+00aa23dd  mov  dword [rax], r14d          ; salt[0:4] := Timestamp
+00aa23fa  call 0xaa2690                   ; DeriveKey
+00aa24ba  cmp  rdx, 0x200                 ; packing only begins after 513 bytes
+00aa24d0  call 0x12c5960                  ; Oodle Compress (Kraken, Level 4)
+00aa24f0/00aa2513  Write(&amp;declen, 4)      ; actual length or 0xFFFFFFFF
+00aa25b0  call [rax + 0x30]               ; Write(salt, 12)
+00aa25c5  call 0x12c6b10                  ; Encrypt: GenRandom(iv), Write(iv),
+                                          ; Write(ct), Write(tag)
+</code></pre>
+<h3 id="corrections-to-docscfilemd">Corrections to <code>docs/cfile.md</code></h3>
+<ul>
+<li>"0x04 u32 Unix timestamp, from 0x08 noise" → Salt is 12 bytes starting at 0x04, of which the first 4 are the timestamp. The observation was correct; the interpretation as a separate field was not.</li>
+<li>"Salt 8 or Salt 8 + IV 16, undecidable" → Salt 12 <strong>and</strong> IV 16.</li>
+<li>"AES in block mode" → AES-<strong>128</strong>-CBC; the SHA256 digest is 32 bytes, but only the first 16 are passed to <code>BCryptGenerateSymmetricKey</code>.</li>
+<li>The 32-byte HMAC tag at the end was unknown. It also explains why the length arithmetic in §2.4 failed: 4 + 12 + 16 + 32 = 64 ≡ 0 (mod 16).</li>
+<li>"No EXE string constant is the secret" → yes, <code>"swapTeam\n\0"</code>; only the tested associations without a resource name were excluded.</li>
+</ul>
+<hr />
+<h2 id="4-acceptance-test">4. Acceptance Test</h2>
+<p><code>python tools/probe_cfilekey.py --selbsttest</code> → Exit code 0.</p>
+<h3 id="41-positive-control-structural">4.1 Positive Control, Structural</h3>
+<pre><code>python tools/probe_cfilekey.py entschluesseln --nur strings/
+  50/50 ok   (10 languages x 5 archive generations)
+python tools/probe_cfilekey.py entschluesseln
+  structurally (HMAC tag + PKCS7): 67/67
+  plaintext    (verify_plain):     66/67
+</code></pre>
+<p>The 50 <code>strings/*.lang</code> files pass the full chain: HMAC tag correct, PKCS7 valid, Oodle yields <strong>exactly</strong> the length announced in the header (e.g., <code>strings/english.lang</code> from <code>patch_4</code>: 478 352 → 2 452 756 bytes), and the plaintext begins with <code>EF BB BF // string table</code> as the unencrypted <code>.lang</code> file from Part 1. This is <code>cfile.verify_plain</code>, taken unchanged.</p>
+<p>The hard counter remains the HMAC tag: 32 bytes, which a wrong key hits with probability 2⁻²⁵⁶. "Looks like text" no longer applies here.</p>
+<p><strong>One deviation, honestly named:</strong> <code>default_mp.cfg</code> from <code>gameresources</code> (80 bytes) decrypts to exactly one byte <code>00</code>. Tag and padding match; the round-trip reproduces the original bytes — the file is simply empty in-game. <code>verify_plain</code> counts it as "no text". This is a finding about the file, not a key problem; therefore the two counters are separate.</p>
+<h3 id="42-round-trip--the-strong-criterion">4.2 Round-Trip — the strong criterion</h3>
+<pre><code>python tools/probe_cfilekey.py roundtrip
+  67/67 byte-identically reproduced
+</code></pre>
+<p>Decrypt, then re-encrypt with the same salt and the same IV, and compare against the original payload — including padding and HMAC tag. 67 out of 67, byte for byte, from 80 bytes to 478 352 bytes. This confirms not only the key but the entire write direction: mode, padding type, tag order (<code>salt || iv || ct</code>), field order.</p>
+<h3 id="43-negative-controls--77-fail-as-intended">4.3 Negative Controls — 7/7 fail as intended</h3>
+<pre><code>ok  wrong key (Name 'snapdemo2.cfg')        HMAC tag incorrect
+ok  wrong secret (SHA256 without 'swapTeam\n\0')   HMAC tag incorrect
+ok  flipped salt byte (salt[6] ^= 1)                HMAC tag incorrect
+ok  flipped ciphertext byte                         HMAC tag incorrect
+ok  flipped tag byte                                HMAC tag incorrect
+ok  wrong mode (ECB instead of CBC)                    no PKCS7 padding
+ok  AES-256 instead of AES-128 (full digest as key)     no PKCS7 padding
+</code></pre>
+<p>The last two intentionally bypass the day comparison and fail only at the plaintext structure — otherwise, the HMAC alone would block everything, leaving control blind to mode and key length.</p>
+<hr />
+<h2 id="5-the-new-payload">5. The New Payload</h2>
+<pre><code>python tools/probe_cfilekey.py bauen --name wolfsdk_test.cfg
+</code></pre>
+<p>→ <code>re_probes/cfilekey/wolfsdk_test.cfg.cfile</code>, 96 bytes.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource-Name</td>
+<td><code>wolfsdk_test.cfg</code></td>
+</tr>
+<tr>
+<td>Plaintext</td>
+<td><code>map game/dlc/c02/c2v1_custom\n</code> (29 bytes)</td>
+</tr>
+<tr>
+<td><code>declen</code></td>
+<td><code>0xFFFFFFFF</code> — the writer also cannot pack under 0x200 bytes</td>
+</tr>
+<tr>
+<td>Salt</td>
+<td><code>7c42b75bab14bbb219691e48</code> (ts 1538736764 + 8 random bytes)</td>
+</tr>
+<tr>
+<td>IV</td>
+<td><code>b59d9d79de83ba976f473c5a56ec75fc</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The trailing <code>\n</code> is intentional: <code>resourceExec</code> pushes the text into the command buffer, and a terminator costs nothing. A version without it yields <code>--text "map game/dlc/c02/c2v1_custom"</code>.</p>
+<p><strong>Not tested at runtime.</strong> The game was not started. Only confirmed that the file passes the checks executed by the load path: geometry, HMAC tag, PKCS7, <code>declen</code>.</p>
+<h3 id="what-the-container-writer-must-know">What the Container Writer Must Know</h3>
+<ol>
+<li><strong>The resource name goes into the key.</strong> The payload is bound exactly to the name under which it appears in the IDCL entry. Counter-test: <code>wolfsdk_test.cfh</code>, <code>WOLFSDK_TEST.CFG</code>, and <code>base/wolfsdk_test.cfg</code> all fail at the day. Rebuild with a different name: <code>probe_cfilekey.encrypt(plain, name, salt12, iv16, declen)</code>.</li>
+<li>Entry type <code>cfile</code>, <code>compression == 0</code> — like all 67 retail payloads. The archive passes the bytes through; its own Oodle layer sits <em>under</em> the encryption and is off anyway here (<code>declen = 0xFFFFFFFF</code>).</li>
+<li>The reader calculates ciphertext length from <code>Length() - 32 - Tell()</code>. The payload must be exactly as long as written here; appended padding bytes break the tag.</li>
+</ol>
+<hr />
+<h2 id="6-discarded-or-corrected-hypotheses">6. Discarded or Corrected Hypotheses</h2>
+<ul>
+<li>"The derivation rule stands exclusively in the SteamStub-encrypted <code>.text</code>" (<code>docs/cfile.md</code>) — true only for the packed EXE. In the runtime capture, it is open; the unpacker was never needed.</li>
+<li>"No derivation from purely public inputs applies" — the statement remains correct for the 4,096 triples tested there, but is refuted as a generalization: the real derivation uses exclusively public inputs plus a string constant that <code>--scan-strings</code> tried in the wrong combination (without resource name, without NUL, ciphertext start at 8/16 instead of 32).</li>
+<li>"<code>cfile</code> could depend on a runtime value like the <code>.verify</code> HMAC" — <strong>no.</strong> The KDF takes three buffers, all three are offline available. That is the decisive difference from <code>saveverify.md</code> §5.</li>
+<li>"AEAD/GCM is ruled out" (<code>docs/cfile.md</code> §2.3) — correct in result but for the wrong reason. There is indeed an authentication tag here, but it is a separate HMAC-SHA256 and not part of the cipher.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-C2v1-Identity.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>c2v1-Alias: File-Corrupt-Identitaet</a><a class="next" href="Research-Report-Chunklist.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>packagechunklist.json in TNC-Retail: Clear Negative</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

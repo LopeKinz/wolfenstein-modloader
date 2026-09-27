@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reverse Engineering Research – Wolfenstein Modloader</title>
+<meta name="description" content="Index of all research briefs and reports from the reverse-engineering work, with links to each page.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#status"><span class="en">Status and records</span><span class="de">Stand und Protokolle</span></a></p>
+<h1>Reverse Engineering Research</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Reverse-Engineering-Research"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#research-briefs">Research Briefs</a></li><li><a href="#research-reports">Research Reports</a></li><li><a href="#kit-based-map-research">Kit-Based Map Research</a></li><li><a href="#mission-research">Mission Research</a></li><li><a href="#custom-map-prototypes">Custom-Map Prototypes</a></li><li><a href="#dlc-runtime-tests">DLC Runtime Tests</a></li><li><a href="#weapon-research">Weapon Research</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is a table of contents for the research notes on Wolfenstein II: The New Colossus and related work. It links the task briefs (what a researcher was asked to find out) and the reports (what they found), plus pages on building a new map from existing parts, missions, custom map prototypes, DLC tests and weapons. The notes keep the original measurements, failed attempts and open questions. It contains no results of its own; it helps you find the right page.</p><ul><li>24 research briefs describing tasks, e.g. encryption keys, mesh and collision formats.</li><li>36 research reports with the results, e.g. on texture keys, save files and custom maps.</li><li>Extra sections for kit-based map building, mission research, map prototypes, DLC tests and weapons.</li><li>Failed approaches and uncertainty are kept, not smoothed over.</li></ul></div><div class="de"><p class="lede">Diese Seite ist ein Inhaltsverzeichnis der Forschungsnotizen zu Wolfenstein II: The New Colossus und verwandter Arbeit. Sie verlinkt die Aufträge (was jemand herausfinden sollte) und die Berichte (was dabei herauskam), dazu Seiten zum Bau einer neuen Karte aus vorhandenen Teilen, zu Missionen, Kartenprototypen, DLC-Tests und Waffen. Die Notizen bewahren die Originalmessungen, gescheiterte Versuche und offene Fragen. Eigene Ergebnisse enthält die Seite nicht; sie hilft dir, die passende Seite zu finden.</p><ul><li>24 Forschungsaufträge, z. B. zu Verschlüsselungsschlüsseln, Mesh- und Kollisionsformaten.</li><li>36 Forschungsberichte mit Ergebnissen, z. B. zu Textur-Schlüsseln, Spielständen und eigenen Karten.</li><li>Eigene Abschnitte zu Kartenbau aus Bausteinen, Missionen, Kartenprototypen, DLC-Tests und Waffen.</li><li>Gescheiterte Ansätze und Unsicherheiten werden nicht geglättet, sondern festgehalten.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>This index contains every Markdown research note from <code>re_probes</code>. The pages preserve the original measurements, failed approaches, uncertainty, and hand-off instructions while presenting them in English.</p>
+<h2 id="research-briefs">Research Briefs</h2>
+<ul>
+<li><a href="Research-Brief-Cfilekey2.html">Identity</a> — source: <code>re_probes/agent_briefs/cfilekey2.md</code></li>
+<li><a href="Research-Brief-Cmdtable.html">Identity</a> — source: <code>re_probes/agent_briefs/cmdtable.md</code></li>
+<li><a href="Research-Brief-Cmfmt.html">Identity</a> — source: <code>re_probes/agent_briefs/cmfmt.md</code></li>
+<li><a href="Research-Brief-Command-Queue.html">Mission: Retail Command Execution</a> — source: <code>re_probes/agent_briefs/command_queue.md</code></li>
+<li><a href="Research-Brief-Cvartable.html">Identity</a> — source: <code>re_probes/agent_briefs/cvartable.md</code></li>
+<li><a href="Research-Brief-Datahash.html">Identity</a> — source: <code>re_probes/agent_briefs/datahash.md</code></li>
+<li><a href="Research-Brief-Dlc-Primary.html">Research Task: DLC-/Patch Container and Priority</a> — source: <code>re_probes/agent_briefs/dlc_primary.md</code></li>
+<li><a href="Research-Brief-Entitypipe.html">Identity</a> — source: <code>re_probes/agent_briefs/entitypipe.md</code></li>
+<li><a href="Research-Brief-Execcarrier.html">Identity</a> — source: <code>re_probes/agent_briefs/execcarrier.md</code></li>
+<li><a href="Research-Brief-Hash08.html">Investigation Task: IDCL Header Hash at +0x08</a> — source: <code>re_probes/agent_briefs/hash08.md</code></li>
+<li><a href="Research-Brief-Idclhash.html">Identity</a> — source: <code>re_probes/agent_briefs/idclhash.md</code></li>
+<li><a href="Research-Brief-Idclwriter.html">Identity</a> — source: <code>re_probes/agent_briefs/idclwriter.md</code></li>
+<li><a href="Research-Brief-Loose-Assets.html">Search Task: Loose Assets and External Load Paths</a> — source: <code>re_probes/agent_briefs/loose_assets.md</code></li>
+<li><a href="Research-Brief-Map-Bundle-V3.html">Identity</a> — source: <code>re_probes/agent_briefs/map_bundle_v3.md</code></li>
+<li><a href="Research-Brief-Map-Selection.html">Research Task: Map/DLC Selection Logic</a> — source: <code>re_probes/agent_briefs/map_selection.md</code></li>
+<li><a href="Research-Brief-Mapmanifest.html">Identity</a> — source: <code>re_probes/agent_briefs/mapmanifest.md</code></li>
+<li><a href="Research-Brief-Matpipe.html">Identity</a> — source: <code>re_probes/agent_briefs/matpipe.md</code></li>
+<li><a href="Research-Brief-Meshfmt.html">Identity</a> — source: <code>re_probes/agent_briefs/meshfmt.md</code></li>
+<li><a href="Research-Brief-Save-Integrity-V3.html">Identity</a> — source: <code>re_probes/agent_briefs/save_integrity_v3.md</code></li>
+<li><a href="Research-Brief-Save-Load-Route.html">Mission: TNC Savegame/Menu Load Path</a> — source: <code>re_probes/agent_briefs/save_load_route.md</code></li>
+<li><a href="Research-Brief-Savestructure.html">Identity</a> — source: <code>re_probes/agent_briefs/savestructure.md</code></li>
+<li><a href="Research-Brief-Saveverify.html">Identity</a> — source: <code>re_probes/agent_briefs/saveverify.md</code></li>
+<li><a href="Research-Brief-Texdbkey.html">Identity</a> — source: <code>re_probes/agent_briefs/texdbkey.md</code></li>
+<li><a href="Research-Brief-Vtrest.html">Identity</a> — source: <code>re_probes/agent_briefs/vtrest.md</code></li>
+</ul>
+<h2 id="research-reports">Research Reports</h2>
+<ul>
+<li><a href="Research-Report-Assetviewer.html">Asset Tab for Wolfenstein II (assetviewer)</a> — source: <code>re_probes/agent_reports/assetviewer.md</code></li>
+<li><a href="Research-Report-C2v1-Identity.html">c2v1-Alias: File-Corrupt-Identitaet</a> — source: <code>re_probes/agent_reports/c2v1_identity.md</code></li>
+<li><a href="Research-Report-Cfilekey2.html"><code>cfile</code> — Key derivation found, corpus decrypted, round-trip byte-exact</a> — source: <code>re_probes/agent_reports/cfilekey2.md</code></li>
+<li><a href="Research-Report-Chunklist.html">packagechunklist.json in TNC-Retail: Clear Negative</a> — source: <code>re_probes/agent_reports/chunklist.md</code></li>
+<li><a href="Research-Report-Cmdtable.html">TNC Command Registry – Runtime Image Analysis</a> — source: <code>re_probes/agent_reports/cmdtable.md</code></li>
+<li><a href="Research-Report-Cmfmt.html">cm (Collision): Layout, Round-Trip, Box-Hull, Binding</a> — source: <code>re_probes/agent_reports/cmfmt.md</code></li>
+<li><a href="Research-Report-Command-Queue.html">Static Research: Retail Command Queue (TNC)</a> — source: <code>re_probes/agent_reports/command_queue.md</code></li>
+<li><a href="Research-Report-Custom-Save-Registration.html">TNC custom-save registration investigation</a> — source: <code>re_probes/agent_reports/custom_save_registration.md</code></li>
+<li><a href="Research-Report-Cvartable.html">TNC Cvar Catalog – Runtime Image Analysis</a> — source: <code>re_probes/agent_reports/cvartable.md</code></li>
+<li><a href="Research-Report-Datahash.html"><code>entry+0x50</code> (data_hash) and <code>entry+0x60</code> (hash_0x60) — from the code</a> — source: <code>re_probes/agent_reports/datahash.md</code></li>
+<li><a href="Research-Report-Dlc4-Cfile.html"><code>dlc_4</code> Map plus <code>cfile:wolfsdk_test.cfg</code></a> — source: <code>re_probes/agent_reports/dlc4_cfile.md</code></li>
+<li><a href="Research-Report-Dlc4-Override.html">Override-Chunk: Custom edits under the Retail card name <code>c2v1</code></a> — source: <code>re_probes/agent_reports/dlc4_override.md</code></li>
+<li><a href="Research-Report-Dlc-Primary.html">DLC-/Patch Container as Primary Source — Static Finding</a> — source: <code>re_probes/agent_reports/dlc_primary.md</code></li>
+<li><a href="Research-Report-Entitypipe.html">Entity-Pipeline: Custom map on Retail geometry via <code>.entities</code></a> — source: <code>re_probes/agent_reports/entitypipe.md</code></li>
+<li><a href="Research-Report-Execcarrier.html">The <code>cfile</code> Carrier: Smallest DLC to Carry a Resource</a> — source: <code>re_probes/agent_reports/execcarrier.md</code></li>
+<li><a href="Research-Report-Explosivpistole-Diag.html">Explosive Pistol Does Not Explode: Diagnosis</a> — source: <code>re_probes/agent_reports/explosivpistole_diag.md</code></li>
+<li><a href="Research-Report-Gore-Runtime.html">TNC Gore-Runtime: Findings and Next Test Path</a> — source: <code>re_probes/agent_reports/gore_runtime.md</code></li>
+<li><a href="Research-Report-Hash08.html">Hash08 static probe report</a> — source: <code>re_probes/agent_reports/hash08.md</code></li>
+<li><a href="Research-Report-Idclhash.html">IDCL Header <code>+0x08</code> — Solved (derived from code, not a hash sweep)</a> — source: <code>re_probes/agent_reports/idclhash.md</code></li>
+<li><a href="Research-Report-Idclwriter.html">IDCL-Writer: Write the four hashes instead of copying</a> — source: <code>re_probes/agent_reports/idclwriter.md</code></li>
+<li><a href="Research-Report-Loose-Assets.html">TNC Retail: lose/external load paths (read-only findings only)</a> — source: <code>re_probes/agent_reports/loose_assets.md</code></li>
+<li><a href="Research-Report-Map-Bundle-V3.html">Alias Package v3</a> — source: <code>re_probes/agent_reports/map_bundle_v3.md</code></li>
+<li><a href="Research-Report-Map-Selection.html">Map/DLC Selection Logic (Static Findings)</a> — source: <code>re_probes/agent_reports/map_selection.md</code></li>
+<li><a href="Research-Report-Mapmanifest.html">Map-Manifest: What a map must know about an asset</a> — source: <code>re_probes/agent_reports/mapmanifest.md</code></li>
+<li><a href="Research-Report-Mapview.html">3D Map View: Server, CLI, and Loader Button</a> — source: <code>re_probes/agent_reports/mapview.md</code></li>
+<li><a href="Research-Report-Matpipe.html">matpipe: material → image → texdb, end-to-end</a> — source: <code>re_probes/agent_reports/matpipe.md</code></li>
+<li><a href="Research-Report-Meshfmt.html">Mesh Format (model / modelAsset / modelstream): Resolved, Box is writable</a> — source: <code>re_probes/agent_reports/meshfmt.md</code></li>
+<li><a href="Research-Report-Missions.html">Mission Builder Kit: Custom Missions for the Gestapo Office Map (c2v1)</a> — source: <code>re_probes/agent_reports/missions.md</code></li>
+<li><a href="Research-Report-Save-Integrity-V3.html">Offline Save Repair v3</a> — source: <code>re_probes/agent_reports/save_integrity_v3.md</code></li>
+<li><a href="Research-Report-Save-Load-Route.html">TNC Save-/Menu Load Path (Static Research)</a> — source: <code>re_probes/agent_reports/save_load_route.md</code></li>
+<li><a href="Research-Report-Savestructure.html">Why the edited save state was rejected — Structure of <code>checkpoint.dat</code></a> — source: <code>re_probes/agent_reports/savestructure.md</code></li>
+<li><a href="Research-Report-Saveverify.html"><code>.verify</code> in Wolfenstein II — Generation, Verification, and Its Role During Loading</a> — source: <code>re_probes/agent_reports/saveverify.md</code></li>
+<li><a href="Research-Report-Small-Custom-Map.html">TNC Small Custom Map Prototype</a> — source: <code>re_probes/agent_reports/small_custom_map.md</code></li>
+<li><a href="Research-Report-Texdb-Rewrite.html">TNC texdb / custom-map alias: findings</a> — source: <code>re_probes/agent_reports/texdb_rewrite.md</code></li>
+<li><a href="Research-Report-Texdbkey.html">The TexDB Key — Solved (from the code, not a hash sweep)</a> — source: <code>re_probes/agent_reports/texdbkey.md</code></li>
+<li><a href="Research-Report-Tnc-Custom-Maps.html">TNC: Custom Map Registration and Load Path (Read-Only Finding)</a> — source: <code>re_probes/agent_reports/tnc_custom_maps.md</code></li>
+</ul>
+<h2 id="kit-based-map-research">Kit-Based Map Research</h2>
+<ul>
+<li><a href="Kitmap-Design-Report.html">Kitmap c2v1: Level Design "Atriumhall"</a> — source: <code>re_probes/kitmap/design/BERICHT.md</code></li>
+<li><a href="Kitmap-Kit-Survey.html">Kit-Survey c2v1: Components for a New Map</a> — source: <code>re_probes/kitmap/kit/bericht.md</code></li>
+<li><a href="Kitmap-Map-Skeleton.html">Skeleton for a new map in c2v1</a> — source: <code>re_probes/kitmap/skeleton/BERICHT.md</code></li>
+</ul>
+<h2 id="mission-research">Mission Research</h2>
+<ul>
+<li><a href="Mission-Anatomy.html">Mission Anatomy: How Wolfenstein II Builds a Mission (c2v1 "Gestapo Office")</a> — source: <code>re_probes/missions/anatomy/anatomy.md</code></li>
+<li><a href="Mission-Kiscule-Scripting.html">Writing Kiscule – Scripts for Custom Missions</a> — source: <code>re_probes/missions/kiscule/BERICHT.md</code></li>
+<li><a href="Mission-Text.html">Mission Text Sources: Where Goal and HUD Text Comes From and What a DLC Folder Can Change</a> — source: <code>re_probes/missions/text/text.md</code></li>
+</ul>
+<h2 id="custom-map-prototypes">Custom-Map Prototypes</h2>
+<ul>
+<li><a href="TNC-C3V1-Custom-Map-Prototype.html">TNC c3v1_custom – Alias Prototype</a> — source: <code>re_probes/tnc_custom_map_c3v1_custom/README.md</code></li>
+</ul>
+<h2 id="dlc-runtime-tests">DLC Runtime Tests</h2>
+<ul>
+<li><a href="TNC-DLC-C02-Runtime-Test.html">Primary DLC Test c02p0</a> — source: <code>re_probes/tnc_dlc_test/runtime_primary_c02/RESULT.md</code></li>
+</ul>
+<h2 id="weapon-research">Weapon Research</h2>
+<ul>
+<li><a href="Explosive-Pistol-Research.html">Pistol: Decl Chain and Explosive Pistol</a> — source: <code>re_probes/weapons/pistole_explosiv.md</code></li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="Research-Status-2026-09-21.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Status — 21.09.2026, 21:00</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

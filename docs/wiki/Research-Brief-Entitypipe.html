@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Entitypipe – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: build a pipeline for a playable custom TNC map by editing the entity file of an existing level.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Entitypipe</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Entitypipe"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is the task description given to a research worker, not a result. The goal for Wolfenstein II: The New Colossus is a custom map on existing level geometry: read a map&#x27;s <span class="t" data-t="entity">entity</span> file, change enemies, pickups, lights, triggers or the spawn point, rebuild the archive and verify it. The brief lists what is already solved, what must be proven, and what the worker must not touch.</p><ul><li>Source map: the Gestapo office (c2v1) from DLC 2; its entity file is plain text.</li><li>Required: a byte-exact round-trip over every entity file, and edits that change only the intended bytes.</li><li>At least three distinct changes a player would notice, each listed with its entity name.</li><li>The checker must reject a broken block, a dangling reference and a duplicate name.</li><li>No install and no game launch; the result must be labelled &quot;structurally valid, runtime unconfirmed&quot;.</li></ul></div><div class="de"><p class="lede">Diese Seite ist die Aufgabenstellung für einen Forschungs-Worker, kein Ergebnis. Ziel für Wolfenstein II: The New Colossus ist eine eigene Karte auf vorhandener Level-Geometrie: die <span class="t" data-t="entity">Entity</span>-Datei einer Karte lesen, Gegner, Pickups, Lichter, Trigger oder den Startpunkt ändern, das Archiv neu bauen und prüfen. Das Briefing nennt, was schon gelöst ist, was bewiesen werden muss und was der Worker nicht anfassen darf.</p><ul><li>Ausgangskarte: das Gestapo-Büro (c2v1) aus DLC 2; seine Entity-Datei ist reiner Text.</li><li>Gefordert: ein byte-genauer Roundtrip über jede Entity-Datei und Änderungen, die nur die beabsichtigten Bytes betreffen.</li><li>Mindestens drei verschiedene Änderungen, die man als Spieler bemerkt, jeweils mit Entity-Namen aufgelistet.</li><li>Der Prüfer muss einen kaputten Block, einen ins Leere zeigenden Verweis und einen doppelten Namen ablehnen.</li><li>Keine Installation und kein Spielstart; das Ergebnis muss als „strukturell gültig, im Spiel unbestätigt“ gekennzeichnet sein.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-entitypipe-a1; task entitypipe; implement.
+Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Parallel: w-meshfmt-a1 (geometry), w-cmfmt-a1 (collision), w-matpipe-a1
+(surfaces), w-mapmanifest-a1 (streaming). You own placement and authoring.</p>
+<h1 id="objective">Objective</h1>
+<p>You are the one worker on this wave whose result can be PLAYABLE without any
+further format being cracked - so treat that as the goal, not a side effect.</p>
+<p>Build the authoring pipeline for a custom map on existing geometry: read a
+retail map's <code>.entities</code>, change it meaningfully, rebuild the bundle, verify it.
+Concretely, produce a map that differs from retail in ways a player would
+notice: enemy placement and counts, item and weapon pickups, lights, triggers,
+spawn point. That is what "custom map" means for most id Tech games that ship
+without an editor, and everything needed for it is already solved.</p>
+<h1 id="what-is-already-solved---build-directly-on-it">What is already solved - build directly on it</h1>
+<ul>
+<li><code>wolfsdk/idclwrite.py</code> - container writer, round-trips retail archives
+  BYTE-IDENTICALLY (3/3), 6/6 negative controls, <code>finalize()</code> recomputes every
+  hash. Independently re-verified by the master today.</li>
+<li>The other master (codex/Astra) already proved ONE authored entity change
+  survives a bundle build: a cyan lobby light at 8.72,-192.97,1.32 in
+  <code>re_probes/map_alias_v3/bundle_headerfixed/</code> - READ IT AS A REFERENCE, do not
+  modify it, it is their only copy. Their <code>docs/tnc_astra_findings_20260923.md</code>
+  documents the alias/MRL work.</li>
+<li><code>re_probes/idclwriter/chunk_22.resources</code> is that same bundle with its four
+  stale entry hashes repaired (7127/7127). Read-only for you.</li>
+<li>The <code>.entities</code> file is a <code>compfile</code> and is TEXT - <code>compfile:maps/game/dlc/
+  c02/c2v1_custom.entities</code>, 256319 bytes uncompressed. That is your input.</li>
+<li><code>tools/entities.py</code> (part 1 entity work) and <code>tools/build_entities_mod.py</code>
+  exist - read them, reuse what fits.</li>
+</ul>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li>Retail source map: <code>D:/SteamLibrary/.../dlc/dlc_2/base/chunk_22.resources</code>
+  (c2v1, Gestapo Office). READ ONLY.</li>
+<li><code>re_probes/agent_reports/{small_custom_map,idclwriter,execcarrier}.md</code></li>
+<li><code>docs/karten.md</code>, <code>docs/kiscule.md</code> (2408 script files, 205 node types -
+  scripted events live there), <code>docs/moddingflaeche-tnc.md</code>.</li>
+<li>The entity grammar is id Tech 6 and close to Doom 2016's <code>.entities</code>. Public
+  knowledge is a legitimate starting point, but VERIFY every claim against the
+  actual file - do not import assumptions.</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/build_custom_map.py (new - the pipeline), tools/probe_entitypipe.py (new -
+checks), re_probes/entitypipe/ (new dir, the built map), and
+re_probes/agent_reports/entitypipe.md.
+Everything else is read-only: <code>wolfsdk/*</code>, other workers' tools, dlc_4,
+re_probes/{map_alias_v3,idclwriter,execcarrier,cfilekey}/.</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p><strong>Do not install into the game folder and do not launch the game.</strong> The user
+runs installs themselves, in a five-minute window. No writes to
+"C:/Users/‹user›/Saved Games". No pip install. Do not edit any other worker's
+files, docs/*, or config.json.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib only. Reproducible from the command line.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li>A parser/serializer for <code>.entities</code> with a byte-exact round-trip on the real
+  file: read it, write it back unchanged, get identical bytes. Without that, an
+  edit is guesswork. State it as n/n over every <code>compfile</code> entity file you can
+  find, not just one.</li>
+<li>Surgical edits: changing one property must leave every other byte untouched.
+  Prove it with a diff, the way the part-1 decl editor does.</li>
+<li>A built map bundle under <code>re_probes/entitypipe/</code> containing at least three
+  DISTINCT, player-visible changes (not just a light), each listed in the report
+  with its entity name and what a player would see.</li>
+<li>It must pass <code>tools/probe_datahash.py</code> n/n and <code>tools/probe_idclhash.py</code> OK.</li>
+<li>Negative controls: a malformed entity block, a dangling entity reference and a
+  duplicate entity name must each be REJECTED by your checker. A checker that
+  accepts everything measures nothing.</li>
+<li>A five-line runbook at the end of the report: install, launch, what to look
+  for, how to tell it worked, uninstall.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Nothing offline proves the map loads. Say "structurally valid by these checks,
+runtime unconfirmed". Be especially careful with entity references: a spawn that
+names a non-existent entityDef will not be caught by any hash check but will
+break the map.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If the entities file turns out to be a compiled/binary form rather than the text
+it appears to be, say so immediately with evidence. If a change class (e.g.
+adding a new enemy rather than moving an existing one) needs an asset that is
+not in the map's chunk, name that dependency rather than shipping a map that
+will fail to resolve it.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones. Publish a bus fact when the entities round-trip is
+byte-exact, and again when the bundle verifies - the other four workers are
+building the pieces that will eventually plug into YOUR pipeline. Concise German
+report in re_probes/agent_reports/entitypipe.md. Finish the bus task.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Dlc-Primary.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research Task: DLC-/Patch Container and Priority</a><a class="next" href="Research-Brief-Execcarrier.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Execcarrier</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

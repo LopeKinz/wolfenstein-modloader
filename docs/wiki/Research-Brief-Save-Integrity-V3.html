@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Save Integrity V3 – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: find offline why custom-map save candidates for Wolfenstein II are broken, and fix the builder.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Save Integrity V3</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Save-Integrity-V3"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This is the assignment given to a research worker, not a result. Save game candidates for a custom map in Wolfenstein II: The New Colossus were malformed, and earlier explanations were only hypotheses. The worker must parse original and candidate files to find the concrete structural errors, fix the candidate builder and, if possible, work out the <span class="t" data-t="checksum">checksum</span> in game.details. Correct 4-byte <span class="t" data-t="hash">hashes</span> alone must not be taken as proof that a save is valid.</p><ul><li>Suspected issue: the builder replaces map names but may leave old length values in place.</li><li>The game.details checksum should be tested against several original files, not just one sample.</li><li>Rebuilding an unchanged save must give byte-identical files; longer and shorter names must also work.</li><li>Deliberately wrong length values and checksums must be rejected by the checks.</li><li>No writing to real saves, no game launch, and no claim that the map is playable.</li></ul></div><div class="de"><p class="lede">Dies ist der Auftrag an einen Forschungs-Worker, kein Ergebnis. Spielstand-Kandidaten für eine eigene Karte in Wolfenstein II: The New Colossus waren fehlerhaft, und frühere Erklärungen waren nur Vermutungen. Der Worker soll Original- und Kandidatendateien einlesen, die konkreten Strukturfehler finden, den Kandidaten-Builder reparieren und wenn möglich die <span class="t" data-t="checksum">Prüfsumme</span> in game.details herausfinden. Korrekte 4-Byte-<span class="t" data-t="hash">Hashes</span> allein gelten nicht als Beweis, dass ein Spielstand gültig ist.</p><ul><li>Vermutetes Problem: Der Builder ersetzt Kartennamen, lässt aber möglicherweise alte Längenwerte stehen.</li><li>Die Prüfsumme in game.details soll an mehreren Originaldateien getestet werden, nicht an einer einzelnen.</li><li>Ein unveränderter Spielstand muss beim Neubau bytegleich herauskommen; längere und kürzere Namen müssen ebenfalls funktionieren.</li><li>Absichtlich falsche Längenwerte und Prüfsummen müssen von den Prüfungen abgelehnt werden.</li><li>Kein Schreiben in echte Spielstände, kein Spielstart und keine Behauptung, die Karte sei spielbar.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-save_integrity_v3-a1; task save_integrity_v3; research/implement.
+Read .agent-cache/WORKER.md. Bus script C:/Users/‹user›/.agents/skills/agent-cache-orchestrator/scripts/acbus.py.</p>
+<h1 id="objective">Objective</h1>
+<p>Determine the exact cause of our malformed custom-map save candidates offline. Fix the candidate builder and derive game.details checksum if possible. Prior reports are hypotheses, not trustworthy runtime proof.</p>
+<h1 id="verification-behavior">Verification behavior</h1>
+<p>For every important assurance provide a negative counterexample. Report uncertainty and failed hypotheses explicitly. Correct DAT hashes alone do not imply a structurally valid save. Do not conclude verify files block saves from AES strings or unknown checksum alone.</p>
+<h1 id="sources">Sources</h1>
+<ul>
+<li>tools/build_custom_save_candidate.py (currently replaces NUL strings in mapstart, but length prefixes may remain stale; checkpoint special case duplicated).</li>
+<li>re_probes/save_backups/SLOT0_before_c2custom (original FC2-WOLF0)</li>
+<li>re_probes/custom_save_candidates/FC2-WOLF0-c2v1_custom_v2</li>
+<li>tools/probe_savegame.py, tools/savehash.py, docs/spielstaende.md</li>
+<li>public primary id Software Doom3/BFG idDict::Checksum source: test dictionary checksum algorithms against multiple distinct original game.details. Browse when using external sources.</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/build_custom_save_candidate.py; new tools/probe_details_checksum.py; new tools/verify_custom_save_candidate.py; re_probes/agent_reports/save_integrity_v3.md; new isolated candidate under re_probes/custom_save_candidates/<em>v3</em>.</p>
+<h1 id="forbidden">Forbidden</h1>
+<p>No live save writes, game install writes, launches, process memory modifications, or claims of playable map. No broad test suites. Other docs and source belong to master.</p>
+<h1 id="acceptance">Acceptance</h1>
+<p>Find concrete structural errors by parsing actual original/candidate files; preserve untouched structures; candidate identity transform should be byte-exact for relevant DAT/details; longer/shorter names must round-trip; deliberate malformed prefixes/checksum rejected. Check game.details checksum on corpus if solved, not one sample. If not solved, clearly mark candidate invalid/unverified.</p>
+<h1 id="coordination-and-deliverable">Coordination and deliverable</h1>
+<p>Checkpoint meaningful milestones, publish proven cross-worker findings, return concise findings and artifacts. Finish bus task when work done, master verifies. Real token metrics only if available.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Meshfmt.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Meshfmt</a><a class="next" href="Research-Brief-Save-Load-Route.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Mission: TNC Savegame/Menu Load Path</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

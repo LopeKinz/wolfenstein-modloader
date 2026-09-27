@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Can a DLC Chunk overwrite an asset from the base game? – Wolfenstein Modloader</title>
+<meta name="description" content="Can a DLC package in The New Colossus replace base-game assets, so mods could be a simple drop-in folder?">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tnc"><span class="en">The New Colossus</span><span class="de">The New Colossus</span></a></p>
+<h1>Can a DLC Chunk overwrite an asset from the base game?</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/DLC-Overrides"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-answer-with-evidence-grade">0. Answer with Evidence Grade</a></li><li><a href="#1-the-decisive-measurement">1. The Decisive Measurement</a></li><li><a href="#2-the-one-case-where-two-containers-conflict">2. The One Case Where Two Containers Conflict</a></li><li><a href="#3-the-packagemapspec-fields--with-prediction-tests">3. The packagemapspec Fields — with Prediction Tests</a></li><li><a href="#4-what-the-exe-says-about-the-dlc-path">4. What the Exe Says About the DLC Path</a></li><li><a href="#5-part-1--no-packagemapspecjson-but-masterindex">5. Part 1 — no packagemapspec.json, but master.index</a></li><li><a href="#6-the-built-package-dlc_4">6. The built package dlc_4</a></li><li><a href="#7-the-guide">7. The Guide</a></li><li><a href="#8-what-remains-open-and-which-experiment-decides-it">8. What remains open, and which experiment decides it</a></li><li><a href="#sources">Sources</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">In Wolfenstein II: The New Colossus, the team checked whether a DLC <span class="t" data-t="chunk">chunk</span> can overwrite an asset from the base game. If so, a mod could be a folder you add and delete, without touching the installation. The shipped DLCs never replace anything: 7,733 assets appear twice, but every copy is identical. A later game test showed a self-built DLC is found, but an extra dependency chunk does not win over the original map data. Using a DLC chunk as the primary source is still blocked by an unknown <span class="t" data-t="checksum">checksum</span> in the file <span class="t" data-t="header">header</span>.</p><ul><li>7,733 assets exist in both a DLC chunk and a base archive, and all 7,733 are bit-identical.</li><li>Game test: a self-built dlc_4 was detected (found 4 dlcs); the ownership check did not block it.</li><li>An added dependency chunk did not override the original map data; the primary chunk won.</li><li>One header check value (at +0x08) is still unknown, which blocks the remaining test.</li><li>The New Order has no comparable DLC map list, so this path is only realistic for The New Colossus.</li></ul></div><div class="de"><p class="lede">Für Wolfenstein II: The New Colossus wurde geprüft, ob ein DLC-<span class="t" data-t="chunk">Chunk</span> ein Asset aus dem Hauptspiel überschreiben kann. Dann wäre ein Mod ein Ordner, den du hinzufügst und wieder löschst, ohne die Installation anzufassen. Die offiziellen DLCs ersetzen nie etwas: 7.733 Assets liegen doppelt vor, aber jede Kopie ist identisch. Ein späterer Spieltest zeigte, dass ein selbst gebautes DLC erkannt wird, ein zusätzlicher Abhängigkeits-Chunk aber nicht gegen die Originaldaten gewinnt. Ein DLC-Chunk als Hauptquelle scheitert noch an einer unbekannten <span class="t" data-t="checksum">Prüfsumme</span> im <span class="t" data-t="header">Header</span>.</p><ul><li>7.733 Assets liegen sowohl in einem DLC-Chunk als auch im Hauptarchiv, und alle 7.733 sind bitgleich.</li><li>Spieltest: Ein selbst gebautes dlc_4 wurde erkannt (found 4 dlcs); die Besitzprüfung hat es nicht blockiert.</li><li>Ein zusätzlicher Abhängigkeits-Chunk hat die Originaldaten der Karte nicht überschrieben; der Haupt-Chunk hat gewonnen.</li><li>Ein Prüfwert im Header (bei +0x08) ist noch unbekannt und blockiert den letzten Test.</li><li>The New Order hat keine vergleichbare DLC-Kartenliste; der Weg ist nur für The New Colossus realistisch.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p><em>Wolfenstein II</em> ships with three released DLCs. Each registers via its own <code>packagemapspec.json</code> and brings its own <code>chunk_&lt;id&gt;.resources</code>. If such a chunk can overwrite an <strong>existing</strong> asset, then the entire patch machinery for Part 2 becomes optional: a mod would then be a folder you drop in and take out — without backup, without journaling, without rollback, without a single write operation to the 40-GB installation.</p>
+<p>All of this is lifted <strong>read-only</strong> from the unmodified Retail installation at <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus</code> and <code>…\Wolfenstein.The.New.Order</code>. Reproducible with:</p>
+<pre><code class="language-bash">python tools/dlcmod.py messung      # the decisive measurement
+python tools/dlcmod.py felder       # packagemapspec fields, with prediction tests
+python tools/dlcmod.py selbsttest   # the archiver builder
+python tools/dlcmod.py bauen --ziel &lt;folder outside the Steam library&gt;
+</code></pre>
+<p>Grades like those in <code>docs/patchvorrang.md</code>: <strong>MEASURED</strong> (read from files), <strong>DEDUCED</strong> (inferred from structure), <strong>SPECULATED</strong> (plausible, not secured).</p>
+<hr />
+<h2 id="0-answer-with-evidence-grade">0. Answer with Evidence Grade</h2>
+<blockquote>
+<p><strong>Short:</strong> Not determinable from the files — and for a reason that is itself an outcome: the three released DLCs do <strong>not overwrite a single</strong> asset. They <strong>double</strong>. In 7,733 instances, the same <code>(Type,Name)</code> pair exists in both a DLC chunk and a base archive, and <strong>in 7,733 instances the content is bit-identical</strong>. There is therefore no released precedent case from which to read the precedence rule.</p>
+<p>What the 7,733 instances do show: a name collision between a DLC chunk and the base archive is in this engine <strong>not an error case, but everyday occurrence</strong>. The engine has a resolution rule — otherwise it could not load the three DLCs. Only open is how that rule reads.</p>
+</blockquote>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Grade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>7,733 <code>(Type,Name)</code> overlaps between DLC chunk ↔ base archive, <strong>0</strong> with differing <code>data_hash</code></td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>2</td>
+<td>The engine keeps these 7,733 collisions out of the Retail game. A collision is not an error.</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Exactly <strong>one</strong> pair in the entire installation where a DLC chunk and a <em>Patch</em> container carry different content: <code>perks:perk/player/sp/grenadier_fc_base</code></td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>refchunks</code> literally means "dependency chunks" in the Exe: an <strong>registered</strong> refchunk is not doubled in the DLC chunk (15 remaining cases), a <strong>non-registered</strong> one is (1,495 cases)</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>gameresources</code> and <code>chunkbase_6</code> are not meaningfully doubled by any DLC (11 vs. 0 cases respectively) — they are always mounted</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>layer</code> is <strong>not</strong> <code>f(basechunkid)</code>: <code>basechunkid 6</code> carries <code>layer 1</code> in the base game, <code>layer −1</code> in the DLC. The 1:1 coverage from <code>Patch-Precedence.md</code> applies only within <code>base/</code>.</td>
+<td>MEASURED, correcting a previous statement</td>
+</tr>
+<tr>
+<td>7</td>
+<td>The Exe knows an entitlement check for DLCs (<code>idEntitlements::Get DLC %d not installed</code>) with <strong>exactly three</strong> named keys <code>ENTITLEMENT_DLC1..3</code> — contrary to <code>docs/ladepfade.md</code>, which notes "no visible ownership check" for Part 2</td>
+<td>MEASURED, correcting a previous statement</td>
+</tr>
+<tr>
+<td>8</td>
+<td>The DLC virtual textures overwrite nothing: they land in their <strong>own quadrant</strong> (<code>vt_useDLCVmtrPageFiles</code>)</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>9</td>
+<td>There can always be only <strong>one</strong> DLC sound container mounted simultaneously (<code>MountDlc: another dlc already mounted</code>)</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Part 1 has <strong>no</strong> <code>packagemapspec.json</code> equivalent. Instead, <code>master.index</code> — a pure file list without map names, layers, or refchunks.</td>
+<td>MEASURED</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="runtime-addendum-september-22-2026">Runtime Addendum, September 22, 2026</h3>
+<p>The controlled gameplay test now yields a narrower, more reliable answer than the pure file analysis:</p>
+<ul>
+<li>A newly built <code>dlc_4</code> is detected: <code>found dlc id 4 at ../dlc//dlc_4</code>, <code>SearchDLC: found 4 dlcs</code>. The ownership check does not block Discovery.</li>
+<li><code>resource_dlcDbgSearchPath</code> cannot be set in this Retail build; the log reports <code>Unknown command 'resource_dlcDbgSearchPath'</code>.</li>
+<li>A <code>refchunks: [26]</code> for <code>c02p0</code> actually requests <code>chunk_26</code>. However, a deliberately different but valid card Canary (<code>c02p0.entities</code>, <code>...100000</code> → <code>...900000</code>) was <strong>not</strong> used: the log still shows <code>...100000</code>. The primary <code>chunk_1</code> therefore wins against an additionally mounted Refchunk. <strong>MEASURED.</strong></li>
+<li>A freshly built IDCL container is strictly validated before loading. It requires the second <code>IDCL</code> directly following the metadata pools and a correct FarmHash64 at Header <code>+0x20</code>. Both are now present in the builder.</li>
+<li>Header <code>+0x08</code> is also actively checked; its algorithm remains undisclosed. The engine reports the calculated 64-bit value in the log upon deviation, thereby creating a targeted oracle, but no general formula exists yet.</li>
+</ul>
+<p><strong>Current Conclusion:</strong> An additional Refchunk is not an override path. The potential path via a DLC chunk selected as <em>primary</em> remains verifiable only when Header <code>+0x08</code> can be calculated universally. All test files have been removed from the game folder and the original <code>packagemapspec.json</code> has been byte-for-byte restored.</p>
+<hr />
+<h2 id="1-the-decisive-measurement">1. The Decisive Measurement</h2>
+<p><code>python tools/dlcmod.py messung</code>. All 24 base archives (178,077 entries, 167,694 unique pairs) against the three DLC chunks.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>DLC / Chunk</th>
+<th style="text-align: center;">Entries</th>
+<th style="text-align: center;">Also in Base</th>
+<th style="text-align: center;">Content Same</th>
+<th style="text-align: center;">Content <strong>Different</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dlc_1/chunk_20.resources</code></td>
+<td style="text-align: center;">13,366</td>
+<td style="text-align: center;">2,422</td>
+<td style="text-align: center;">2,422</td>
+<td style="text-align: center;"><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>dlc_2/chunk_22.resources</code></td>
+<td style="text-align: center;">6,985</td>
+<td style="text-align: center;">1,326</td>
+<td style="text-align: center;">1,326</td>
+<td style="text-align: center;"><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>dlc_3/chunk_24.resources</code></td>
+<td style="text-align: center;">12,754</td>
+<td style="text-align: center;">3,985</td>
+<td style="text-align: center;">3,985</td>
+<td style="text-align: center;"><strong>0</strong></td>
+</tr>
+<tr>
+<td><strong>Sum</strong></td>
+<td style="text-align: center;">33,105</td>
+<td style="text-align: center;"><strong>7,733</strong></td>
+<td style="text-align: center;"><strong>7,733</strong></td>
+<td style="text-align: center;"><strong>0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>MEASURED.</strong> The statement is complete; no sample: every single one of the 33,105 DLC entries was checked against the base index.</p>
+<p><code>data_hash</code> is content-dependent — the cross-check in <code>tools/dlcmod.py</code> unpacks 60 overlapping pairs from <code>dlc_1/chunk_20</code> and the respective base archive and compares them byte-by-byte: <strong>60 of 60 bit-identical</strong>. Thus, "same <code>data_hash</code>" here truly means "same content" rather than just "same length". MEASURED.</p>
+<h3 id="the-types-of-overlap">The Types of Overlap</h3>
+<p>The 7,733 are not an anomaly but precisely what a level needs:</p>
+<pre><code>cm 3119   image 1837   model 1395   material 591   anim 215   sound 118
+entityDef 56   decalatlas 56   perks 74   particle 50   md6Def 30   …
+</code></pre>
+<p>Collision models, images, models, materials — geometry and surfaces appearing in multiple chapters. A DLC chunk is a <strong>self-sustaining copy of everything its maps need and what isn't mounted anyway.</strong></p>
+<h3 id="why-this-does-not-answer-the-question--and-what-it-is-still-worth">Why This Does Not Answer the Question — And What It Is Still Worth</h3>
+<p>From 7,733 content-identical collisions it does <strong>not</strong> follow that the engine prefers a copy when content differs, nor that it does not. However, three things follow, and this is no comfort but substance:</p>
+<ol>
+<li><strong>A collision is not an error case.</strong> Anyone fearing that a self-built DLC chunk with an already existing name could drive the engine into <code>resource '%s' of type '%s' is orphaned</code> or <code>container entry defaulted</code>: this happens in the Retail game 7,733 times per DLC map. MEASURED.</li>
+<li><strong>The resolution rule exists and runs.</strong> Every time someone plays <em>Gunslinger Joe</em>, the engine decides between two containers 2,422 times. UNLOCKED.</li>
+<li><strong>The attempt is cheap.</strong> It requires no rebuilding of a base archive and no backup — just a folder that can be deleted again.</li>
+</ol>
+<hr />
+<h2 id="2-the-one-case-where-two-containers-conflict">2. The One Case Where Two Containers Conflict</h2>
+<p>Beyond perks 7 and 733, there is exactly <strong>one</strong> pair where a DLC chunk differs in content from another <em>provided</em> container — not from a base archive, but from a patch layer:</p>
+<pre><code>perks : perk/player/sp/grenadier_fc_base
+   chunk_16              263 B   2017-11-03   hash 189cd9c94538365b
+   dlc_1/chunk_20        263 B   2017-12-07   hash 189cd9c94538365b   &lt;- identical to chunk_16
+   patch_3_chunkbase_6   322 B   2018-02-24   hash ca35f0735b7b555b   &lt;- divergent
+</code></pre>
+<p>The difference, unpacked and diffed (<strong>MEASURED</strong>):</p>
+<pre><code class="language-diff">        regionUnlockName = &quot;#str_perk_grenadier_fc_tracking&quot;;
++       activateOnPerkItem = true;
++       item = &quot;player/perkitem&quot;;
+</code></pre>
+<p><strong>The timeline explains it completely.</strong> <code>dlc_1</code> was built on 2017‑12‑07 — which is bit-exact the date of the most recent entry in <code>patch_2</code>. Thus, it took on the content valid at that time. <code>patch_3</code> (2018‑02‑24) added two fields to the perk after that. <strong>And <code>dlc_1</code> reports <code>patchlevel 2</code>.</strong></p>
+<p><strong>RESOLVED, by backtracking across all three DLCs:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>DLC</th>
+<th style="text-align: right;"><code>patchlevel</code></th>
+<th>most recent entry in Chunk</th>
+<th>most recent entry in Patch Layer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dlc_1</code></td>
+<td style="text-align: right;">2</td>
+<td>2017‑12‑07</td>
+<td><code>patch_2</code>: 2017‑12‑07</td>
+</tr>
+<tr>
+<td><code>dlc_2</code></td>
+<td style="text-align: right;">3</td>
+<td>2018-01-25</td>
+<td>— (between <code>patch_2</code> and <code>patch_3</code>)</td>
+</tr>
+<tr>
+<td><code>dlc_3</code></td>
+<td style="text-align: right;">3</td>
+<td>2018-02-24</td>
+<td><code>patch_3</code>: 2018-02-24</td>
+</tr>
+</tbody>
+</table></div>
+<p>Thus, <code>patchlevel</code> in a DLC spec is <strong>the search upper bound for patch layers when loading a map from this spec</strong> — the same meaning as in <code>base/packagemapspec.json</code> (<code>docs/patchvorrang.md</code>, Finding 7), but applied card-locally. Under this interpretation, the contradiction is none: <code>patch_3_chunkbase_6</code> is not sought at all for a <code>dlc_1</code> map, and thus <code>dlc_1</code> brings the version fitting <code>patchlevel 2</code>.</p>
+<p><strong>The flip side is important for us:</strong> a self-built <code>dlc_4</code>, which declares a <strong>Base Map</strong> but reports an insufficiently low <code>patchlevel</code>, would strip its patch layers from that map. Therefore, both provided specs list <code>patchlevel: 4</code> — the same value as in <code>base/</code>.</p>
+<p><em>(CONJECTURED whether <code>patchlevel</code> applies per spec or globally takes the maximum. <code>patchlevel: 4</code> is harmless under either interpretation.)</em></p>
+<hr />
+<h2 id="3-the-packagemapspec-fields--with-prediction-tests">3. The <code>packagemapspec</code> Fields — with Prediction Tests</h2>
+<p><code>python tools/dlcmod.py fields</code>. 41 map entries: 31 from <code>base/</code>, 10 from the three DLCs. <code>basechunkid</code>, <code>chunkid</code>, <code>isbasechunk</code>, <code>layer</code>, <code>name</code> appear in all 41; <code>refchunks</code> only in 7 (4 × <code>dlc_1</code>, 3 × <code>dlc_2</code>).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>Map name, as loaded by the game</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td><code>chunkid</code></td>
+<td>In which <code>chunk_&lt;id&gt;.resources</code>/<code>.texdb</code> the map lies; <code>0</code> = <code>gameresources</code></td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td><code>basechunkid</code></td>
+<td>Common base archive: <code>0</code> = <code>gameresources</code>, <code>6</code> = <code>chunkbase_6</code></td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td><code>isbasechunk</code></td>
+<td>Only <code>common</code> and <code>init</code>, both <code>chunkid 0</code></td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td><code>refchunks</code></td>
+<td><strong>Dependency Chunks</strong>: in addition to mounted chunks</td>
+<td>MEASURED, see 3.1</td>
+</tr>
+<tr>
+<td><code>layer</code></td>
+<td>Load layer. See 3.2 — the previous interpretation was too narrow.</td>
+<td>PARTIALLY REFUTED</td>
+</tr>
+<tr>
+<td><code>patchinfo.patchlevel</code></td>
+<td>Search upper bound for <code>patch_N</code> layers</td>
+<td>RESOLVED, see 2</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="31-refchunks--the-prediction-that-holds">3.1 <code>refchunks</code> — the prediction that holds</h3>
+<p>The exe names it. <code>0x1426CF933</code>, <strong>MEASURED</strong>:</p>
+<pre><code>idResourceManagerLocal::GetIsChunkForMapInstalled: dlc maps are considdered
+installed for now %s, but checking dependency chunks
+</code></pre>
+<p>From this, the verifiable prediction: <strong>a chunk registered as <code>refchunks</code> will be mounted — thus the DLC chunk does not need its own copy of its assets. A chunk not registered must be duplicated.</strong></p>
+<p>Tested on the three chunks from which all three DLCs draw (<strong>MEASURED</strong>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;"><code>chunk_9</code></th>
+<th style="text-align: right;"><code>chunk_12</code></th>
+<th style="text-align: right;"><code>chunk_13</code></th>
+<th>registered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dlc_1</code></td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td>9, 12, 13</td>
+</tr>
+<tr>
+<td><code>dlc_2</code></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>127</strong></td>
+<td style="text-align: right;">1</td>
+<td>9, 13</td>
+</tr>
+<tr>
+<td><code>dlc_3</code></td>
+<td style="text-align: right;"><strong>692</strong></td>
+<td style="text-align: right;"><strong>459</strong></td>
+<td style="text-align: right;"><strong>217</strong></td>
+<td>none</td>
+</tr>
+</tbody>
+</table></div>
+<p>Six cells, six hits. Logged in → 0–10 copies. Not logged in → 127 to 692. <code>dlc_2</code> is the sharpest case: the same DLC doubles from <code>chunk_12</code> twelve times and exactly once from the two logged-in <code>chunk_9</code>/<code>chunk_13</code>.</p>
+<p>Overall picture across all three DLCs: <strong>15 copies from logged-in refchunks, 1,495 from non-logged-in.</strong></p>
+<p><strong>The 15 remaining cases are explained, not dismissed.</strong> All 14 from <code>dlc_1</code> are <code>image</code> entries with <code>$streamed</code> in the name:</p>
+<pre><code>image models/food/textures/icecream_01.tga$mtlkind=albedo$streamed
+image models/modules/neworleans/doors/textures/doorknob_01.tga$…$streamed
+</code></pre>
+<p><code>$streamed</code> images do not carry their payload data in the archive, but in <code>streamed.resources</code> (<code>docs/streamed.md</code>); the archive entry is a stub. <strong>SPECULATED:</strong> such a stub must reside in the container from which the map loads, and is therefore excluded from refchunk savings.</p>
+<h3 id="32-layer--the-previous-interpretation-was-too-narrow">3.2 <code>layer</code> — the previous interpretation was too narrow</h3>
+<p><code>docs/patchvorrang.md</code> notes: "<code>layer</code> matches <code>basechunkid</code> 1:1, without exception across all 31 maps." Across all <strong>41</strong> entries this is no longer true (<strong>MEASURED</strong>):</p>
+<pre><code>layer=-1  basechunkid=6   dlc    10 entries
+layer= 0  basechunkid=0   base    9 entries
+layer= 1  basechunkid=6   base   22 entries
+</code></pre>
+<p><code>basechunkid 6</code> carries two different <code>layer</code> values. The 1:1 match applies <strong>only within <code>base/</code></strong>; <code>layer −1</code> is a separate value led exclusively by DLC maps.</p>
+<p>What <code>layer</code> is remains open. The Exe has the Cvar <code>resource_ignoreLayers</code> with the description <em>"ignore layer bits and load all layers during map loads"</em> (<code>docs/patchvorrang.md</code>, Section 1) — <strong>Layer Bits</strong>, i.e., a bitmask. <strong>SPECULATED:</strong> <code>−1</code> is the mask "all bits set" and means "no layer restriction", which fits a DLC that is not part of the base game's chapter streaming. Not proven.</p>
+<h3 id="33-what-is-mounted-without-being-logged-in">3.3 What is mounted without being logged in</h3>
+<p>The doubling numbers say it directly (<strong>MEASURED</strong>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Target Archive</th>
+<th style="text-align: center;">Total Duplications from all three DLCs combined</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gameresources</code></td>
+<td style="text-align: center;"><strong>11</strong></td>
+</tr>
+<tr>
+<td><code>chunkbase_6</code></td>
+<td style="text-align: center;"><strong>0</strong></td>
+</tr>
+<tr>
+<td>logged-in refchunks</td>
+<td style="text-align: center;">15</td>
+</tr>
+<tr>
+<td>present only in <code>patch_*</code></td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td>non-logged-in <code>chunk_*</code></td>
+<td style="text-align: center;"><strong>7,703</strong></td>
+</tr>
+<tr>
+<td>Sum</td>
+<td style="text-align: center;">7,733</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>ELUCIDATED:</strong> <code>gameresources</code> and <code>chunkbase_6</code> are mounted for every map, so no one duplicates them. This is the decisive number for a mod: <strong>the seven <code>table:playerdamage/*</code> entries lie exclusively in <code>gameresources</code></strong> — i.e., in exactly the container every map brings along that no DLC has ever duplicated. Whether a DLC chunk can override it is thus the ultimate untested case.</p>
+<hr />
+<h2 id="4-what-the-exe-says-about-the-dlc-path">4. What the Exe Says About the DLC Path</h2>
+<p><code>NewColossus_x64vk.exe</code>, 58,062,032 bytes, <code>.text</code> SteamStub encrypted. Readable is <code>.rdata</code>. All addresses <strong>MEASURED</strong>, Virtual Addresses:</p>
+<h3 id="the-searchdlc-block">The <code>SearchDLC</code> Block</h3>
+<pre><code>0x1426CF690  resource_dlcDbgSearchPath
+0x1426CF6E0  %s/dlcinfo.json
+0x1426CF730  %s/base
+0x1426CF738  SearchDLC: Could not load mapspec for dlc id %d from %s
+0x1426CF770  SearchDLC: could not read existing dlc info file: %s
+0x1426CF7A8  dlcid
+0x1426CFAF0  SearchDLC: found %d dlcs
+0x1426CFB30  found dlc id %d at %s          &lt;- new, the success line per DLC
+0x1426CFB48  ../dlc/
+</code></pre>
+<p><code>found dlc id %d at %s</code> has previously appeared in no document. This is the line where one sees in the log <strong>per DLC</strong> that it was recognized, with ID and path — more precisely than the summary line <code>found %d dlcs</code>.</p>
+<p><strong>No ownership check exists in this literal block.</strong> MEASURED.</p>
+<h3 id="the-installation-check">The Installation Check</h3>
+<pre><code>0x1426CF8E3  GetIsChunkForMapInstalled: can't find chunk for map %s
+0x1426CF933  GetIsChunkForMapInstalled: dlc maps are considdered installed
+             for now %s, but checking dependency chunks
+0x1426CF9C3  GetIsChunkForMapInstalled: chunk %d for map %s is not installed
+0x1426CFA43  GetIsChunkForMapInstalled: chunk %d is a dlc and base chunk %d
+             is not in fast storage for map %s
+</code></pre>
+<p><strong>MEASURED.</strong> The engine explicitly tracks that a chunk is "a dlc" and checks the associated <code>basechunkid</code>. The message <code>can't find chunk for map %s</code> appears when a map name lacks a Spec entry — this is the first error that would trigger an incorrectly constructed <code>dlc_4</code>.</p>
+<h3 id="the-ownership-check-that-exists-for-part-2">The Ownership Check That Exists for Part 2</h3>
+<p><code>docs/ladepfade.md</code> states that the TNC path contains "no visible ownership check." This holds true for the <code>SearchDLC</code> block. However, elsewhere in the executable, it is clearly present (<strong>MEASURED</strong>):</p>
+<pre><code>0x1426DBD10  idEntitlements::Get DLC %d not installed
+             idEntitlements::Get DLC %d installed
+             idEntitlements::Get entitlements are empty
+             New DLC installed
+             .?AUCCallbackInternal_OnDLCInstalled@idEntitlements@@
+</code></pre>
+<p>and, with <strong>exactly three</strong> named identifiers:</p>
+<pre><code>GDM_CONNECTION_TO_HOST_DENIED_MISSING_ENTITLEMENT_DLC1 / _DLC2 / _DLC3
+GDM_KICKED_MISSING_ENTITLEMENT_DLC1 / _DLC2 / _DLC3
+GDM_DLC_ERROR_REMOVED / _MISSING_GENERIC / _CORRUPT
+SAVEGAME_E_DLC_NOT_FOUND
+idDeclChapter::DLC_CHAPTER_PRESENCE_00 / _01 / _02 / _03
+</code></pre>
+<p><code>ENTITLEMENT_DLC</code> exists only with the digits 1, 2, and 3 — <strong>MEASURED</strong>, across the entire executable. <code>DLC_CHAPTER_PRESENCE</code> has four slots, from <code>00</code> to <code>03</code>.</p>
+<p><strong>UNCOVERED:</strong> There is an entitlement layer, and it is hardwired for three entitlements. Whether <code>SearchDLC</code> queries it during mount is recorded in <code>.text</code> but is <strong>not measurable</strong>. This is the one risk that cannot be seen with a <code>dlcid: 4</code> — and the reason why the guide below searches the log precisely for this.</p>
+<h3 id="sound-and-virtual-textures">Sound and Virtual Textures</h3>
+<pre><code>0x14268C377  MountDlc: Could not mount dlc sound containers for %s
+0x14268C587  MountDlc: another dlc already mounted (%s) while mounting %s
+             MountDlc: dlc %s already mounted
+             MountDlc: mounting %s
+             UnmountDlc: unmounting %s
+</code></pre>
+<p><strong>MEASURED.</strong> There can <strong>only ever be one</strong> DLC sound container mounted simultaneously. This matches the file layout: each DLC has a complete, independent <code>base/sound/soundbanks/pc/</code> with the same filenames as the base game (<code>sound.pack</code>, <code>english(us).pack</code>, <code>prodspec.json</code>, <code>wwise_project.bin</code>) and its own <code>prodspec.json</code> with <code>patchlevel: 0</code> containing only the banks for its own maps. <strong>UNCOVERED:</strong> The DLC sound path <strong>replaces</strong> the base game's path for the duration of the DLC map — this is the only measured location where a DLC actually displaces a base game resource, and it does so via the file path, not the resource container.</p>
+<p>For virtual textures, it is reversed. <code>0x142679478</code>/<code>0x1426794B8</code>, two strings immediately adjacent, <strong>MEASURED</strong>:</p>
+<pre><code>&quot;Loads the dlc vmtr list for storing pages in the dlc quadrant.&quot;
+vt_useDLCVmtrPageFiles
+</code></pre>
+<p><em>(The mapping of Description↔Name here is unusually secure: in the same block directly before stands <code>"Loads the intro vmtr list for storing pages in the first quadrant." / vt_useIntroVmtrPageFiles</code>, and directly after are two further pairs in the same order, description then name.)</em></p>
+<p><strong>UNCOVERED:</strong> <code>dlc_1/virtualtextures/maps/game/dlc/c01/*.pages</code> is not a replacement for the base game's <code>virtualtextures/</code>, but rather an <strong>additional page source in its own quadrant</strong> of the physical page buffer. A DLC does not overwrite anything here either. For a <code>dlc_4</code> that brings no new maps, the folder is simply superfluous — which is why the built package omits it.</p>
+<hr />
+<h2 id="5-part-1--no-packagemapspecjson-but-masterindex">5. Part 1 — no <code>packagemapspec.json</code>, but <code>master.index</code></h2>
+<p><strong>MEASURED</strong>, <code>WolfNewOrder_x64.exe</code> and <code>…\Wolfenstein.The.New.Order\base\</code>:</p>
+<ul>
+<li>The strings <code>packagemapspec</code> and <code>mapspec</code> appear <strong>0 times</strong> in the executable.</li>
+<li>There is no <code>packagemapspec.json</code> on disk.</li>
+<li>Instead: <code>master.index</code>, 520 bytes, Magic <code>\x03SER</code>, followed by a u32 (big endian) <code>14</code> and 28 length-prefixed names:</li>
+</ul>
+<pre><code>chunk0.index  chunk0.resources  chunk1.index  chunk1.resources  …
+chunk13.index chunk13.resources
+</code></pre>
+<p>This is a <strong>pure file list</strong> — no card names, no <code>layer</code>, no <code>refchunks</code>, no <code>patchlevel</code>. It includes <code>gamechunktoinstallchunk.gic</code> (678 bytes, Magic <code>\x02CIG</code>), which maps game chunks to install chunks.</p>
+<p><strong>OPEN:</strong> Part 1 has no equivalent for <code>packagemapspec.json</code>. The map-to-chunk assignment is not in a plaintext file, but in the <code>.index</code> files and the <code>.gic</code>. Therefore, a Part 1 DLC cannot "register" anything — it can only carry packages that the engine opens via <code>OpenDLCFileHandles</code>.</p>
+<p>The hurdle remains that from <code>docs/ladepfade.md</code> E7: <code>info.txt</code> with <code>appID</code> and <code>dlcID</code>, and the message <code>User does not own this DLC.</code> There, ownership verification is explicitly stated in the literal block of the Mount function — whereas in Part 2 it resides in a different translation unit (<code>idEntitlements</code>).</p>
+<p><strong>Conclusion for Part 1:</strong> The DLC path there is <em>not</em> cheaper than in Part 2, but rather more expensive — more guessing involved (the <code>info.txt</code> dialect, four versions in <code>tools/dlcinfo.py</code>), an additional verified ownership check, and no spec format through which something could be registered. <strong>Part 2 is the path that should be taken.</strong></p>
+<hr />
+<h2 id="6-the-built-package-dlc_4">6. The built package <code>dlc_4</code></h2>
+<p><code>python tools/dlcmod.py build --target &lt;folder&gt;</code>. This tool <strong>refuses</strong> to write into the Steam library; placing it there is a manual step for the user.</p>
+<pre><code>dlc_4/dlcinfo.json                 19 Byte   { &quot;dlcid&quot; : 4 }
+dlc_4/base/packagemapspec.json    233 Byte
+dlc_4/base/chunk_26.resources   90 172 Byte   7 entries, all uncompressed
+dlc_4/base/chunk_26.texdb          32 Byte   empty
+stufe_b/packagemapspec.json                   Exchange file, see 7
+stufe_c/packagemapspec.json                   Exchange file, see 7
+</code></pre>
+<p>Content: the seven <code>table:playerdamage/*</code> from <code>mods/tnc_erste</code> — the multiplier for incoming player damage, set to 0 in all seven difficulty tables. Nothing new invented; the tool reads <code>mods/tnc_erste/mod.json</code> and applies the same <code>wolfsdk.decl.apply_patch</code> rule as the regular patch path.</p>
+<pre><code>{ spline clamp min 0.5 max 0.5 … }   -&gt;   { spline clamp min 0.0 max 0.0 … }
+</code></pre>
+<p>All seven replacements are <strong>byte-identical</strong> — <code>csize</code> and <code>usize</code> remain as they were. The tool aborts if a replacement changes the length.</p>
+<h3 id="the-selected-identifiers">The selected identifiers</h3>
+<p><strong><code>dlcid: 4</code>.</strong> Released are 1, 2, 3 (<code>dlc_1/2/3</code>), so 4 is the first free one. It collides with neither an existing folder nor any identifier provided by the game. <strong>The known risk:</strong> the entitlement layer knows only <code>ENTITLEMENT_DLC1..3</code> (Section 4). If <code>SearchDLC</code> queries it, <code>dlcid 4</code> fails — and exactly that appears in the log (<code>idEntitlements::Get DLC 4 not installed</code>). The attempt thus answers the question even when it fails.</p>
+<p><em>The alternative would be to use an occupied identifier (1, 2, or 3) — but this would mean competing with a released DLC for the same identifier (<code>found dlc id %d at %s</code> suggests a mapping from identifier to path). Try only after <code>dlcid 4</code> fails at entitlement, and then with the knowledge that the path is no longer interference-free.</em></p>
+<p><strong><code>chunkid: 26</code>.</strong> Occupied are 0 (<code>gameresources</code>), 1, 3, 4, 5, 6 (<code>chunkbase_6</code>), 7–16, and the DLC chunks 20, 22, 24. 26 continues the two-step sequence of DLCs and leaves 21/23/25 free, should the engine expect partner files there.</p>
+<h3 id="what-the-tool-does-not-compute">What the tool <strong>does not</strong> compute</h3>
+<p>Three fields <code>tools/dlcmod.py</code> cannot calculate, and this is also stated in the source text:</p>
+<ol>
+<li><strong><code>data_hash</code> and <code>hash_0x60</code></strong> of the entries. The algorithm is unknown (<code>wolfsdk/idcl.py</code>: neither CRC32/64, Adler32, FNV-1a, Murmur, xxHash64, MD5, SHA-1, FarmHash Fingerprint64 nor CityHash64 over stored or unpacked bytes). <code>tools/probe_tnc_hash.py</code> additionally checked Type/Path combinations and both halves of CityHash128: <strong>2,000 uncompressed Retail entries, 0 hits</strong> on both fields, including byte order. The EXE contains the CityHash constants <code>k1</code>/<code>k0</code> at file offset <code>0x25C8330</code>/<code>0x25C8338</code>; nevertheless, it is demonstrably not using the direct standard form. Therefore, the built entries carry the hashes of the <strong>originals</strong> — that is, hashes that do not match the new content. This is precisely the same state as with the regular In-Place path, which loaded flawlessly in Part 1 with 373 patched assets (verified). Unverified for Part 2. If <code>resourceStorage_checkDataCheckSum</code> triggers, the log shows <code>container entry defaulted</code> (<code>0x1426CDDF8</code>).</li>
+<li><strong>Header hash at <code>+0x08</code>.</strong> This is actively checked upon mounting and causes <code>container ... has corrupt header</code> on deviation. The algorithm remains open; however, the Engine outputs the calculated value in the log. <code>+0x20</code> is resolved: FarmHash64 from the entry table (<code>0x78</code>) up to and including the second <code>IDCL</code> marker.</li>
+<li><strong>No dependencies.</strong> <code>chunk_26</code> reports <code>num_dependencies = 0</code>. No released archive does this (<strong>MEASURED</strong>, all 24 have some), but all seven entries have <code>num_deps = 0</code> in <code>gameresources</code> themselves, so an empty dependency table is structurally sound. Unrecorded.</li>
+</ol>
+<p>The self-test (<code>python tools/dlcmod.py selbsttest</code>) checks what is verifiable: the builder writes an archive that <code>wolfsdk.idcl.Archive</code> — the same parser that reads the 24 Retail archives — fully re-reads, with correct types, names, payload data, and shared pool strings; and the replacement remains length-neutral.</p>
+<hr />
+<h2 id="7-the-guide">7. The Guide</h2>
+<p>First, once: <strong>Enable log file.</strong> Part 2 otherwise writes no <code>qconsole.log</code> (<code>docs/ladepfade.md</code>). Start parameters:</p>
+<pre><code>+logFile 1 +logFilePersistent 1
+</code></pre>
+<p>The log lands under <code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein II The New Colossus\base\qconsole.log</code>.</p>
+<p><strong>Retrieve baseline value first:</strong> start without <code>dlc_4</code> and search for <code>SearchDLC: found 3 dlcs</code> in the log. If a different number appears, the initial state is incorrect and everything else is uninterpretable.</p>
+<h3 id="stage-0--no-file-at-all">Stage 0 — no file at all</h3>
+<pre><code>+resource_dlcDbgSearchPath &quot;C:/wolfdlc&quot;
+</code></pre>
+<p>If the log subsequently shows <code>SearchDLC: found 0 dlcs</code> instead of 3, the Cvar has indeed moved the search path — and <strong>the entire attempt can occur on <code>C:\wolfdlc\</code> without a single file in the Steam folder</strong>. If this works, use this path for everything that follows and read <code>&lt;SearchPath&gt;</code> below instead of <code>…\Wolfenstein.II.The.New.Colossus\dlc</code>.</p>
+<h3 id="stage-a--place-it-do-not-register-safe">Stage A — place it, do not register (safe)</h3>
+<p>Copy <code>dlc_4/</code> unchanged to <code>&lt;SearchPath&gt;</code>. The included <code>packagemapspec.json</code> reports a <strong>custom, non-existent</strong> map (<code>game/dlc/c04/c4v1</code>) and collides with nothing.</p>
+<p>What Stage A answers:</p>
+<ol>
+<li>Is a self-built DLC ever found and its Spec accepted?</li>
+<li>Are DLC chunks mounted <strong>globally</strong>? If yes, the invulnerability works immediately and everywhere — and then the entire question is answered without ever touching a base map.</li>
+</ol>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>In Log</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SearchDLC: found 4 dlcs</code></td>
+<td><strong>Found.</strong> The spec was accepted.</td>
+</tr>
+<tr>
+<td><code>found dlc id 4 at &lt;path&gt;</code></td>
+<td>ID and path confirmed.</td>
+</tr>
+<tr>
+<td><code>SearchDLC: found 3 dlcs</code> (unchanged)</td>
+<td>The folder was not seen. Wrong location, or <code>dlcinfo.json</code> is unreadable.</td>
+</tr>
+<tr>
+<td><code>SearchDLC: could not read existing dlc info file: &lt;path&gt;</code></td>
+<td><code>dlcinfo.json</code> found, but unreadable/unparseable.</td>
+</tr>
+<tr>
+<td><code>SearchDLC: Could not load mapspec for dlc id 4 from &lt;path&gt;</code></td>
+<td>Folder OK, <strong><code>packagemapspec.json</code> rejected</strong>. Tinker the JSON, not the folder.</td>
+</tr>
+<tr>
+<td><code>idEntitlements::Get DLC 4 not installed</code></td>
+<td><strong>The entitlement layer is active.</strong> <code>dlcid 4</code> is not possessed. This is a valid result: the interference-free path then leads nowhere.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Then start any mission and take a hit:</p>
+<ul>
+<li><strong>No damage</strong> → DLC chunks are globally mounted <strong>and</strong> override
+  <code>gameresources</code>. Both open questions answered at once, and Mods for Part 2 are now just a folder.</li>
+<li><strong>Normal damage</strong> (with <code>found 4 dlcs</code>) → the DLC is found, but its
+  Chunk is not mounted for foreign maps. Expected. Continue with
+  Level B.</li>
+</ul>
+<h3 id="level-b--register-an-existing-map">Level B — register an existing map</h3>
+<p>Copy <code>stufe_b/packagemapspec.json</code> over <code>dlc_4/base/packagemapspec.json</code>.
+It reports <code>game/wolf/c01/c01p1</code> — the same map that <code>base/</code> also
+reports, but with <code>chunkid 26</code> and <code>refchunks: [1]</code>, so that <code>chunk_1</code> (where
+the map actually resides) is still mounted, and <code>patchlevel 4</code> like in
+<code>base/</code>.</p>
+<p>Then <strong>restart</strong> (do not load — a savegame can store values between runs), start Chapter 1 via the chapter selection, and take the first hit.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Conclusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>No damage</strong></td>
+<td><strong>A DLC Chunk overrides.</strong> The DLC Spec entry displaces the Base one, and <code>chunk_26</code> beats <code>gameresources</code>. The answer to the title question is Yes.</td>
+</tr>
+<tr>
+<td>Normal damage, map loads cleanly</td>
+<td>The DLC entry is <strong>not</strong> prioritized, or <code>gameresources</code> wins. Answer: No.</td>
+</tr>
+<tr>
+<td>Map does not load / missing Assets</td>
+<td>The DLC entry <strong>has</strong> displaced, but the refchunk contributes nothing. The mechanism works, the recipe is wrong. Try again with <code>refchunks: [1, 0]</code>.</td>
+</tr>
+<tr>
+<td><code>GetIsChunkForMapInstalled: can't find chunk for map game/wolf/c01/c01p1</code></td>
+<td>Both Spec entries are mixed up. Level C.</td>
+</tr>
+<tr>
+<td><code>SearchDLC: Could not load mapspec for dlc id 4</code></td>
+<td>The spec is rejected in this form. Level C.</td>
+</tr>
+<tr>
+<td><code>container entry defaulted: table:playerdamage/normal</code></td>
+<td><strong>The entry was found and discarded</strong> — the integrity check works, so the uncomputable <code>data_hash</code> fields from 6 are out. Then the path failed not on priority, but on the hash.</td>
+</tr>
+<tr>
+<td><code>resource 'playerdamage/normal' of type 'table' is orphaned</code></td>
+<td>No container knows the name anymore — the spec displaced <code>gameresources</code> instead of complementing it. Revert immediately.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="level-c--same-map-in-dlc-form">Level C — same map in DLC form</h3>
+<p><code>stufe_c/packagemapspec.json</code> differs from B in only two fields:
+<code>layer: -1</code> and <code>basechunkid: 6</code> instead of <code>0</code>/<code>0</code> — the form used by all three delivered DLCs. Try this if B fails with
+<code>Could not load mapspec</code> or <code>can't find chunk for map</code>.</p>
+<h3 id="revert">Revert</h3>
+<p>Delete <code>dlc_4/</code>. That is all. No delivered file was touched, so there is nothing to restore — that is the whole point of this path.</p>
+<h3 id="how-to-recognize-that-it-did-not-work">How to recognize that it <em>did not</em> work</h3>
+<p>In summary, after ascending depth of failure:</p>
+<ol>
+<li><code>SearchDLC: found 3 dlcs</code> — never observed.</li>
+<li><code>could not read existing dlc info file</code> — <code>dlcinfo.json</code> corrupted.</li>
+<li><code>Could not load mapspec for dlc id 4</code> — spec rejected.</li>
+<li><code>idEntitlements::Get DLC 4 not installed</code> — entitlement missing.</li>
+<li><code>can't find chunk for map …</code> — spec accepted, mapping broken.</li>
+<li><code>container entry defaulted</code> — entry found, content discarded (hash check).</li>
+<li><code>… is orphaned (no container contains it anymore)</code> — the DLC was superseded rather than supplemented, and the target is now nowhere.</li>
+<li>All quiet, normal damage — the DLC chunk loses to <code>gameresources</code>. <strong>This is the clean no-answer.</strong></li>
+</ol>
+<hr />
+<h2 id="8-what-remains-open-and-which-experiment-decides-it">8. What remains open, and which experiment decides it</h2>
+<p>In this order, each builds on the previous:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Experiment</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Does relocating <code>resource_dlcDbgSearchPath</code> move the search path?</td>
+<td>Stage 0</td>
+<td>1 start, 0 files</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Is a custom-built DLC found?</td>
+<td>Stage A, log line <code>found dlc id 4</code></td>
+<td>1 start, 1 folder</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Does the entitlement check access <code>dlcid 4</code>?</td>
+<td>Stage A, log line <code>idEntitlements</code></td>
+<td>same</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Are DLC chunks globally mounted?</td>
+<td>Stage A, tally hits</td>
+<td>same</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Does a DLC chunk overwrite a base asset?</strong></td>
+<td>Stage B</td>
+<td>1 start, 1 file swap</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Is the <code>data_hash</code> check active?</td>
+<td>falls into 5 together (<code>container entry defaulted</code>)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p>Question 5 is the one everything hinges on. <strong>It cannot be decided without a game launch</strong> — the files yield 7,733 collisions and zero disagreements, and the place where the engine chooses lies in the SteamStub-encrypted <code>.text</code>. This is the same hard limit as in <code>docs/patchvorrang.md</code>, Section 4.</p>
+<p><strong>The difference from <code>Patch-Precedence.md</code>:</strong> there, the decisive experiment costs four changed bytes across two delivered archives and 129 MiB backup. Here it costs a folder that gets deleted again. If both attempts are scheduled anyway, <strong>this one should go first.</strong></p>
+<hr />
+<h2 id="sources">Sources</h2>
+<ul>
+<li><code>tools/dlcmod.py</code> — all numbers in this document, plus the packer</li>
+<li><code>wolfsdk/idcl.py</code> — archive format, <code>data_hash</code>, the hash note</li>
+<li><code>wolfsdk/decl.py</code> — <code>apply_patch</code>, the replacement rule</li>
+<li><code>mods/tnc_erste/mod.json</code> — the seven tables and their target values</li>
+<li><code>docs/patchvorrang.md</code> — <code>patchlevel</code>, patch precedence, <code>containerType_t::PATCH</code></li>
+<li><code>docs/ladepfade.md</code> — <code>dlc</code> folders of both games, E7/E8, partial-1 strings</li>
+<li><code>docs/streamed.md</code> — <code>$streamed</code> images</li>
+<li><code>docs/virtualtextures.md</code>, <code>docs/vt-planes.md</code> — <code>.pages</code>, quadrants</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Cfile-Encryption.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small><code>cfile</code> — the encrypted Resource type of Wolfenstein II</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

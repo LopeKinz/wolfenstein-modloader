@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Savestructure – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: find offline why an edited Wolfenstein II save is rejected as &#x27;File Corrupt&#x27;, and fix it.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Savestructure</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Savestructure"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This is the assignment given to a research worker, not a result. An edited <span class="t" data-t="savegame">save game</span> for Wolfenstein II: The New Colossus, with a renamed map, was rejected by the game as &#x27;File Corrupt&#x27;. Earlier work had ruled out the .verify files and the 4-byte <span class="t" data-t="header">header</span>, so the brief suspects that some part of the save still carries an old length. The worker must name the exact faulty byte, build a corrected copy and show a checker that rejects the known-bad version, without starting the game or touching the real saves.</p><ul><li>Known before the task: .verify files do not block loading, and all 4-byte headers of the candidates are correct.</li><li>Main lead: checkpoint.dat grew from 476,224 to 476,231 bytes when the map name got longer.</li><li>The worker must name the file, byte offset, current value and correct value of the defect.</li><li>Required negative control: the checker must reject the known-bad v2 and accept the untouched original.</li><li>The honest goal is &#x27;structurally consistent, runtime unconfirmed&#x27;; loading in the game cannot be proven offline.</li></ul></div><div class="de"><p class="lede">Dies ist der Auftrag an einen Forschungs-Worker, kein Ergebnis. Ein bearbeiteter <span class="t" data-t="savegame">Spielstand</span> für Wolfenstein II: The New Colossus mit umbenannter Karte wurde vom Spiel als &#x27;File Corrupt&#x27; abgelehnt. Frühere Arbeit hatte die .verify-Dateien und den 4-Byte-<span class="t" data-t="header">Header</span> ausgeschlossen; der Auftrag vermutet daher, dass ein Teil des Spielstands noch eine alte Länge enthält. Der Worker soll das genaue fehlerhafte Byte benennen, eine korrigierte Kopie bauen und einen Prüfer zeigen, der die bekannt fehlerhafte Version ablehnt, ohne das Spiel zu starten oder echte Spielstände anzufassen.</p><ul><li>Vorher bekannt: .verify-Dateien blockieren das Laden nicht, und alle 4-Byte-Header der Kandidaten stimmen.</li><li>Hauptspur: checkpoint.dat wuchs von 476.224 auf 476.231 Bytes, als der Kartenname länger wurde.</li><li>Der Worker muss Datei, Byte-Position, aktuellen und richtigen Wert des Fehlers benennen.</li><li>Pflicht-Gegenprobe: Der Prüfer muss die bekannt fehlerhafte v2 ablehnen und das unveränderte Original annehmen.</li><li>Ehrliches Ziel ist &#x27;strukturell stimmig, im Spiel unbestätigt&#x27;; das Laden lässt sich offline nicht beweisen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-savestructure-a1</code>; task <code>savestructure</code>; research/implement.
+Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
+Parallel: <code>w-texdbkey-a1</code>, <code>w-cvartable-a1</code>, <code>w-idclwriter-a1</code>. The other master (<code>codex/Astra</code>) owned the earlier save work and is at its host session limit.</p>
+<h1 id="objective">Objective</h1>
+<p>Find, offline, why an edited Wolfenstein II savegame is rejected as "File Corrupt" - and fix the candidate so it is structurally correct.</p>
+<p>These are the user's own single-player saves on their own machine. The task is a file-format one, and the search space is now small.</p>
+<h1 id="what-is-established---this-is-why-the-task-is-tractable-now">What is established - this is why the task is tractable now</h1>
+<p><code>re_probes/agent_reports/saveverify.md</code> read the load path out of the runtime image and pinned <code>SAVEGAME_E_CORRUPTED</code> (the "File Corrupt" message) to exactly three set sites, all AFTER the <code>.verify</code> check:</p>
+<p>(a) 0x8b47c4   Read(body) != Length - 4
+  (b) 0x8b4831   MD5_BlockChecksum(body) != be32(4-byte head)
+  (c) 0x8b462d   only for encrypted *.bin</p>
+<p><code>.verify</code> does NOT block loading: a mismatch only sets a flag that prints "Loading Dev Mode or corrupted save game" and loading continues. So the sidecars can stay untouched.</p>
+<p>The master then checked (b) offline over BOTH existing candidates, v2 and v3:
+<strong>every <code>.dat</code> passes</strong> - checkpoint.dat, checkpoint_alt.dat, checkpoint_mapstart.dat, game_duration.dat, level_duration.dat, level_duration_alt.dat, head == fold everywhere. (<code>game.details</code> is plain ASCII with no 4-byte head; (b) does not apply to it, it carries the separate CRC32 over sorted key/value bytes, already solved.)</p>
+<p>v2 <strong>was</strong> rejected at runtime with a clean (b). Therefore the cause is <strong>(a)</strong>: the deserializer consumes a different number of bytes than the file provides.</p>
+<p>Concrete lead: <code>checkpoint.dat</code> grew 476224 -&gt; 476231 bytes when the map path went from <code>game/dlc/c02/c2v1</code> (0x11) to <code>game/dlc/c02/c2v1_custom</code> (0x18). Something else in the stream very likely still carries the OLD total - a section length, a block size, a trailing offset table, or a count of bytes that was written before the rename. Find it.</p>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li>Originals, READ ONLY: <code>re_probes/save_backups/SLOT0_before_c2custom</code> and <code>SLOT2_before_c2custom</code> (14 files each).</li>
+<li>Candidates, READ ONLY: <code>re_probes/custom_save_candidates/FC2-WOLF0-c2v1_custom</code> (v1), <code>*_v2</code>, <code>*_v3</code>. v3 is the newest and has the details CRC and the length prefixes repaired.</li>
+<li>tools/savehash.py (the MD5-fold head), tools/probe_savegame.py, tools/probe_saveverify.py (<code>struktur</code> subcommand), docs/spielstaende.md. All read-only for you.</li>
+<li><code>re_probes/agent_reports/{saveverify,custom_save_registration,save_integrity_v3}.md</code></li>
+<li>The method that works: diff the ORIGINAL against the CANDIDATE byte by byte and account for EVERY difference. There are only a handful. One of them, or one thing that did NOT change and should have, is the bug.</li>
+<li>If you need the serialization grammar, <code>re_probes/runtime_87400/module.bin</code> is the read-only capture of the running, unpacked executable (virtual RVA layout, file offset == RVA, sections in manifest.json); the deserializer around 0x8b3f40-0x8b4900 is mapped in saveverify.md. capstone 5.0.7 is vendored: PYTHONPATH=re_probes/python_deps.</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/probe_save_structure.py (new), <code>re_probes/save_structure/</code> (new dir, your corrected candidate goes here as a full copy), <code>re_probes/agent_reports/savestructure.md</code>.</p>
+<p><strong>Do NOT modify</strong> <code>re_probes/custom_save_candidates/</code> or <code>re_probes/save_backups/</code> - they belong to the other master and the backups are the user's only copy of their real saves. Read them, write your own copy.</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p><strong>Never write to "C:/Users/‹user›/Saved Games"</strong> or the Steam install. No game
+launch, no process attach. Do not touch tools/build_custom_save_candidate.py,
+tools/probe_details_checksum.py, tools/verify_custom_save_candidate.py,
+tools/probe_saveverify.py, tools/savehash.py, or any other worker's files;
+no docs/<em>, no wolfsdk/</em>, no config.json. No pip install.
+Do not touch any <code>*.bin</code> in a candidate - profile/progression .bin are
+encrypted with a key derived from a runtime user value and must stay as they are.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib plus vendored capstone. Reproducible from the command line,
+no running game required.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li>A named, located structural defect: file, byte offset, what it says, what it
+  should say, and why. Not "probably a length field somewhere".</li>
+<li>A corrected candidate under re_probes/save_structure/ where, demonstrably:
+  every <code>.dat</code> satisfies branch (b); the map/layer strings are consistent in
+  checkpoint.dat, checkpoint_mapstart.dat and game.details; the <code>.verify</code> files
+  are copied unchanged; and the byte count the deserializer would consume
+  matches Length-4 by your own parse.</li>
+<li>A parser that can state, for a given <code>.dat</code>, how many bytes the deserializer
+  consumes - because that is the only way to check branch (a) offline.</li>
+<li>Negative control: your checker must REJECT the v2 candidate (known rejected
+  at runtime) and ACCEPT the untouched original. If it accepts both, it does
+  not measure anything.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Every important assurance needs a check that fails if it is false. Be careful
+with one thing in particular: you cannot observe "File Corrupt" offline, so do
+not claim the candidate is now loadable. The honest claim is "structurally
+consistent by these checks, runtime unconfirmed". The runtime test needs the
+user's PC and is not available.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If the serialization does not yield a definite answer, the valuable deliverable
+is the offline branch-(a) checker plus the exact list of unaccounted-for
+differences. A clean negative beats a plausible story. Say which hypotheses
+died.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones. Publish a bus fact when the defect is located - the
+other master's save task is parked on exactly this question. Concise German
+report in re_probes/agent_reports/savestructure.md. Finish the bus task.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Save-Load-Route.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Mission: TNC Savegame/Menu Load Path</a><a class="next" href="Research-Brief-Saveverify.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Saveverify</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

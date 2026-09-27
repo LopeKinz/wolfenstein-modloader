@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ghidra: What to Extract from the EXEs — and What Not – Wolfenstein Modloader</title>
+<meta name="description" content="What the Ghidra analysis tool can and cannot read from the program files of both Wolfenstein games.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#systems"><span class="en">Game systems</span><span class="de">Spielsysteme</span></a></p>
+<h1>Ghidra: What to Extract from the EXEs — and What Not</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Ghidra-Analysis"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#setup">Setup</a></li><li><a href="#invocation">Invocation</a></li><li><a href="#what-does-not-work-text">What does not work: .text</a></li><li><a href="#function-map-from-pdata">Function map from .pdata</a></li><li><a href="#class-model-from-msvc-rtti">Class model from MSVC RTTI</a></li><li><a href="#what-ghidra-contributed">What Ghidra contributed</a></li><li><a href="#open-questions-and-runtime-path">Open Questions and Runtime Path</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page describes running the reverse-engineering tool <span class="t" data-t="ghidra">Ghidra</span> on the program files of Wolfenstein: The New Order and Wolfenstein II: The New Colossus. The actual game code is encrypted by Steam&#x27;s copy protection in both games, so it cannot be read on disk. What can be read are the function boundaries and the class structure, which a custom parser extracted; Ghidra&#x27;s own class analyzer found nothing. Questions about what the code actually does can only be answered while the game runs.</p><ul><li>Game code is encrypted by <span class="t" data-t="steamstub">SteamStub</span> in both games and looks like random data.</li><li>Function boundaries: 50,884 in TNO and 121,682 in TNC.</li><li>Class model: 2,368 classes in TNO and 5,627 in TNC, read by a direct <span class="t" data-t="rtti">RTTI</span> parser.</li><li>Ghidra&#x27;s built-in class analyzer found 0 classes on these files; this is measured, not a setup error.</li><li>No unpacker is built here, since that would mean removing copy protection.</li></ul></div><div class="de"><p class="lede">Diese Seite beschreibt den Einsatz des Reverse-Engineering-Werkzeugs <span class="t" data-t="ghidra">Ghidra</span> auf die Programmdateien von Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Der eigentliche Spielcode ist in beiden Spielen durch Steams Kopierschutz verschlüsselt und auf der Festplatte nicht lesbar. Lesbar sind die Funktionsgrenzen und die Klassenstruktur, die ein eigener Parser ausgelesen hat; Ghidras eigene Klassenanalyse fand nichts. Fragen dazu, was der Code tatsächlich tut, lassen sich nur beantworten, während das Spiel läuft.</p><ul><li>Der Spielcode ist in beiden Spielen durch <span class="t" data-t="steamstub">SteamStub</span> verschlüsselt und sieht aus wie Zufallsdaten.</li><li>Funktionsgrenzen: 50.884 in TNO und 121.682 in TNC.</li><li>Klassenmodell: 2.368 Klassen in TNO und 5.627 in TNC, gelesen mit einem eigenen <span class="t" data-t="rtti">RTTI</span>-Parser.</li><li>Ghidras eingebaute Klassenanalyse fand 0 Klassen; das ist gemessen, kein Bedienfehler.</li><li>Ein Entpacker wird hier bewusst nicht gebaut, da das Kopierschutz entfernen hieße.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Tool: <code>tools/ghidra_map.py</code>. Results: <code>docs/ghidra/</code>.</p>
+<h2 id="summary">Summary</h2>
+<p>The code section <code>.text</code> is encrypted by SteamStub in <strong>both</strong> games and is statically unanalyzable. Ghidra finds nothing there, and this is not a user error.</p>
+<p>What lies beside it is fully readable and evaluated:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>TNO</th>
+<th>TNC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Function boundaries from <code>.pdata</code></td>
+<td>50 884</td>
+<td>121 682</td>
+</tr>
+<tr>
+<td>RTTI classes with inheritance and vtable</td>
+<td>2 368</td>
+<td>5 627</td>
+</tr>
+</tbody>
+</table></div>
+<p>Ghidra's own RTTI analyzer delivered <strong>zero</strong> of these — why, see below under "What Ghidra Contributed". The class hierarchy comes from a direct parser over the MSVC-RTTI structures in <code>.data</code>/<code>.rdata</code>.</p>
+<h2 id="setup">Setup</h2>
+<p>Ghidra and a JDK as ZIP files only; no installer, no privilege escalation, nothing added to PATH or Registry:</p>
+<pre><code class="language-powershell">$root = &quot;C:\Users\‹user›\tools&quot;; mkdir -Force $root\_download | Out-Null
+# curl.exe has been part of Windows since Win10 and can resume interrupted downloads.
+curl.exe -L -C - --fail -o $root\_download\ghidra.zip `
+  https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/ghidra_12.1.4_PUBLIC_20260921.zip
+curl.exe -L -C - --fail -o $root\_download\jdk21.zip `
+  https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_x64_windows_hotspot_21.0.12.1_1.zip
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::ExtractToDirectory(&quot;$root\_download\jdk21.zip&quot;, $root)
+[System.IO.Compression.ZipFile]::ExtractToDirectory(&quot;$root\_download\ghidra.zip&quot;, $root)
+@{ jdk=&quot;$root\jdk-21.0.12.1+1&quot;; ghidra=&quot;$root\ghidra_12.1.4_PUBLIC&quot;
+   headless=&quot;$root\ghidra_12.1.4_PUBLIC\support\analyzeHeadless.bat&quot; } |
+  ConvertTo-Json | Out-File &quot;$root\pfade.json&quot; -Encoding ascii
+
+# PyGhidra into its own venv -- the Wheels are in the Ghidra package, offline.
+python -m venv $root\pyghidra-venv
+&amp; $root\pyghidra-venv\Scripts\python.exe -m pip install --no-index `
+  --find-links &quot;$root\ghidra_12.1.4_PUBLIC\Ghidra\Features\PyGhidra\pypkg\dist&quot; pyghidra
+</code></pre>
+<p><code>ghidra_map.py</code> reads <code>C:\Users\‹user›\tools\pfade.json</code>, sets <code>JAVA_HOME</code> and <code>GHIDRA_INSTALL_DIR</code> per invocation, and restarts itself for the Ghidra mode within the PyGhidra venv. Nothing is changed globally.</p>
+<h3 id="pitfalls-this-setup-has-hit">Pitfalls this Setup Has Hit</h3>
+<ul>
+<li><strong><code>Invoke-WebRequest</code> cannot resume downloads.</strong> An interrupted 543-MB download leaves a ruin that a "already exists" check will skip on the next run. <code>curl.exe -C -</code> can do it.</li>
+<li><strong><code>Expand-Archive</code></strong> takes a very long time for 6695 entries; <code>[System.IO.Compression.ZipFile]::ExtractToDirectory</code> is orders of magnitude faster.</li>
+<li><strong><code>&amp; native.exe 2&gt;&amp;1</code></strong> turns every stderr line into a <code>NativeCommandError</code> in PowerShell 5.1 and terminates the script with Exit 1 — even though the program returned 0. <code>java -version</code> writes to stderr. Do not redirect it.</li>
+<li><strong>Ghidra 12 removed Jython.</strong> <code>analyzeHeadless.bat</code> accepts <code>-preScript</code> / <code>-postScript</code> with <code>.py</code> files, but crashes with <code>Ghidra was not started with PyGhidra. Python is not available</code> — and only <strong>after</strong> the complete analysis, so the run proceeds without the desired settings and you barely notice it. Either use PyGhidra or write scripts in Java.</li>
+<li><strong>A left-over Ghidra project gets reused.</strong> Then you measure the analysis results of the previous run, not those of the configured analyzer. <code>ghidra_map.py</code> deletes the project directory before each run.</li>
+<li><strong><code>AutoAnalysisManager</code> reads analyzer switches when opening the program.</strong> Whoever sets them afterwards must call <code>initializeOptions()</code> afterward.</li>
+</ul>
+<h2 id="invocation">Invocation</h2>
+<p>python tools/ghidra_map.py pdata     # Function map, seconds, without Ghidra
+python tools/ghidra_map.py rtti      # Class model, ~1 s, without Ghidra
+python tools/ghidra_map.py ghidra    # Ghidra import of both EXEs
+python tools/ghidra_map.py alles
+python tools/ghidra_map.py --selbsttest</p>
+<p>The EXEs are <strong>read-only</strong>. For the Ghidra import, a copy is placed in the Scratchpad (<code>%TEMP%\wolf_ghidra</code>); the Ghidra project also resides there and not in the repo.</p>
+<h2 id="what-does-not-work-text">What does not work: <code>.text</code></h2>
+<p>Shannon entropy of raw bytes per section (<code>docs/ghidra/pdata_*.json</code>, 8,000 = indistinguishable from random):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Section</th>
+<th>TNO</th>
+<th>TNC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.text</code></td>
+<td><strong>8,000</strong></td>
+<td><strong>8,000</strong></td>
+</tr>
+<tr>
+<td><code>.bind</code></td>
+<td>7,998</td>
+<td>7,945</td>
+</tr>
+<tr>
+<td><code>.pdata</code></td>
+<td>6,756</td>
+<td>6,995</td>
+</tr>
+<tr>
+<td><code>.rdata</code></td>
+<td>5,473</td>
+<td>4,659</td>
+</tr>
+<tr>
+<td><code>.data</code></td>
+<td>3,055</td>
+<td>3,179</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>.bind</code> is the SteamStub loader; it decrypts <code>.text</code> only at startup in memory. For static analysis this means:</p>
+<ul>
+<li><strong>No disassembly, no decompilation, no function names from code.</strong> Ghidra's Decompiler has nothing to do here.</li>
+<li><strong>No call graphs</strong>, no cross-references of code to data. Consequently, every mapping "which function belongs to which class" is missing — the vtables below provide addresses, but the code behind them remains opaque.</li>
+<li>All analyzers that touch code are disabled in <code>ghidra_map.py</code>. They would burn hours on noise and generate phantom functions. They are disabled via a whitelist (everything except two), not via a blacklist — analyzer names change between versions, and a misspelled name is silently ignored.</li>
+</ul>
+<p>An unpacker for this will <strong>not</strong> be built or used in this project: that would be removing copy protection. The encrypted <code>.text</code> is the limit of static analysis.</p>
+<h2 id="function-map-from-pdata">Function map from <code>.pdata</code></h2>
+<p>The exception table lists every function for x64 with a <code>RUNTIME_FUNCTION</code> entry: 12 bytes consisting of start RVA, end RVA, and pointers to Unwind Info. It is unencrypted — function boundaries are open, even if the code within them is not readable.</p>
+<p><code>docs/ghidra/pdata_tno.csv</code>, <code>docs/ghidra/pdata_tnc.csv</code>:
+<code>va_start,va_end,size,rva_start,unwind_rva</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>TNO</th>
+<th>TNC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Functions</td>
+<td><strong>50 884</strong></td>
+<td><strong>121 682</strong></td>
+</tr>
+<tr>
+<td>Size Median</td>
+<td>90 B</td>
+<td>101 B</td>
+</tr>
+<tr>
+<td>Size Max</td>
+<td>27 952 B</td>
+<td>51 617 B</td>
+</tr>
+<tr>
+<td>Covered Bytes</td>
+<td>11 438 970</td>
+<td>29 274 718</td>
+</tr>
+<tr>
+<td>Share of Code Section</td>
+<td>91.9 %</td>
+<td>91.9 %</td>
+</tr>
+<tr>
+<td>ImageBase</td>
+<td><code>0x140000000</code></td>
+<td><code>0x140000000</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>No overlaps, no invalid ranges. In TNO, 11 functions lie in a second, small code section named <code>text</code> (<code>0x1FB8000</code>, 12 KB, next to <code>.nvFatBi</code> — NVIDIA accessory), while the remaining 50 873 are in <code>.text</code>. The missing ~8 % are alignment padding and jump tables, not missing entries.</p>
+<p>What it is useful for: an address from a crash log or runtime trace can be mapped to "Function No. N, Start <code>0x…</code>, Length L" without knowing the code. Two runs of the same game become comparable in this way.</p>
+<h2 id="class-model-from-msvc-rtti">Class model from MSVC RTTI</h2>
+<p><code>docs/ghidra/klassen_tno.csv</code>, <code>docs/ghidra/klassen_tnc.csv</code>:
+<code>class,bases,vtables,cols</code> (bases and vtables separated by <code>;</code>). Fully with raw names in <code>rtti_tno.json</code> / <code>rtti_tnc.json</code>.</p>
+<p>The structure chain is the standard MSVC one and lies completely outside of <code>.text</code>:</p>
+<pre><code>TypeDescriptor (.data)        vfptr | spare | &quot;.?AVidPlayer@@&quot;
+CompleteObjectLocator (.rdata) sig=1 | offset | cdOffset | →TD | →CHD | →self
+ClassHierarchyDescriptor       sig | attr | numBases | →BaseClassArray
+BaseClassArray                 → BaseClassDescriptor per base class → TD
+vtable                         the 8 bytes before point to the COL
+</code></pre>
+<p>Under x64, each COL carries its own RVA in the last field. This is a filter without heuristics: a hit is either a COL or nothing. Therefore, the numbers below are not an estimate.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>TNO</th>
+<th>TNC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Type names (<code>.?AV…@@</code>) in <code>.data</code></td>
+<td>2 626</td>
+<td>7 167</td>
+</tr>
+<tr>
+<td>Valid TypeDescriptors of these</td>
+<td>2 541</td>
+<td>7 105</td>
+</tr>
+<tr>
+<td>Complete Object Locators</td>
+<td>2 369</td>
+<td>5 783</td>
+</tr>
+<tr>
+<td><strong>Classes</strong></td>
+<td><strong>2 368</strong></td>
+<td><strong>5 627</strong></td>
+</tr>
+<tr>
+<td>With base classes</td>
+<td>2 181</td>
+<td>5 172</td>
+</tr>
+<tr>
+<td>With vtable address</td>
+<td>2 368</td>
+<td>5 627</td>
+</tr>
+<tr>
+<td>Total vtables</td>
+<td>2 369</td>
+<td>5 783</td>
+</tr>
+<tr>
+<td>Root classes (no bases)</td>
+<td>187</td>
+<td>455</td>
+</tr>
+<tr>
+<td>With multiple inheritance</td>
+<td>1</td>
+<td>115</td>
+</tr>
+<tr>
+<td>Longest base list</td>
+<td>8</td>
+<td>8</td>
+</tr>
+</tbody>
+</table></div>
+<p>Class distribution:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>TNO</th>
+<th>TNC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id*</code> (Engine/Game)</td>
+<td>1 898</td>
+<td>2 882</td>
+</tr>
+<tr>
+<td><code>hk*</code>/<code>hcl*</code> (Havok)</td>
+<td>0</td>
+<td>1 391</td>
+</tr>
+<tr>
+<td>Template instances (raw)</td>
+<td>271</td>
+<td>960</td>
+</tr>
+<tr>
+<td>Others</td>
+<td>199</td>
+<td>394</td>
+</tr>
+</tbody>
+</table></div>
+<p>TNO contains <strong>no</strong> Havok RTTI; TNC includes 1 391 Havok classes. 893 class names appear in both games, 1 475 only in TNO, and 4 734 only in TNC.</p>
+<h3 id="the-core-chain">The Core Chain</h3>
+<pre><code>idClass
+└── idEventReceiver
+    └── idEntity
+        ├── idAnimatedEntity
+        │   ├── idActor
+        │   │   ├── idPlayer
+        │   │   └── idAI2
+        │   └── idProp → idProp_Usable → idProp_Static → …
+        └── …
+idResource
+└── idDecl
+    └── idDeclTypeInfo
+        └── idDeclGameModeSP
+idInventoryItem (: idEventReceiver : idClass)
+└── idWeapon
+</code></pre>
+<p>In <strong>TNC</strong>, <code>idManagedClass</code> sits additionally between <code>idEventReceiver</code> and <code>idClass</code> — a genuine engine difference between the two games, not a parsing error.</p>
+<p>Example vtables (TNO / TNC):
+<code>idPlayer</code> <code>0x1410297D8</code> / <code>0x1429496B0</code>,
+<code>idEntity</code> <code>0x140F77598</code> / <code>0x1428EAE30</code>,
+<code>idDeclGameModeSP</code> <code>0x140F56098</code> / <code>0x1426BE720</code>.</p>
+<h3 id="what-is-intentionally-missing-here">What is intentionally missing here</h3>
+<ul>
+<li><strong><code>idCVar</code> has no RTTI.</strong> <code>.?AVidCVar@@</code> does not appear in either EXE; <code>idCVar</code> appears only as a plain text string (14 times in TNO, 15 times in TNC). The class is apparently not polymorphic. Therefore, the class model does not help with Cvar work — instead, rely on the string tables from <code>docs/cvars-tnc.md</code>.</li>
+<li><strong>Template names remain raw.</strong> <code>.?AU?$MemberSlot@V…@@</code> would require a separate demangler to resolve cleanly; the raw names stand unchanged in the CSV.</li>
+<li><strong>No method names.</strong> The vtables provide addresses in <code>.text</code>, which is encrypted. It is statically impossible to determine which function occupies slot <em>n</em>.</li>
+<li><strong>No field names/offsets.</strong> RTTI describes types and inheritance, not the memory layout of members.</li>
+</ul>
+<h2 id="what-ghidra-contributed">What Ghidra contributed</h2>
+<p>The Ghidra run (<code>ghidra_map.py ghidra</code>, results in <code>docs/ghidra/ghidra_tno.json</code> / <code>ghidra_tnc.json</code>) imports both EXEs — TNO in 21 s, TNC in 24 s, each with 12 memory blocks and 386 or 545 import symbols respectively — and yields <strong>0 RTTI classes, 0 TypeDescriptors, 0 vtables</strong>.</p>
+<p>This is measured, not suspected. The step-by-step diagnosis:</p>
+<ol>
+<li><code>RttiUtil.findTypeInfoVftableAddress()</code> finds the anchor correctly: <code>0x14109F568</code> in TNO. All 2 541 TypeDescriptors point to exactly this address; the data is intact.</li>
+<li><code>RttiAnalyzer.canAnalyze(program)</code> still returns <strong><code>False</code></strong>. The analyzer does not even appear in the program's analysis options — it cannot be enabled because it considers itself irrelevant.</li>
+<li>If one manually calls <code>RttiAnalyzer.added()</code>, it places exactly one symbol (<code>type_info::vftable</code>) and subsequently finds zero RTTI0 entries. The MessageLog remains empty.</li>
+</ol>
+<p>Conclusion: not a usability error, but the analyzer fails to process these binaries. The direct parser in <code>ghidra_map.py rtti</code> reads the same structures completely for both EXEs in 1–2 seconds.</p>
+<p>Incidental finding: Ghidra reports 34 167 (TNO) or 78 325 (TNC) "detected functions", even though all code analyzers are disabled and <code>.text</code> is encrypted. These numbers come from the PE loader itself and convey <strong>nothing</strong> about actually analyzed code — they are also significantly lower than the 50 884 / 121 682 real entries from <code>.pdata</code>. Do not read these as analysis results.</p>
+<p>What the Ghidra run still provides: a section/block overview, the import table with library mapping, and a reliable negative finding. It remains within the tool so that it can be verified.</p>
+<h2 id="open-questions-and-runtime-path">Open Questions and Runtime Path</h2>
+<p>Static exhaustion covers: function boundaries, types, inheritance, vtable addresses, imports, strings. Not answerable statically and only reachable at runtime:</p>
+<ul>
+<li>which code resides at which vtable address,</li>
+<li>which function reads which CVar,</li>
+<li>field offsets within objects,</li>
+<li>everything that the execution of <code>.text</code> presupposes.</li>
+</ul>
+<p>For these questions, a debugger running on the game is the only way — then <code>.text</code> is decrypted in memory, and the vtable addresses from this document are exactly the entry point for that. This is a separate task and was explicitly not part of this work.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Kiscule-Scripting.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Kiscule — The Script Layer of Wolfenstein II</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

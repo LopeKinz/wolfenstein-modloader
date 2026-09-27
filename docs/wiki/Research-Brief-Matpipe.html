@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Matpipe – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: put a self-made texture onto a surface in a Wolfenstein II map, from image to material.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Matpipe</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Matpipe"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This is the assignment given to a research worker, not a result. The goal is to show a texture made by the modder on a surface in a Wolfenstein II: The New Colossus map. The worker must decode how a <span class="t" data-t="material">material</span> names its images, check whether game images can be read and written back unchanged, and build the full chain from image to <span class="t" data-t="texdb">texture database</span> entry to material. Because the game is not started, the brief asks to report this only as &#x27;structurally valid, rendering unconfirmed&#x27;.</p><ul><li>Already solved beforehand: the lookup key of the texture database, correct for 25,930 of 25,930 entries.</li><li>Required: a material reader that rebuilds at least 200 retail materials byte for byte.</li><li>Required: an image <span class="t" data-t="roundtrip">round-trip</span> for at least 200 retail images, checked against the texture database sizes.</li><li>Negative controls: unsorted rows, a wrongly masked key and a wrong mip count must all be caught.</li><li>If the pixel format needs an encoder the project does not have, the worker must say so instead of adding a dependency.</li></ul></div><div class="de"><p class="lede">Dies ist der Auftrag an einen Forschungs-Worker, kein Ergebnis. Ziel ist, eine selbst gemachte Textur auf einer Fläche in einer Karte von Wolfenstein II: The New Colossus zu zeigen. Der Worker soll entschlüsseln, wie ein <span class="t" data-t="material">Material</span> seine Bilder benennt, prüfen, ob Spielbilder sich lesen und unverändert zurückschreiben lassen, und die ganze Kette vom Bild über den Eintrag in der <span class="t" data-t="texdb">Texturdatenbank</span> bis zum Material bauen. Da das Spiel nicht gestartet wird, soll das Ergebnis nur als &#x27;strukturell gültig, Darstellung unbestätigt&#x27; gemeldet werden.</p><ul><li>Vorher schon gelöst: der Suchschlüssel der Texturdatenbank, korrekt für 25.930 von 25.930 Einträgen.</li><li>Verlangt: ein Material-Leser, der mindestens 200 Original-Materialien byte-genau nachbaut.</li><li>Verlangt: ein <span class="t" data-t="roundtrip">Roundtrip</span> für mindestens 200 Originalbilder, abgeglichen mit den Größen in der Texturdatenbank.</li><li>Gegenproben: unsortierte Zeilen, ein falsch maskierter Schlüssel und eine falsche Mip-Anzahl müssen erkannt werden.</li><li>Braucht das Pixelformat einen Encoder, den das Projekt nicht hat, soll der Worker das sagen, statt eine Abhängigkeit hinzuzufügen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-matpipe-a1</code>; task <code>matpipe</code>; research/implement.
+Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
+Parallel: <code>w-meshfmt-a1</code>, <code>w-cmfmt-a1</code>, <code>w-entitypipe-a1</code>, <code>w-mapmanifest-a1</code>.
+You own surfaces: material -&gt; image -&gt; texdb, end to end.</p>
+<h1 id="objective">Objective</h1>
+<p>Close the visual loop: put a texture we authored onto a surface in a TNC map.
+1462 <code>image</code> and 388 <code>material</code> entries per map, and the lookup key that used to block this was solved today.</p>
+<p>Answer and deliver:</p>
+<ol>
+<li>The <code>material</code> payload format - how a material names its images and which slot is the albedo/diffuse.</li>
+<li>The TNC <code>image</code> payload (<code>.bimage</code>, <code>BIM\x0e</code>): can we author one, and in which pixel formats? Round-trip a retail image first.</li>
+<li>The full chain: author an image, write the matching <code>.texdb</code> rows, bind it through a material, so a named surface in a map would use our pixels.</li>
+</ol>
+<h1 id="what-is-already-solved---do-not-redo-it">What is already solved - do not redo it</h1>
+<ul>
+<li><strong>The TexDB key is solved and master-verified today</strong>:
+  <code>key = ((entry+0x60 &amp; 0x0FFF_FFFF_FFFF_FFFF) &lt;&lt; 4) | (mip_base - mip_level)</code>,
+  25930/25930 across all 28 <code>.texdb</code>. The asset NAME does not enter the key.
+  Read <code>re_probes/agent_reports/texdbkey.md</code> in full before you start - it also decoded the <code>.bimage</code> mip table (header 0x32 bytes, then 32-byte records: level, 0, w, h, raw_size, streamed/inline, stored_size, offset), and it establishes that <code>MountDatabase</code> checks only the magic and that a new <code>chunk_N.resources</code> auto-mounts its <code>chunk_N.texdb</code>.</li>
+<li>Crucially it also says: <code>entry+0x60</code> for images is assigned by the build tool and <strong>no reader recomputes it</strong>, so we may choose it freely - and 570 retail hashes are shared between image names, i.e. the engine itself deduplicates. Reusing a retail key gives retail pixels; own pixels need own texdb rows, written SORTED or the binary search fails.</li>
+<li>Container writing is finished: <code>wolfsdk/idclwrite.py</code>, byte-exact round-trip.</li>
+<li>Part 1 image code exists and is read-only for you: <code>wolfsdk/bim.py</code>, <code>wolfsdk/image.py</code> (BIM decode/encode, PNG in/out), <code>tools/probe_texdb.py</code>, <code>tools/verify_image.py</code>. Part 1 is BIM of a different version - check, do not assume.</li>
+</ul>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li><code>re_probes/runtime_87400/module.bin</code> - read-only capture of the RUNNING, unpacked executable (file offset == RVA, sections in manifest.json). The image/material loaders are in there; today's five wins all came from reading loaders rather than sweeping data.</li>
+<li><code>docs/texdb.md</code>, <code>docs/virtualtextures.md</code>, <code>docs/ui-assets.md</code> (part 1 image replacement already works there, <code>image-export</code>/<code>image-import</code>).</li>
+<li>Retail corpus READ ONLY:
+  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+<li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/probe_matpipe.py (new), re_probes/matpipe/ (new dir),
+re_probes/agent_reports/matpipe.md (new).
+Everything else read-only, including other workers' tools and dirs.</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No game launch, no process attach, no writes under the Steam install or "C:/Users/‹user›/Saved Games". Do not edit wolfsdk/<em>, docs/</em>, config.json, tools/probe_texdbkey.py or any other worker's file. No pip install.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib only (plus vendored capstone for disassembly). Reuse <code>wolfsdk/oodle.py</code>. No new image library - if a block-compressed format needs an encoder we do not have, say so rather than adding a dependency.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li><code>material</code> parser with a byte-exact round-trip, n/n over at least 200 retail
+  materials across 3 archives.</li>
+<li><code>image</code> payload round-trip, n/n over at least 200 retail images, and the mip
+  table cross-checked against the sizes the <code>.texdb</code> actually stores.</li>
+<li>End-to-end demo: an authored image (a flat, unmistakable colour is ideal - it
+  is obvious on screen and trivially verifiable) plus its texdb rows plus a
+  material that points at it, all inside a container that passes
+  <code>probe_datahash</code> n/n and <code>probe_idclhash</code> OK.</li>
+<li>Negative controls: unsorted texdb rows, a key with the top nibble left unmasked,
+  and a mip count that disagrees with the bimage header must each be caught by
+  your checker.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Nothing offline shows that a pixel reaches the screen. Say "structurally valid
+by these checks, rendering unconfirmed". Keep "the lookup will find our block"
+and "the GPU will decode it" strictly apart - the second depends on the pixel
+format, which is NOT yet established (texdbkey.md says so explicitly).</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If the pixel format turns out to be a block-compressed form we cannot encode
+without a new dependency, that is the answer: report which formats appear, with
+counts, and whether any uncompressed form is accepted. Part 1 has exactly this
+limitation documented - do not repeat its mistake of shipping an encoder whose
+output nobody ever looked at.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones. Publish a bus fact when the image round-trip works -
+w-meshfmt-a1 needs materials for any authored geometry. Concise German report
+in re_probes/agent_reports/matpipe.md. Finish the bus task.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Mapmanifest.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Mapmanifest</a><a class="next" href="Research-Brief-Meshfmt.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Meshfmt</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

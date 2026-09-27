@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Status — 21.09.2026, 21:00 – Wolfenstein Modloader</title>
+<meta name="description" content="Handover note from 21 Sept 2026: developer console in Wolfenstein II, patcher bugs and open tasks.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#status"><span class="en">Status and records</span><span class="de">Stand und Protokolle</span></a></p>
+<h1>Status — 21.09.2026, 21:00</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Status-2026-09-21"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-most-important-discovery-developer-console-in-wolfenstein-ii">The Most Important Discovery: Developer Console in Wolfenstein II</a></li><li><a href="#two-corrections-to-my-own-work">Two Corrections to My Own Work</a></li><li><a href="#open-issues">Open Issues</a></li><li><a href="#state-of-installations">State of Installations</a></li><li><a href="#addendum-findings-of-the-last-agent-just-before-the-restart">Addendum: Findings of the Last Agent (just before the restart)</a></li><li><a href="#do-not-run-wolfsdk-apply-until-f1-is-fixed">Do not run wolfsdk apply until F1 is fixed</a></li><li><a href="#other-open-points-from-the-same-inspection">Other open points from the same inspection</a></li><li><a href="#what-else-is-missing">What else is missing</a></li><li><a href="#f1-and-f2-are-repaired-inspection-not-yet-complete">F1 and F2 are repaired, inspection not yet complete</a></li><li><a href="#ghidra--installation-started-aborted">Ghidra — Installation started, aborted</a></li><li><a href="#open-tasks-in-bus">Open tasks in Bus</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">A handover note from 21 September 2026 covering both games. The main find: the retail version of Wolfenstein II (TNC) accepts a developer mode switch and opens a real developer <span class="t" data-t="console">console</span>, which was impossible in Wolfenstein: The New Order (TNO). The note also records several bugs in the mod patcher; two severe ones were later repaired but not yet independently verified, with a warning not to apply mods until then.</p><ul><li>Starting TNC with com_enableDeveloperMode 1 opens a working developer console.</li><li>The old TNC cvar list of 2,231 entries was too large and partly mislabeled.</li><li>TNO save headers are an MD5-based <span class="t" data-t="checksum">checksum</span>; 82 of 82 files match.</li><li>Patcher bugs F1 (broken rollback) and F2 (mixing up unrelated textures) were fixed, but the audit was not finished.</li><li>The program code is encrypted on disk, so static analysis only yields class names and function boundaries.</li></ul></div><div class="de"><p class="lede">Eine Übergabenotiz vom 21. September 2026 zu beiden Spielen. Der wichtigste Fund: Die Verkaufsversion von Wolfenstein II (TNC) akzeptiert einen Entwicklermodus-Schalter und öffnet eine echte Entwickler-<span class="t" data-t="console">Konsole</span>, was in Wolfenstein: The New Order (TNO) unmöglich war. Außerdem hält die Notiz mehrere Fehler im Mod-Patcher fest; zwei schwere wurden später repariert, aber noch nicht unabhängig geprüft, verbunden mit der Warnung, bis dahin keine Mods anzuwenden.</p><ul><li>Mit com_enableDeveloperMode 1 gestartet, öffnet TNC eine funktionierende Entwicklerkonsole.</li><li>Die alte TNC-Cvar-Liste mit 2.231 Einträgen war zu groß und teils falsch beschriftet.</li><li>Die Kopfzeilen der TNO-Spielstände sind eine MD5-basierte <span class="t" data-t="checksum">Prüfsumme</span>; 82 von 82 Dateien passen.</li><li>Patcher-Fehler F1 (kaputtes Zurückrollen) und F2 (Vermischen fremder Texturen) wurden behoben, die Prüfung aber nicht abgeschlossen.</li><li>Der Programmcode ist auf der Platte verschlüsselt; statische Analyse liefert nur Klassennamen und Funktionsgrenzen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Handover before a session restart. What is stated here has not been recorded in any other document.</p>
+<h2 id="the-most-important-discovery-developer-console-in-wolfenstein-ii">The Most Important Discovery: Developer Console in Wolfenstein II</h2>
+<p><strong>The Retail version of The New Colossus accepts <code>com_enableDeveloperMode 1</code> and opens a real developer console.</strong> In Part 1, this was exactly impossible — there, the DevGUI is not connected in the Retail build.</p>
+<p>Proven by a screenshot of the screen: Console overlay with input line <code>]</code>, engine outputs (<code>QUICKSAVE</code>, <code>WARNING: [SOUND] Missing sound event ...</code>), and the build string <code>...-vulkan retail</code>.</p>
+<p>Start as follows:</p>
+<pre><code>python -c &quot;import sys; sys.path.insert(0,'.'); from wolfsdk.game import Game; \
+  Game.find(title='tnc').launch(['+com_enableDeveloperMode','1'])&quot;
+</code></pre>
+<p><strong>Steam asks for arguments via a <code>steam://</code> URL</strong> ("Start the game with custom start options", Continue/Cancel). Without clicking, nothing starts. This is recorded in <code>C:\Program Files (x86)\Steam\logs\console_log.txt</code> as <code>LaunchApp waiting for user response to ShowGameArgs</code>.</p>
+<h3 id="remote-control-of-the-console">Remote Control of the Console</h3>
+<p><code>scratchpad\type.ps1</code> types lines into the game window (Scancodes, because the engine does not read virtual keys). <strong>It checks before each line who has focus and aborts otherwise</strong> — without this check, three console commands landed in the user's chat window.</p>
+<p>Verified working commands:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>writeConfig &lt;file&gt;</code></td>
+<td>writes all Cvars with real values</td>
+</tr>
+<tr>
+<td><code>conDump &lt;file&gt;</code></td>
+<td>writes the console buffer</td>
+</tr>
+<tr>
+<td><code>listCvars &lt;search&gt;</code></td>
+<td>Values, substring search</td>
+</tr>
+<tr>
+<td><code>listCvars - help &lt;search&gt;</code></td>
+<td><strong>real descriptions from the engine</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Both files land in
+<code>C:\Users\‹user›\Saved Games\MachineGames\Wolfenstein II The New Colossus\base\</code>.</p>
+<p>Additional commands found in the EXE: <code>listCmds</code>, <code>listDecls</code>, <code>reloadDecls</code>, <code>god</code>, <code>noclip</code>, <code>notarget</code>, <code>spawn</code>, <code>teleport</code>, <code>devmap</code>, <code>killMonsters</code>, <code>kill</code>, <code>r_showTris</code>, <code>exec</code>, <code>bind</code>, <code>toggle</code>, <code>screenshot</code>.</p>
+<h2 id="two-corrections-to-my-own-work">Two Corrections to My Own Work</h2>
+<p><strong>1. <code>docs/cvars_tnc.json</code> with 2231 entries is overestimated.</strong> The engine itself responds to <code>listCvars - help g_</code> with eight Cvars, and to <code>bot_</code> with "0 cvars listed". Most harvested names are therefore not registered Cvars. The file is a candidate list, not a catalog.</p>
+<p><strong>2. The descriptions therein are partially misassigned.</strong> Cross-check: <code>com_assertNoDialog</code> is named by the engine as "bypass the popup assert dialog", while in my file it held the description of another Cvar. Correct were instead <code>g_showHud</code>, <code>g_bloodEffects</code>, <code>g_fov</code>.</p>
+<p><strong>Next step:</strong> Iterate <code>listCvars - help</code> through a–z, mix results, rebuild <code>cvars_tnc.json</code> from them. An initial attempt failed because the dump script counted old files instead of checking if new ones were written — <strong>check timestamps</strong>, otherwise you measure yourself.</p>
+<h2 id="open-issues">Open Issues</h2>
+<ul>
+<li>One agent is still running: Game state format for both games + code review of <code>resources.py</code>/<code>patch.py</code>.</li>
+<li><code>wolfsdk/idcl.py</code> + <code>wolfsdk/oodle.py</code> are present but not connected — an unpacker for Wolfenstein-II assets is missing as the final step.</li>
+<li>Raw write path in Patcher is missing: <code>.bswf</code>, <code>.bimage</code>, <code>.lang</code>, <code>.dct</code>, <code>.png</code> lie uncompressed in the archive, <code>write_in_place</code>/<code>rebuild</code> would switch them to Deflate. Must be done before every menu text change.</li>
+<li><code>com_skipIntroVideo</code> stands in <code>cvars.RETAIL_BLOCKED</code> (measured), yet the README claims the intro skip works. One of these two is false, to be resolved with a start and <code>qconsole.log</code>.</li>
+</ul>
+<h2 id="state-of-installations">State of Installations</h2>
+<p>Part 1 is <strong>patched</strong>: 7 Mods, 373 Assets, Backup ok, Journal and <code>config.json</code> identical. Part 2 is untouched — there only reading and starting occurred. Wolfenstein II ran last with the console open.</p>
+<p><code>python tools/verify_all.py</code> runs all harmless checks.</p>
+<h2 id="addendum-findings-of-the-last-agent-just-before-the-restart">Addendum: Findings of the Last Agent (just before the restart)</h2>
+<h3 id="patcher--five-real-bugs-none-fixed">Patcher — five real bugs, none fixed</h3>
+<ol>
+<li>
+<p><strong><code>patch.py:125</code> — broken Journal reads as "no Journal".</strong>
+   <code>read_journal()</code> returns <code>None</code> on <em>every</em> error, including invalid JSON. A crash during <code>_write_journal</code> (line 335 writes non-atomically) leaves a partial JSON; the loader then reports "Original state" despite the patch being applied, and <code>revert()</code> restores <strong>only the .index files</strong>. Result: clean indices over rebuilt .resources — exactly the offset discrepancy this module is built to handle.
+   Fix: only <code>FileNotFoundError</code> → <code>None</code>, rest → <code>PatchError</code>; write Journal via <code>.tmp</code> + <code>os.replace</code>.</p>
+</li>
+<li>
+<p><strong><code>patch.py:179</code> — Game update not detected.</strong> The Manifest records only the size per <code>.resources</code>, and complains only if it becomes <em>smaller</em>. A same-size or larger update gets through; <code>revert()</code> then copies old indices over new data without a rollback path. The already-calculated <code>sha256</code> of the indices sits unused in the Manifest.</p>
+</li>
+<li>
+<p><strong><code>patch.py:99</code> <code>find()</code> — only one name variant is patched.</strong> Confirmed on real data: 40 groups with multiple spellings, e.g., <code>image textures/common/flat_local</code> versus <code>hqcompressnormal textures/common/flat_local</code>. Whoever patches one leaves the other in the original — <strong>affects the Gore texture mod immediately.</strong></p>
+</li>
+<li>
+<p><strong><code>resources.py:280</code> — <code>rebuild()</code> checks too late</strong>, namely after <code>tmp.replace()</code>. Caught within <code>apply()</code>, but dangerous for direct callers from <code>tools/</code>.</p>
+</li>
+<li>
+<p><strong><code>patch.py:274</code> — <code>deflate_exact</code> runs twice</strong>, the most expensive function in the module.</p>
+</li>
+</ol>
+<p>Seven plausible suspicions were refuted instead: no duplicate or overlapping offsets, no gaps, <code>rebuild()</code> reproduces file size byte-exactly. The module's assumptions hold.</p>
+<h3 id="save-games">Save Games</h3>
+<p><code>.verify</code> files are <strong>not</strong> reproducible: 28 byte-identical source files yield 28 different <code>.verify</code> files, meaning a random value is embedded per write operation. Consistent with this, every encrypted file ≡ 8 (mod 16) — 8 bytes of salt plus AES blocks, and the EXE brings a Windows-CNG layer along.</p>
+<p><strong>But the lock does not work at all:</strong> Part 2 refuses to load a save game with an incorrect <code>.verify</code> only in Dev Mode (<code>Loading Dev Mode or corrupted save game.</code>, Cvar <code>devMode_skipCorruptedSaves</code>).</p>
+<p><strong>New lead, more valuable than any save-game hack:</strong> the command-line prefix <strong><code>+devMode_</code></strong> with <code>devMode_enable</code>, <code>devMode_fatalErrorOnEnter</code>, <code>DEVMODE_DEVELOPER/PRODUCTION</code>.</p>
+<p>~~Open in Part 1: the 4-byte header of each <code>.dat</code> is a checksum, whose algorithm was not found.~~ <strong>Done, 22.09.</strong> It is idLibs <code>MD5_BlockChecksum</code>: MD5 over the body, the four digest words read little-endian and XOR-folded — stored but <strong>big-endian</strong>, as the sole field in these files. This has failed at brute-forcing it. 82/82 files with headers match; details and the negative proof against every CRC-32 in <code>docs/savegames.md</code>, tool <code>tools/savehash.py</code>.</p>
+<hr />
+<h1 id="warning--status-2120-before-the-second-restart">WARNING — Status 21:20, before the second restart</h1>
+<h2 id="do-not-run-wolfsdk-apply-until-f1-is-fixed">Do not run <code>wolfsdk apply</code> until F1 is fixed</h2>
+<p>The Patcher repair from tonight has <strong>introduced two severe bugs</strong>. Both reproduced in a sandbox, both still <strong>unfixed</strong>. A ready-made fix script lies under
+<code>&lt;scratchpad&gt;\fix_f1_f2.py</code> — it has not been applied because applying it would be unverified.</p>
+<h3 id="f1--the-rollback-in-apply-is-dead-patchpy413--301">F1 — the rollback in <code>apply()</code> is dead (patch.py:413 / :301)</h3>
+<p><code>ensure_backup()</code> stamps size and mtime of every <code>.resources</code> <strong>before</strong> writing, while <code>_record_resources()</code> refreshes the stamp only <strong>after</strong> the <code>try</code> block. If an exception occurs in between, <code>verify_backup()</code> sees exactly the deviation that <code>apply()</code> itself created, treats it as a game update, and the new rule "every problem blocks" denies its own rollback.</p>
+<p>Issue: The installation remains <strong>half-patched</strong>; the original error is replaced by a misleading message, and <strong>every subsequent revert also fails</strong> — permanently, because the stamp never matches again. The only way out is manual work or 40 GB of Steam file verification.</p>
+<p>The rebuild path hits deterministically (file grows), while the in-place path relies on mtime once more than one second has passed — with 373 assets over 14 archives, this always occurs.</p>
+<p><strong>Fix:</strong> If a journal exists, the files are our own; the stamp comparison should then be skipped. Without a journal, any deviation is truly an external change, so the check remains active.</p>
+<h3 id="f2--find-collects-foreign-assets-patchpy118--139">F2 — <code>find()</code> collects foreign assets (patch.py:118 / :139)</h3>
+<p>Grouping is done via the <strong>last whitespace token</strong>. For bracketed option forms, this is a number, not a path:</p>
+<pre><code>find('image', 'shrink( .../keller/keller_head_ao, 512)') -&gt; 3 hits
+   ... keller_head_ao          (correct, 2x)
+   ... lasercutter_v2_glass    (FOREIGN)
+</code></pre>
+<p>16 of the 40 variant groups are merged this way; the largest, <code>('image','1)')</code>, contains <strong>74 unrelated names</strong>. <code>apply()</code> writes the payload to <strong>every</strong> hit — thus a texture mod would overwrite up to 73 uninvolved textures and rebuild foreign archives.</p>
+<p>Today not critical: of the 373 active assets, exactly one has variants, and that is a legitimate spelling. It is a mine, not current damage.</p>
+<p><strong>Fix:</strong> Group by path — the token containing a slash. No or multiple slashes: no group, only exact match.</p>
+<h3 id="f3--the-verification-suite-does-not-cover-these-modules">F3 — The verification suite does not cover these modules</h3>
+<p><code>tools/verify_all.py</code> skips <code>verify_patch.py</code> and <code>verify_gui.py</code> because the <code>WRITE_CALLS</code> filter sees <code>install.apply()</code>. However, <code>verify_patch.py</code> is the <strong>only</strong> end-to-end test for <code>patch.py</code> and <code>resources.py</code>, and it operates solely within a temp directory. Therefore, the five repairs are not covered by the suite at all.</p>
+<h2 id="other-open-points-from-the-same-inspection">Other open points from the same inspection</h2>
+<ul>
+<li><code>gui.py:586</code> <code>_mods_in_sync()</code> returns <code>True</code> when the journal is unreadable — "Play" then starts without inquiry with an unknown mod state.</li>
+<li><code>cli.py:446</code> catches only <code>GameError</code>; <code>PatchError</code> from <code>cmd_info</code>/<code>cmd_play</code> lands as a Traceback for the user.</li>
+<li>Only one archive pair was tested. The multi-archive case of <code>apply()</code> is not covered.</li>
+</ul>
+<h2 id="what-else-is-missing">What else is missing</h2>
+<p>The attempt at a retail lock in Part 2 failed: <code>g_infiniteAmmo</code> and <code>g_freeCamSpeed</code> do not exist there (<code>Unknown command</code>); they came from the harvested name list. For a valid attempt, take names from <code>docs/cvars_tnc_echt.json</code>. The game crashed with an Access Violation (21:11:04); save files are intact.</p>
+<p>And a find from our own log, not yet pursued: Part 2 searches <code>C:\Users\‹user›\Saved Games\...\base\</code> <strong>before</strong> the Steam folder. Experiments on this are ready in <code>tools/experiment_loadpaths.py</code>.</p>
+<hr />
+<h1 id="status-2145--third-restart-all-aborted">Status 21:45 — third restart, all aborted</h1>
+<h2 id="f1-and-f2-are-repaired-inspection-not-yet-complete">F1 and F2 are repaired, inspection not yet complete</h2>
+<p><code>wolfsdk/patch.py</code> now carries both fixes:</p>
+<ul>
+<li><strong>F1:</strong> <code>verify_backup()</code> skips the stamp comparison of <code>.resources</code> if a journal exists (<code>ours = self.journal_path.is_file()</code>). Without a journal, game update detection remains active.</li>
+<li><strong>F2:</strong> new method <code>Installation._path_key(name)</code> groups via the single token with a slash instead of the last token.</li>
+</ul>
+<p><strong>Self-proven:</strong> the contaminated case now yields 4 hits, all the same path (<code>keller_head_ao</code> under <code>shrink(</code> and <code>resize(</code>); the foreign <code>lasercutter_v2_glass</code> is gone. <code>textures/common/flat_local</code> still finds both legitimate spellings. Largest group <strong>2 instead of 74</strong>, 35 groups instead of 40.</p>
+<p><strong>Not yet verified</strong> — the independent auditor was aborted mid-run:</p>
+<ul>
+<li>Does the rollback in <code>apply()</code> now truly proceed after an exception, and does it retain the <em>original</em> error?</li>
+<li>Does <code>revert()</code> continue to refuse when actually changed from outside (Manifest present, <strong>Journal deleted</strong>)? If F1-Fix disables this, it is a regression.</li>
+</ul>
+<p>Last status of the auditor before the abort: <strong>275 names lose their grouping due to the F2-Fix</strong>, because they contain multiple tokens with a forward slash — yet there is <strong>0 overlap</strong>, meaning these 275 have no variants at all. Re-calculate.</p>
+<p><strong>Until this is verified: do not run <code>wolfsdk apply</code> against the real installation.</strong></p>
+<h2 id="ghidra--installation-started-aborted">Ghidra — Installation started, aborted</h2>
+<p>Script: <code>&lt;scratchpad&gt;\setup_ghidra.ps1</code>, callable again, skips already loaded files. Target <code>C:\Users\‹user›\tools</code>, partial download resides in <code>C:\Users\‹user›\tools\_download</code>.</p>
+<ul>
+<li>Ghidra 12.1.4 (543 MB), JDK 21 Temurin (196 MB), both as ZIP without installer and without elevation.</li>
+<li>URLs are stored in <code>%TEMP%\ghidra_url.txt</code>, <code>ghidra_name.txt</code>, <code>jdk_url.txt</code>.</li>
+</ul>
+<p><strong>Measured and critical for expectations:</strong> <code>.text</code> has entropy <strong>8.000</strong> with 0 % null bytes in <strong>both</strong> EXEs — fully encrypted, indistinguishable from random. Static code analysis yields nothing there.</p>
+<p>What Ghidra still provides: RTTI class hierarchy and vtables from <code>.rdata</code>, plus <strong>172,586 function boundaries</strong> from <code>.pdata</code> (TNO 50,901, TNC 121,685).</p>
+<p>For actual code, only the runtime path works: attach a debugger to the running process; there, <code>.text</code> is decrypted. It does not generate a DRM-free file. Creating an unpacked EXE remains excluded.</p>
+<h2 id="open-tasks-in-bus">Open tasks in Bus</h2>
+<p><code>patchverify</code> (independently verify F1/F2) and <code>suite</code> (<code>verify_all</code> should run <code>verify_patch.py</code> instead of skipping) — both unfinished, tasks in history. Bus resides under <code>.agent-cache</code>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Reverse-Engineering-Research.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Reverse Engineering Research</a><a class="next" href="Research-Orchestrator-Feedback.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Feedback: agent-cache-orchestrator</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

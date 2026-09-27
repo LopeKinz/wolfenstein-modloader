@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>`cfile` — the encrypted Resource type of Wolfenstein II – Wolfenstein Modloader</title>
+<meta name="description" content="How Wolfenstein II encrypts its game text files, and why the key could not be found.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tnc"><span class="en">The New Colossus</span><span class="de">The New Colossus</span></a></p>
+<h1><code>cfile</code> — the encrypted Resource type of Wolfenstein II</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Cfile-Encryption"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-what-it-is">1. What it is</a></li><li><a href="#2-which-algorithm--proven-without-a-line-of-code">2. Which Algorithm — proven without a line of code</a></li><li><a href="#3-the-cross-checks-the-key-must-pass">3. The cross-checks the key must pass</a></li><li><a href="#4-what-is-excluded-and-with-what">4. What is excluded, and with what</a></li><li><a href="#5-what-remains-open">5. What Remains Open</a></li><li><a href="#6-connection-to-the-rest-of-the-docs">6. Connection to the Rest of the Docs</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein II (TNC) stores its game text and some settings files in an <span class="t" data-t="encryption">encrypted</span> file type called cfile. The page shows it is AES encryption through a Windows library, with a separate <span class="t" data-t="key">key</span> worked out for each file from a random value. The recipe for that key sits in the copy-protected part of the program, and millions of tested key guesses all failed. So game text cannot be modded this way; a loose unencrypted file might work but is untested.</p><ul><li>20 files: 10 settings files and all 10 language files, 67 versions in total.</li><li>All 67 are multiples of 16 bytes, which rules out the GCM mode and points to AES with padding.</li><li>About 33.8 million byte windows and 2.8 million string-based keys were tested; none worked.</li><li>Removing the copy protection to read the code is ruled out.</li><li>Three settings files also exist as plain loose files, so settings changes do not need the archive.</li></ul></div><div class="de"><p class="lede">Wolfenstein II (TNC) speichert Spieltexte und einige Einstellungsdateien in einem <span class="t" data-t="encryption">verschlüsselten</span> Dateityp namens cfile. Die Seite zeigt, dass es sich um AES-Verschlüsselung über eine Windows-Bibliothek handelt, wobei für jede Datei ein eigener <span class="t" data-t="key">Schlüssel</span> aus einem Zufallswert berechnet wird. Die Rechenvorschrift dafür steckt im kopiergeschützten Teil des Programms, und Millionen getesteter Schlüssel-Kandidaten schlugen fehl. Spieltexte lassen sich so nicht modden; eine lose, unverschlüsselte Datei könnte funktionieren, ist aber ungetestet.</p><ul><li>20 Dateien: 10 Einstellungsdateien und alle 10 Sprachdateien, insgesamt 67 Versionen.</li><li>Alle 67 sind Vielfache von 16 Bytes; das schließt den GCM-Modus aus und spricht für AES mit Auffüllung.</li><li>Rund 33,8 Millionen Byte-Fenster und 2,8 Millionen Schlüssel aus Textkonstanten wurden getestet, keiner passte.</li><li>Den Kopierschutz zu entfernen, um den Code zu lesen, ist ausgeschlossen.</li><li>Drei Einstellungsdateien liegen zusätzlich als lose Klartextdateien vor; Einstellungen brauchen das Archiv also nicht.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p><strong>Summary.</strong> <code>cfile</code> is AES in block mode via the Windows CNG library <code>bcrypt.dll</code>; the handler is named <code>idEncryptedFileResource</code>. The key is <strong>derived per file</strong> from a random salt, and the derivation specification exists exclusively within the SteamStub-encrypted <code>.text</code> section. There is no ready-made key in a readable section, and none of the derivations using only public inputs succeed. <strong>Localization remains unknown.</strong> What was previously "unknown" is now measured as excluded — the numbers are below, the tool is <code>tools/cfile.py</code>.</p>
+<pre><code>python tools/cfile.py --survey      # Container and the three structural measurements
+python tools/cfile.py --probe       # Derivations from public inputs
+python tools/cfile.py --scan-exe    # every window from .rdata/.data as key
+python tools/cfile.py --scan-strings # every string constant as KDF secret
+python tools/cfile.py --key HEX     # a candidate against all cfiles
+python tools/cfile.py --selbsttest
+</code></pre>
+<hr />
+<h2 id="1-what-it-is">1. What it is</h2>
+<p>20 unique names: 10 <code>.cfg</code> files and all 10 <code>strings/*.lang</code>. Across the five archive generations (<code>gameresources</code>, <code>patch_1</code> … <code>patch_4</code>), there are <strong>67 unique payloads</strong>; each generation provides a new <code>.lang</code>. All lie with <code>compression == 0</code> in the archive, so uncompressed from the perspective of IDCL — the archive passes through the bytes, and encryption sits underneath.</p>
+<h3 id="payload-header">Payload Header</h3>
+<pre><code>0x00 u32  Length after unpacking, 0xFFFFFFFF = not packed at all
+0x04 u32  Unix timestamp in seconds
+ab 0x08   Noise
+</code></pre>
+<p>The timestamp matches <code>entry.timestamp_us</code> of the archive entry (exactly to the day, <code>strings/english.lang</code> in <code>patch_4</code>: <code>1538736764</code> in the header against <code>1538740169566088 µs</code> in the entry). The inflated length is genuinely larger than the file for all 63 packed payloads — for <code>strings/english.lang</code> from <code>patch_4</code>, 2,452,756 bytes on disk versus 478,352 bytes; for those from <code>gameresources</code>, 2,049,240 versus 389,360. Four files carry <code>ffffffff</code> (<code>default_mp.cfg</code>, <code>default_snap.cfg</code>, <code>snapdemo.cfg</code>, <code>snapedit.cfg</code>); their plaintext is immediately <code>.cfg</code> text, and precisely those are therefore the oracle for every key attempt.</p>
+<h3 id="the-handler">The Handler</h3>
+<p>In <code>.rdata</code> lies a contiguous string pool revealing the entire class (addresses are RVAs in <code>NewColossus_x64vk.exe</code>, ImageBase 0x140000000):</p>
+<pre><code>0x026C9550  &quot;decompress failed&quot;
+0x026C9568  &quot;decryption failed(%d)&quot;
+0x026C9580  &quot;Failed to derive key&quot;
+0x026C9598  &quot;Failed to generate salt&quot;
+0x026C95B0  &quot;File is larger than INT_MAX: 0x%llx&quot;
+0x026C95D8  &quot;Could not read file&quot;
+0x026C9630  &quot;Failed to encrypt (%d)&quot;
+0x026C9648  &quot;cfile&quot;
+0x026C9650  &quot;idEncryptedFileResource&quot;
+0x026C9668  &quot;Failed to allocate buffer&quot;
+0x026C9688  &quot;could not derive key&quot;
+</code></pre>
+<p>The type string <code>cfile</code> stands eight bytes before the class name — the same string pool, the same translation unit. The order of error messages describes the flow: generate salt → derive key → encrypt, and on read decrypt → decompress. <strong>The key is calculated, not read.</strong></p>
+<hr />
+<h2 id="2-which-algorithm--proven-without-a-line-of-code">2. Which Algorithm — proven without a line of code</h2>
+<p><code>.text</code> is fully SteamStub-encrypted in both EXEs (entropy 8,000, no 64-KiB block under 7,97; see <code>docs/ghidra.md</code>). Therefore only what CNG demands as plaintext was read.</p>
+<h3 id="21-the-import-table-lists-exactly-15-functions">2.1 The Import Table lists exactly 15 functions</h3>
+<p><code>bcrypt.dll</code>, names from the Import Name Table starting at <code>.rdata@0x2E34ED8</code>:</p>
+<pre><code>BCryptOpenAlgorithmProvider   BCryptCloseAlgorithmProvider
+BCryptCreateHash              BCryptHashData        BCryptFinishHash
+BCryptDuplicateHash           BCryptDestroyHash
+BCryptGenerateSymmetricKey    BCryptDuplicateKey    BCryptDestroyKey
+BCryptEncrypt                 BCryptDecrypt
+BCryptGetProperty             BCryptSetProperty     BCryptGenRandom
+</code></pre>
+<p>This is missing <strong>every</strong> key derivation function: no <code>BCryptDeriveKeyPBKDF2</code>, no <code>BCryptKeyDerivation</code>, no <code>BCryptDeriveKey</code>. The strings <code>PBKDF</code> and <code>KeyDerivation</code> do not appear anywhere in the file. Thus, the KDF is hand-built from <code>CreateHash</code>/<code>HashData</code>/<code>FinishHash</code> — it is code, and this code is not readable here. <code>BCryptGenRandom</code> is the counterpart to "Failed to generate salt".</p>
+<h3 id="22-there-is-exactly-one-algorithm-and-exactly-one-chaining-mode">2.2 There is exactly one algorithm and exactly one chaining mode</h3>
+<p>All UTF-16LE strings in the EXE that could be BCRYPT algorithm or mode names:</p>
+<pre><code>0x029798A0  SHA512      0x029798F0  SHA256      0x02979900  SHA384
+0x029799E8  AES         0x02979DA8  MD5         0x02979DB0  SHA1
+0x02979DC0  RNG         0x0297A520  ChainingMode
+0x0297A5D0  ChainingModeGCM
+</code></pre>
+<p><strong><code>AES</code> is the only block cipher.</strong> <code>ChainingModeCBC</code>, <code>ChainingModeCFB</code>, <code>ChainingModeECB</code>, <code>ChainingModeCCM</code> do not appear; <code>ChainingMode</code> appears <strong>zero</strong> times as ASCII and twice as UTF-16 — once as a property name and once as a value. The three UTF-16 hits on <code>DES</code> belong to country code tables (<code>DEL DES ENI ENG</code>) and a palette name, not CNG. The only set mode is GCM, which belongs indisputably to the other class: the error message next to it reads
+<code>idSecureAEADCipher: BCryptSetProperty( BCRYPT_CHAINING_MODE ) failed: %x</code>
+(0x297A540). <code>idSecureBlockCipher</code> sets <strong>no</strong> mode, so it runs in CNG-default, which is CBC.</p>
+<p>The two classes in the string pool 0x2979500–0x297A600:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idSecureHash</code></td>
+<td>MD5/SHA1/SHA256/SHA384/SHA512, <code>HashDigestLength</code></td>
+</tr>
+<tr>
+<td><code>idSecureHMAC</code></td>
+<td>own <code>Initialize</code>/<code>hmacFunction</code> errors</td>
+</tr>
+<tr>
+<td><code>idSecureBlockCipher</code></td>
+<td><code>AES</code>, <code>BlockLength</code>, <code>Encrypt</code>/<code>Decrypt</code>, <code>EncryptWithOSPadding</code>/<code>DecryptWithOSPadding</code></td>
+</tr>
+<tr>
+<td><code>idSecureAEADCipher</code></td>
+<td><code>ChainingModeGCM</code>, <code>AuthTagLength</code>, <code>nonce must be exactly 12 bytes (bcrypt restriction)</code>, <code>cipherText too short (%d &lt; %d)</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="23-the-lengths-rule-out-aeadgcm">2.3 The lengths rule out AEAD/GCM</h3>
+<p><strong>67 of 67 payloads are multiples of 16 bytes.</strong></p>
+<p>This is not archival alignment. A cross-check via <code>gameresources.resources</code>, 13,915 entries with <code>compression == 0</code>; excluding <code>sound</code> (which is inherently 16-aligned) and <code>cfile</code> itself leaves 8,948 entries:</p>
+<pre><code>csize%16:  0:434  1:551  2:1609  3:583  4:360  5:490  6:499  7:668
+           8:385  9:745 10:517 11:486 12:343 13:363 14:496 15:419
+Expected for uniform distribution: 559 per remainder class.
+</code></pre>
+<p>The remainder 0 is at 434, which is <strong>below</strong> the expectation. The archive does not align to 16; the property is embedded in the <code>cfile</code> format.</p>
+<p>AES-GCM is a stream cipher: Ciphertext length = Plaintext length, plus 12-byte Nonce and 12–16-byte Tag. For 67 files with arbitrary plaintext lengths — 63 Oodle streams and 4 <code>.cfg</code> texts — all to fall on multiples of 16, the 67 independent lengths would need to hit the same remainder class mod 16. This is 16⁻⁶⁶ ≈ 10⁻⁸⁰. <strong>AEAD/GCM rules out for <code>cfile</code>.</strong> What remains is a block mode with padding — for which there is a matching function: <code>idSecureBlockCipher::DecryptWithOSPadding</code>, i.e., <code>BCRYPT_BLOCK_PADDING</code>, i.e., PKCS7. Only with this can the true plaintext length be recovered for the four <code>ffffffff</code> files, because the header does not state it there.</p>
+<h3 id="24-where-the-ciphertext-starts">2.4 Where the ciphertext starts</h3>
+<p>The header is 8 bytes of plaintext; a block mode ciphertext is a multiple of 16; and both together are a multiple of 16. Thus, in between lies a range of length <strong>8 (mod 16)</strong>. This fits "Failed to generate salt": 8-byte Salt (ciphertext starting at 0x10) or 8-byte Salt plus 16-byte IV (ciphertext starting at 0x20). Which of the two, cannot be decided by the bytes alone — both variants are always checked in <code>tools/cfile.py</code> as <code>CT_STARTS</code>.</p>
+<hr />
+<h2 id="3-the-cross-checks-the-key-must-pass">3. The cross-checks the key must pass</h2>
+<p>Part 1 dumps <strong>the same file in plaintext</strong>: inside <code>Wolfenstein.The.New.Order\base</code> lies <code>strings/english.lang</code> as a resource type <code>file</code>, 868,273 bytes, uncompressed, UTF-8 with BOM:</p>
+<pre><code>efbbbf 2f2f 2073 7472 696e 6720 7461 626c 650d0a   &quot;// string table\r\n&quot;
+2f2f0d0a 0d0a 7b0d0a 09 22 23 7374 725f ...        &quot;//\r\n\r\n{\r\n\t\&quot;#str_…&quot;
+</code></pre>
+<p>The format is <code>"#str_key"&lt;TAB&gt;"Value"</code> per line within a <code>{ }</code> block. Part 2 provides the similarly named file at the same location (<code>strings/&lt;language&gt;.lang</code>), but has changed its type from <code>file</code> to <code>cfile</code>, packing and encrypting it. The type change is the entire difference — the underlying format is the same string table format, which is why its header serves as an acceptance criterion.</p>
+<p>This makes the three test cases executable and available as code in <code>tools/cfile.py</code> (<code>verify_plain</code>, tested against the actual file from Part 1 via <code>--selbsttest</code>):</p>
+<ol>
+<li><strong>Readable Text</strong> — the plaintext must start with <code>EF BB BF // string table</code>.</li>
+<li><strong>The stated length is correct</strong> — according to Oodle exactly <code>0x1F44D8</code> = 2,049,240 bytes for <code>english.lang</code> from <code>gameresources</code>, and 2,452,756 bytes for the one from <code>patch_4</code>. Both are listed in the header and are not numbers that come out randomly.</li>
+<li><strong>All 67</strong>, not just one. <code>--key</code> iterates over all of them.</li>
+</ol>
+<p>A candidate that fails any of these three is invalid.</p>
+<hr />
+<h2 id="4-what-is-excluded-and-with-what">4. What is excluded, and with what</h2>
+<h3 id="41-no-fixed-key-no-fixed-iv">4.1 No fixed key, no fixed IV</h3>
+<ul>
+<li><strong>1,254,614</strong> 16-byte blocks across all 67 payloads. Of these, <strong>0</strong> occur in more than one file. No ECB with a fixed key, no key/nonce repetition.</li>
+<li>The longest common prefix of two payloads starting at offset 8 is <strong>1 byte</strong>.</li>
+<li>The sharpest single piece of evidence: <code>xb_classic.cfg</code>, <code>xb_default.cfg</code>, and <code>xb_mirrored.cfg</code> are each <strong>624 bytes</strong> long and declare <code>declen</code> as 1261, 1261, and 1262 respectively — three controller configurations that differ by a handful of characters in plaintext. Their common prefix starting at offset 8 is <strong>0 bytes</strong>. Nearly identical plaintext, completely different ciphertext: <strong>a unique salt per file</strong>. This is also what "Failed to generate salt" states.</li>
+</ul>
+<h3 id="42-no-derivation-from-purely-public-inputs">4.2 No derivation from purely public inputs</h3>
+<p>If the key were calculated solely from what is in the file — Salt, filename, type, timestamp, stated length — the encryption would be pure obfuscation and could be broken here. <code>--probe</code> checks this:</p>
+<ul>
+<li>31 compositions of <code>salt8</code>, <code>salt16</code>, header, full name, filename, basename, <code>"cfile"</code>, <code>declen</code>, <code>ts</code></li>
+<li>× 5 Hashes (MD5, SHA1, SHA256, SHA384, SHA512), each directly and as HMAC in both directions</li>
+<li>× 3 Key lengths (16/24/32) × 4 Start offsets (8/16/24/32) × ECB and CBC</li>
+<li>= <strong>4,092</strong> triples of (Construction, Start offset, Mode), each measured against all four plaintext oracles — <strong>16,368 measurements</strong></li>
+</ul>
+<p>The proportion of printable bytes is evaluated over every 6 blocks. CBC requires no IV: <code>P[i] = D(C[i]) xor C[i-1]</code> applies from the second block onward, so the result depends only on the key.</p>
+<pre><code>Random      0.379   (97 printable out of 256 values)
+Plaintext    1.000
+measured     0.500   best, ecb@32, hmac_msg_sha512(salt8+head)[:32]
+</code></pre>
+<p>The five best values lie between 0.479 and 0.500 and belong to five different, unrelated constructions — this is noise, not a signal. <strong>No public derivation succeeds.</strong></p>
+<h3 id="43-no-finished-key-in-a-readable-section">4.3 No finished key in a readable section</h3>
+<p><code>--scan-exe --step 1</code> takes <strong>every</strong> byte offset in <code>.rdata</code>, <code>.data</code>, and <code>_RDATA</code> as raw AES keys, length 16 and 32, and checks ECB and CBC at all plausible start offsets against <code>snapdemo.cfg</code>:</p>
+<pre><code>33 791 358 windows in 694 s, best text ratio 0.656
+.rdata+0x2D59E24, 32 bytes, cbc@16
+  07e00570 04600000 b0c8d401 0037a702 00000000 10fb1c01 ffffffff 02fc1c01
+yields:     56 96 b5 db ac 31 5c ac ba 5a 52 0a 81 31 7d 66 …
+</code></pre>
+<p>(33.8 instead of 37.8 million, because windows are skipped over entirely by identical bytes — the null ranges in <code>.data</code>.) The "best" candidate is visibly a chunk of pointer/relocation table, and its result is noise: 84 of 128 printable bytes, where 48.5 would be expected and ~5.7 million draws land roughly there at most. A real key would lie around 1,000.
+<strong>No finished AES key exists in the readable sections.</strong> This aligns with "Failed to derive key" — it is indeed being calculated — but now it is measured rather than hypothesized.</p>
+<h3 id="44-no-exe-string-constant-is-the-secret">4.4 No EXE String Constant Is The Secret</h3>
+<p>The most natural construction for a build key would be a string literal in binary, hashed against the salt. <code>--scan-strings</code> exhaustively attempts this: <strong>117,703</strong> unique printable strings (4–64 characters) found in <code>.rdata</code>, each raw, as <code>string‖salt</code> and as <code>salt‖string</code>, through all five hash functions the game brings along, sliced to 16 and 32 bytes — <strong>2,824,872 key candidates</strong> in 67 seconds.</p>
+<pre><code>best text portion 0.609
+sha256(&quot;g_aiIncomingDamageScale_DIFFICULTY_MEINLEBEN&quot; + salt)[:16], ecb@16
+yields:  dc 61 34 3e a0 40 e2 bd ba 91 35 6f bc 9b 32 45 c5 7b c5 a3 …
+</code></pre>
+<p>78 of 128 printable bytes instead of the expected 48.5 — this is exactly the maximum that ~1.9 million draws from noise provide, and the bytes above speak for themselves. <strong>No EXE string constant is the secret of this KDF</strong> — at least not in this combination.</p>
+<hr />
+<h2 id="5-what-remains-open">5. What Remains Open</h2>
+<ul>
+<li><strong>The KDF itself.</strong> It consists of <code>BCryptCreateHash</code>/<code>HashData</code>/<code>FinishHash</code> and a secret. The secret could be a byte-array in <code>.rdata</code> that we do not recognize as such (it only passes through the check with the correct KDF, not as a key), or it stands as a sequence of <code>mov</code> immediates in <code>.text</code>. Neither can be decided without reading <code>.text</code>, and <code>.text</code> is SteamStub-encrypted. <strong>A decompressor for this is Copy Protection Removal and is not an option.</strong></li>
+<li><strong>CBC is closed, not measured.</strong> Measured is: block mode with padding (the lengths), AES as the only block cipher (the strings), no <code>ChainingMode*</code> value except GCM (the strings), GCM belongs to the AEAD class (the error message beside it). From this follows CBC only via the documented CNG default for AES, if <code>BCryptSetProperty</code> is not called. ECB is weakly excluded by the data — with 67 files containing almost exclusively compressed plaintext, repeated blocks would also be rare under ECB. <code>tools/cfile.py</code> therefore checks both everywhere.</li>
+<li><strong>Salt 8 or Salt 8 + IV 16.</strong> The length arithmetic allows both. Without a key it is not distinguishable, and with a key it would be resolved in one attempt.</li>
+<li><strong>Whether a loose <code>base\strings\english.lang</code> is read at all.</strong> If the load path prefers loose files (see <code>docs/ladepfade.md</code>), the question remains whether <code>idEncryptedFileResource</code> has an unencrypted input. This is a runtime question; the game was not started.</li>
+<li><strong>The rest of the <code>idSecure*</code> family.</strong> What <code>idSecureAEADCipher</code> (GCM) is used for in the game remains open — it is demonstrably not used by <code>cfile</code>.</li>
+</ul>
+<hr />
+<h2 id="6-connection-to-the-rest-of-the-docs">6. Connection to the Rest of the Docs</h2>
+<p><code>docs/moddingflaeche-tnc.md</code> §6 remains correct in principle — localization is not moddable via this path — but one line there is superseded by this measurement: "The content is encrypted, the key unknown". More precisely: <strong>AES in block mode via <code>bcrypt.dll</code>, handler <code>idEncryptedFileResource</code>, key per file derived from a random salt, derivation rule only in <code>.text</code>.</strong> The numbers are here.</p>
+<p>Furthermore, the finding softens further than noted there: <code>default.cfg</code>, <code>default_sp.cfg</code>, and <code>build.cfg</code> additionally lie as loose plaintext files in <code>base\</code>, so CVar changes do not need the archive anyway. Only the game text itself remains encrypted.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Developer-Mode.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Developer Mode — What It Unlocks and Where the Retail Lock Remains</a><a class="next" href="DLC-Overrides.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Can a DLC Chunk overwrite an asset from the base game?</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

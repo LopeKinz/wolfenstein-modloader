@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reverse Engineering Artifact Inventory – Wolfenstein Modloader</title>
+<meta name="description" content="Inventory of the large research files kept in the repository instead of the wiki.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#status"><span class="en">Status and records</span><span class="de">Stand und Protokolle</span></a></p>
+<h1>Reverse Engineering Artifact Inventory</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Artifacts"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#top-level-areas">Top-Level Areas</a></li><li><a href="#file-types">File Types</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page lists the generated research files behind the wiki, such as rebuilt game archives, texture databases, screenshots and logs. They stay in the project repository rather than the wiki because many are several gigabytes and would exceed GitHub file-size limits. It gives file counts and sizes per research area and per file type. It is a catalog for orientation, not a research result.</p><ul><li>In total 1,918 files with 7.4 GiB.</li><li>The largest share is 60 .resources <span class="t" data-t="archive">archive</span> files (3.8 GiB) and 28 .texdb files (2.5 GiB).</li><li>The biggest area is &#x27;kitmap&#x27; with 1.6 GiB.</li><li>Every prose research note is in the wiki as its own page; only the large generated files stay out.</li></ul></div><div class="de"><p class="lede">Diese Seite listet die erzeugten Forschungsdateien hinter dem Wiki auf, etwa neu gebaute Spielarchive, Texturdatenbanken, Screenshots und Logs. Sie bleiben im Projekt-Repository statt im Wiki, weil viele mehrere Gigabyte groß sind und die Dateigrößen-Grenzen von GitHub sprengen würden. Die Seite nennt Dateianzahl und Größe pro Forschungsbereich und pro Dateityp. Sie ist ein Katalog zur Orientierung, kein Forschungsergebnis.</p><ul><li>Insgesamt 1.918 Dateien mit 7,4 GiB.</li><li>Den größten Anteil haben 60 .resources-<span class="t" data-t="archive">Archiv</span>dateien (3,8 GiB) und 28 .texdb-Dateien (2,5 GiB).</li><li>Der größte Bereich ist „kitmap“ mit 1,6 GiB.</li><li>Jede Forschungsnotiz in Textform steht als eigene Seite im Wiki; nur die großen erzeugten Dateien bleiben draußen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>The Wiki includes every prose research note from <code>re_probes</code> as an English page. Large generated artifacts remain in the repository's <code>re_probes/</code> tree: copying multi-gigabyte <code>.resources</code>, <code>.texdb</code>, images, archives, and temporary failures into a GitHub Wiki would duplicate data and exceed GitHub file-size limits.</p>
+<p>Inventory at generation time: <strong>1,918 files</strong>, <strong>7.4 GiB</strong> total.</p>
+<h2 id="top-level-areas">Top-Level Areas</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th style="text-align: right;">Files</th>
+<th style="text-align: right;">Size</th>
+<th>Repository path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(root)</code></td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">435.4 MiB</td>
+<td><code>re_probes</code></td>
+</tr>
+<tr>
+<td><code>__pycache__</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">176.0 B</td>
+<td><code>re_probes/__pycache__</code></td>
+</tr>
+<tr>
+<td><code>agent_briefs</code></td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">96.9 KiB</td>
+<td><code>re_probes/agent_briefs</code></td>
+</tr>
+<tr>
+<td><code>agent_reports</code></td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">317.7 KiB</td>
+<td><code>re_probes/agent_reports</code></td>
+</tr>
+<tr>
+<td><code>assetviewer</code></td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">1.8 MiB</td>
+<td><code>re_probes/assetviewer</code></td>
+</tr>
+<tr>
+<td><code>assetviewer3d</code></td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">8.5 MiB</td>
+<td><code>re_probes/assetviewer3d</code></td>
+</tr>
+<tr>
+<td><code>cfilekey</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">96.0 B</td>
+<td><code>re_probes/cfilekey</code></td>
+</tr>
+<tr>
+<td><code>chunklist</code></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">33.2 KiB</td>
+<td><code>re_probes/chunklist</code></td>
+</tr>
+<tr>
+<td><code>cmdtable</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">93.7 KiB</td>
+<td><code>re_probes/cmdtable</code></td>
+</tr>
+<tr>
+<td><code>cmfmt</code></td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">12.2 KiB</td>
+<td><code>re_probes/cmfmt</code></td>
+</tr>
+<tr>
+<td><code>custom_save_candidates</code></td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">1.4 MiB</td>
+<td><code>re_probes/custom_save_candidates</code></td>
+</tr>
+<tr>
+<td><code>cutsceneaudio</code></td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">1.9 MiB</td>
+<td><code>re_probes/cutsceneaudio</code></td>
+</tr>
+<tr>
+<td><code>cvartable</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1.8 MiB</td>
+<td><code>re_probes/cvartable</code></td>
+</tr>
+<tr>
+<td><code>datahash</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">17.8 KiB</td>
+<td><code>re_probes/datahash</code></td>
+</tr>
+<tr>
+<td><code>dlc4_alias_reduced_after_full_probe</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">865.4 MiB</td>
+<td><code>re_probes/dlc4_alias_reduced_after_full_probe</code></td>
+</tr>
+<tr>
+<td><code>dlc4_cfile</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">144.7 MiB</td>
+<td><code>re_probes/dlc4_cfile</code></td>
+</tr>
+<tr>
+<td><code>dlc4_devmap_patch_crashy</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">984.3 MiB</td>
+<td><code>re_probes/dlc4_devmap_patch_crashy</code></td>
+</tr>
+<tr>
+<td><code>dlc4_old_identity_probe</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">865.4 MiB</td>
+<td><code>re_probes/dlc4_old_identity_probe</code></td>
+</tr>
+<tr>
+<td><code>dlc4_override</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">144.7 MiB</td>
+<td><code>re_probes/dlc4_override</code></td>
+</tr>
+<tr>
+<td><code>dlcprecedence</code></td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">170.7 KiB</td>
+<td><code>re_probes/dlcprecedence</code></td>
+</tr>
+<tr>
+<td><code>empty_dlc</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">88.3 KiB</td>
+<td><code>re_probes/empty_dlc</code></td>
+</tr>
+<tr>
+<td><code>entitypipe</code></td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">152.6 MiB</td>
+<td><code>re_probes/entitypipe</code></td>
+</tr>
+<tr>
+<td><code>execcarrier</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">64.4 KiB</td>
+<td><code>re_probes/execcarrier</code></td>
+</tr>
+<tr>
+<td><code>extract_c2</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">290.0 B</td>
+<td><code>re_probes/extract_c2</code></td>
+</tr>
+<tr>
+<td><code>hash08_scratch</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">13.4 KiB</td>
+<td><code>re_probes/hash08_scratch</code></td>
+</tr>
+<tr>
+<td><code>idclhash</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">19.8 KiB</td>
+<td><code>re_probes/idclhash</code></td>
+</tr>
+<tr>
+<td><code>idclwriter</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">144.7 MiB</td>
+<td><code>re_probes/idclwriter</code></td>
+</tr>
+<tr>
+<td><code>kitmap</code></td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">1.6 GiB</td>
+<td><code>re_probes/kitmap</code></td>
+</tr>
+<tr>
+<td><code>live_test_backup</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">316.0 B</td>
+<td><code>re_probes/live_test_backup</code></td>
+</tr>
+<tr>
+<td><code>loader_english</code></td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">475.4 KiB</td>
+<td><code>re_probes/loader_english</code></td>
+</tr>
+<tr>
+<td><code>map_alias_v3</code></td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">458.0 MiB</td>
+<td><code>re_probes/map_alias_v3</code></td>
+</tr>
+<tr>
+<td><code>mapmanifest</code></td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">149.0 MiB</td>
+<td><code>re_probes/mapmanifest</code></td>
+</tr>
+<tr>
+<td><code>mapview_shots</code></td>
+<td style="text-align: right;">139</td>
+<td style="text-align: right;">64.7 MiB</td>
+<td><code>re_probes/mapview_shots</code></td>
+</tr>
+<tr>
+<td><code>matpipe</code></td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">139.5 MiB</td>
+<td><code>re_probes/matpipe</code></td>
+</tr>
+<tr>
+<td><code>media</code></td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">19.7 MiB</td>
+<td><code>re_probes/media</code></td>
+</tr>
+<tr>
+<td><code>meshfmt</code></td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">26.5 MiB</td>
+<td><code>re_probes/meshfmt</code></td>
+</tr>
+<tr>
+<td><code>missions</code></td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">581.5 MiB</td>
+<td><code>re_probes/missions</code></td>
+</tr>
+<tr>
+<td><code>modelexport</code></td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">33.6 MiB</td>
+<td><code>re_probes/modelexport</code></td>
+</tr>
+<tr>
+<td><code>python_deps</code></td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">8.6 MiB</td>
+<td><code>re_probes/python_deps</code></td>
+</tr>
+<tr>
+<td><code>runtime_87400</code></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">88.0 MiB</td>
+<td><code>re_probes/runtime_87400</code></td>
+</tr>
+<tr>
+<td><code>save_backups</code></td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">2.6 MiB</td>
+<td><code>re_probes/save_backups</code></td>
+</tr>
+<tr>
+<td><code>save_structure</code></td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">477.2 KiB</td>
+<td><code>re_probes/save_structure</code></td>
+</tr>
+<tr>
+<td><code>skins</code></td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">62.6 MiB</td>
+<td><code>re_probes/skins</code></td>
+</tr>
+<tr>
+<td><code>staticcoll</code></td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">80.2 KiB</td>
+<td><code>re_probes/staticcoll</code></td>
+</tr>
+<tr>
+<td><code>studio_english</code></td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">7.6 MiB</td>
+<td><code>re_probes/studio_english</code></td>
+</tr>
+<tr>
+<td><code>studio_shots</code></td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">9.6 MiB</td>
+<td><code>re_probes/studio_shots</code></td>
+</tr>
+<tr>
+<td><code>studioimport</code></td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">9.4 MiB</td>
+<td><code>re_probes/studioimport</code></td>
+</tr>
+<tr>
+<td><code>texcache</code></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">27.5 KiB</td>
+<td><code>re_probes/texcache</code></td>
+</tr>
+<tr>
+<td><code>texdbkey</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">15.5 KiB</td>
+<td><code>re_probes/texdbkey</code></td>
+</tr>
+<tr>
+<td><code>tnc_custom_map_c2v1_custom</code></td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">19.7 MiB</td>
+<td><code>re_probes/tnc_custom_map_c2v1_custom</code></td>
+</tr>
+<tr>
+<td><code>tnc_custom_map_c3v1_custom</code></td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">31.8 MiB</td>
+<td><code>re_probes/tnc_custom_map_c3v1_custom</code></td>
+</tr>
+<tr>
+<td><code>tnc_dlc_test</code></td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">11.3 MiB</td>
+<td><code>re_probes/tnc_dlc_test</code></td>
+</tr>
+<tr>
+<td><code>tno_maps</code></td>
+<td style="text-align: right;">241</td>
+<td style="text-align: right;">51.2 MiB</td>
+<td><code>re_probes/tno_maps</code></td>
+</tr>
+<tr>
+<td><code>verify_quarantine_SLOT0_FC2</code></td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">280.0 B</td>
+<td><code>re_probes/verify_quarantine_SLOT0_FC2</code></td>
+</tr>
+<tr>
+<td><code>viewer</code></td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">13.7 MiB</td>
+<td><code>re_probes/viewer</code></td>
+</tr>
+<tr>
+<td><code>vtrest</code></td>
+<td style="text-align: right;">353</td>
+<td style="text-align: right;">1.1 MiB</td>
+<td><code>re_probes/vtrest</code></td>
+</tr>
+<tr>
+<td><code>weapon_textures</code></td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">158.1 MiB</td>
+<td><code>re_probes/weapon_textures</code></td>
+</tr>
+<tr>
+<td><code>weapon_textures_parts</code></td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">158.1 MiB</td>
+<td><code>re_probes/weapon_textures_parts</code></td>
+</tr>
+<tr>
+<td><code>weapons</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5.3 KiB</td>
+<td><code>re_probes/weapons</code></td>
+</tr>
+<tr>
+<td><code>workflows</code></td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">307.0 KiB</td>
+<td><code>re_probes/workflows</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="file-types">File Types</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Extension</th>
+<th style="text-align: right;">Files</th>
+<th style="text-align: right;">Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.resources</code></td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">3.8 GiB</td>
+</tr>
+<tr>
+<td><code>.texdb</code></td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">2.5 GiB</td>
+</tr>
+<tr>
+<td><code>.png</code></td>
+<td style="text-align: right;">714</td>
+<td style="text-align: right;">357.8 MiB</td>
+</tr>
+<tr>
+<td><code>.zip</code></td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">317.2 MiB</td>
+</tr>
+<tr>
+<td><code>.failed</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">138.6 MiB</td>
+</tr>
+<tr>
+<td><code>.bin</code></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">88.1 MiB</td>
+</tr>
+<tr>
+<td><code>.candidate</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">51.3 MiB</td>
+</tr>
+<tr>
+<td><code>.json</code></td>
+<td style="text-align: right;">178</td>
+<td style="text-align: right;">40.2 MiB</td>
+</tr>
+<tr>
+<td><code>.txt</code></td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">33.4 MiB</td>
+</tr>
+<tr>
+<td><code>.glb</code></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">31.1 MiB</td>
+</tr>
+<tr>
+<td><code>.wav</code></td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">12.8 MiB</td>
+</tr>
+<tr>
+<td><code>.dll</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7.2 MiB</td>
+</tr>
+<tr>
+<td><code>.js</code></td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">6.9 MiB</td>
+</tr>
+<tr>
+<td><code>.wtx</code></td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">4.4 MiB</td>
+</tr>
+<tr>
+<td><code>.dat</code></td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">4.3 MiB</td>
+</tr>
+<tr>
+<td><code>.mapresources</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4.1 MiB</td>
+</tr>
+<tr>
+<td><code>.log</code></td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">1.0 MiB</td>
+</tr>
+<tr>
+<td><code>.jxr</code></td>
+<td style="text-align: right;">324</td>
+<td style="text-align: right;">939.2 KiB</td>
+</tr>
+<tr>
+<td><code>.proc</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">752.6 KiB</td>
+</tr>
+<tr>
+<td><code>.pyc</code></td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">707.3 KiB</td>
+</tr>
+<tr>
+<td><code>.tsv</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">684.2 KiB</td>
+</tr>
+<tr>
+<td><code>.py</code></td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">658.3 KiB</td>
+</tr>
+<tr>
+<td><code>.ogg</code></td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">657.5 KiB</td>
+</tr>
+<tr>
+<td><code>.entities</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">652.4 KiB</td>
+</tr>
+<tr>
+<td><code>.md</code></td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">528.6 KiB</td>
+</tr>
+<tr>
+<td><code>.decl</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">510.2 KiB</td>
+</tr>
+<tr>
+<td><code>.cfile</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">467.3 KiB</td>
+</tr>
+<tr>
+<td><code>.h</code></td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">397.5 KiB</td>
+</tr>
+<tr>
+<td><code>.asm</code></td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">170.7 KiB</td>
+</tr>
+<tr>
+<td><code>.svg</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">140.6 KiB</td>
+</tr>
+<tr>
+<td><code>.html</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">29.1 KiB</td>
+</tr>
+<tr>
+<td><code>(none)</code></td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">10.4 KiB</td>
+</tr>
+<tr>
+<td><code>.cm</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4.4 KiB</td>
+</tr>
+<tr>
+<td><code>.details</code></td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">3.6 KiB</td>
+</tr>
+<tr>
+<td><code>.extkisclule</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3.3 KiB</td>
+</tr>
+<tr>
+<td><code>.verify</code></td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">2.8 KiB</td>
+</tr>
+<tr>
+<td><code>.tmp</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.4 KiB</td>
+</tr>
+<tr>
+<td><code>.cfg</code></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">148.0 B</td>
+</tr>
+<tr>
+<td><code>.after</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">48.0 B</td>
+</tr>
+</tbody>
+</table></div></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Orchestrator-Feedback.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Feedback: agent-cache-orchestrator</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

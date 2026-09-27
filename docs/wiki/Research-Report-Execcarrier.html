@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The `cfile` Carrier: Smallest DLC to Carry a Resource – Wolfenstein Modloader</title>
+<meta name="description" content="A minimal self-made Wolfenstein II DLC that carries one encrypted config file, built and checked offline.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>The <code>cfile</code> Carrier: Smallest DLC to Carry a Resource</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Execcarrier"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result-in-one-sentence">Result in One Sentence</a></li><li><a href="#1-what-was-built">1. What Was Built</a></li><li><a href="#2-the-ids--what-is-proven-and-why-5--26">2. The IDs — What Is Proven and Why 5 / 26</a></li><li><a href="#3-acceptance">3. Acceptance</a></li><li><a href="#4-what-remains-open--and-it-is-the-most-important-thing">4. What remains open — and it is the most important thing</a></li><li><a href="#5-reproduction">5. Reproduction</a></li><li><a href="#runbook">Runbook</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report builds the smallest possible <span class="t" data-t="dlc">DLC</span> package for Wolfenstein II: The New Colossus. It holds just one encrypted config file that, if the game runs it, should load a custom map. The package passes 21 of its own tests plus two independent checkers, and the file can be decrypted back out of the finished archive correctly. Whether the game mounts the package and runs the file has not been tested; the game was not started.</p><ul><li>The package uses DLC ID 5 and chunk ID 26, both checked to be unused in the installation.</li><li>The payload decrypts from the built archive to &#x27;map game/dlc/c02/c2v1_custom&#x27;, which proves packing did not damage it.</li><li>An empty 32-byte texture database is enough: the game itself ships an identical empty one.</li><li>The installer passed 11 of 11 tests on a throwaway copy; it refuses to overwrite and only uninstalls its own folder.</li><li>Main open question: whether DLC archives are already mounted in the main menu, where the console command is typed.</li></ul></div><div class="de"><p class="lede">Dieser Bericht baut das kleinstmögliche <span class="t" data-t="dlc">DLC</span>-Paket für Wolfenstein II: The New Colossus. Es enthält nur eine verschlüsselte Config-Datei, die – wenn das Spiel sie ausführt – eine eigene Karte laden soll. Das Paket besteht 21 eigene Tests und zwei unabhängige Prüfer, und die Datei lässt sich korrekt aus dem fertigen Archiv wieder entschlüsseln. Ob das Spiel das Paket einbindet und die Datei ausführt, ist nicht getestet; das Spiel wurde nicht gestartet.</p><ul><li>Das Paket nutzt DLC-ID 5 und Chunk-ID 26; beide sind laut Prüfung in der Installation frei.</li><li>Die Nutzlast entschlüsselt sich aus dem gebauten Archiv zu „map game/dlc/c02/c2v1_custom“ – das Packen hat sie also nicht beschädigt.</li><li>Eine leere, 32 Byte große Texturdatenbank reicht: Das Spiel liefert selbst eine identische leere Datei aus.</li><li>Das Installationsskript bestand 11 von 11 Tests an einer Wegwerf-Kopie; es überschreibt nichts und deinstalliert nur den eigenen Ordner.</li><li>Wichtigste offene Frage: ob DLC-Archive im Hauptmenü, wo der Konsolenbefehl eingegeben wird, schon eingebunden sind.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-execcarrier-a1</code>, Task <code>execcarrier</code>, 2026-09-23.
+New: <code>tools/build_exec_carrier.py</code>, <code>tools/install_exec_carrier.py</code>,
+<code>re_probes/execcarrier/dlc_5/</code>.</p>
+<h2 id="result-in-one-sentence">Result in One Sentence</h2>
+<p>The carrier stands and passes 21 own plus 2 foreign tests, including the only one that truly counts: the payload can be <strong>extracted from the built container</strong> to <code>map game/dlc/c02/c2v1_custom\n</code>.
+<strong>Structurally valid after these tests; Mount unconfirmed</strong> — the game was not started and nothing was written to the game folder.</p>
+<h2 id="1-what-was-built">1. What Was Built</h2>
+<pre><code>re_probes/execcarrier/dlc_5/
+   dlcinfo.json                     19 B   {&quot;dlcid&quot; : 5}
+   base/packagemapspec.json        233 B   chunkid 26, map game/dlc/c05/c5v1
+   base/chunk_26.resources      65 632 B   1 Entry: cfile:wolfsdk_test.cfg
+   base/chunk_26.texdb              32 B   empty
+</code></pre>
+<p>Entry: <code>comp 0</code>, <code>csize == usize == 96</code>, <code>offset 65536</code>, <code>version 1</code>,
+<code>flags 0</code>, 0 dependencies, <code>+0x50 == +0x60 == 0x0e4bf70cb4ffc3e4</code>.</p>
+<p>None of this is newly invented. The container is laid with the existing
+<code>tools/dlcmod.baue_archiv</code> and hashed with <code>wolfsdk/idclwrite.finalize</code> —
+the writer that today has byte-identically rewritten three Retail archives.
+<code>tools/build_exec_carrier.py</code> consists essentially of tests, not build steps.</p>
+<p>Two decisions that need a justification:</p>
+<ul>
+<li><strong><code>hash_0x60</code> follows <code>+0x50</code>.</strong> <code>baue_archiv</code> wants a template entry; the
+  template is a delivered <code>cfile</code> from <code>base/patch_4.resources</code> (therefore
+  <code>version 1</code>, <code>flags 0</code> measured rather than guessed). Its <code>+0x60</code> deviates
+  like all Retail <code>cfile</code> from <code>+0x50</code>, and <code>idclwrite.hash60_rule</code> would
+  therefore preserve it — the new entry then takes the foreign 64-bit value
+  of <code>default.cfg</code>. The template is thus passed with <code>hash_0x60 = data_hash</code>
+  so that <code>finalize()</code> follows the newly calculated <code>+0x50</code>. No reader
+  calculates <code>+0x60</code> (<code>idclwriter.md</code> §7), and dependency records do not exist
+  here — but an explainable value is preferable to a borrowed one.</li>
+<li><strong><code>mapspec</code> matches <code>dlc_3</code></strong>, the simplest Retail DLC: own map name,
+  <code>basechunkid 6</code>, <code>layer -1</code>, <strong>no</strong> <code>refchunks</code> key, <code>patchlevel 4</code>.
+  <code>patchlevel</code> is the search limit for <code>patch_N</code> layers and <code>base/</code> reports 4;
+  a smaller value could remove map patch layers (<code>docs/dlcmod.md</code> §2).</li>
+</ul>
+<h2 id="2-the-ids--what-is-proven-and-why-5--26">2. The IDs — What Is Proven and Why 5 / 26</h2>
+<p><code>python tools/build_exec_carrier.py --ids</code> reads the installation from
+<strong>two</strong> sources (file names <em>and</em> all <code>packagemapspec.json</code>, including
+<code>basechunkid</code> and <code>refchunks</code>), because an ID can exist in a Spec without
+the file existing, and vice versa:</p>
+<pre><code>proven chunk-IDs: [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 22, 24]
+proven dlc-IDs  : [1, 2, 3, 4]
+selected        : dlcid=5  chunkid=26
+free            : yes
+</code></pre>
+<p><code>dlcid 5</code>, because 1–3 are Retail and 4 carries the Map Alias. <code>chunkid 26</code>,
+because it is free and continues the Retail pattern (DLC chunks are 20, 22, 24).
+Both are checked against the installation on every run, not just asserted once.</p>
+<p>Note without restriction: the permission layer of the Exe knows only
+<code>ENTITLEMENT_DLC1/2/3</code> (<code>docs/dlcmod.md</code> §4). <code>dlc_4</code> mounts anyway, so
+<code>dlcid 5</code> is no worse placed there — but it is not proven for 5.</p>
+<h2 id="3-acceptance">3. Acceptance</h2>
+<h3 id="31-the-own-tests--2121">3.1 The Own Tests — 21/21</h3>
+<p><code>python tools/build_exec_carrier.py</code></p>
+<p>ok   exactly 1 entry
+  ok   Type 'cfile'
+  ok   Name exactly 'wolfsdk_test.cfg'
+  ok   compression == 0
+  ok   csize == usize == PayloadLength 96 -- no padding bytes, otherwise Length()-32-Tell() fails
+  ok   Payload byte-identical to wolfsdk_test.cfg.cfile
+  ok   decrypted from container: b'map game/dlc/c02/c2v1_custom\n'
+  ok   declen 0xFFFFFFFF (unpacked)
+  ok   Metadata ends on the IDCL marker
+  ok   Header hash +0x20 (FarmHash64 over the metadata)
+  ok   Header hash +0x08
+  ok   no legacy entry hash at +0x50</p>
+<p>Validation checks (must fail)
+  ok   case mismatch fails through
+  ok   'base/' prefix fails through
+  ok   16 appended padding bytes break the tag</p>
+<p>TexDB
+  ok   Magic 4FA5C2292EF3C761 -- the only thing MountDatabase checks
+  ok   8 Magic + 16 Build-ID + u64 entry count 0 = 32 bytes
+  ok   byte-identical to delivered patch_4_chunkbase_6.texdb</p>
+<p>JSON
+  ok   mapspec reports chunkid 26
+  ok   chunkid 26 is free in the installation
+  ok   dlcid 5 is free in the installation</p>
+<p>21/21 tests passed</p>
+<p>The seventh line is the end-to-end test requested by the assignment:
+<code>idcl.Archive.read_raw()</code> on the built container, then
+<code>probe_cfilekey.decrypt()</code>. It verifies the HMAC tag and PKCS7 over exactly
+the bytes left behind by the archive construction — container checks alone do not see a shifted or padded payload.</p>
+<p>The three validation checks are not decorative: they are precisely the three ways this carrier could be built incorrectly (renamed name, 'base/' prefix, padding bytes after the payload), and all three fail at the tag.</p>
+<h3 id="32-the-foreign-validators">3.2 The Foreign Validators</h3>
+<pre><code>python tools/probe_datahash.py re_probes/execcarrier/dlc_5/base/chunk_26.resources
+   chunk_26.resources   1/1   (skipped 0 of 1 entries, mode 4)
+   +0x50  1/1                                              exit 0
+
+python tools/probe_idclhash.py re_probes/execcarrier/dlc_5/base/chunk_26.resources
+   v12  meta=212  tail=IDCL
+   +0x08 e7256786c21d5c2f/e7256786c21d5c2f OK
+   +0x20 c0fa759caf99cebe/c0fa759caf99cebe OK               exit 0
+</code></pre>
+<p><strong>Both validators can fail on this file</strong> — measured on disposable copies in the scratchpad, not claimed:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Manipulation</th>
+<th>Validator</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>one payload byte flipped</td>
+<td><code>probe_datahash</code></td>
+<td><code>BAD cfile:wolfsdk_test.cfg</code>, 0/1, exit 1</td>
+</tr>
+<tr>
+<td>header byte at <code>0x18</code> flipped</td>
+<td><code>probe_idclhash</code></td>
+<td><code>+0x08 …/b2d79b78b1a31c43 BAD</code>, 0/1, exit 1</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="33-the-texdb-claim--proven-not-assumed">3.3 The TexDB Claim — Proven, Not Assumed</h3>
+<p>The assignment requires testing the claim "a minimal TexDB suffices" against the header format. It is more strongly proven than: <strong>the game delivers an empty TexDB itself.</strong> <code>base/patch_4_chunkbase_6.texdb</code> is 32 bytes large — 8 bytes Magic <code>4FA5C2292EF3C761</code>, 16 bytes Build-ID, <code>u64</code> entry count <code>0</code> — and belongs to a 401-KB container mounted in the retail game. Our <code>chunk_26.texdb</code> is <strong>byte-identical</strong> to this file (verified, not reconstructed). This matches the code: <code>MountDatabase</code> (<code>0x792E00</code>) checks exclusively the Magic and the two read sizes according to <code>texdbkey.md</code> §2, and the 16 bytes Build-ID are copied but never compared. The container contains no <code>image</code> anyway, so no key will ever be looked up.</p>
+<h3 id="34-the-installer--1111-on-a-disposable-copy">3.4 The Installer — 11/11 on a Disposable Copy</h3>
+<p><code>python tools/install_exec_carrier.py --selbsttest</code> builds a dummy game folder with <code>dlc/dlc_1..4</code> in the temp directory and runs both paths:</p>
+<pre><code>  ok   install places dlc_5
+  ok   all four files present
+  ok   Container byte-identical copy
+  ok   second install aborts without overwriting
+  ok   no remainder of a temporary folder
+  ok   uninstall refuses foreign content
+  ok   foreign content still present (nothing deleted)
+  ok   --dry-run does not delete
+  ok   uninstall removes dlc_5
+  ok   uninstall without installation aborts
+  ok   dlc_1..4 untouched
+</code></pre>
+<p>The properties required by the task and how they are enforced:</p>
+<ul>
+<li><strong>Prints before touching.</strong> Every run lists the four target paths with size before anything happens. <code>--dry-run</code> prints only.</li>
+<li><strong>Never overwrites.</strong> If <code>dlc/dlc_5</code> exists, it is an abort.</li>
+<li><strong>No-op on failure.</strong> Copying goes to <code>dlc_5.installing</code>; only then does <code>os.replace</code> create <code>dlc_5</code>. Any exception removes the intermediate folder; a half-written DLC cannot exist.</li>
+<li><strong><code>uninstall</code> cannot hit a Retail DLC.</strong> Only a folder containing <strong>exactly</strong> those four files and whose <code>dlcinfo.json</code> reports <code>dlcid 5</code> is deleted. A wrong <code>--game-root</code> or a foreign file in the folder lead to an abort, not deletion.</li>
+</ul>
+<p>Against the actual game folder, only <code>install --dry-run</code> ran:
+the plan was printed, and <code>dlc/</code> contained unchanged <code>dlc_1..4</code>.
+<code>dlc_4</code> was only read.</p>
+<h2 id="4-what-remains-open--and-it-is-the-most-important-thing">4. What remains open — and it is the most important thing</h2>
+<p><strong>The mount time point of DLC chunks is not documented, and this determines whether the console line works.</strong></p>
+<p>What was measured (<code>docs/dlcmod.md</code> §3.1/§3.3): <code>gameresources</code> and <code>chunkbase_6</code> are <em>mounted for every map</em>, so they do not double-count a DLC; registered <code>refchunks</code> are mounted, unregistered chunks must be doubled (15 against 1,495 copies, six out of six cells). The Exe explicitly logs this:
+<code>GetIsChunkForMapInstalled: chunk %d for map %s is not installed</code>.</p>
+<p>All of this describes mounting <strong>during a map loading process</strong>. Whether a DLC chunk is already mounted in the main menu — the moment the console line is typed — is undecidable from the files and was not followed up via disassembly here; that would be a separate task.</p>
+<p>From this, a testable prediction and its two outcomes:</p>
+<ul>
+<li><strong>The map loads</strong> → the chunk was mounted, the chain is complete.</li>
+<li><strong>Again <code>cfile:wolfsdk_test.cfg:NONE can't generate in production</code></strong> → the name was correctly resolved but not found in any mounted container. Then it is <em>not</em> the Traeger that is wrong (§3 excludes this), but the chunk was not mounted at this time point. The next step would then be to put the same payload into a container that is demonstrably mounted in the main menu — not by screwing on this Traeger.</li>
+<li><strong>Any third message</strong> → belongs in the report, not in a repair.</li>
+</ul>
+<p>Cross-check for the log if it fails: <code>qconsole.log</code> contains <code>SearchDLC: found %d dlcs</code> and <code>found dlc id %d at %s</code>. If there is no <code>dlc id 5</code> there, the package was not even recognized (then <code>dlcinfo.json</code> or the permission layer is the cause); if it is there but the resource is still missing, it is exactly the mount time point above.</p>
+<p>Smaller open points:</p>
+<ul>
+<li><code>resourceExec</code> knows about a <code>-s</code> according to its Usage string (<code>USAGE: resourceExec &lt;filename&gt; -s [define]</code>), and the Retail start commands use it (<code>resourceExec default.cfg -s</code>). The current runtime attempt <strong>without</strong> <code>-s</code> has already resolved the name to <code>cfile:wolfsdk_test.cfg</code>, so the measured form is in the Runbook. If it stays silent, <code>resourceExec wolfsdk_test.cfg -s</code> is the second attempt.</li>
+<li><code>RS_ValidateContainers</code> is one of the 34 unlocked commands and could provide information about mounted containers (<code>Validating %d containers:</code>), but requires filenames as arguments and is not suitable for a five-minute window on a 40-GB installation.</li>
+<li>The Traeger is 65,632 bytes in size; 65,536 bytes of alignment padding precede the data area — this is the 64-KiB alignment of <code>addr_data</code>, which Retail also uses, and it is not waste worth optimizing.</li>
+</ul>
+<h2 id="5-reproduction">5. Reproduction</h2>
+<p>python tools/build_exec_carrier.py            # build + 21 tests
+python tools/build_exec_carrier.py --pruefen   # test only
+python tools/build_exec_carrier.py --ids       # show populated IDs
+python tools/probe_datahash.py re_probes/execcarrier/dlc_5/base/chunk_26.resources
+python tools/probe_idclhash.py re_probes/execcarrier/dlc_5/base/chunk_26.resources
+python tools/install_exec_carrier.py --selbsttest
+python tools/install_exec_carrier.py install --dry-run</p>
+<hr />
+<h2 id="runbook">Runbook</h2>
+<ol>
+<li><strong>Install:</strong> <code>python tools/install_exec_carrier.py install</code></li>
+<li><strong>Start:</strong> Launch the game with <code>+com_enableDeveloperMode 1</code>, click <em>Continue</em> in the Steam dialog, and open the console in the main menu.</li>
+<li><strong>Type:</strong> <code>resourceExec wolfsdk_test.cfg</code></li>
+<li><strong>Success:</strong> The map <code>game/dlc/c02/c2v1_custom</code> loads. If instead you receive <code>can't generate in production</code>, the chunk was not mounted — see Section 4, do not unscrew at Traeger.</li>
+<li><strong>Uninstall:</strong> <code>python tools/install_exec_carrier.py uninstall</code></li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Entitypipe.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Entity-Pipeline: Custom map on Retail geometry via <code>.entities</code></a><a class="next" href="Research-Report-Explosivpistole-Diag.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Explosive Pistol Does Not Explode: Diagnosis</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

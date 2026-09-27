@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Command Registry – Runtime Image Analysis – Wolfenstein Modloader</title>
+<meta name="description" content="Why TNC&#x27;s console rejects map and devmap: the commands exist, but the console only sees 34 of 234.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>TNC Command Registry – Runtime Image Analysis</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Cmdtable"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-registry-structure">1. Registry Structure</a></li><li><a href="#2-two-independent-attacks">2. Two Independent Attacks</a></li><li><a href="#3-checks">3. Checks</a></li><li><a href="#4-why-map-reports-unknown-command">4. Why map reports &quot;Unknown command&quot;</a></li><li><a href="#5-likely-path-without-patch-resourceexec">5. Likely path without patch: resourceExec</a></li><li><a href="#6-verdict-by-name">6. Verdict by Name</a></li><li><a href="#7-open-points-and-risks">7. Open Points and Risks</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">In Wolfenstein II: The New Colossus, typing map or devmap in the <span class="t" data-t="console">console</span> gives &quot;unknown command&quot;. This report listed all 234 registered commands from a memory image of the running game. It found that the console runs in a restricted mode that only searches 34 exposed commands. The command resourceExec is one of those 34 and, according to the code, runs a script file in unrestricted mode. That could unlock map loading without patching the game, but this has not been tested at runtime.</p><ul><li>234 commands are registered; two independent methods agree exactly with a live table (0 differences).</li><li>map, devmap, teleport and killMonsters are registered but not exposed; spawn, noclip and lowercase god do not exist.</li><li>The restriction is an internal context value, not a <span class="t" data-t="cvar">cvar</span>; developer-mode settings do not change it.</li><li>resourceExec sets this value to unrestricted, so a script file run through it should be able to call map (static finding only).</li><li>loadGame and saveGame are exposed and can be called from the console directly.</li></ul></div><div class="de"><p class="lede">In Wolfenstein II: The New Colossus liefert map oder devmap in der <span class="t" data-t="console">Konsole</span> nur „unknown command“. Dieser Bericht hat alle 234 registrierten Befehle aus einem Speicherabbild des laufenden Spiels aufgelistet. Ergebnis: Die Konsole läuft in einem eingeschränkten Modus, der nur 34 freigegebene Befehle durchsucht. Der Befehl resourceExec gehört zu diesen 34 und führt laut Code eine Skriptdatei im uneingeschränkten Modus aus. Das könnte das Laden von Karten ohne Patch am Spiel ermöglichen, wurde aber noch nicht im laufenden Spiel getestet.</p><ul><li>234 Befehle sind registriert; zwei unabhängige Methoden stimmen exakt mit einer Live-Tabelle überein (0 Abweichungen).</li><li>map, devmap, teleport und killMonsters sind registriert, aber nicht freigegeben; spawn, noclip und ein kleingeschriebenes god gibt es nicht.</li><li>Die Sperre ist ein interner Kontextwert, keine <span class="t" data-t="cvar">Cvar</span>; Entwicklermodus-Einstellungen ändern daran nichts.</li><li>resourceExec setzt diesen Wert auf „uneingeschränkt“. Eine darüber ausgeführte Skriptdatei sollte daher map aufrufen können (nur statischer Befund).</li><li>loadGame und saveGame sind freigegeben und lassen sich direkt aus der Konsole aufrufen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-cmdtable-a1</code>, Task <code>cmdtable</code>. Source: <code>re_probes/runtime_87400/module.bin</code> (92,188,672 Bytes, Layout "virtual RVA", Base <code>0x7FF62C210000</code>, pid 87400).
+Tool: <code>tools/probe_cmdtable.py</code>, Result: <code>re_probes/cmdtable/commands.json</code>.
+All data is purely static and read-only; no game launch, no process attach, no write access.</p>
+<pre><code class="language-bash">PYTHONPATH=re_probes/python_deps python tools/probe_cmdtable.py
+</code></pre>
+<h2 id="summary">Summary</h2>
+<p><code>map</code> and <code>devmap</code> <strong>are registered</strong>. They are simply not discoverable because the Dispatcher searches in one of <strong>two</strong> command lists depending on the execution context. The console always runs in a restricted context and sees only 34 of 234 commands. This is not a Cvar or a launch parameter, but an internal context value – however, there is already an unlocked command that legally sets it to "unrestricted": <strong><code>resourceExec</code></strong>.</p>
+<p>This confirms result variant <strong>(c)</strong> of the briefing, with the caveat: the command exists, is gated, and the gate is reachable without a patch – but runtime confirmation is still pending.</p>
+<h2 id="1-registry-structure">1. Registry Structure</h2>
+<p><code>idCmdSystemLocal</code> resides as a Singleton in <code>.data</code> at RVA <code>0x4104420</code> (vtable <code>0x2978618</code>, verified). It contains two <code>idList</code> heads:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>RVA</th>
+<th>Meaning</th>
+<th>Status in Snapshot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+0x08 / +0x10 / +0x14</code></td>
+<td><code>0x4104428</code></td>
+<td>List <strong>all</strong></td>
+<td>234 / Capacity 256</td>
+</tr>
+<tr>
+<td><code>+0x28 / +0x30 / +0x34</code></td>
+<td><code>0x4104448</code></td>
+<td>List <strong>exposed</strong></td>
+<td>34 / Capacity 64</td>
+</tr>
+<tr>
+<td><code>+0x200b8</code></td>
+<td><code>0x41244d8</code></td>
+<td>Restriction-Level</td>
+<td>0 (Idle)</td>
+</tr>
+</tbody>
+</table></div>
+<p>The two arrays themselves are Heap allocations (<code>0x15e579120</code>, <code>0x21c170200</code>) and lie <strong>outside</strong> the Module Capture. A pure data run over the live table is therefore impossible offline – enumeration had to proceed via registration.</p>
+<p>Node layout (read from <code>AddCommand</code> itself, not assumed), 0x38 Bytes:</p>
+<pre><code>+0x00 name*   +0x08 function*   +0x10 argCompletion*   +0x18 description*   +0x20 flags
+</code></pre>
+<p><code>idCmdSystemLocal::AddCommand</code> (vtable slot 4, RVA <code>0x1264840</code>, identified via the string <code>idCmdSystemLocal::AddCommand: %s already defined</code>) converts the Flags:</p>
+<pre><code class="language-assembly">0x12648e8  mov  ecx, [rsp+0xa8]     ; flags-Argument of caller
+0x12648f3  or   esi, 4
+0x12648f6  and  al, 2
+0x12648f8  cmove esi, ecx           ; stored = (arg &amp; 2) ? arg|4 : arg
+...
+0x1264a37  test byte [rdi+0x20], 4  ; only with bit 2 also in the second list
+0x1264a3b  je   ...
+</code></pre>
+<p>Bit 1 (<code>0x2</code>) is passed as a <strong>constant</strong> at the call site; Bit 2 (<code>0x4</code>) derives from <code>AddCommand</code> and decides inclusion in the exposed list. There is no code path that changes this subsequently.</p>
+<h2 id="2-two-independent-attacks">2. Two Independent Attacks</h2>
+<p><strong>Code Attack</strong> – Disassembly (capstone 5.0.7, vendored) of every function referencing the Singleton or calling <code>AddCommand</code> directly; Register/Stack-slot tracker reads <code>name</code>, <code>callback</code>, <code>description</code>, <code>argCompletion</code>, <code>flags</code> from each call site. Result: <strong>165</strong> call sites (virtually <code>call [rax+0x20]</code> and directly <code>call 0x1264840</code> in <code>idCmdSystemLocal::Init</code>).</p>
+<p><strong>Data Attack</strong> – two static registration forms in <code>.data</code>:</p>
+<ul>
+<li>Self-registration list, head at <code>0x30B5900</code> → first node <code>0x2fe4d00</code>, read by <code>Init</code> at <code>0x1264794</code> and passed to <code>AddCommand</code> via a loop (<code>0x126479b</code>–<code>0x12647ca</code>). <strong>63</strong> nodes (0x30 Bytes, <code>{next,name,fn,comp,desc,flags}</code>).</li>
+<li>Flat table at <code>0x2efd230</code>, 0x28-Byte Records: <strong>6</strong> entries (<code>mdnt_*</code>).</li>
+</ul>
+<p><strong>Sum: 165 + 63 + 6 = 234.</strong> Overlap 0.</p>
+<h2 id="3-checks">3. Checks</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Positive control: <code>writeConfig</code>, <code>conDump</code>, <code>listCvars</code>, <code>exec</code>, <code>bind</code>, <code>toggle</code>, <code>TakeScreenshot</code></td>
+<td>all present – <strong>OK</strong></td>
+</tr>
+<tr>
+<td>Cross-check against live table <code>re_probes/runtime_87400/commands_live.json</code></td>
+<td>234 vs. 234, <code>only_live=[]</code>, <code>only_static=[]</code>, <strong>0</strong> flag deviations, <strong>0</strong> exposed deviations</td>
+</tr>
+<tr>
+<td>Negative control <code>--sec-delta 0x8 / 0x28 / 0x40 / -0x1000 / 0x200000</code></td>
+<td>each terminates with Exit 2, no table</td>
+</tr>
+<tr>
+<td>Negative control <code>--base-delta 0x10000</code></td>
+<td>Terminate: <code>vtable 0x2968618 != expected 0x2978618</code></td>
+</tr>
+<tr>
+<td>Negative control <code>--sec-delta -0x1b0</code> (Offset containing a module pointer)</td>
+<td>Terminate at vtable comparison, not at pointer test</td>
+</tr>
+<tr>
+<td>Negative control with <code>--ignore-anchor</code> (intentionally bypassing anchor guard)</td>
+<td>Chain-Walk yields <strong>0 nodes</strong>, no plausible table</td>
+</tr>
+</tbody>
+</table></div>
+<p>Flag distribution is unambiguous: <code>0x6</code> → 34 times, all exposed; <code>0x0</code> → 196 times; <code>0x200000</code> → 4 times (<code>God</code>, <code>InfiniteHealth</code>, <code>NoPlayerDeath</code>, <code>Notarget</code>), none of which are exposed. Flag↔exposed correlation: 234/234.</p>
+<h2 id="4-why-map-reports-unknown-command">4. Why <code>map</code> reports "Unknown command"</h2>
+<p>Dispatcher <code>idCmdSystemLocal</code> vtable slot 16, RVA <code>0x1265150</code>:</p>
+<pre><code>0x12651a7  mov   eax, 0x28              ; Offset exposed list
+0x12651ac  mov   ecx, 8                 ; Offset all list
+0x12651b1  cmp   dword [r14+0x200b8], 0
+0x12651b9  cmove eax, ecx               ; Raw bytes 0f 44 c1 = CMOVZ
+</code></pre>
+<p>Level <code>0</code> → search in <strong>all 234</strong>; Level <code>≠0</code> → search <strong>only in the 34 exposed</strong>. No match → <code>0x126533e</code> → <code>Unknown command '%s'\n</code> (<code>0x2982790</code>).</p>
+<p>The level (<code>cmdSystem+0x200b8</code>, RVA <code>0x41244d8</code>) is <strong>not a Cvar</strong>. A complete scan of all 121,682 functions / 7,072,620 instructions yields 146 references; as a literal, only <code>0</code> (constructor <code>0x1214619</code>) and <code>1</code> are written, everything else is Save/Restore pairs or passed-through parameters. Setting it to <code>1</code> is done by:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Context</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Console input</td>
+<td><code>0xa8db00</code> (sets <code>0xa8db77</code>, restores <code>0xa8e42a</code>), <code>0xa90410</code></td>
+</tr>
+<tr>
+<td>Start parameter <code>+…</code></td>
+<td><code>0xa5fdf0</code> (references <code>com_enableDeveloperMode</code>, <code>devMode_</code>)</td>
+</tr>
+<tr>
+<td>Start Config</td>
+<td><code>0xa60220</code></td>
+</tr>
+<tr>
+<td>Common Init/Frame</td>
+<td><code>0xa638b0</code></td>
+</tr>
+<tr>
+<td>Command <code>exec</code></td>
+<td><code>0x12638e0</code> (<code>0x1264170</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Therefore, <code>map</code>, <code>devmap</code>, and also <code>+map</code> as a start parameter fail, while <code>writeConfig</code>/<code>conDump</code>/<code>listCvars</code> work. The snapshot shows Level 0 because it was taken in idle state outside any command execution – this is consistent, not a contradiction.</p>
+<p>Addendum to the Cvar question: <code>devMode_enable</code> (int value at <code>0x2fe3790</code>, currently <code>1</code>) only switches the branch at <code>0x12652ce</code> ("Attempting to call a developer command" → warning <strong>and</strong> execution, instead of "Dev Mode is not enabled…"). This branch is unreachable at Level 1 because the search there never happens outside the exposed list. <code>com_enableDeveloperMode=1</code>, <code>devMode_enable=1</code>, <code>g_demoDevMode=1</code> change nothing at Level – the measurement is thus fully explained.</p>
+<h2 id="5-likely-path-without-patch-resourceexec">5. Likely path without patch: <code>resourceExec</code></h2>
+<p><code>resourceExec</code> is one of the 34 exposed commands (flags <code>0x6</code>, callback <code>0xa7a040</code>), so callable from the console:</p>
+<pre><code>USAGE: resourceExec &lt;filename&gt; -s [define]: execute a script file
+</code></pre>
+<p>Unlike <code>exec</code> (enforces Level 1), it sets the level to <strong>0</strong>:</p>
+<pre><code>0xa7a74b  mov   ebx, [0x41244d8]     ; save old level
+0xa7a76d  mov   edx, edi             ; edi = 0
+0xa7a76f  mov   [0x41244d8], edx     ; Level := 0
+0xa7a790  lea   rdi, [0x4104470]     ; buffer &quot;unlimited&quot;
+0xa7a797  lea   r15, [0x41144a0]     ; buffer &quot;limited&quot;
+0xa7a7a6  test  edx, edx
+0xa7a7a8  cmovne rcx, r15            ; edx=0 -&gt; unlimited buffer
+</code></pre>
+<p>There are two separate command buffers in <code>.data</code> that preserve the level across the delayed execution. The frame drain empties them with the respective level:</p>
+<p>0xa6569d  xor  edx, edx      ; Level 0
+0xa6569f  call 0x1265800     ; -&gt; unrestricted buffer
+0xa656a4  mov  edx, 1        ; Level 1
+0xa656b0  call 0x1265800     ; -&gt; restricted buffer</p>
+<p>This causes the content of a script file executed via <code>resourceExec</code> to run at Level 0, allowing the dispatcher to search all 234 commands – <code>map</code>, <code>devmap</code>, <code>teleport</code>, <code>killMonsters</code>, etc., would be accessible there.</p>
+<p><strong>Status: static derivation, not verified at runtime.</strong> Verifiable prediction: a script file in the Resource archive containing the line <code>map &lt;name&gt;</code>, invoked as <code>resourceExec &lt;file&gt;</code>. A runtime test was forbidden to me.</p>
+<p>Second verifiable prediction that would falsify the model: <code>listCmds</code> selects its list at <code>0x1262bf3/0x1262bfa</code> also via the level. Therefore, it must output <strong>exactly 34</strong> commands when entered in the console. Similarly, <code>toggle</code> (flags <code>0x0</code>) must deliver "Unknown command" in the console, even though it is registered.</p>
+<h2 id="6-verdict-by-name">6. Verdict by Name</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>registered</th>
+<th>Flags</th>
+<th>exposed</th>
+<th>Callback</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>map</code></td>
+<td>yes</td>
+<td><code>0x0</code></td>
+<td><strong>no</strong></td>
+<td><code>0xa7e2c0</code></td>
+<td>Call site <code>0xa6f707</code></td>
+</tr>
+<tr>
+<td><code>devmap</code></td>
+<td>yes</td>
+<td><code>0x0</code></td>
+<td><strong>no</strong></td>
+<td><code>0xa7e0d0</code></td>
+<td>Call site <code>0xa6f765</code></td>
+</tr>
+<tr>
+<td><code>spawn</code></td>
+<td><strong>no</strong></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>no call site, no record</td>
+</tr>
+<tr>
+<td><code>teleport</code></td>
+<td>yes</td>
+<td><code>0x0</code></td>
+<td>no</td>
+<td><code>0xf3bdf0</code></td>
+<td>Call site <code>0xf46751</code></td>
+</tr>
+<tr>
+<td><code>god</code> (small)</td>
+<td><strong>no</strong></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>God</code> (large)</td>
+<td>yes</td>
+<td><code>0x200000</code></td>
+<td>no</td>
+<td><code>0xfdfaa0</code></td>
+<td>Registrar list <code>0x2fb4bf0</code></td>
+</tr>
+<tr>
+<td><code>noclip</code></td>
+<td><strong>no</strong></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>killMonsters</code></td>
+<td>yes</td>
+<td><code>0x0</code></td>
+<td>no</td>
+<td><code>0xf39df0</code></td>
+<td>Call site <code>0xf4683c</code></td>
+</tr>
+<tr>
+<td><code>reloadDecls</code></td>
+<td>yes</td>
+<td><code>0x0</code></td>
+<td>no</td>
+<td><code>0xa415e0</code></td>
+<td>Call site <code>0xa3a682</code></td>
+</tr>
+<tr>
+<td><code>listCmds</code></td>
+<td>yes</td>
+<td><code>0x6</code></td>
+<td><strong>yes</strong></td>
+<td><code>0x1262b10</code></td>
+<td><code>Init</code>, direct call <code>0x12646b6</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Additional map loaders, all with flags <code>0x0</code> and thus not exposed:
+<code>fastmap</code> (<code>0xa7dee0</code>), <code>loosemap</code> (<code>0xa7e3e0</code>), <code>cmap</code> (<code>0xa7e2c0</code>, same callback as <code>map</code>), <code>checkmap</code> (<code>0xa7dcc0</code>), <code>slowmap</code>/<code>slowmapcheckpoint</code>/<code>slowcombomap</code>, <code>nextmap</code> (<code>0xa80600</code>), <code>RestartMap*</code>, <code>loadGameIntoMap</code> (<code>0xa85d80</code>), <code>LoadPreviousMapFromSaveGame</code> (<code>0x11dedd0</code>), <code>restartmapwithlobby</code> (<code>0xa80830</code>).
+They all share the argument completion <code>0xa7e500</code>.</p>
+<p>For the save route relevant: <strong><code>loadGame</code> (<code>0xa85680</code>) and <code>saveGame</code> (<code>0xa86250</code>) are exposed</strong> (flags <code>0x6</code>) and thus directly callable from the console; the non-exposed <code>loadGameIntoMap</code> uses the same completion function <code>0x12667c0</code>.</p>
+<p>The 34 exposed commands:
+<code>activateConsole, bind, BuildInfo, BuildInfoToClipBoard, clear, conDump, configVersion, dumpWarnings, echo, exec, exit, find, getviewpos, listBinds, listCmds, listCvars, loadGame, parse, print, quit, resourceExec, RS_ValidateContainers, saveGame, TakeScreenshot, ToggleMainMenu, unbind, unbindAll, vid_restart, vstr, vt_delayedRestart, vt_restart, wait, where, writeConfig</code></p>
+<h2 id="7-open-points-and-risks">7. Open Points and Risks</h2>
+<ul>
+<li>The <code>resourceExec</code> path is <strong>not</strong> verified at runtime. It remains unclear from which path the file is read (the name suggests the Resource archive) and whether name resolution imposes additional restrictions.</li>
+<li>One call site (<code>0x12647bf</code>) remains intentionally unresolved in the code attack – this is the loop that iterates through the Registrar list, and is covered by the data attack.</li>
+<li>"String present in <code>.rdata</code>" was not consistently treated as evidence. Each of the 234 entries either has a decoded <code>AddCommand</code> call site or a validated static record; the count matches exactly with the live table.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Chunklist.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>packagechunklist.json in TNC-Retail: Clear Negative</a><a class="next" href="Research-Report-Cmfmt.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>cm (Collision): Layout, Round-Trip, Box-Hull, Binding</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Idclwriter – Wolfenstein Modloader</title>
+<meta name="description" content="Task description: build a writer for the four Wolfenstein II archive hashes and repair a map bundle.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Idclwriter</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Idclwriter"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This is the task description given to a research worker for Wolfenstein II (TNC). It asks for a tool that writes the four <span class="t" data-t="hash">hash</span> fingerprints of game archives, which were already worked out but not yet written by any code. The tool must prove itself by rewriting original archives identically and by repairing four wrong fingerprints in a custom map bundle.</p><ul><li>The bundle had 7,123 of 7,127 correct entries; the four wrong ones were the newly made files.</li><li>With a certain checking setting on, a wrong fingerprint is a fatal error, so this is a hidden crash risk.</li><li>Required: a byte-identical <span class="t" data-t="roundtrip">round-trip</span> on at least three original archives of different sizes.</li><li>Required: negative tests, such as a flipped byte or hashes written in the wrong order, must be caught.</li><li>Rules: no game launch, no new compressor, and no changes to the other team&#x27;s files.</li></ul></div><div class="de"><p class="lede">Dies ist die Aufgabenbeschreibung für einen Forschungs-Worker zu Wolfenstein II (TNC). Gefordert ist ein Werkzeug, das die vier <span class="t" data-t="hash">Hash</span>-Fingerabdrücke der Spielarchive schreibt, die schon hergeleitet, aber noch von keinem Code geschrieben wurden. Das Werkzeug muss sich beweisen, indem es Original-Archive identisch neu schreibt und vier falsche Fingerabdrücke in einem eigenen Karten-Paket repariert.</p><ul><li>Das Paket hatte 7.123 von 7.127 korrekten Einträgen; die vier falschen waren die neu erstellten Dateien.</li><li>Bei aktivierter Prüfeinstellung ist ein falscher Fingerabdruck ein fataler Fehler, also ein verstecktes Absturzrisiko.</li><li>Gefordert: ein byte-gleicher <span class="t" data-t="roundtrip">Roundtrip</span> bei mindestens drei Original-Archiven unterschiedlicher Größe.</li><li>Gefordert: Negativtests, etwa ein gekipptes Byte oder Hashes in falscher Reihenfolge, müssen erkannt werden.</li><li>Regeln: kein Spielstart, kein neuer Kompressor und keine Änderungen an Dateien des anderen Teams.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-idclwriter-a1; task idclwriter; implement.
+Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Parallel: w-texdbkey-a1, w-cvartable-a1, w-savestructure-a1. The other master
+(codex/Astra) is at its host session limit and is not running.</p>
+<h1 id="objective">Objective</h1>
+<p>Turn today's five solved hashes into a working writer, and prove it on a real
+defect.</p>
+<p>Everything a self-built TNC container needs is now derived and verified:</p>
+<p>entry +0x50   MurmurHash64B(decompressed payload, len = usize@0x48,
+                seed 0xDEADBEEF)          -&gt; tools/probe_datahash.py::murmur64b
+  entry +0x60   == +0x50 for every type except image/extkisclule/cfile/compfile;
+                no reader recomputes it, but the same value must go into
+                dep+0x18 of every dependency record referencing the entry
+  header +0x20  FarmHash64(metadata from +0x78 through the trailing IDCL marker)
+  header +0x08  FarmHash64(header[0x10:0x78]) + 3-round kMul finalizer mixed
+                with the version   -&gt; tools/probe_idclhash.py</p>
+<p>Nothing in the repository writes them yet. <code>wolfsdk/idcl.py</code> reads only.</p>
+<h1 id="the-concrete-defect-to-fix">The concrete defect to fix</h1>
+<p>Master verified the other master's bundle read-only:
+<code>re_probes/map_alias_v3/bundle_headerfixed/base/chunk_22.resources</code>
+(151,702,019 bytes, 7128 entries). 7123/7127 entries carry a correct <code>+0x50</code>.
+Exactly four do not - the four whose payloads were authored or newly created:</p>
+<p>compfile:maps/game/dlc/c02/c2v1_custom.entities            usize=256319 comp=0
+  extkisclule:generated/decls/maps/game/dlc/c02/c2v1_custom_gameplay/
+    kiscules/sacramento_gameplay_kiscule_combat_sim_screen_fx_893872923.decl
+                                                              usize=1643   comp=0
+  json:maps/game/dlc/c02/c2v1_custom/devmapinfo.json          usize=304    comp=0
+  file:generated/buildgame/game/dlc/c02/c2v1_custom.mapresources
+                                                              usize=2150169 comp=2</p>
+<p>They kept the hash of the original payload. With cvar
+<code>resourceStorage_checkDataCheckSum</code> at its default 0 this is never checked, so
+the bundle loads; set to 1 it is a FatalError, not a warning. Latent crash.</p>
+<p>Reproduce the finding first, before changing anything:
+<code>python tools/probe_datahash.py re_probes/map_alias_v3/bundle_headerfixed/base/chunk_22.resources</code></p>
+<h1 id="ownership">Ownership</h1>
+<p>wolfsdk/idclwrite.py (new - the writer), tools/probe_idclwriter.py (new -
+derivation checks and the repair driver), re_probes/idclwriter/ (new dir, ALL
+output including the corrected container), re_probes/agent_reports/idclwriter.md.</p>
+<p><strong>Do NOT modify <code>re_probes/map_alias_v3/</code> in any way.</strong> It belongs to the other
+master and is its only copy. Read it, write your corrected container into
+<code>re_probes/idclwriter/</code>. Copying 151 MB is acceptable; destroying someone
+else's artifact is not.
+<code>wolfsdk/idcl.py</code> is read-only for you - import it, do not edit it. Its
+docstring already documents all four derivations; keep your writer consistent
+with it.</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No game launch, no process attach, no writes under the Steam install or
+"C:/Users/‹user›/Saved Games". Do not touch tools/probe_idclhash.py,
+tools/probe_datahash.py, tools/probe_cmdtable.py, tools/probe_saveverify.py,
+tools/probe_texdbkey.py, tools/probe_cvartable.py, tools/tnc_<em>.py,
+tools/build_tnc_map_alias_v3.py, tools/verify_tnc_map_alias_v3.py,
+tools/vtpixel.py, re_probes/{map_alias_v3,custom_save_candidates,idclhash,datahash,cmdtable,saveverify,texdbkey,cvartable,vtrest}/,
+docs/</em>, config.json. No pip install.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib only (the repository has no third-party dependencies and
+must keep it that way - see README). Oodle/Kraken decompression already exists
+in <code>wolfsdk/oodle.py</code>; reuse it. Do not add a compressor: for a changed payload,
+store it uncompressed if you cannot reproduce the original codec exactly, and
+say so in the report.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ol>
+<li><code>wolfsdk/idclwrite.py</code> recomputes all four hashes in the correct order:
+   entry table finalized -&gt; <code>+0x20</code> -&gt; <code>+0x08</code> over the finished header.</li>
+<li>Round-trip control: reading a retail container and writing it back
+   unchanged must produce a <strong>byte-identical</strong> file. Do this for at least three
+   retail archives of different sizes. If it is not byte-identical, the writer
+   is wrong - find out why before going further.</li>
+<li>The repaired container in <code>re_probes/idclwriter/</code> passes
+   <code>python tools/probe_datahash.py &lt;that file&gt;</code> with <strong>7127/7127</strong> (one entry
+   is compression mode 4 and has no decoder - it stays skipped), and
+   <code>python tools/probe_idclhash.py &lt;that file&gt;</code> with <code>+0x08</code> and <code>+0x20</code> OK.</li>
+<li>Every payload except the four repaired entries must be byte-identical to the
+   source container. Prove it, do not assert it.</li>
+<li>Negative controls, each must FAIL: flip one payload byte without recomputing
+   and show the checker catches it; write the header hashes in the wrong order
+   (+0x08 before +0x20) and show the result is rejected; skip the dep+0x18
+   update for a changed <code>+0x60</code> and show the stale check would fire.</li>
+</ol>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>The round-trip in (2) is the load-bearing check: a writer that cannot reproduce
+a retail file exactly has no business writing a modified one. Run it first.
+State sample sizes and counts everywhere; today's standard on this project is
+n/n with named negative controls.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If a payload's original compression cannot be reproduced and storing it
+uncompressed changes the container layout in a way you cannot verify, say so
+and stop - a half-verified 151 MB container is worse than none. Report what
+blocked you with offsets.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones (writer round-trips; four entries repaired; controls
+pass). Publish a bus fact when the writer round-trips byte-exactly - that is
+the moment self-built containers become real rather than theoretical. Concise
+German report in re_probes/agent_reports/idclwriter.md. Finish the bus task.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Idclhash.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Idclhash</a><a class="next" href="Research-Brief-Loose-Assets.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Search Task: Loose Assets and External Load Paths</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

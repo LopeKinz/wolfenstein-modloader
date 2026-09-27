@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Virtual Textures — the `.pages` Format of Wolfenstein: The New Order – Wolfenstein Modloader</title>
+<meta name="description" content="How TNO stores its huge world textures in .pages files: container fully mapped, pixel data not yet decoded.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tno"><span class="en">The New Order</span><span class="de">The New Order</span></a></p>
+<h1>Virtual Textures — the <code>.pages</code> Format of Wolfenstein: The New Order</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNO-Virtual-Textures"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-the-inventory">1. The Inventory</a></li><li><a href="#2-file-header--32-bytes-verified">2. File Header — 32 Bytes (Verified)</a></li><li><a href="#3-set-header--40-bytes-per-page-verified">3. Set Header — 40 Bytes per page (Verified)</a></li><li><a href="#4-page-payload--16-bytes--four-channel-blocks-verified">4. Page Payload — 16 Bytes + Four Channel Blocks (Verified)</a></li><li><a href="#5-verification">5. Verification</a></li><li><a href="#6-slack-between-sentences-partially-open">6. Slack Between Sentences (Partially Open)</a></li><li><a href="#7-engine-constants-from-wolfneworder_x64exe">7. Engine Constants from WolfNewOrder_x64.exe</a></li><li><a href="#8-the-codec--what-is-known">8. The Codec — what is known</a></li><li><a href="#9-the-vt_-cvars">9. The vt_ Cvars</a></li><li><a href="#10-what-this-means-for-modding">10. What This Means for Modding</a></li><li><a href="#where-this-knowledge-ends">Where This Knowledge Ends</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein: The New Order keeps its large world and material textures in 39 &#x27;.pages&#x27; files (about 35.6 GB). This page maps the file structure completely: a header, then a tree of texture tiles at different detail levels, and every byte of seven fully checked files is accounted for. The actual pixels inside each tile are stored in a shortened JPEG XR variant that no standard decoder can read yet. So modders can now locate and extract tiles, but cannot yet view or replace the pixels.</p><ul><li>All 39 .pages files pass the header check; the tile tree is a complete <span class="t" data-t="quadtree">quadtree</span> with one tile at the top and more detail levels below.</li><li>Seven files were walked completely and every byte was explained, with about 120,000 parent/child links checked without error.</li><li>Every retail tile uses JPEG XR <span class="t" data-t="compression">compression</span>, split into exactly four blocks. That these are diffuse, normal, specular and power maps is a well-supported guess, not proven.</li><li>The pixel data is not decoded: the block headers lack the normal JPEG XR signature and image size, so a standard decoder cannot be used.</li><li>About 100 vt_ console settings were found, including ones to change the texture file path or create .pages files; whether they work in the retail game is not verified.</li></ul></div><div class="de"><p class="lede">Wolfenstein: The New Order speichert seine großen Welt- und Materialtexturen in 39 „.pages“-Dateien (etwa 35,6 GB). Diese Seite beschreibt den Dateiaufbau vollständig: einen Kopf, dann einen Baum aus Texturkacheln in verschiedenen Detailstufen, und in sieben komplett geprüften Dateien ist jedes Byte erklärt. Die eigentlichen Pixel jeder Kachel liegen in einer gekürzten JPEG-XR-Variante, die noch kein Standard-Decoder lesen kann. Modder können Kacheln also finden und herausziehen, aber die Pixel noch nicht ansehen oder ersetzen.</p><ul><li>Alle 39 .pages-Dateien bestehen die Kopfprüfung; der Kachelbaum ist ein vollständiger <span class="t" data-t="quadtree">Quadtree</span> mit einer Kachel oben und immer feineren Stufen darunter.</li><li>Sieben Dateien wurden komplett durchlaufen und jedes Byte erklärt; etwa 120.000 Eltern-Kind-Verbindungen wurden ohne Fehler geprüft.</li><li>Jede Kachel im Verkaufsspiel nutzt JPEG-XR-<span class="t" data-t="compression">Kompression</span>, aufgeteilt in genau vier Blöcke. Dass diese Diffuse-, Normal-, Specular- und Power-Maps sind, ist eine gut gestützte Vermutung, aber nicht bewiesen.</li><li>Die Pixeldaten sind nicht dekodiert: Den Blockköpfen fehlen die übliche JPEG-XR-Signatur und die Bildgröße, deshalb funktioniert kein Standard-Decoder.</li><li>Rund 100 vt_-Konsoleneinstellungen wurden gefunden, darunter solche zum Ändern des Texturpfads oder zum Erzeugen von .pages-Dateien; ob sie im Verkaufsspiel funktionieren, ist nicht geprüft.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Status of this analysis: <strong>Container fully decrypted and verified; pixel data not yet.</strong> What is listed under "Verified" below has been cross-checked against multiple files; what is listed under "Hypothesis" or "Open" has not. The section <a href="#where-the-knowledge-ends">Where the knowledge ends</a> explicitly states where the boundary lies.</p>
+<p>Tools: <code>tools/probe_vtpages.py</code> (read-only, standard library only).</p>
+<pre><code>python tools/probe_vtpages.py list
+python tools/probe_vtpages.py header c12p1.pages
+python tools/probe_vtpages.py walk   c12p1.pages
+python tools/probe_vtpages.py page   c12p1.pages 100 40 0
+python tools/probe_vtpages.py blocks c12p1.pages 100 40 0 --out DIR
+python tools/probe_vtpages.py map    c12p1.pages 0 --out belegung.png
+python tools/probe_vtpages.py selftest [file]
+</code></pre>
+<hr />
+<h2 id="1-the-inventory">1. The Inventory</h2>
+<p><code>D:\SteamLibrary\...\Wolfenstein.The.New.Order\virtualtextures\</code> contains 39 files, totaling <strong>35.6 GB</strong> (33.2 GiB; remeasured on 21.09.2026 — the earlier "41 GB" figures here and the "~34 GB" figures in <code>File-Formats.md</code>/<code>Modding-Limits.md</code> were both incorrect and have been corrected). Two families:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Example</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cNNpM.pages</code></td>
+<td><code>c13p1.pages</code>, <code>c04p2_3.pages</code></td>
+<td>Unique-/Mega-texture per chapter section (World Geometry)</td>
+</tr>
+<tr>
+<td><code>chunkN_vmtr.pages</code>, <code>_vmtr.pages</code></td>
+<td><code>chunk7_vmtr.pages</code></td>
+<td><strong>V</strong>irtual-<strong>M</strong>a<strong>t</strong>e<strong>r</strong>ial pages — exactly what materials with <code>usevirtualmapping 1</code> retrieve (Weapons, Characters, shared assets)</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>_vmtr.pages</code> is the global vmtr set (1.2 GB); the <code>chunkN_vmtr.pages</code> files correspond 1:1 to the <code>base/chunkN.resources</code> archives.</p>
+<p>All 39 files pass the header consistency test (<code>probe_vtpages.py list</code>) without exception:</p>
+<pre><code>file                          bytes  across  lvl     nodes  scale  hdr
+_vmtr.pages              1201132468    1024   11   1398101      2  ok
+c01p2.pages              2962672722    2048   12   5592405      2  ok
+c12p1.pages                13563938     128    8     21845      2  ok
+...  (all 39: ok)
+</code></pre>
+<p><code>across</code> ∈ {128, 256, 512, 1024, 2048} — the side length of the virtual texture in pages. It always holds that <code>across == 2^(levels-1)</code> and <code>nodes == (4^levels - 1) / 3</code>, which is the exact node count of a complete Quadtree at this depth.</p>
+<hr />
+<h2 id="2-file-header--32-bytes-verified">2. File Header — 32 Bytes (Verified)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Type</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+0</td>
+<td>u32</td>
+<td><code>0x77339904</code></td>
+<td>Magic (<code>04 99 33 77</code> on disk)</td>
+</tr>
+<tr>
+<td>+4</td>
+<td>u32</td>
+<td>128…2048</td>
+<td><code>pagesAcross</code> — pages per side at Mip 0</td>
+</tr>
+<tr>
+<td>+8</td>
+<td>u32</td>
+<td>0</td>
+<td>zero in all 39 files</td>
+</tr>
+<tr>
+<td>+12</td>
+<td>u32</td>
+<td>8…12</td>
+<td>Number of Mip levels (<code>log2(across)+1</code>)</td>
+</tr>
+<tr>
+<td>+16</td>
+<td>u32</td>
+<td></td>
+<td>Node count of the full Quadtree <code>(4^levels-1)/3</code></td>
+</tr>
+<tr>
+<td>+20</td>
+<td>u32</td>
+<td>2</td>
+<td><strong>Offset Scale</strong>: all offsets/sizes in the tree are in units of 2 bytes</td>
+</tr>
+<tr>
+<td>+24</td>
+<td>u64</td>
+<td></td>
+<td>File size in bytes — matches exactly for all 39 files</td>
+</tr>
+</tbody>
+</table></div>
+<p>The scale at +20 is the <code>*_DISK_OFFSET_SCALE</code> value of the engine (the EXE knows <code>PRODUCTION_DISK_OFFSET_SCALE</code>, <code>DEFAULT_DISK_OFFSET_SCALE</code>, <code>UNCOMPRESSED_DISK_OFFSET_SCALE</code>). Retail uses 2 consistently. This was the key to the tree: raw reads yield nonsense offsets, but multiplying by <code>×2</code> points exactly to the child sets.</p>
+<p>There is no other table, no directory, no trailer. <strong>The rest of the file is exclusively the tree.</strong></p>
+<hr />
+<h2 id="3-set-header--40-bytes-per-page-verified">3. Set Header — 40 Bytes per page (Verified)</h2>
+<p>Starting directly at offset 32 begins the first set entry. Each entry:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+0</td>
+<td>u32</td>
+<td>Magic <code>0xCABFED04</code></td>
+</tr>
+<tr>
+<td>+4</td>
+<td>u32</td>
+<td>Compression (idTech5-<code>compression_t</code>), Retail always <strong>5 = <code>COMP_JXR</code></strong></td>
+</tr>
+<tr>
+<td>+8</td>
+<td>u32[4]</td>
+<td>Disk offsets of the four children, in 2-byte units (0 = no child)</td>
+</tr>
+<tr>
+<td>+24</td>
+<td>u16[4]</td>
+<td>Reserved size of the four children, in 2-byte units</td>
+</tr>
+<tr>
+<td>+32</td>
+<td>u32</td>
+<td>Page coordinate, packed: <code>x = value &amp; 0xFFFF</code>, <code>y = value &gt;&gt; 16</code></td>
+</tr>
+<tr>
+<td>+36</td>
+<td>u32</td>
+<td>Mip level, <strong>0 = finest</strong>, <code>levels-1</code> = the single 1×1 root page</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sibling order is row-major: <code>index = (y &amp; 1) * 2 + (x &amp; 1)</code>.<br />
+For each child, <code>child.x &gt;&gt; 1 == parent.x</code>, <code>child.y &gt;&gt; 1 == parent.y</code>, and <code>child.mip == parent.mip - 1</code> — verified against ~120,000 parent/child edges with no deviations.</p>
+<p>The very first sentence at offset 32 is a special case: <code>compression = 0</code> (<code>COMP_NONE</code>), containing no payload; both coordinate and Mip are set to 0 and are meaningless. It serves only as the root pointer — its child 0 points to the actual 1×1 page at offset 72. Therefore, it must be filtered out by <code>compression == 0</code> during evaluation; otherwise, it would be counted as a Mip-0 page.</p>
+<p>The four <code>u16</code> sizes represent what is <strong>reserved</strong> on the slab, not necessarily what the sentence occupies: the surplus is Slack (see §6).</p>
+<hr />
+<h2 id="4-page-payload--16-bytes--four-channel-blocks-verified">4. Page Payload — 16 Bytes + Four Channel Blocks (Verified)</h2>
+<p>Immediately following the 40-byte header:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+0</td>
+<td>u32 LE</td>
+<td>Magic <code>0x28190D1E</code> (<code>1e 0d 19 28</code>)</td>
+</tr>
+<tr>
+<td>+4</td>
+<td>u16 LE</td>
+<td>Layout code (observed: 0,1,2,4,5,6,8,12,13,14)</td>
+</tr>
+<tr>
+<td>+6</td>
+<td>u16 <strong>BE</strong></td>
+<td>Size of Block 0</td>
+</tr>
+<tr>
+<td>+8</td>
+<td>u16 <strong>BE</strong></td>
+<td>Size of Block 1</td>
+</tr>
+<tr>
+<td>+10</td>
+<td>u16 <strong>BE</strong></td>
+<td>Size of Block 2</td>
+</tr>
+<tr>
+<td>+12</td>
+<td>u16 <strong>BE</strong></td>
+<td>Size of Block 3</td>
+</tr>
+<tr>
+<td>+14</td>
+<td>u16</td>
+<td>0 in every sentence of all tested files</td>
+</tr>
+</tbody>
+</table></div>
+<p>The four block sizes are <strong>big endian</strong> — the only field in the entire format. Immediately following them lie the four blocks consecutively, and the payload is padded to an even byte count:</p>
+<pre><code>payload_size = (16 + sum(blocksizes) + 1) &amp; ~1
+</code></pre>
+<p>This is not an assumption: sentence size = <code>40 + payload_size</code> reproduces the file size for <code>c12p1.pages</code>, <code>c16p0.pages</code>, and <code>c03p3.pages</code> byte-for-byte, with no remainder.</p>
+<hr />
+<h2 id="5-verification">5. Verification</h2>
+<p><code>probe_vtpages.py selftest &lt;file&gt;</code> runs the entire tree and verifies: Magic, sibling order, coordinate derivation, Mip descent, coordinates within the grid <code>across &gt;&gt; mip</code>, parent size consistency, and that no unreferenced sentence exists in gaps.</p>
+<pre><code>selftest ok: c12p1.pages,       4468 sentences,   4467 edges,  13563938 B +       0 B Slack =  13563938 B
+selftest ok: c03p1.pages,       9031 sentences,   9030 edges,  27216028 B +   28672 B Slack =  27244700 B
+selftest ok: c16p0.pages,      24154 sentences,  24153 edges,  80537674 B +       0 B Slack =  80537674 B
+selftest ok: c02p0.pages,      29526 sentences,  29525 edges,  85948078 B + 1513472 B Slack =  87461550 B
+selftest ok: chunk3_vmtr.pages, 21578 sentences,  21577 edges, 155853376 B + 2071462 B Slack = 157924838 B
+selftest ok: c01p4.pages,      27766 sentences,  27765 edges,  97858590 B +  544768 B Slack =  98403358 B
+selftest ok: c03p3.pages,      29063 sentences,  29062 edges,  76360770 B +       0 B Slack =  76360770 B
+</code></pre>
+<p>Every byte of every tested file is accounted for. The tree is thus confirmed as a model, not merely plausible.</p>
+<p>Additional visual inspection: <code>probe_vtpages.py map c03p1.pages 0 --out x.png</code> renders the occupancy of Mip 0. The result consists of clean axis-parallel rectangles of varying sizes — an atlas-packer layout, with no noise. If x/y were swapped or sibling order incorrect, confetti would appear. Typical occupancy: 18% (c12p1) to 34% (c03p1) of pages on Mip 0 are stored at all; the tree is therefore sparsely populated.</p>
+<p>Distribution of sentences across Mips, example <code>c02p0.pages</code> (256 pages wide, 9 levels):</p>
+<pre><code>mip 0: 18398   mip 3:  727   mip 6:  15
+mip 1:  7683   mip 4:  225   mip 7:   4
+mip 2:  2413   mip 5:   60   mip 8:   1   &lt;- the 1x1 root page
+</code></pre>
+<hr />
+<h2 id="6-slack-between-sentences-partially-open">6. Slack Between Sentences (Partially Open)</h2>
+<p>Not every file is gapless. <code>c02p0.pages</code> has 739 gaps, <code>chunk3_vmtr</code> 471. Verified:</p>
+<ul>
+<li>Gaps are <strong>reserved by the parent sentence</strong> — the parent's <code>u16</code> size claim exactly covers sentence + gap. The sum of reservation surpluses is byte-identical to the sum of gap lengths.</li>
+<li>No sentence magic exists within any gap. Thus, the tree reaches everything.</li>
+<li>The vast majority of gaps are exactly <strong>2048 bytes</strong> long.</li>
+</ul>
+<p>The content is open. Most entries are <code>0xFF</code> (free space), but individual bytes within them are deliberately set to <code>0xE7</code>/<code>0xEF</code> — single deleted bits, which resembles a occupancy bitmap more than filler garbage. In <code>chunk3_vmtr</code>, there are additionally 31 larger gaps (up to ~39 KB) filled with zeros.</p>
+<p><strong>Interpretation (Hypothesis, unproven):</strong> The Pagefiles are <strong>writable</strong>. The Engine provides Cvars for this: <code>vt_logPageWrites</code> ("write out log file entries when virtual texture pages are created and written"), <code>vt_stopOnWriteErrors</code>, <code>vt_readOnlyNetPages</code>, <code>vt_createPagesFile</code>. The 2048-byte slack would then be a growth reserve, allowing a newly transcoded page to be rewritten in place at its location, even if it becomes slightly larger.</p>
+<hr />
+<h2 id="7-engine-constants-from-wolfneworder_x64exe">7. Engine Constants from <code>WolfNewOrder_x64.exe</code></h2>
+<p>The EXE carries a Reflection/RTTI table with constant names <strong>and their source text expressions</strong>. This is hard documentation, not interpretation:</p>
+<pre><code>PAGE_WIDTH_LOG2            7
+PAGE_WIDTH                  (1&lt;&lt;7)          -&gt; 128
+PAGE_BORDER_WIDTH           4
+PAGE_PAYLOAD_WIDTH          128-2*4         -&gt; 120
+LOAD_WIDTH                  128-2*4         -&gt; 120
+PAGE_TEXELS                 128*128         -&gt; 16384
+DXT1_BLOCK_SIZE / DXT5_BLOCK_SIZE
+PAGEDATA_NUM_CHANNEL_IMAGES
+PAGEDATA_IMAGE0_SIZE_DXT    16384*1/2       -&gt; 8192   (= DXT1, 128x128)
+MAX_PAGE_DATA_SIZE_DXT      16384*5/2       -&gt; 40960
+MAX_PAGE_DATA_SIZE          16384*4*3
+MAX_PAGEFILE_HEADER_SIZE    4096
+MAX_VIRTUAL_PAGES_WIDE_LOG2 11
+MAX_VIRTUAL_PAGES_WIDE      1&lt;&lt;11           -&gt; 2048
+MAX_TOTAL_MIP_LEVELS / MIN_INSTALLED_MIP_LEVEL
+MAX_CONTAINER_PAGE_NAME
+PRODUCTION_DISK_OFFSET_SCALE / DEFAULT_DISK_OFFSET_SCALE / UNCOMPRESSED_DISK_OFFSET_SCALE
+</code></pre>
+<p>Enums:</p>
+<pre><code>compression_t:          COMP_NONE, COMP_DXT, COMP_LZW, COMP_DCT, COMP_HDP,
+                        COMP_JXR, COMP_MAX_COMPRESSIONS      (0..5, 6 = count)
+virtualTextureFlavor_t: ID_VTF_UNKNOWN, ID_VTF_BAKE, ID_VTF_VMTR
+physical pools:         PHYSICAL_PAGES_POOL_VMTR, _UNIQUE,
+                        _UNIQUE_DIFFUSE_ONLY, _UNIQUE_DIFFUSE_ONLY2,
+                        _SHARED_COUNT, _PRT, _MAX
+</code></pre>
+<p>Source files that the EXE refers to in Assert strings:
+<code>w:\tech5\engine\renderer\VirtualTextureSystem.cpp</code>,
+<code>w:\tech5\engine\renderer\jobs\transcode\PageCompression.cpp</code>.</p>
+<p><strong>Calculation for the <code>virtualmapping</code> field.</strong> A material with <code>virtualmapping = { 0.015625, 0.015625, 0.0, 0.0625 }</code> occupies 1/64 of the virtual texture per axis. In a vmtr file with <code>across = 1024</code>, this equals 16 pages, so 16 × 128 = <strong>2048 texels</strong> side length — a completely normal texture size. The first two numbers are thus scaling, and the last two are offset (here: 0 in x, 1/16 = 64 pages in y). The 1024 pages × 128 texels result in a virtual texture of 131072 = 2^17 texels side length, matching the Cvar <code>vt_virtualSizeLog2</code>.</p>
+<p>Minor uncertainty: <code>PAGE_PAYLOAD_WIDTH = 120</code> suggests that a page carries only 128 unique texels and the 4 border texels per page are copies of neighbors. Then the stride would be 120 instead of 128, and the above calculation would yield 1920 instead of 2048. The power-of-two calculation fits better with <code>vt_virtualSizeLog2</code>, but <strong>which one is correct remains unproven.</strong></p>
+<hr />
+<h2 id="8-the-codec--what-is-known">8. The Codec — what is known</h2>
+<p><strong>Secured:</strong></p>
+<ul>
+<li>Every Retail set carries <code>compression = 5 = COMP_JXR</code>. No single deviating value in ~145,000 checked sets.</li>
+<li>Each page consists of exactly <strong>four</strong> channel blocks, never more, never less.</li>
+<li>Each block begins with a <strong>constant</strong> prefix that is bit-identical across all pages and all files:</li>
+</ul>
+<p><code>Block 0:  71 00 a3 c6 0a 3c 60 a3 c6 00 ff 00 00 01 00
+  Block 1:  d1 10 a1 a1 aa 1a 1a a1 a1 a0 ff 00 00 01 00
+  Block 2:  d1 00 8c a3 28 c8             ff 00 00 01 00
+  Block 3:  d1 00 94 25 09 40             ff 00 00 01 00</code></p>
+<p>Blocks 0/1 have a 10-byte header; blocks 2/3 have only 6 bytes. Afterward, all four share the same 5-byte sequence <code>ff 00 00 01 00</code>, followed by variable data. The fact that the header is constant means it encodes only things that are identical across all sides—dimensions (always 128×128) and quantization (set globally via the <code>vt_quality*</code> Cvars).</p>
+<ul>
+<li>The data section is <strong>not</strong> a byte-stopped JPEG stream: among 22,238 <code>0xFF</code> bytes in a sample, only 4,893 are followed by a <code>0x00</code>. Therefore, the standard JPEG <code>FF 00</code> stop rule does not apply here.</li>
+<li>The data section is a bitstream. Typical patterns include long runs of <code>99 99 99…</code>, <code>66 66 66…</code>, or <code>49 24 92 49 24 92…</code>—these are periodic bit patterns (<code>10011001</code>, <code>01100110</code>, <code>100100100…</code>) produced by an entropy coder when encoding a highly probable symbol repeatedly.</li>
+<li>The EXE contains the complete symbol table of an <strong>HD-Photo/JPEG-XR</strong> decoder, verbatim as in Microsoft's reference implementation: <code>WMPHOTO</code>, <code>IndLPLum</code>, <code>AbsLevelIndLP0/1</code>, <code>AbsLevelIndHP0/1</code>, <code>DecIndLPLum0/1</code>, <code>DecFirstIndLPChr</code>, <code>DecIndLPChr0/1</code>, <code>DecNumCBP</code>, <code>DecNumBlkCBP</code>, <code>DecIndHPLum0/1</code>, <code>DecFirstIndHPLum/Chr</code>, <code>DecIndHPChr0/1</code>. (LP = Lowpass, HP = Highpass, CBP = Coded Block Pattern, Lum/Chr = Luma/Chroma—these are the adaptive VLC context tables of JPEG XR.)</li>
+</ul>
+<p><strong>Hypothesis (well-supported but unproven): block assignment.</strong>
+Quality Cvars exist for JXR in exactly four variants—<code>vt_qualityJXRDiffuse</code>, <code>…Normal</code>, <code>…Specular</code>, <code>…Power</code>—and there are exactly four blocks. <code>MAX_PAGE_DATA_SIZE_DXT = 16384*5/2 = 40960</code> decomposes cleanly into DXT1 (8192) + DXT5 (16384) + DXT1 (8192) + DXT1 (8192), and <code>PAGEDATA_IMAGE0_SIZE_DXT = 8192</code> is exactly DXT1 for 128×128. This matches the measured byte proportions (proportion of total volume per file):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Block 0</th>
+<th>Block 1</th>
+<th>Block 2</th>
+<th>Block 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>c12p1</td>
+<td>40 %</td>
+<td>34 %</td>
+<td>24 %</td>
+<td>2 %</td>
+</tr>
+<tr>
+<td>c03p1</td>
+<td>26 %</td>
+<td>48 %</td>
+<td>23 %</td>
+<td>3 %</td>
+</tr>
+<tr>
+<td>c02p0</td>
+<td>36 %</td>
+<td>43 %</td>
+<td>19 %</td>
+<td>3 %</td>
+</tr>
+<tr>
+<td>c16p0</td>
+<td>29 %</td>
+<td>48 %</td>
+<td>19 %</td>
+<td>4 %</td>
+</tr>
+<tr>
+<td>chunk3_vmtr</td>
+<td>22 %</td>
+<td>63 %</td>
+<td>14 %</td>
+<td>1 %</td>
+</tr>
+</tbody>
+</table></div>
+<p>Block 1 is almost always the largest (Normal Maps are high-frequency and compress poorly); Block 3 is tiny at 1–4% (Power/Gloss is mostly constant). Therefore: <strong>Block 0 = Diffuse, 1 = Normal, 2 = Specular, 3 = Power.</strong> The longer header for blocks 0/1 fits the fact that these two are multi-channel while blocks 2/3 are single-channel. This has not been proven.</p>
+<p><strong>Hypothesis: the layout code</strong> in payload +4. <code>vt_showPageInfo</code> describes itself as "Shows page info: source #, layout #, compression, mono/color specular", and there is <code>vt_maxMonoSpecularError</code> ("specular is considered monochrome if the error is less than this value"). The observed values 0,1,2,4,5,6 and 8,12,13,14 appear to be <code>bit3 = mono specular</code> plus a layout ID 0…6 in the lower bits. The most frequent value is 6.</p>
+<p><strong>Open question: the actual decoding.</strong> The block header is <em>not</em> a valid JPEG-XR codestream header. A true codestream begins with the 8-byte signature <code>WMPHOTO\0</code>, followed by <code>RESERVED_B=1</code>, flags, and—when <code>SHORT_HEADER_FLAG</code> is set—16-bit width and height. Here, the signature is missing, and there is no room for 32-bit dimensions before the <code>ff 00 00 01 00</code> sequence (only 6 or 10 bytes total). I additionally searched every bit position of the headers to see if anywhere two identical 16-bit fields with values 127/119/63/31 appear (i.e., 128−1, 120−1, etc.)—no hits.</p>
+<p>This means: MachineGames writes a <strong>truncated</strong> stream. Dimensions and configuration are implicit because they are always identical. A standard JXR decoder cannot process these bytes without first reconstructing the header—and to do that, one would need to know which bits the engine omitted. This cannot be clarified without disassembling <code>PageCompression.cpp</code> code.</p>
+<hr />
+<h2 id="9-the-vt_-cvars">9. The <code>vt_</code> Cvars</h2>
+<p>Extracted from <code>.rdata</code> of <code>WolfNewOrder_x64.exe</code>: 119 name matches, approximately 100 unique Cvars. The descriptions are stored in the pool directly next to the names; the following pairings were read from the layout of the <code>.rdata</code> region (see <code>tools/mine_cvars_tnc.py</code> for pitfalls).</p>
+<h3 id="format-and-encoding">Format and Encoding</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vt_qualityDCTLuma</code></td>
+<td>quality in the range [0-100] percent where higher is better quality</td>
+</tr>
+<tr>
+<td><code>vt_qualityDCTChroma</code></td>
+<td>quality in the range [0-100] percent</td>
+</tr>
+<tr>
+<td><code>vt_qualityDCTNormal</code></td>
+<td>quality in the range [0-100] percent</td>
+</tr>
+<tr>
+<td><code>vt_qualityDCTSpecular</code></td>
+<td>quality in the range [0-100] percent</td>
+</tr>
+<tr>
+<td><code>vt_qualityDCTPower</code></td>
+<td>quality in the range [0-100] percent</td>
+</tr>
+<tr>
+<td><code>vt_qualityHDPDiffuse</code></td>
+<td>amount of quantization to apply in the range [0-255] where lower is better quality</td>
+</tr>
+<tr>
+<td><code>vt_qualityHDPNormal</code> / <code>…Specular</code> / <code>…Power</code></td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>vt_qualityHDPLossless</code></td>
+<td>force lossless HD-Photo compression</td>
+</tr>
+<tr>
+<td><code>vt_qualityJXRDiffuse</code></td>
+<td>amount of quantization to apply in the range [0-255] where lower is better quality</td>
+</tr>
+<tr>
+<td><code>vt_qualityJXRNormal</code> / <code>…Specular</code> / <code>…Power</code></td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>vt_qualityJXRLossless</code></td>
+<td>force lossless JPEG-XR compression</td>
+</tr>
+<tr>
+<td><code>vt_maxMonoSpecularError</code></td>
+<td>specular is considered monochrome if the error is less than this value</td>
+</tr>
+<tr>
+<td><code>vt_useSpecularScale</code></td>
+<td>scale the specular to avoid DXT quantization errors</td>
+</tr>
+<tr>
+<td><code>vt_specularThreshold</code> / <code>vt_specularScale</code></td>
+<td>(Default 0.2 for one of the two)</td>
+</tr>
+<tr>
+<td><code>vt_uncompressedVmtr</code></td>
+<td>Use uncompressed vmtr data. Only read at startup.</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is the most important part of the entire document: <strong>there are three codecs</strong> (DCT, HDP, JXR) each with their own quality controllers, and Retail files use JXR.</p>
+<h3 id="files-paths-generation">Files, Paths, Generation</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vt_filePath</code></td>
+<td>Path for the virtual texture</td>
+</tr>
+<tr>
+<td><code>vt_filePathVmtrOverride</code></td>
+<td>Optionally get vmtr files from a different source than vt_filePath</td>
+</tr>
+<tr>
+<td><code>vt_createPagesFile</code></td>
+<td>(creates a <code>.pages</code> file)</td>
+</tr>
+<tr>
+<td><code>vt_packPageFiles</code></td>
+<td>Use the virtual texture file name without any suffixes, 0 = version vmtr and megas, 1 = version megas, 2 = version none</td>
+</tr>
+<tr>
+<td><code>vt_containers</code></td>
+<td>Set to enable loading from containers</td>
+</tr>
+<tr>
+<td><code>vt_logPageWrites</code></td>
+<td>write out log file entries when virtual texture pages are created and written</td>
+</tr>
+<tr>
+<td><code>vt_stopOnWriteErrors</code></td>
+<td>error out when encountering write errors</td>
+</tr>
+<tr>
+<td><code>vt_readOnlyNetPages</code></td>
+<td>Set to always open network pagefiles in readonly mode</td>
+</tr>
+<tr>
+<td><code>vt_useNetworkPagesWithPreload</code></td>
+<td>Use the network page files and vmtr even when using linear preload files</td>
+</tr>
+<tr>
+<td><code>vt_usePageFileCache</code></td>
+<td>Use the pageFileCache for all reads</td>
+</tr>
+<tr>
+<td><code>vt_useNonBufferedIO</code></td>
+<td>use non-buffered IO</td>
+</tr>
+<tr>
+<td><code>vt_noSeekCacheLines</code></td>
+<td>number of cache lines we can skip without seeking</td>
+</tr>
+<tr>
+<td><code>vt_minMipLevelInstalled</code></td>
+<td>minimum mip level installed on the hard disk (2 = all mips except finest two installed, 16 = no mips installed)</td>
+</tr>
+<tr>
+<td><code>vt_supportRoundedDownVmtrs</code></td>
+<td>quick temporary fix to load in the 4x1 pages properly</td>
+</tr>
+<tr>
+<td><code>vt_genMissingPages</code></td>
+<td>Generate a page in memory for pages that don't exist on disk.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="runtime--physical-cache">Runtime / Physical Cache</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vt_pageImageSizeVmtr</code></td>
+<td>Dimensions of the physical page images. vt_restart after changing this. (Default 4096)</td>
+</tr>
+<tr>
+<td><code>vt_pageImageSizeUnique</code></td>
+<td>dito (Default 4096)</td>
+</tr>
+<tr>
+<td><code>vt_pageImageSizeUniqueDiffuseOnly</code> / <code>…2</code></td>
+<td>dito</td>
+</tr>
+<tr>
+<td><code>vt_uncompressedPhysicalImages</code></td>
+<td>Use uncompressed physical page images. vt_restart after changing this.</td>
+</tr>
+<tr>
+<td><code>vt_linearPhysicalImages</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>vt_maxPhysicalPRTPages</code></td>
+<td>Maximum number of resident PRT pages. (Default 4096)</td>
+</tr>
+<tr>
+<td><code>vt_enablePRT</code></td>
+<td>Set to enable PRT mode</td>
+</tr>
+<tr>
+<td><code>vt_maxLockedPages</code></td>
+<td>Don't lock more than pages than this.</td>
+</tr>
+<tr>
+<td><code>vt_minLod</code></td>
+<td>Set the finest mip that can be accessed.</td>
+</tr>
+<tr>
+<td><code>vt_lodBias</code></td>
+<td>Additional floating point bias for virtual texture page tables</td>
+</tr>
+<tr>
+<td><code>vt_maxAniso</code></td>
+<td>Floating point max aniso for physical textures.</td>
+</tr>
+<tr>
+<td><code>vt_filter</code></td>
+<td>filter physical images, 0 = off, 1 = bilinear, 2 = trilinear</td>
+</tr>
+<tr>
+<td><code>vt_maxPPF</code></td>
+<td>maximum number of transcoded pages per frame</td>
+</tr>
+<tr>
+<td><code>vt_pageFadeInSteps</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>vt_pageBorderAdjust</code></td>
+<td>Debug adjustment of a page's mapping about it's center</td>
+</tr>
+<tr>
+<td><code>vt_stripPageBorders</code></td>
+<td>Strip the page border by upscaling the center</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="feedback--streaming">Feedback / Streaming</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vt_feedbackLodBias</code></td>
+<td>Additional floating point bias for feedback LOD</td>
+</tr>
+<tr>
+<td><code>vt_feedbackHighWater</code></td>
+<td>More than this percentage of pages needed this frame and we consider ourselves oversubscribed.</td>
+</tr>
+<tr>
+<td><code>vt_feedbackLowWater</code></td>
+<td>Less than this percentage of pages needed this frame and we consider ourselves undersubscribed.</td>
+</tr>
+<tr>
+<td><code>vt_feedbackLODIncrement</code></td>
+<td>Base increment value for adjusting dynamic LOD bias. (Default 0.125)</td>
+</tr>
+<tr>
+<td><code>vt_skipStreaming</code></td>
+<td>Skip streaming but still transcode and update the page tables</td>
+</tr>
+<tr>
+<td><code>vt_skipTranscode</code></td>
+<td>Skip transcoding (but don't skip reading)</td>
+</tr>
+<tr>
+<td><code>vt_skipUpdatePageImages</code></td>
+<td>Skip updating page table and physical images on the PC (but still read/transcode)</td>
+</tr>
+<tr>
+<td><code>vt_skipExplicitPageFeedback</code></td>
+<td>don't append explicit pages from gui surfaces.</td>
+</tr>
+<tr>
+<td><code>vt_nopreload</code></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="upsampling">Upsampling</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vt_useUpsample</code></td>
+<td>Number of extra levels in vt to use for upsample</td>
+</tr>
+<tr>
+<td><code>vt_upsampleFilter</code></td>
+<td>0 = nearest, 1 = bilinear, 2 = biquadratic, 3 = bicubic, 4 = sinc+hamming, 5 = sinc+blackman, 6 = sinc+lanczos, 7 = sinc+kaiser</td>
+</tr>
+<tr>
+<td><code>vt_upsampleSharpen</code></td>
+<td>amount of sharpening to apply to upsampled texture pages</td>
+</tr>
+<tr>
+<td><code>vt_upsampleNoise</code></td>
+<td>amount of noise to add to upsampled texture pages</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="jobs">Jobs</h3>
+<p><code>vt_useAnalyzeJobs</code>, <code>vt_usePageSortJobs</code>, <code>vt_useTranscodeJobs</code>,
+<code>vt_usePageMinLodJobs</code> — alle "0 = off, 1 = threaded".
+<code>vt_splitTranscodeJobs</code> ("split transcode jobs into two jobs per page"),
+<code>vt_useCudaTranscode</code> ("controls Cuda texture transcoding: 0 - off,
+1 - smart, 2 - on"), <code>vt_singleStep</code> ("single step through the transcode
+process"), <code>vt_usePageTablePBOs</code>, <code>vt_useUnsynchronizedPageTablePBOs</code>,
+<code>vt_useInvalidateRangeBitForMappingAndPageTablePBOMap</code>,
+<code>vt_useDirectTextureAccess</code>, <code>vt_useMinLodTexture</code>, <code>vt_useMinLodTexture</code>,
+<code>vt_touchPhysCacheOnAlloc</code>, <code>vt_skipPhysicalTextureUploads</code>,
+<code>vt_virtualSizeLog2</code> ("Log2 of the virtualTexture dimensions for general
+texture allocation. Must be set on the command line.").</p>
+<h3 id="debug-visualisierung">Debug-Visualisierung</h3>
+<p><code>vt_showPageLoads</code>, <code>vt_showFeedbackAnalysis</code>, <code>vt_showFeedbackBuffer</code>,
+<code>vt_showFeedbackStreaming</code>, <code>vt_showStats</code>, <code>vt_recordStats</code>,
+<code>vt_showLockedPages</code>, <code>vt_showPageSources</code> ("Shades vmtr and unique pages
+differently"), <code>vt_showPageMips</code>, <code>vt_showPageColors</code>, <code>vt_showPageNumbers</code>,
+<code>vt_showPageInfo</code> ("Shows page info: source #, layout #, compression,
+mono/color specular"), <code>vt_showPageBorders</code>, <code>vt_showPageCheckered</code>,
+<code>vt_showPageSizes</code>, <code>vt_showPageUsage</code>, <code>vt_showExplicitPages</code>.</p>
+<h3 id="kommandos-keine-variablen">Kommandos (keine Variablen)</h3>
+<p><code>vt_info</code> ("prints data on a virtual material"), <code>vt_emptyCache</code>, <code>vt_lockPages</code>, <code>vt_restart</code> ("reallocates the physical images for changes in size or compression"), <code>vt_reload</code> ("reload all the currently loaded virtual textures"), <code>vt_validateCache</code> ("consistency checks the page buffers"), <code>vt_setSource</code> ("Explicitly change the page file for a virtual material to compare"), <code>vt_transcodeBenchmark</code>, <code>vt_benchmark</code>.</p>
+<hr />
+<h2 id="10-what-this-means-for-modding">10. What This Means for Modding</h2>
+<p><strong>What is now possible:</strong></p>
+<ul>
+<li><code>.pages</code> files can be fully read, indexed, and verified for integrity. One can precisely state which tile resides on which Mipmap level at which coordinate, its dimensions, and its offset within the file.</li>
+<li>Individual page blocks can be raw extracted (<code>probe_vtpages.py blocks</code>) and compared against others.</li>
+<li>It is possible to specifically determine which region of a Mega-texture belongs to a given material — via <code>virtualmapping</code> (Scale/Offset) in the Material Declaration and the Occupancy map.</li>
+</ul>
+<p><strong>What is not possible:</strong> Swapping pixels. This would require an JXR encoder that generates the same truncated stream as MachineGames' encoder. Even with a functioning decoder, the return path would be another project entirely.</p>
+<p><strong>Therefore, the more promising paths are not the format itself, but the Cvars:</strong></p>
+<ol>
+<li><code>vt_filePath</code> and <code>vt_filePathVmtrOverride</code> bend the search path. If one reaches a location where complete, custom <code>.pages</code> files can be placed, there is no need to patch the format — only to generate it.</li>
+<li><code>vt_createPagesFile</code> is exactly this generator, built into the game. Together with <code>vt_uncompressedVmtr</code> ("Use uncompressed vmtr data") and the <code>vt_quality*</code> controls, this suggests that the engine still has the encoding side onboard, not just the decoding side.</li>
+<li><code>vt_setSource</code> swaps the Pagefile of a single virtual material at runtime — intended for comparison, but precisely the lever a texture mod would need.</li>
+</ol>
+<p>Whether these Cvars are accessible in the Retail build (Console, Cheat flags) has <strong>not</strong> been verified here. That would be the next sensible step and can be approached with the existing tools (<code>tools/probe_cvars.py</code>, <code>tools/probe_retail_lock.py</code>).</p>
+<hr />
+<h2 id="where-this-knowledge-ends">Where This Knowledge Ends</h2>
+<p><strong>Secured, double-checked:</strong></p>
+<ul>
+<li>File header (32 bytes), all seven fields, across 39 files.</li>
+<li>The Offset scale 2 — without it, nothing makes sense.</li>
+<li>Sentence header (40 bytes): Magic, Compression enum, four child offsets, four child sizes, packed x/y, Mipmap level. Child index <code>(y&amp;1)*2 + (x&amp;1)</code>.</li>
+<li>Page subheader (16 bytes) with four <strong>big-endian</strong> block sizes.</li>
+<li>That exactly four blocks exist per page and their lengths.</li>
+<li>That across seven fully traversed files, every single byte is accounted for.</li>
+<li>That Retail consistently uses <code>COMP_JXR</code>.</li>
+<li>The engine constants (128-byte tiles, 4 texel border, 120 usable texels) — these are literally in the EXE.</li>
+</ul>
+<p><strong>Speculated, reasoned, but not proven:</strong></p>
+<ul>
+<li>Block assignment Diffuse/Normal/Specular/Power.</li>
+<li>Layout code = Layout ID plus Mono-Specular bit.</li>
+<li>The 2048-byte slack as growth reserve for overwritten pages.</li>
+<li>Whether the virtual texture edge is <code>across × 128</code> or <code>across × 120</code>.</li>
+</ul>
+<p><strong>Not solved:</strong></p>
+<ul>
+<li><strong>Pixel data.</strong> The bitstream behind <code>ff 00 00 01 00</code> is not decoded. It is related to HD-Photo/JPEG-XR (the EXE contains the complete HD-Photo decoder), but the block headers are not a valid JXR codestream header — they lack signature and dimensions. Therefore, a standard decoder cannot be attached, and how to correctly reconstruct the header cannot be determined without disassembly.</li>
+<li><strong>Consequently, no PNG export of a real page.</strong> <code>probe_vtpages.py map</code> exports a <em>map</em> (which pages exist, colored by size) — this is proof of the tree structure, explicitly <strong>not</strong> for the pixel data. A PNG with invented pixels would be worse than none at all.</li>
+<li>Meaning of individual bytes in the constant block headers.</li>
+<li>Content and purpose of the gaps partially filled with zeros and bit patterns.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNO-Maps.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>The 25 Cards from Wolfenstein: The New Order</a><a class="next" href="Virtual-Texture-Planes.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>The Four Channel Layers of a Virtual-Texture Page — Block 0 and Block 1</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

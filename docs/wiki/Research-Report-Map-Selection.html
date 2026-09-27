@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map/DLC Selection Logic (Static Findings) – Wolfenstein Modloader</title>
+<meta name="description" content="How TNC picks between a base-game map and a DLC map of the same name: still open, with one decisive test designed.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Map/DLC Selection Logic (Static Findings)</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Map-Selection"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result">Result</a></li><li><a href="#retail-specs-and-field-meaning">Retail Specs and Field Meaning</a></li><li><a href="#existing-test-artifacts">Existing Test Artifacts</a></li><li><a href="#savegamemap-metadata">Savegame/Map Metadata</a></li><li><a href="#single-test-clear-decision-conditions">Single Test: Clear Decision Conditions</a></li><li><a href="#failed-or-overly-strong-hypotheses">Failed or Overly Strong Hypotheses</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein II: The New Colossus describes each map in a spec file that names its main archive chunk and extra dependencies. This report asks what happens when a <span class="t" data-t="dlc">DLC</span> spec uses the same map name as the base game: which one wins? Static analysis shows the DLC entry is a plausible candidate but does not prove it wins. Save files store the map name and layers but show no sign of choosing between base and DLC. The page ends with one precise in-game test to settle the question.</p><ul><li>chunkid names a map&#x27;s main archive; refchunks only adds extra dependencies and does not override the base.</li><li>Several hypotheses were refuted, for example that layer or basechunkid decides the choice.</li><li>Save files contain the map name, start point and layers; their checksum is not a map or container ID.</li><li>Earlier launch tests with +map, +exec and +loadGame were ignored before the menu, so no runtime result exists.</li><li>The proposed test: load a save of the same map through the menu and look for a unique marker asset in the DLC chunk.</li></ul></div><div class="de"><p class="lede">Wolfenstein II: The New Colossus beschreibt jede Karte in einer Spec-Datei, die ihren Haupt-Chunk und zusätzliche Abhängigkeiten nennt. Dieser Bericht fragt: Was passiert, wenn eine <span class="t" data-t="dlc">DLC</span>-Spec denselben Kartennamen wie das Hauptspiel nutzt – wer gewinnt? Die statische Analyse zeigt, dass der DLC-Eintrag ein plausibler Kandidat ist, beweist aber nicht, dass er gewinnt. Spielstände speichern Kartenname und Layer, zeigen aber keine Auswahl zwischen Hauptspiel und DLC. Die Seite endet mit einem genauen Test im Spiel, der die Frage klären soll.</p><ul><li>chunkid nennt das Hauptarchiv einer Karte; refchunks fügt nur zusätzliche Abhängigkeiten hinzu und überschreibt das Hauptspiel nicht.</li><li>Mehrere Hypothesen wurden widerlegt, etwa dass layer oder basechunkid die Wahl entscheidet.</li><li>Spielstände enthalten Kartenname, Startpunkt und Layer; ihre Prüfsumme ist keine Karten- oder Container-ID.</li><li>Frühere Starttests mit +map, +exec und +loadGame wurden vor dem Menü ignoriert. Ein Ergebnis aus dem laufenden Spiel gibt es daher nicht.</li><li>Vorgeschlagener Test: einen Spielstand derselben Karte übers Menü laden und nach einem eindeutigen Marker-Asset im DLC-Chunk suchen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><h2 id="result">Result</h2>
+<p>For identical <code>name</code>, the DLC entry is a plausible primary candidate, but it is not statically proven as the winner against the Base entry. Retail data instead clearly distinguishes between the <strong>primary map source</strong> (<code>chunkid</code>) and <strong>additional dependencies</strong> (<code>refchunks</code>).</p>
+<p>Savegame data contains the requested map name and Layer/Start metadata. They are therefore a possible input for Map/Layer loading before the actual map asset reading; however, no static finding shows that they write a Base/DLC priority over the Container mount. <code>game.details</code> is display/save metadata, not proven as the selection source.</p>
+<h2 id="retail-specs-and-field-meaning">Retail Specs and Field Meaning</h2>
+<p>The complete Retail evaluation in <code>docs/patchvorrang.md</code> and <code>docs/dlcmod.md</code> finds:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Example</th>
+<th>Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Base <code>base/packagemapspec.json</code></td>
+<td><code>game/wolf/c02/c02p0</code>: <code>chunkid: 1</code>, <code>basechunkid: 0</code>, <code>layer: 0</code></td>
+<td>The base map is primarily described from <code>chunk_1</code>.</td>
+</tr>
+<tr>
+<td>Retail DLC 1/2</td>
+<td><code>chunkid: 20/22</code>, <code>basechunkid: 6</code>, <code>layer: -1</code>, <code>refchunks</code> present</td>
+<td>Own DLC chunk plus explicit dependencies.</td>
+</tr>
+<tr>
+<td>Retail DLC 3</td>
+<td><code>chunkid: 24</code>, <code>basechunkid: 6</code>, <code>layer: -1</code>, no <code>refchunks</code></td>
+<td>The primary DLC chunk functions as an independent map source.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Parser literals in the EXE lie adjacent to <code>refchunks</code>, <code>chunkid</code>, <code>basechunkid</code>, <code>packagemapspec.json</code>, <code>patchinfo</code>; this supports separate parser inputs, not a priority rule.</p>
+<p>The data comparison confirms <code>refchunks</code> as a dependency: registered chunks are significantly less duplicated in the DLC (15 remaining copies), while unregistered dependencies are strong (1,495 copies). Therefore, an entry like <code>refchunks: [26]</code> can additionally mount <code>chunk_26</code>, but does not make it the primary source of the map.</p>
+<p><code>layer</code> and <code>basechunkid</code> are not a safe priority function: <code>basechunkid 6</code> appears in Base with <code>layer 1</code>, and in DLC with <code>layer -1</code>. The 1:1 relationship only holds within the Retail Base Spec. EXE Cvars like <code>resource_ignoreLayers</code> and <code>com_forceAllMapLayersToLoad</code> show layer filters, but do not prove that layers decide Base vs. DLC name resolution.</p>
+<h2 id="existing-test-artifacts">Existing Test Artifacts</h2>
+<p>The own primary spec is structurally appropriate:</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;game/wolf/c02/c02p0&quot;, &quot;chunkid&quot;: 26,
+  &quot;basechunkid&quot;: 6, &quot;layer&quot;: -1, &quot;refchunks&quot;: [1]
+}
+</code></pre>
+<p>It is located in <code>re_probes/tnc_dlc_test/dlc_4/base/packagemapspec.json</code> as well as runtime copies. <code>RESULT.md</code> documents that the loader finds <code>dlc_4</code> and accepts the spec syntactically. A container with a false header field <code>+0x08</code> is rejected with <code>container chunk_26.resources has corrupt header</code>; this is an integrity/mount gate, not a priority finding.</p>
+<p>The direct probe run did not produce a map loading section: <code>+map</code>, <code>+exec</code>, and <code>+loadGame</code> were ignored before the menu. Therefore, there is currently neither a positive nor a negative runtime result for the same-name collision.</p>
+<h2 id="savegamemap-metadata">Savegame/Map Metadata</h2>
+<p>Read findings on existing TNC save states (<code>game.details</code> and <code>checkpoint_mapstart.dat</code>):</p>
+<ul>
+<li><code>game.details</code> writes <code>mapName=...</code> along with <code>difficulty</code>, <code>gamePlayTime</code>, mission/material names, and a content-dependent <code>checksum</code>. The same map name appears in multiple slots with different checksums; the checksum value is not a proven map ID or container ID.</li>
+<li>The relevant <code>GAME-CHALLENGE</code> save for c02p0 has <code>mapName=game/wolf/c02/c02p0</code>. <code>SLOT2</code> contains additional c02p0 saves.</li>
+<li><code>checkpoint_mapstart.dat</code> contains the map name multiple times, as well as the Player start and layer names. For the c02p0 save, among others are <code>layer/base</code>, <code>layer/c02p0</code>, <code>layer/wyatt</code>, <code>layer/code</code>; for the DLC save c00v1, <code>layer/dlc/c0v1</code> is present. This indicates saved layer/start state data, not the origin (Base/DLC) of a similarly named container.</li>
+<li>The 4-byte file header is reproducible as an MD5 <code>MD5_BlockChecksum</code> over the payload for <code>.dat</code> files (<code>tools/savehash.py</code>), while <code>game.details</code> remains plaintext. This verifies file integrity but says nothing about map spec priority.</li>
+</ul>
+<p><strong>Decision:</strong> Savegame metadata can specify the target name and layers to load. No existing dataset proves that it selects a Base/DLC entry before Mount or replaces <code>chunkid</code>/<code>refchunks</code>. This must be observed via the actual save/load menu path with logs.</p>
+<h2 id="single-test-clear-decision-conditions">Single Test: Clear Decision Conditions</h2>
+<ol>
+<li>Before the run, the Base spec c02p0 must remain unchanged (<code>chunkid 1</code>). The DLC spec must contain the <strong>same</strong> <code>name</code> with <code>chunkid 26</code>, <code>basechunkid 6</code>, <code>layer -1</code>, <code>refchunks [1]</code>, <code>patchlevel 4</code>.</li>
+<li><code>chunk_26</code> must contain a valid header (<code>+0x08</code>) and a uniquely identifiable Canary resource; an incorrect header ends the test before priority decision.</li>
+<li>Load an existing c02p0 game state via the menu/savegame load path. Do not use <code>+map</code>/<code>+exec</code> as the sole abbreviation, since this exact path was ignored before the menu in the previous run.</li>
+<li>In the log, first secure Mount/Map assignment and then the Canary proof.</li>
+</ol>
+<p>Evaluation:</p>
+<ul>
+<li><strong>Canary visible + c02p0 loads:</strong> DLC map spec was selected for the name and <code>chunk_26</code> won the collision.</li>
+<li><strong>c02p0 loads, Canary missing, Base asset remains:</strong> DLC spec may have been assumed, but <code>chunk_26</code> is not the winning source; confirmed Mount speaks to Base priority.</li>
+<li><strong><code>GetIsChunkForMapInstalled</code>/missing map:</strong> Assignment or dependency count incomplete; no priority verdict.</li>
+<li><strong><code>Could not load mapspec</code>:</strong> Spec form rejected; no priority verdict.</li>
+<li><strong><code>corrupt header</code>/<code>container entry defaulted</code>:</strong> Integrity/hash gate; mark the run as non-decisive.</li>
+<li><strong>Savegame loads a different name than expected:</strong> Save/menu state is the confounder; repeat the run before Base/DLC priority is evaluated.</li>
+</ul>
+<p>The discriminating comparison is exclusively a uniquely different Canary in the primary <code>chunk_26</code> against the unchanged Base result. A <code>refchunks: [26]</code> test is not a priority test and counts as a negative control.</p>
+<h2 id="failed-or-overly-strong-hypotheses">Failed or Overly Strong Hypotheses</h2>
+<ul>
+<li><strong>"<code>refchunks</code> overrides the Base Chunk" — refuted as a test design flaw:</strong>
+  Refchunks are additional dependencies; the existing refchunk mechanism does not demonstrate override priority.</li>
+<li><strong>"<code>layer == f(basechunkid)</code> determines selection" — refuted:</strong>
+  <code>basechunkid 6</code> carries both Base <code>layer 1</code> and DLC <code>layer -1</code>.</li>
+<li><strong>"<code>game.details</code> checksum is Map/Container ID" — not confirmed:</strong>
+  it depends on game content and was not identified as a Map ID or Chunk ID.</li>
+<li><strong>"Map name in Savegame proves the Container" — not confirmed:</strong>
+  the same name appears as a Request/Status in both Base and DLC contexts; origin is not listed as <code>chunkid</code> there.</li>
+<li><strong>"Header-<code>+0x08</code> error proves Base Priority" — refuted:</strong>
+  the container is discarded before the actual collision occurs.</li>
+<li><strong>"Direct CLI start determines priority" — failed:</strong>
+  the existing run ignored the used startup commands prior to the menu and did not generate a <code>LoadMap</code> section.</li>
+</ul>
+<p>This renders the static response testable up to the Mount/Load boundary: The primary candidate is determined by the same-named DLC Map Spec entry with <code>chunkid</code>; whether this entry displaces the Base entry upon collision remains reserved for the above-defined single measurement.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Map-Bundle-V3.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Alias Package v3</a><a class="next" href="Research-Report-Mapmanifest.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Map-Manifest: What a map must know about an asset</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

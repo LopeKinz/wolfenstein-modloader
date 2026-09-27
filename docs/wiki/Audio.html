@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audio – Wolfenstein Modloader</title>
+<meta name="description" content="Inventory of the sound system in both games: where audio lives, what format it uses, and what can be modded.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#systems"><span class="en">Game systems</span><span class="de">Spielsysteme</span></a></p>
+<h1>Audio</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Audio"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-executive-summary">0. Executive Summary</a></li><li><a href="#1-which-asset-types-exist">1. Which Asset Types Exist</a></li><li><a href="#2-the-actual-data-format">2. The Actual Data Format</a></li><li><a href="#3-where-the-actual-audio-bytes-lie--the-critical-finding">3. Where the actual audio bytes lie — the critical finding</a></li><li><a href="#4-the-sound-decls-the-simple-modding-path">4. The sound Decls: the simple Modding Path</a></li><li><a href="#5-cvars">5. Cvars</a></li><li><a href="#6-what-is-changeable-and-what-is-not">6. What is changeable and what is not</a></li><li><a href="#7-part-2--wolfenstein-ii-the-new-colossus">7. Part 2 — Wolfenstein II: The New Colossus</a></li><li><a href="#8-reproduction">8. Reproduction</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page surveys the audio of Wolfenstein: The New Order (TNO) and Wolfenstein II: The New Colossus (TNC). In TNO, the sounds are plain Ogg Vorbis files stored in two big streaming containers, and all sound settings (volume, range, random variants, mixer levels) are readable text <span class="t" data-t="decl">declarations</span>. TNC uses the Wwise audio middleware with binary sound banks, which the tools cannot edit yet. For TNO, the easiest way to change sound is editing a few text files, not replacing audio data.</p><ul><li>TNO audio is <span class="t" data-t="ogg">Ogg Vorbis</span>; all 61,318 sample entries were checked against the streaming containers with 0 mismatches.</li><li>99% of TNO sound definitions (9,364 of 9,445) inherit from one master file that adds 10 dB volume, so one number changes almost everything.</li><li>The TNO mixer file has 13 sub-buses; the player weapon bus sits at -11 dB, a single number in a text file.</li><li>Replacing actual TNO audio bytes is technically possible but risky: the 1.5 GB streaming containers are not backed up by the tools.</li><li>TNC uses Wwise with 937 sound banks; there is no parser for them, so only volume console settings are usable there. That changed sound files take effect in TNO is not yet confirmed in the game.</li></ul></div><div class="de"><p class="lede">Diese Seite untersucht den Ton von Wolfenstein: The New Order (TNO) und Wolfenstein II: The New Colossus (TNC). In TNO sind die Sounds normale Ogg-Vorbis-Dateien in zwei großen Streaming-Containern, und alle Sound-Einstellungen (Lautstärke, Reichweite, Zufallsvarianten, Mischpultpegel) sind lesbare Text-<span class="t" data-t="decl">Deklarationen</span>. TNC nutzt die Audio-Middleware Wwise mit binären Soundbanks, die die Werkzeuge noch nicht bearbeiten können. In TNO änderst du den Klang am einfachsten über ein paar Textdateien, nicht durch Austausch der Audiodaten.</p><ul><li>TNO-Audio ist <span class="t" data-t="ogg">Ogg Vorbis</span>; alle 61.318 Sample-Einträge wurden gegen die Streaming-Container geprüft, mit 0 Abweichungen.</li><li>99 % der TNO-Sounddefinitionen (9.364 von 9.445) erben von einer Master-Datei, die 10 dB Lautstärke addiert – eine Zahl ändert also fast alles.</li><li>Die TNO-Mischpultdatei hat 13 Unterkanäle; der Kanal für Spielerwaffen liegt bei -11 dB, eine einzige Zahl in einer Textdatei.</li><li>Echte TNO-Audiodaten zu ersetzen ist technisch möglich, aber riskant: Die 1,5 GB großen Streaming-Container werden von den Werkzeugen nicht gesichert.</li><li>TNC nutzt Wwise mit 937 Soundbanks; dafür gibt es keinen Parser, dort sind nur Lautstärke-Einstellungen nutzbar. Dass geänderte Sounddateien in TNO wirken, ist im Spiel noch nicht bestätigt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Inventory of the audio layer for both games. All figures originate from <code>tools/probe_audio.py</code>, which runs against the original data in <code>base/_wolfsdk_backup</code> (the installation is patched). Nothing was written, no game was launched.</p>
+<p><strong>Interpretation.</strong> A Magic-Byte that was read appears here as a <em>Finding</em>. Anything inferred solely from names, sizes, or analogy appears as a <em>Hypothesis</em> and is marked accordingly.</p>
+<hr />
+<h2 id="0-executive-summary">0. Executive Summary</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>What</th>
+<th>Part 1 (TNO)</th>
+<th>Part 2 (TNC)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engine</td>
+<td>id Tech 5</td>
+<td>id Tech 6</td>
+</tr>
+<tr>
+<td>Audio Middleware</td>
+<td>engine-internal</td>
+<td><strong>Wwise</strong></td>
+</tr>
+<tr>
+<td>Audio Data</td>
+<td>raw <strong>Ogg Vorbis</strong> in <code>streamed.resources</code> / <code>english.streamed</code></td>
+<td><code>sound.pack</code> / <code>english(us).pack</code>, Container Magic <code>IDCL</code></td>
+</tr>
+<tr>
+<td>Control Data</td>
+<td><code>sound</code> Decls in archive, plaintext</td>
+<td>in <code>.bnk</code> Banks, binary</td>
+</tr>
+<tr>
+<td>Modifiable with this SDK</td>
+<td><strong>yes, the Decls</strong> (volume, range, random selection, mixbuses)</td>
+<td>no</td>
+</tr>
+<tr>
+<td>Audio bytes swappable</td>
+<td>technically possible, but <strong>without Revert-Net</strong> — see §6</td>
+<td>no</td>
+</tr>
+</tbody>
+</table></div>
+<p>The short path to "louder and brasher" does <strong>not</strong> go through new audio files, but rather through three text files: <code>sound:inheritences/master</code> (overwrites 9364 of 9444 Sound Decls), <code>soundmixing:default</code> (13 Mixbuses with <code>gain</code>), and family nodes such as <code>inheritences/weapons/weapons_pl</code>.</p>
+<hr />
+<h2 id="1-which-asset-types-exist">1. Which Asset Types Exist</h2>
+<p>Of 105 Asset Types and 203,843 Assets, seven are audio-related:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th style="text-align: right;">Count</th>
+<th>Path Endings</th>
+<th>What It Is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sample</code></td>
+<td style="text-align: right;">61,318</td>
+<td><code>.bsnd</code> x61318</td>
+<td><strong>Descriptor</strong>, no audio data</td>
+</tr>
+<tr>
+<td><code>sound</code></td>
+<td style="text-align: right;">43,782</td>
+<td><code>.decl</code> x37015, <code>.bsnd</code> x6514, <code>.samplepack</code> x253</td>
+<td>Sound Shader (text) + Variant Descriptors</td>
+</tr>
+<tr>
+<td><code>voicetrack</code></td>
+<td style="text-align: right;">30,627</td>
+<td><code>.bmvtr</code> x30627</td>
+<td>Voice Track Descriptor, 4-language</td>
+</tr>
+<tr>
+<td><code>voiceover</code></td>
+<td style="text-align: right;">2,880</td>
+<td><code>.decl</code> x2880</td>
+<td>Selection table over Voicetracks (text)</td>
+</tr>
+<tr>
+<td><code>impactSounds</code></td>
+<td style="text-align: right;">56</td>
+<td><code>.decl</code> x56</td>
+<td>Hit/Shell impact mapping (text)</td>
+</tr>
+<tr>
+<td><code>soundmixing</code></td>
+<td style="text-align: right;">26</td>
+<td><code>.decl</code> x26</td>
+<td><strong>Mixbuses, Gains, Compressor/Limiter</strong> (text)</td>
+</tr>
+<tr>
+<td><code>footstepEvents</code></td>
+<td style="text-align: right;">1</td>
+<td><code>.decl</code> x1</td>
+<td>Step Events (text)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The task-named type names <code>soundshader</code>, <code>snd</code>, <code>music</code>, <code>voice</code>, <code>reverb</code>, and <code>soundmaterial</code> do not exist in TNO.</strong> What they mean content-wise is located elsewhere:</p>
+<ul>
+<li><em>soundshader</em> → this is exactly the type <code>sound</code>; the fields are internally named <code>soundShaderFlags</code>.</li>
+<li><em>music</em> → not a type, but a namespace: 225 <code>sound</code> Decls under <code>music/…</code>, e.g., <code>music/menu/main_menu</code>, <code>music/c01p1/mus_c01p1_crashlanding</code>, <code>music/journal/house_of_the_rising_sun</code>.</li>
+<li><em>voice</em> → <code>voiceover</code> + <code>voicetrack</code>.</li>
+<li><em>reverb</em> → not a type. Reverb is a) a namespace in Sound Decls (<code>weapons/handgun/player/reverb/dw_large_room</code>, <code>…/dw_outdoor</code>, <code>…_rear</code>) and b) the fields <code>wetFalloff</code>, <code>wetVolume</code>, <code>wetMaxDistanceOffset</code>. The Asset Type <code>env</code> (627 items) is <strong>Image</strong> Environment (Cubemaps, Color Grading), not Reverb — verified against <code>env:default</code>.</li>
+<li><em>soundmaterial</em> → does not exist; material references run via <code>impactSounds</code> Decls (<code>metalSound</code>, <code>stoneSound</code>, <code>fleshSound</code>, <code>woodSound</code>, <code>cardboardSound</code>, …).</li>
+</ul>
+<hr />
+<h2 id="2-the-actual-data-format">2. The Actual Data Format</h2>
+<p>Magic Bytes, all read (Finding):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type / Ending</th>
+<th>First 4 Bytes</th>
+<th style="text-align: right;">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sample/.bsnd</code></td>
+<td><code>b'bsnf'</code></td>
+<td style="text-align: right;">61,318 (100 %)</td>
+</tr>
+<tr>
+<td><code>sound/.bsnd</code></td>
+<td><code>b'bsnf'</code></td>
+<td style="text-align: right;">6,514 (100 %)</td>
+</tr>
+<tr>
+<td><code>sound/.samplepack</code></td>
+<td><code>b'1KPS'</code></td>
+<td style="text-align: right;">253 (100 %)</td>
+</tr>
+<tr>
+<td><code>sound/.decl</code></td>
+<td><code>b'{\r\n\t'</code> (text)</td>
+<td style="text-align: right;">37,009 of 37,015</td>
+</tr>
+<tr>
+<td><code>voicetrack/.bmvtr</code></td>
+<td><code>b'"VTR'</code></td>
+<td style="text-align: right;">30,627 (100 %)</td>
+</tr>
+<tr>
+<td><code>voiceover/.decl</code>, <code>soundmixing/.decl</code>, <code>impactSounds/.decl</code>, <code>footstepEvents/.decl</code></td>
+<td>text</td>
+<td style="text-align: right;">all</td>
+</tr>
+<tr>
+<td><code>streamed.resources</code> (1.08 GB)</td>
+<td><strong><code>b'OggS'</code></strong></td>
+<td style="text-align: right;">File start</td>
+</tr>
+<tr>
+<td><code>english.streamed</code> (0.39 GB)</td>
+<td><strong><code>b'OggS'</code></strong></td>
+<td style="text-align: right;">File start</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>No RIFF/WAVE, no XMA, no MSADPCM, no Bink Audio (<code>BCF</code>/<code>KB2</code>) in the audio paths.</strong> The <code>.bik</code> files under <code>base/bink/</code> are videos with their own audio track and do not belong to the Sound Engine.</p>
+<p>The filenames in the Decls end with <code>.wav</code> — this is the source name from production, not the delivered format. The game uses Ogg Vorbis.</p>
+<h3 id="bsnf--the-sample-descriptor"><code>bsnf</code> — the Sample Descriptor</h3>
+<p>There are two variants, both exactly 74 or 272 bytes in size (no other sizes occur: 33.610 × 74 B, 27.708 × 272 B).</p>
+<p><strong>Monolingual, 74 Bytes:</strong></p>
+<pre><code>u8[4]    &quot;bsnf&quot;
+BE u32   Number of language entries (= 1)
+u8[16]   Null bytes
+BE u32   @24  Length of the Ogg stream in bytes
+BE u32   @28  32              (meaning unconfirmed)
+BE u32   @32  Hash/ID
+BE u32   @36  0
+BE u32   @40  Granule = Number of PCM samples
+BE u32   @44  0
+BE u32   @48  Length, repetition of @24
+--- starting at @52 a WAVEFORMATEX in Little Endian ---
+LE u16   wFormatTag        0x674F = Ogg Vorbis Mode 1
+LE u16   nChannels         1 or 2
+LE u32   nSamplesPerSec    48000
+LE u32   nAvgBytesPerSec   192000 (stereo) / 96000 (mono)
+LE u16   nBlockAlign       4 / 2
+LE u16   wBitsPerSample    16
+LE u32   Granule, repetition of @40
+</code></pre>
+<p><strong>Multilingual, 272 Bytes:</strong> <code>"bsnf"</code>, <code>BE u32 = 4</code>, followed by four 24-byte headers (<code>char[16]</code> language name, <code>BE u32</code> length, <code>BE u32</code> offset of the associated 42-byte sub-block <em>within this descriptor</em>), then the four 42-byte blocks starting at offset 104. Observed languages: <code>english</code>, <code>french</code>, <code>italian</code>, <code>spanish</code>.</p>
+<p>Example <code>sample:sound/projectile/bullet_impacts/concrete/imp_concrete_01.wav</code> (path <code>generated/sound/…/imp_concrete_01_vorbis.bsnd</code>): Length 17.619 B, Granule 38.822 Samples → 0.81 s, Stereo, 48 kHz.</p>
+<h3 id="vtr--the-voicetrack-descriptor">`"VTR" — the Voicetrack Descriptor</h3>
+<p><code>voicetrack:voicetrack/english/ai/efforts/eff_soldier_meleehit_01.vtr</code> is 1.344 bytes in size and contains: Magic <code>22 56 54 52</code>, <code>BE u32 = 4</code>, four 24-byte language headers (english/french/italian/spanish, each 0x136 = 310 bytes, offsets 0, 414, 724, 1034), then four 310-byte blocks with Magic <code>22 52 54 56</code> (`"RTV"). 104 + 4 × 310 = 1.344 — the math adds up exactly. <strong>Also no audio data</strong> here, only description. <em>Hypothesis:</em> the 310-byte block contains lip-sync/viseme data, because it is too large for simple pointers and the blocks are equal in length per language.</p>
+<hr />
+<h2 id="3-where-the-actual-audio-bytes-lie--the-critical-finding">3. Where the actual audio bytes lie — the critical finding</h2>
+<p>They do <strong>not</strong> reside in the <code>chunkN.resources</code>. The archives contain only the 74/272-byte descriptors. The Ogg streams are located in two containers that are <strong>not listed in <code>master.index</code></strong>:</p>
+<pre><code>base/streamed.resources   1.157.177.472 B   begins with &quot;OggS&quot;
+base/english.streamed       415.137.488 B   begins with &quot;OggS&quot;
+</code></pre>
+<p>They are addressed via the <strong>variable remainder of the index entry</strong> — that section which <code>docs/formats.md</code> describes as "longer for audio types, not fully understood". 20 bytes behind the offset/usize/csize triplet stands a BE u32: the byte offset into the container.</p>
+<p>Verification across <strong>all 61,318 <code>sample</code> entries</strong>: for each one, the Ogg page chain was traversed from the indicated offset to the EOS page, and the measured length was compared against the length from the <code>bsnf</code>.</p>
+<pre><code>streamed.resources    33,455 entries, length matches exactly
+english.streamed      27,863 entries, length matches exactly
+                           0 deviations
+</code></pre>
+<p>The container assignment is by name: everything under <code>sound/vo/english/…</code> lies in <code>english.streamed</code>, everything else in <code>streamed.resources</code>.</p>
+<h3 id="slot-grid">Slot Grid</h3>
+<pre><code>streamed.resources   14,454 occupied slots, 14,454 of them on the 16384-byte grid (100 %)
+                     free space per slot: min 0, median 8,607, max 3,144,537 B
+english.streamed      5,091 occupied slots,  5,091 of them on the 16384-byte grid (100 %)
+                     free space per slot: min 0, median 8,041, max 16,380 B
+</code></pre>
+<p>No single overlap. Each sound receives <code>ceil(Länge / 16384) * 16384</code> bytes. There are fewer slots than entries because the same samples are indexed in multiple chunks.</p>
+<h3 id="answer-to-the-core-question">Answer to the Core Question</h3>
+<p>The question was: normal archive entries or <strong>named resource blocks with pre-calculated size</strong> (such as the particles, which failed with <code>idFile_RingBuffer file '&lt;name&gt;.bin' skipping &lt;n&gt; bytes</code>)?</p>
+<p><strong>Neither nor — a third case, and it is cheaper than both.</strong></p>
+<p>The structural difference from particles is measurable: <code>particle</code> has <strong>two</strong> entries per asset, 2.672 <code>.decl</code> <em>and</em> 2.672 <code>.bin</code> under the same name. The <code>.bin</code> (Magic <code>06 54 52 50</code>) is the compiled particle — that is the named resource block at which all particle mods failed. <code>sound</code> has <strong>no</strong> <code>.bin</code> counterpart. Its <code>.decl</code> entries carry the same short entry suffix (9 zeros + sequential BE-u32-ID) as <code>entityDef</code>, <code>weapon</code>, and <code>material</code> — exactly the types this SDK already successfully patches.</p>
+<p>For audio bytes: they are not an archive entry at all, but a piece of file data at a fixed address with a length field located in the archive. The length is therefore <strong>changeable</strong>, as long as the slot accommodates it.</p>
+<hr />
+<h2 id="4-the-sound-decls-the-simple-modding-path">4. The <code>sound</code> Decls: the simple Modding Path</h2>
+<p>9,445 unique <code>sound</code>-Decl names, plaintext, fully readable by the parser in <code>wolfsdk/decl.py</code>. Namespaces: <code>vo</code> 5157, <code>anim_events</code> 1228, <code>ambience</code> 676, <code>weapons</code> 501, <code>enemies</code> 468, <code>movements</code> 272, <code>music</code> 225, <code>footsteps</code> 223, <code>explosions</code> 44, <code>impacts</code> 24.</p>
+<h3 id="the-fields-asked-for">The Fields Asked For</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th style="text-align: right;">Decls setting it</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>edit.parms.volume.min</code> / <code>.max</code></td>
+<td style="text-align: right;">1695 / 1668</td>
+<td><strong>Random volume per playback</strong>, in dB. If both are equal, it is fixed.</td>
+</tr>
+<tr>
+<td><code>edit.parms.volume.offset</code></td>
+<td style="text-align: right;">631</td>
+<td>Fixed dB addition, inherited and added</td>
+</tr>
+<tr>
+<td><code>edit.parms.maxDistance</code></td>
+<td style="text-align: right;">1180</td>
+<td><strong>Range</strong>: silent beyond this point</td>
+</tr>
+<tr>
+<td><code>edit.parms.minDistance</code></td>
+<td style="text-align: right;">865</td>
+<td>Full volume up to this point</td>
+</tr>
+<tr>
+<td><code>edit.soundFiles.num</code> + <code>item[i]</code></td>
+<td style="text-align: right;">9331 / 21323 references</td>
+<td><strong>Random selection</strong>: one drawn from <code>num</code> files</td>
+</tr>
+<tr>
+<td><code>edit.parms.pitch.min</code> / <code>.max</code></td>
+<td style="text-align: right;">259 / 208</td>
+<td>Random pitch</td>
+</tr>
+<tr>
+<td><code>edit.parms.soundShaderFlags</code></td>
+<td style="text-align: right;">1716</td>
+<td><code>SSF_LOOPING</code>, <code>SSF_GLOBAL</code>, <code>SSF_DISTANCE_LOW_PASS</code>, <code>SSF_PASS_HDR</code>, <code>SSF_NO_OCCLUSION</code>, <code>SSF_DISTANCE_BASED_STEREO</code>, …</td>
+</tr>
+<tr>
+<td><code>edit.parms.groups</code></td>
+<td style="text-align: right;">383</td>
+<td>Mix group, e.g. <code>SSG_WEAPONS_PL</code>, <code>SSG_IMPACTS</code>, <code>SSG_MUSIC_INGAME</code></td>
+</tr>
+<tr>
+<td><code>edit.parms.priority</code></td>
+<td style="text-align: right;">261</td>
+<td><code>SPRIORITY_ULTRA</code> … when voice is scarce</td>
+</tr>
+<tr>
+<td><code>edit.parms.maxPlay.maxShaders</code></td>
+<td style="text-align: right;">108</td>
+<td>How many instances simultaneously</td>
+</tr>
+<tr>
+<td><code>edit.parms.falloff</code> / <code>wetFalloff</code></td>
+<td style="text-align: right;">341 / 264</td>
+<td>Curve for dry/wet</td>
+</tr>
+<tr>
+<td><code>edit.parms.lowPassStrength</code> / <code>lowPassMinDistance</code></td>
+<td style="text-align: right;">181 / 54</td>
+<td>Muffling with distance</td>
+</tr>
+<tr>
+<td><code>edit.parms.controllerShake.intensity</code></td>
+<td style="text-align: right;">97</td>
+<td>Rumble on pad</td>
+</tr>
+<tr>
+<td><code>edit.parms.cameraShake.intensity</code></td>
+<td style="text-align: right;">43</td>
+<td>Camera shake</td>
+</tr>
+<tr>
+<td><code>edit.rmsTable</code></td>
+<td style="text-align: right;">557</td>
+<td>Reference to a pre-calculated loudness curve (HDR-Audio)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Random selection specifics: <strong>1,717 Decls draw from more than one file</strong> (Distribution: 1 file 7614x, 3 files 316x, 5 x252, 6 x175, 4 x166, 8 x158). Examples:</p>
+<pre><code>sound:projectile/bullet_impacts/imp_flesh      num = 15   (Body hits)
+sound:weapons/handgun/player/handgun_46_fire   num =  9
+sound:projectile/bullet_impacts/imp_metal      num = 14
+</code></pre>
+<p>A complete example, verbatim from the archive:</p>
+<pre><code>{
+    inherit = &quot;inheritences/weapons/weapons_pl&quot;;
+    edit = {
+        parms = {
+            minDistance = 50;
+            falloff = &quot;sound/falloffs/slow&quot;;
+            wetFalloff = &quot;sound/falloffs/slow&quot;;
+            frontDirectionalAngle = 25;
+        }
+        soundFiles = {
+            num = 9;
+            item[0] = &quot;sound/Weapons/handgun/handgun_fire_01.wav&quot;;
+            …
+            item[8] = &quot;sound/Weapons/handgun/handgun_fire_09.wav&quot;;
+        }
+        rmsTable = &quot;sound/hdr_curves/weapons/handgun/handgun_fire_05&quot;;
+    }
+}
+</code></pre>
+<p>This means: <strong>custom weapon sounds without new audio data</strong> are possible by redirecting <code>item[i]</code> to an existing sample — such as placing the pistol on <code>weapons/m60/…</code> or increasing/decreasing <code>num</code> to alter the spread. The sample name must point to an existing <code>sample</code> asset.</p>
+<h3 id="inheritance--here-lies-the-lever">Inheritance — here lies the lever</h3>
+<p>99.1% of all Sound Decls (9,364 out of 9,445) inherit transitively from <strong>one</strong> file:</p>
+<pre><code>sound:inheritences/master
+{
+    edit = {
+        parms = {
+            volume = {
+                offset = 10;
+            }
+            lfeVolume = -60;
+        }
+    }
+}
+</code></pre>
+<p>A single number, 97 bytes, and everything gets louder. Below that are 105 family nodes targeting groups specifically:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Descendants</th>
+<th>Set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inheritences/master</code></td>
+<td style="text-align: right;">9364</td>
+<td><code>volume.offset = 10</code></td>
+</tr>
+<tr>
+<td><code>inheritences/vo/vo_battle</code></td>
+<td style="text-align: right;">1878</td>
+<td>Combat Voice Output</td>
+</tr>
+<tr>
+<td><code>inheritences/sfx_general/sfx_general_average</code></td>
+<td style="text-align: right;">601</td>
+<td>General Effects</td>
+</tr>
+<tr>
+<td><code>inheritences/sfx_general/sfx_general_loud</code></td>
+<td style="text-align: right;">335</td>
+<td>"</td>
+</tr>
+<tr>
+<td><code>inheritences/movement_pl</code></td>
+<td style="text-align: right;">254</td>
+<td>Player Movement</td>
+</tr>
+<tr>
+<td><code>inheritences/music</code></td>
+<td style="text-align: right;">221</td>
+<td><code>volume.min/max = -11</code>, <code>offset = -6</code>, <code>groups = "SSG_MUSIC_INGAME"</code></td>
+</tr>
+<tr>
+<td><code>inheritences/weapons/weapons_pl</code></td>
+<td style="text-align: right;">161</td>
+<td><code>volume.offset = 30</code>, <code>groups = "SSG_WEAPONS_PL"</code></td>
+</tr>
+<tr>
+<td><code>inheritences/weapons/weapons_pl_rear</code></td>
+<td style="text-align: right;">75</td>
+<td>Rear Channel Player Weapons</td>
+</tr>
+<tr>
+<td><code>inheritences/weapons/reloads_pl</code></td>
+<td style="text-align: right;">68</td>
+<td>Reloading</td>
+</tr>
+<tr>
+<td><code>inheritences/impacts</code></td>
+<td style="text-align: right;">45</td>
+<td><code>maxDistance = 2000</code>, <code>volume.min = -6</code>, <code>maxPlay.maxShaders = 2</code></td>
+</tr>
+<tr>
+<td><code>inheritences/explosions/explosions_loud</code></td>
+<td style="text-align: right;">43</td>
+<td></td>
+</tr>
+<tr>
+<td><code>inheritences/impacts_loud</code></td>
+<td style="text-align: right;">2</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>For "brutal impacts," these are concrete: <code>inheritences/impacts</code> (raise <code>volume.min</code>, increase <code>maxShaders</code> from 2, so multiple impacts remain audible simultaneously) and <code>sound:projectile/bullet_impacts/imp_flesh</code>.</p>
+<h3 id="soundmixing--the-mixing-console-level"><code>soundmixing</code> — the mixing console level</h3>
+<p>26 Decls, <code>soundmixing:default</code> is the base (4,163 bytes), others inherit and override per chapter (<code>c01p1</code>, <code>c01p2</code>, …). Master bus with Limiter (<code>threshold = -0.2</code>) and 13 sub-buses with <code>gain</code> in dB, each with Compressor and Sidechain on <code>SSB_BUS8</code>:</p>
+<pre><code>subBus[ 0] World Sfx Master              gain = -9
+subBus[ 1] Player Weapon                 gain = -11
+subBus[ 2] Music: Scripted               gain = -6
+subBus[ 3] Music: System                 gain = -6
+subBus[ 4] Ambience                      gain = -4
+subBus[ 5] Explosions                    gain = -5
+subBus[ 6] Special Enemy Voice           gain = -5
+subBus[ 7] Special Enemy Movement        gain = -7
+subBus[ 8] VO: player, radio             gain = -8
+subBus[ 9] VO: Event                     gain = -4
+subBus[10] VO: In game/scripted, battle  gain = 2
+subBus[11] Mix Group 1                   gain = -6
+subBus[12] Mix Group 2                   gain = -6
+</code></pre>
+<p><code>subBus[1] Player Weapon</code> sits at −11 dB. This is the most direct knob for "weapons louder," and it is a single number in a text file.</p>
+<hr />
+<h2 id="5-cvars">5. Cvars</h2>
+<p>TNO, read from <code>WolfNewOrder_x64.exe</code> (Finding: the strings are inside the EXE; that they are all registered as Cvars is <em>Speculation</em>, supported by the fact that other names from the same list function in-game verifiably):</p>
+<pre><code>s_volume_dB           s_voiceVolume_dB      s_muteMusic          s_noSound
+s_reverb              s_showReverb          s_useOcclusion       s_occlusionDistance
+s_lowPassFilter       s_useDistanceLowPass  s_maxSoundDistanceClamp
+s_hdrFalloff          s_skipHDR             s_showHDR            s_showDucks
+s_showSounds          s_drawSounds          s_showSoundsFilter   s_soundGroupFilter
+s_maxEmitterChannels  s_debugMaxPlay        s_finiteSpeedOfSound s_tinnitusStart
+</code></pre>
+<p><code>s_volume_dB</code> and <code>s_voiceVolume_dB</code> are accessible via the existing Start Argument path (<code>+s_volume_dB 6</code>), completely without an archive patch. <em>Not verified in-game.</em></p>
+<p>TNC, from <code>docs/cvars_tnc.json</code> — these are <strong>Candidates, not Cvars</strong>: of the 2,231 harvested names, only 222 are registered in the Engine (Hit rate 10%, <code>TNC-CVar-Validation.md</code>). The Engine itself reports 304 Cvars. Of the audio-related names below, only those also present in <code>cvars_tnc_echt.json</code> have been checked:</p>
+<pre><code>s_volume   s_volume_music   s_volume_vo   s_overridevolume   s_muteSound
+s_muteEnvironments   s_reverbBus   s_skipOcclusion   s_printLoadedBanks
+s_printMapBankReport   s_initForcePreLoadSoundBanks   s_loadEditorBanks
+</code></pre>
+<p>(The numerous <code>s_bossshoot*</code>, <code>s_dogchase*</code>, etc., belong to the Wolfenstein-3D engine within the game, not the mixer layer.)</p>
+<hr />
+<h2 id="6-what-is-changeable-and-what-is-not">6. What is changeable and what is not</h2>
+<h3 id="changeable-with-existing-machinery">Changeable with existing machinery</h3>
+<p><code>sound</code>-, <code>soundmixing</code>-, <code>impactSounds</code>-, <code>voiceover</code>-, and <code>footstepEvents</code>-Decls are ordinary Decl Archive entries without a corresponding <code>.bin</code> counterpart. The existing patch path (<code>wolfsdk/patch.py</code>, <code>deflate_exact</code>, Backup + Journal) applies unchanged, including Revert.</p>
+<p>This makes achievable:</p>
+<ul>
+<li>Volume globally (<code>inheritences/master</code>) or per family</li>
+<li>Mixbus Gains (<code>soundmixing:default</code>)</li>
+<li>Range, reverb, lowpass filter, priority, voice count</li>
+<li>Random selection: more/less variants, <strong>redirect to other existing samples</strong> — this is the practical way to achieve "other weapon sounds"</li>
+<li>Music assignment: <code>music/*</code>-Decls can point to other existing music tracks</li>
+</ul>
+<p><em>Hypothesis, not verified in-game:</em> that modified Sound Decls actually take effect. Structurally, everything points this way (same entry residue as the patchable <code>entityDef</code>/<code>weapon</code>), but it has not been verified.</p>
+<p><strong>Pitfall:</strong> 557 Decls carry an <code>rmsTable</code> for a pre-calculated loudness curve. If volume is increased without adjusting the curve, the HDR audio layer may compensate. <em>Hypothesis.</em> To bypass this, change the <code>gain</code> in <code>soundmixing</code>, which sits behind the HDR stage.</p>
+<h3 id="changeable-but-without-backup--replacing-real-audio-data">Changeable but without backup — replacing real audio data</h3>
+<p>Technically, this is the simplest case of the entire project: write an Ogg Vorbis stream to a known offset and adjust two BE-u32 fields (length @24 and @48) plus the granule in the 74-byte <code>bsnf</code>. The descriptor is a normal Archive entry, so it fits into the existing patch path. The slot offers median 8.6 KB of headroom, but for some sounds <strong>0 bytes</strong> — a longer stream would overwrite the next sound there.</p>
+<p>What argues against this, and significantly:</p>
+<ol>
+<li><code>streamed.resources</code> and <code>english.streamed</code> are <strong>not in <code>master.index</code></strong>. <code>Installation.ensure_backup()</code> backs up exclusively the 14 <code>chunkN.index</code> files and records the lengths of <code>chunkN.resources</code>. The two streaming containers total 1.5 GB and are <strong>never backed up</strong>. A failure would only be fixable via Steam's file verification.</li>
+<li>There is no Vorbis encoder in the standard library. New audio must be generated externally — the SDK is fixed to "standard library only".</li>
+</ol>
+<p><strong>Recommendation:</strong> do not touch this unless the containers are included in the backup. If so, first run <code>ensure_backup</code> to expand the two files and write exclusively <em>shorter</em> streams to keep offset and slot untouched.</p>
+<h3 id="not-changeable">Not changeable</h3>
+<ul>
+<li><strong>TNC Audio.</strong> The <code>IDCL</code> container format has been read (<code>wolfsdk/idcl.py</code>, verified against all 24 Retail <code>.resources</code>), but the unpacker is not connected and there is no write path. The audio data additionally resides in Wwise Banks for which no parser exists — reading the container does nothing about this.</li>
+<li><code>voicetrack</code> blocks: 310 bytes per language, content undeciphered.</li>
+<li><code>.samplepack</code> (Magic <code>1KPS</code>, 253 items): variant bundles with their own streaming offsets in the entry residue. Not further investigated.</li>
+</ul>
+<hr />
+<h2 id="7-part-2--wolfenstein-ii-the-new-colossus">7. Part 2 — Wolfenstein II: The New Colossus</h2>
+<p>Just a status report. The <code>IDCL</code> container format has been read since <code>wolfsdk/idcl.py</code> (Head, Regions, String table, verified against all 24 Retail <code>.resources</code>); for the <code>.pack</code> files here it is still without consequence because the content is Wwise Banks and the unpacker is not connected.</p>
+<h3 id="what-lies-in-the-filesystem">What lies in the filesystem</h3>
+<p>base/sound/soundbanks/pc/
+    sound.pack                 1,722,766,110 B   IDCL
+    english(us).pack             758,900,091 B   IDCL
+    patch_1_sound.pack           110,345,075 B   IDCL
+    patch_3_sound.pack           193,042,687 B   IDCL
+    patch_2_sound.pack            47,419,238 B   IDCL
+    patch_1_english(us).pack      18,712,107 B   IDCL
+    patch_3_english(us).pack      16,697,329 B   IDCL
+    patch_2_english(us).pack      12,209,825 B   IDCL
+    patch_4_sound.pack                   132 B   IDCL   (empty)
+    patch_4_english(us).pack             132 B   IDCL   (empty)
+    wwise_project.bin              4,493,695 B   "WPCv05r"
+    prodspec.json                    163,237 B   Klartext-JSON</p>
+<p>For each DLC (<code>dlc/dlc_1|2|3/base/sound/soundbanks/pc/</code>), the same set applies, including all languages: <code>french(france)</code>, <code>italian</code>, <code>russian</code>, <code>portuguese(brazil)</code>, <code>spanish(mexico)</code>, <code>spanish(spain)</code>. In total, 46 files: 34 <code>.pack</code> files, 4 <code>.json</code> files, 4 <code>.bin</code> files, totaling <strong>3.15 GB</strong>.</p>
+<p>The only extensions found throughout the game directory are: <code>bk2</code> (122, Bink videos), <code>pages</code> (42, virtual textures), <code>cache</code> (39), <code>pack</code> (34), <code>texdb</code> (27), <code>resources</code> (27), <code>cfg</code> (12), <code>json</code> (11), <code>bin</code> (6).</p>
+<p><strong>There are no <code>.streamed</code> files and no <code>.bsnd</code> assets.</strong> The audio layer has been fully migrated to Wwise. This is a finding from the filesystem, not an inference: <code>wwise_project.bin</code> carries the magic number <code>WPCv05r</code> and lists in plain text 1,394 <code>.bnk</code> and 78,558 <code>.wem</code> names — <code>.wem</code> is the Wwise Encoded Media Format.</p>
+<h3 id="the-plain-text-configuration">The Plain-Text Configuration</h3>
+<p><code>prodspec.json</code> is unencrypted and lists every single soundbank:</p>
+<pre><code class="language-json">{ &quot;banksize&quot;: 1699459, &quot;name&quot;: &quot;sb_mus_combat_suites.bnk&quot;, &quot;streamsize&quot;: 102838598 }
+</code></pre>
+<ul>
+<li><strong>937 Banks</strong>, <code>patchlevel: 4</code></li>
+<li>Sum of <code>banksize</code>: 1.02 GB, Sum of <code>streamsize</code>: 8.45 GB</li>
+<li>Bank families: <code>sb_amb</code> (55 Ambience), 30 <code>sb_vo_*</code> per language (English(US), French(France), Italian, Spanish(Spain), Russian, Spanish(Mexico), Portuguese(Brazil)), <code>sb_pr</code> 24, <code>sb_events</code> 23, <code>sb_mus</code> 20, <code>sb_ch</code> 18, <code>sb_preset</code> 16, <code>sb_pl</code> 13, <code>sb_ai</code> 7, <code>sb_fx</code> 5</li>
+<li>Largest streams: <code>sb_mus_combat_suites.bnk</code> (102.8 MB stream), <code>&lt;Language&gt;/sb_vo_ai.bnk</code> (~70.9 MB each)</li>
+<li>The <code>maps</code> key maps bank lists to game cards — hence also the Cvars <code>s_printMapBankReport</code> and <code>s_initForcePreLoadSoundBanks</code>.</li>
+</ul>
+<p><code>wwise_project.bin</code> also lists languages that are not installed (<code>German/sb_vo_c2.bnk</code>, <code>Japanese/sb_vo_c2.bnk</code>) — it appears to be the complete project directory, not the release list. <em>Hypothesis.</em></p>
+<h3 id="what-this-means-practically">What This Means Practically</h3>
+<p>In TNC, for now, only the Cvar path works: <code>s_volume</code>, <code>s_volume_music</code>, <code>s_volume_vo</code>, <code>s_overridevolume</code>. The <code>IDCL</code> container is read, but <code>mods=False</code> — there is no write path for Part 2 — and the mixing itself resides in the Wwise banks for which no parser exists.</p>
+<hr />
+<h2 id="8-reproduction">8. Reproduction</h2>
+<pre><code>python tools/probe_audio.py
+</code></pre>
+<p>Runs for approximately 70 seconds, reads 203,843 index entries, and checks all 61,318 sample descriptors against the Ogg sidechains in the streaming containers. Writes nothing.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="Streamed-Audio-Containers.html"><small><span class="en">Next</span><span class="de">Weiter</span></small><code>streamed.resources</code> and <code>english.streamed</code></a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

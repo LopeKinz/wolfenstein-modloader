@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Meshfmt – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: decode Wolfenstein II&#x27;s 3D model format so new geometry, such as a simple box, can be written.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Meshfmt</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Meshfmt"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is a task description for Wolfenstein II: The New Colossus. A map there is made of many placed models (for example 955 &#x27;model&#x27;, 253 &#x27;modelAsset&#x27; and 249 &#x27;modelstream&#x27; entries in one archive), so understanding this <span class="t" data-t="mesh">mesh</span> format would make new shapes possible. The worker was asked to work out the layout, prove it by rebuilding at least 300 real models byte for byte, and then write a minimal new box mesh. The archive container side was already solved, so only the model data itself remained; the result is on a separate report page.</p><ul><li>Goal: understand how model, modelAsset and modelstream relate and store vertices and detail levels.</li><li>Required: a parser for at least 300 real models across 3 archives, with every byte accounted for.</li><li>Load-bearing check: rebuilt models must match the originals byte for byte.</li><li>Negative controls: a flipped size, cut-off data or wrong vertex count must make the parser fail.</li><li>A new box mesh is allowed, but must be clearly marked as untested in the game.</li></ul></div><div class="de"><p class="lede">Diese Seite ist eine Aufgabenbeschreibung für Wolfenstein II: The New Colossus. Eine Karte besteht dort aus vielen platzierten Modellen (z. B. 955 &#x27;model&#x27;, 253 &#x27;modelAsset&#x27; und 249 &#x27;modelstream&#x27;-Einträge in einem Archiv), daher würde das Verständnis dieses <span class="t" data-t="mesh">Mesh</span>-Formats neue Formen möglich machen. Der Worker sollte den Aufbau ermitteln, ihn durch byte-genaues Nachbauen von mindestens 300 echten Modellen beweisen und dann ein minimales neues Box-Mesh schreiben. Die Archiv-Seite war bereits gelöst, es ging nur noch um die Modelldaten selbst; das Ergebnis steht auf einer eigenen Berichtsseite.</p><ul><li>Ziel: verstehen, wie model, modelAsset und modelstream zusammenhängen und Eckpunkte sowie Detailstufen speichern.</li><li>Gefordert: ein Parser für mindestens 300 echte Modelle aus 3 Archiven, jedes Byte erklärt.</li><li>Tragende Prüfung: Nachgebaute Modelle müssen byte-genau den Originalen entsprechen.</li><li>Gegenproben: falsche Größe, abgeschnittene Daten oder falsche Eckpunktzahl müssen den Parser scheitern lassen.</li><li>Ein neues Box-Mesh ist erlaubt, muss aber klar als im Spiel ungetestet markiert sein.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker: w-meshfmt-a1; Task: meshfmt; Status: research/implement.
+Read <code>.agent-cache/WORKER.md</code>. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Parallel tasks: w-cmfmt-a1 (collision), w-entitypipe-a1 (placement), w-matpipe-a1 (surfaces), w-mapmanifest-a1 (streaming/manifest). You own geometry.</p>
+<h1 id="objective">Objective</h1>
+<p>Make new 3D geometry writable. This is the single hardest remaining piece of "a real custom map", and the survey states it is tractable: a TNC map has no monolithic world blob—it consists of 955 <code>model</code> + 253 <code>modelAsset</code> + 249 <code>modelstream</code> entries placed into the world. Solve the mesh triple, and new shapes become possible.</p>
+<p>Answer, with code and corpus evidence:</p>
+<ol>
+<li>The binary layout of <code>model</code>, and how <code>modelAsset</code> and <code>modelstream</code> relate to it (which holds vertices, which holds LODs/streamed tails, which is a descriptor).</li>
+<li>Can a NEW mesh be authored—a trivial one is enough, e.g., a box—such that the engine's own loader accepts it? Provide the writer.</li>
+<li>What else must exist for a mesh to be usable: a <code>md6Def</code>/<code>modelAsset</code> declaration, a <code>material</code> binding, bounds, LOD entries? Name the minimum set.</li>
+</ol>
+<h1 id="what-is-already-solved---build-on-it-do-not-redo-it">What is already solved - build on it, do not redo it</h1>
+<p>Today the whole container layer fell, and it is all independently re-verified:</p>
+<ul>
+<li><code>wolfsdk/idclwrite.py</code> writes containers; round-trip on 3 retail archives is BYTE-IDENTICAL, 6/6 negative controls. You can put any payload into an archive and the engine will consider the archive sound.</li>
+<li>entry <code>+0x50</code> = MurmurHash64B(uncompressed payload, seed 0xDEADBEEF); <code>+0x60</code>, header <code>+0x20</code>/<code>+0x08</code> all derived. <code>finalize()</code> handles them.</li>
+<li>So your problem is ONLY the payload bytes. Nothing about the archive is in your way any more.</li>
+<li><code>re_probes/runtime_87400/module.bin</code> is a read-only capture of the RUNNING, SteamStub-unpacked executable (virtual RVA layout, file offset == RVA, sections in manifest.json, <code>.pdata</code> for function bounds). Five formats fell to code-driven RE from it today; brute-force sweeps solved none. Go through the loader.</li>
+</ul>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li>The corpus is huge, which is your advantage: 955 models in <code>dlc_2/base/chunk_22.resources</code> alone, plus every base chunk. Differential reading across many samples is cheap here.</li>
+<li>Find the loader by its error strings in <code>.rdata</code> and their xrefs, the way <code>re_probes/agent_reports/{idclhash,datahash,texdbkey,cfilekey2}.md</code> did—read at least one of those reports for the method before starting.</li>
+<li><code>re_probes/agent_reports/texdbkey.md</code> additionally decoded the TNC <code>.bimage</code> mip table; the same report shows how a "header 0x32 bytes, then fixed-size records" layout was cracked. Meshes tend to look similar.</li>
+<li>Part 1 knowledge, read-only: <code>docs/formats.md</code>, <code>docs/moddingflaeche-tno.md</code> (md6Def is text, geometry in binary <code>.md6mesh</code>), <code>wolfsdk/bim.py</code>. TNC is id Tech 6; its <code>md6Def</code> entries (31 in chunk_22) are the descriptor side and are likely text—read some first, they may name the fields.</li>
+<li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps</li>
+<li>Game data READ ONLY:
+  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/probe_meshfmt.py (new), re_probes/meshfmt/ (new dir),
+re_probes/agent_reports/meshfmt.md (new).
+<code>wolfsdk/idcl.py</code>, <code>wolfsdk/idclwrite.py</code>, <code>wolfsdk/oodle.py</code>,
+tools/probe_*.py from other workers: READ-ONLY, import them.</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No game launch, no process attach, no writes under the Steam install or "C:/Users/‹user›/Saved Games". Do not touch other workers' files or dirs (tools/probe_cmfmt.py, probe_entitypipe.py, probe_matpipe.py, probe_mapmanifest.py, and re_probes/{cmfmt,entitypipe,matpipe,mapmanifest,execcarrier,cfilekey,idclwriter,save_structure,map_alias_v3}/), docs/*, config.json. No pip install.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib plus vendored capstone. Reuse <code>wolfsdk/oodle.py</code> for Kraken. Reproducible from the command line, no running game.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li>A parser that reads the mesh payload of a large sample and reports structure
+  without guessing: state n/n over at least 300 real models across 3 archives,
+  where "parsed" means every field consumed and the declared sizes land exactly
+  on the payload end. Partial parses must be reported as partial.</li>
+<li>Round-trip: re-serialize a parsed retail mesh and reproduce the original bytes
+  exactly, n/n on the same sample. This is the load-bearing control - a writer
+  that cannot reproduce retail bytes cannot be trusted to author new ones.</li>
+<li>Negative controls: a flipped size field, a truncated tail and a wrong vertex
+  count must each make the parser fail, not silently produce something.</li>
+<li>If you get that far: author a minimal new mesh (a box is fine) and place it in
+  a container. Say plainly that it is untested at runtime.</li>
+</ul>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If the vertex data turns out to be in a compressed or GPU-specific encoding you
+cannot decode, say exactly where you stopped and what the obstacle is. A precise
+negative here redirects the whole program and is worth more than a hopeful
+half-parser. Report failed hypotheses with numbers.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones (loader located; parser n/n; round-trip n/n). Publish a
+bus fact when the round-trip succeeds - w-cmfmt-a1 and w-entitypipe-a1 both need
+to know whether new geometry is on the table. Concise German report in
+re_probes/agent_reports/meshfmt.md. Finish the bus task.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Matpipe.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Matpipe</a><a class="next" href="Research-Brief-Save-Integrity-V3.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Save Integrity V3</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

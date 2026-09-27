@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skeleton for a new map in c2v1 – Wolfenstein Modloader</title>
+<meta name="description" content="Plan for stripping a Wolfenstein II map down to a minimal skeleton that a new level can be built on.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#maps"><span class="en">Custom maps and missions</span><span class="de">Eigene Karten und Missionen</span></a></p>
+<h1>Skeleton for a new map in c2v1</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Kitmap-Map-Skeleton"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result">Result</a></li><li><a href="#1-what-remains">1. What remains</a></li><li><a href="#2-rules-first-hit-wins-each-entity-exactly-one-rule">2. Rules (first hit wins, each entity exactly one rule)</a></li><li><a href="#3-the-four-decisions-and-their-evidence">3. The Four Decisions and Their Evidence</a></li><li><a href="#4-checks">4. Checks</a></li><li><a href="#5-open-and-risks">5. Open and Risks</a></li><li><a href="#6-commands">6. Commands</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">For Wolfenstein II: The New Colossus, the researchers worked out what must stay when a new map is built inside the existing &quot;c2v1&quot; (Gestapo office) map slot. Only 3 of 9,206 original objects must be kept: the world object and two player starts; the old building, enemies, lights and mission scripts can go. A few support files also need changes, for example emptying the visibility database and swapping the world collision for a simpler one from another map. All 38 checks pass offline, but the result is structurally valid and not yet confirmed in the running game.</p><ul><li>Keep 3 of 9,206 <span class="t" data-t="entity">entities</span>; 160 are optional and 9,043 are removed.</li><li>The visibility database (Tome) is emptied; the game then treats everything as visible.</li><li>The world collision file cannot be left out; it is replaced by the one from map c06p2 (6 boundary plates).</li><li>Without mission scripts the map can be played but not finished; a new script is still needed.</li><li>38/38 checks green and all negative controls caught, but untested in the game.</li></ul></div><div class="de"><p class="lede">Für Wolfenstein II: The New Colossus wurde ermittelt, was bleiben muss, wenn man im vorhandenen Kartenplatz &quot;c2v1&quot; (Gestapo-Büro) eine neue Karte baut. Nur 3 von 9.206 Original-Objekten sind Pflicht: das Welt-Objekt und zwei Spielerstarts; altes Gebäude, Gegner, Lichter und Missionsskripte können weg. Einige Begleitdateien müssen ebenfalls angepasst werden, etwa die Sichtbarkeitsdatenbank leeren und die Welt-Kollision durch eine einfachere aus einer anderen Karte ersetzen. Alle 38 Prüfungen laufen offline durch, aber das Ergebnis ist nur strukturell gültig und im laufenden Spiel noch nicht bestätigt.</p><ul><li>3 von 9.206 <span class="t" data-t="entity">Entities</span> bleiben; 160 sind optional, 9.043 fliegen raus.</li><li>Die Sichtbarkeitsdatenbank (Tome) wird geleert; das Spiel behandelt dann alles als sichtbar.</li><li>Die Welt-Kollisionsdatei ist Pflicht; sie wird durch die aus Karte c06p2 ersetzt (6 Randplatten).</li><li>Ohne Missionsskripte ist die Karte spielbar, aber nicht abschließbar; ein neues Skript fehlt noch.</li><li>38/38 Prüfungen grün, alle Gegenproben erkannt, aber im Spiel ungetestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Task <code>kitmap/skeleton</code>, 2026-09-24. Files: <code>tools/survey_kitmap_skeleton.py</code>, <code>re_probes/kitmap/skeleton/</code> (<code>skeleton.json</code>, <code>skeleton.entities.txt</code>, <code>classification.tsv</code>, this report). All numbers come from a single run, which takes about 10 seconds: 38/38 checks green, all negative controls caught. Read from the installation, nothing written there.
+<strong>Structurally valid, runtime unconfirmed.</strong></p>
+<h2 id="result">Result</h2>
+<p>A new map built in <code>game/dlc/c02/c2v1</code> must <strong>exactly keep 3</strong> of the 9206 Retail-Entities: <code>world</code> (idWorldspawn) and the two idPlayerStarts <code>sacramento_gameplay_player_start_1</code> and <code>c2v1_ps_challenge_01</code>. 160 are optional, 9043 fly out. Chronicles equipment does not depend on the map; it comes from the playerDef of the chapter variant. In the container, three entries change besides <code>.entities</code>, a fourth is optional:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_combo/_world.tome</code></td>
+<td>Payload empty (0 Bytes). This means no Umbra Culling and no PVS anymore.</td>
+</tr>
+<tr>
+<td><code>_combo/_world.bshadows</code></td>
+<td>Remove entry. No tool exists for that yet. Interim solution: <code>+r_useStaticShadows 0</code>.</td>
+</tr>
+<tr>
+<td><code>_combo/world.hkshape</code></td>
+<td>Replace payload with the one from <strong>c06p2</strong>: 6 boundary plates, ≥ 295 m away.</td>
+</tr>
+<tr>
+<td><code>_combo/_world.pvs</code></td>
+<td>Bytes remain. Without Tome, the file is never loaded.</td>
+</tr>
+<tr>
+<td><code>c2v1.ambientsh</code></td>
+<td>Optional empty. This results in only a warning.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="1-what-remains">1. What remains</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Entity</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>world</code></td>
+<td>Carries <code>envSettings = game/ac/c2v1/c2v1_default</code> (Sky/Fog/Env), <code>globalAIsettings</code>, and <code>devmapInvLoadout</code>. Each of the 39 Retail maps has exactly one.</td>
+</tr>
+<tr>
+<td><code>sacramento_gameplay_player_start_1</code></td>
+<td>Start of the campaign (Layer <code>layer/dlc/c2v1</code>).</td>
+</tr>
+<tr>
+<td><code>c2v1_ps_challenge_01</code></td>
+<td>Start of the Challenge, without Layer, so always spawned.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Why both starts?</strong> The chapter variant <code>dlc/c2v1</code> (patch_3) requires <code>spawnSpot = "c2v1_gameplay_player_start_1"</code>. This name does not exist in the map <strong>at all</strong>. The code then only outputs a warning (<code>0x101B796</code>/<code>0x101B79D</code>, Level 5) and takes an entry from the Spawn list as a substitute. Which one, is undecidable offline. Therefore:</p>
+<ul>
+<li>Both starts remain. The layout step sets <strong>all starts to the same new spawn position</strong>.</li>
+<li><strong>Recommendation:</strong> add a third start named <code>c2v1_gameplay_player_start_1</code>, cloned from <code>sacramento_gameplay_player_start_1</code>. Then the name search hits, and the fallback path is no longer needed. Verified: The name is missing in Retail, and the skeleton plus clone validates cleanly.</li>
+</ul>
+<p><strong>Equipment:</strong> <code>playerDef = snapmaps/chronicles/player/agent_shade</code> (<code>patch_3_chunkbase_6</code>, mounted over basechunk 6). The start equipment is <code>silentfeet_shade</code>, <code>kampfmesser61</code> with knife ammo, <code>handgun</code>, and the upgrade <code>weapons/handgun/silencer</code>. None of this is in <code>.entities</code>. The equipment remains intact even though all scripts are removed.</p>
+<p><strong>Game-Challenge:</strong> None of the 39 Retail maps places an <code>idGameChallenge*</code> entity. The engine generates them itself. Therefore nothing needs to be kept.</p>
+<h2 id="2-rules-first-hit-wins-each-entity-exactly-one-rule">2. Rules (first hit wins, each entity exactly one rule)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Verdict</th>
+<th>Classes</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K1</td>
+<td>keep</td>
+<td>idWorldspawn</td>
+<td>1</td>
+</tr>
+<tr>
+<td>K2</td>
+<td>keep</td>
+<td>idPlayerStart</td>
+<td>2</td>
+</tr>
+<tr>
+<td>R1</td>
+<td>remove</td>
+<td>Layer <code>layer/dlc/c2v1_challenge1</code></td>
+<td>46</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>remove</td>
+<td>idKisculeEntity</td>
+<td>31 (+2 already in R1)</td>
+</tr>
+<tr>
+<td>O1</td>
+<td>optional</td>
+<td>idAutomapMapImage/Volume</td>
+<td>8</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>optional</td>
+<td>idSoundEnvironment</td>
+<td>30</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>optional</td>
+<td>idSoundPortal</td>
+<td>53</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>optional</td>
+<td>idEnvArea</td>
+<td>2</td>
+</tr>
+<tr>
+<td>O5</td>
+<td>optional</td>
+<td>idSoundClip, idEnvironmentSpeaker</td>
+<td>67</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>remove</td>
+<td>idStaticInstanceEntity (the old building)</td>
+<td>7306</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>remove</td>
+<td>AI, Spawners, Alarms, ScenePoints</td>
+<td>362</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>remove</td>
+<td>Trigger, WorldMarkers, Splines, idInfo, idVolume</td>
+<td>102</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>remove</td>
+<td>idLight, idLensFlare</td>
+<td>549</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>remove</td>
+<td>Props, Dynamics, Glass, Animated, Ladders, FX</td>
+<td>647</td>
+</tr>
+</tbody>
+</table></div>
+<p>The list containing all 9,206 entities is located in <code>classification.tsv</code>.</p>
+<p><strong>Optional groups</strong> are self-contained. The hull check follows references from <code>.entities</code>, Kiscule, and then validates whether keep + group + hull is valid. This applies to all five cases. Only O1 (Automap) generates an entry: the collection map <code>map_dlc_c2v1</code> (idProp2, via <code>mapUnlockSecret</code>). By default, all five remain excluded because they describe floorplans, reverb, and doors of the <strong>old</strong> rooms.</p>
+<h2 id="3-the-four-decisions-and-their-evidence">3. The Four Decisions and Their Evidence</h2>
+<p>All RVAs reference <code>re_probes/runtime_87400</code>. 37/37 Anchors (exact Disassembly and target string) and 3/3 Live-Cvars are confirmed. Shifting by 1 byte results in <strong>0/37 and 0/3</strong>.</p>
+<h3 id="31-pvs-and-tome-empty-the-tome-leave-pvs-unchanged">3.1 PVS and Tome: Empty the Tome, Leave PVS Unchanged</h3>
+<p>The actual problem is the <strong>Tome</strong>, not the PVS. The Tome is Umbras occlusion database and is baked from the walls of the Gestapo office. If you retain it, the old walls continue to occlude, even though they no longer exist: new rooms behind an old wall would be culled. The solution is an <strong>empty Tome payload</strong>:</p>
+<ul>
+<li>An idFileResource carries its length at <code>+0x50</code> (<code>0xAA380E</code> copies it into the length fields of the memory file). <code>SetTome</code> checks <code>cmp [rax+0x50], 0; jle</code> (<code>0x82DE14</code>) and then reports "file not found" as a <strong>Warning</strong> (<code>0x82DF88</code>). The caller does not evaluate the result (<code>0x381E91</code>), so the Tome remains NULL.</li>
+<li>When loading the Render World, NULL is caught (<code>0x382873</code>), as is in <code>idUmbraViewContext::Init</code> (Warning, <code>0x82F274</code>). The visibility query reports <strong>visible</strong> for a NULL Tome (<code>0x8303E4</code> → <code>mov al, 1</code>). Of the 25 code locations at the Tome context (<code>+0x246BD8</code>), the 16 direct read accesses are all NULL-checked. 9 locations only pass along the address; of those, 3 are tracked: at SetTome (<code>0x381E8A</code>), at loading the Render World (<code>0x38255B</code>), and at loading the PVS (<code>0x11B61E2</code> → <code>r8</code> from <code>0x6DC130</code>). The remaining 6 are not tracked. The review was manual work; only a selection is listed as an Anchor in the script.</li>
+<li>World regions do <strong>not</strong> come from the Tome. Live applies <code>r_useKdPartitioning = 1</code> and <code>r_useUmbraPartitioning = 0</code>, so the regions originate from <code>.prockd</code>: an axis-parallel k-d grid with 105 regions and 104 nodes, which is independent of the layout. The Tome there only provides the cluster count, which is caught for NULL.</li>
+<li><strong>PVS:</strong> <code>0x6DC169</code> loads the PVS only if a Tome exists; otherwise it immediately returns <code>false</code>. Thus the entry is never read and can remain. Queries return −1 (<code>0x6DC4B1</code>). <code>InCurrentPVS</code> (<code>0x11D26C0</code>) returns <strong>true</strong> when PVS or Handle is missing −1: no entity will be put to sleep due to the PVS. A PVS from the old layout would instead put enemies to sleep in "other old rooms". <code>bonusmap01</code> is delivered in Retail entirely without <code>.pvs</code> (measured here).</li>
+<li>The tool exists: <code>idcl.pack_payload(tome, b"")</code> → <code>(b"", 0, stored)</code>, followed by <code>idclwrite.finalize</code>.</li>
+</ul>
+<p><strong>Consequence for visibility:</strong> There is no Umbra culling anymore. Only Frustum and GPU culling remain. Everything new is visible, and nothing old occludes anymore. Whether the entire render path draws cleanly without a Tome was not tracked beyond the check points. However, the dev path "Umbra tome is stale, ignoring until rebuilt" shows that the engine anticipates this state.</p>
+<h3 id="32-staticshadowgeom-remove">3.2 staticShadowGeom: remove</h3>
+<p>The 11 MB baked shadow geometry contains the old building, which would result in ghost shadows. Confirmed: if it is missing, it is skipped silently (<code>0x382036</code>). If it is loaded but empty, it is also set to NULL (<code>0x38203F</code>/<code>0x382047</code>, <code>+0x158 == 0</code>). For files that are too large, the console hack <code>0x81FEA0</code> intentionally empties them.</p>
+<ul>
+<li><strong>Preferred:</strong> Remove the entry. This can only be done by a new Writer; it would constitute a new ability.</li>
+<li><strong>Interim solution for the first test:</strong> Start with <code>+r_useStaticShadows 0</code>. The query <code>0x381F92</code> executes before loading. It acts globally, affecting all maps.</li>
+<li><strong>Not recommended:</strong> An empty payload. What the parser (<code>0x820960</code>, 4,7 KB Code) does with 0 bytes is untracked.</li>
+</ul>
+<h3 id="33-worldhkshape-mandatory-replacing-c06p2">3.3 world.hkshape: Mandatory, replacing c06p2</h3>
+<ul>
+<li><strong>Cannot be omitted.</strong> If the file is missing, <code>0x11A8EC0</code> reports "No world collision shape. Do you need to rebuild the world collision?" via <code>0x12386B0</code> with <strong>Level 7</strong>, terminating map loading as an error. For comparison: warnings run at Level 5 (<code>0x12385E0</code>).</li>
+<li><strong>Contents:</strong> The world collision in c2v1 does not include the building walls; those are stored per instance in <code>cm</code> entries. It consists of 34 polygons, all strictly parsed and byte-exactly rewritten:
+        * <strong>31 small invisible blockers</strong> in the old building frame (largest side 1.91 m):
+                * thin sheets (0.01–0.02 m thick) at heights of 2.2–3.4 m or 11–12.4 m,
+                * crates from 0.45–1.13 m on floors z = 0 / 4.5 / 9.0,
+        * 1 blocker just outside (x = 45.17),
+        * <strong>2 corner boxes</strong> of 5.5 × 6.2 × 3.8 m at (−51.6/−232.8/−12) and (52.2/7.8/18.7). These are the world boundaries.</li>
+<li><strong>Replacement:</strong> The Retail map <strong>c06p2</strong> provides a <code>world.hkshape</code> consisting of only 6 boundary plates (±900…1000 m, floor at z −400…−300). The next distance to the building is 295.5 m. The file parses strictly, can be byte-exactly rewritten, and shares the same <code>cm</code> version as c2v1. A world collision without game geometry is thus Retail practice; c06p2 is also the only Retail map entirely lacking <code>idStaticInstanceEntity</code>. Payload swapping is possible with existing tools.</li>
+<li><strong>Fallback:</strong> Retain Retail bytes and treat the 31 blockers as blocked zones. They are listed under <code>world_hkshape.retail_blockers</code> in <code>skeleton.json</code> with coordinates.</li>
+<li><strong>Open:</strong> The limits of the Havok broadphase grow to ±1000 m. Falling out of the map lands on the plate at z = −300. Both remain unconfirmed at runtime.</li>
+</ul>
+<h3 id="34-mission-logic-remove-all-kiscule-entities">3.4 Mission logic: remove all Kiscule entities</h3>
+<p>The 33 Kiscule Decls (code search locations are 33/33, case is ignored) reference <strong>212 different Entities</strong> of the map. These references are not in <code>.entities</code>, so <code>build_custom_map.check</code> does not see them: During the negative control "Keep main Kiscules", <code>check</code> finds <strong>0</strong> problems, while the Kiscule rule finds <strong>26</strong>. The main script <code>sacramento_gameplay_kiscule_c2v1</code> contains:</p>
+<ul>
+<li>8 mission nodes (targets <code>obj_01_find</code> … <code>obj_04_kill_all</code>),</li>
+<li><code>ActionNextMap</code> (leveling),</li>
+<li><code>ActionChronicle completed = true</code>,</li>
+<li><code>CustomPlayerMode</code> (muted, duplicated in playerDef),</li>
+<li>5 autosaves.</li>
+</ul>
+<p>The mission Decls themselves (<code>cobalt/c2v1/mission_c2v1_main*</code>) do not reference an Entity. If all Kiscule entities are removed, no Decl is instantiated anymore, leaving <strong>0 hidden references</strong>. Doors, triggers, markers, spawners, and AI fall away with R4, R5, and R7.</p>
+<h3 id="35-unchanged">3.5 Unchanged</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>Reason it can remain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.proc</code></td>
+<td>Lists all 7306 instances and 2 additional ones <strong>without</strong> an Entity (<code>c2v1_geo_vista_func_staticinstance_4476/4477</code>). Entries without an Entity are thus Retail practice. The envAreas block retains 2 boxes with Env <code>c2v1_nomoon</code> in [20…41]×[−110…−78]×[−1…5].</td>
+</tr>
+<tr>
+<td><code>.prockd</code></td>
+<td>The area grid does not depend on the layout.</td>
+</tr>
+<tr>
+<td><code>hknavmesh</code></td>
+<td>Only reusable. The skeleton contains no AI.</td>
+</tr>
+<tr>
+<td>staticStreamTree</td>
+<td>Rebuilt at runtime (see <code>mapmanifest.md</code>).</td>
+</tr>
+<tr>
+<td><code>.mapresources</code></td>
+<td>Retail manifests also list missing resources.</td>
+</tr>
+<tr>
+<td>lightprobe images</td>
+<td>Become unused once the probe lights are missing.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="4-checks">4. Checks</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Retail-Text Round-Trip, 9206 Entities</td>
+<td>byte-exact</td>
+</tr>
+<tr>
+<td>Each Entity matches exactly one rule</td>
+<td>9206/9206</td>
+</tr>
+<tr>
+<td><code>validate(skeleton)</code> = <code>build_custom_map.check</code> (including <code>inherit</code> against the mounted entityDefs) + mandatory rules + Kiscule rules</td>
+<td>empty</td>
+</tr>
+<tr>
+<td>References of retained Entities to removed ones</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Skeleton + Clone <code>c2v1_gameplay_player_start_1</code></td>
+<td>empty</td>
+</tr>
+<tr>
+<td><strong>Negative:</strong> <code>sacramento_gameplay_player_start_1</code> omitted</td>
+<td>caught</td>
+</tr>
+<tr>
+<td><strong>Negative:</strong> <code>c2v1_ps_challenge_01</code> omitted</td>
+<td>caught</td>
+</tr>
+<tr>
+<td><strong>Negative:</strong> <code>world</code> omitted</td>
+<td>caught</td>
+</tr>
+<tr>
+<td><strong>Negative:</strong> Spawner <code>c2v1_combat_target_ai_spawn_firstarea</code> retained</td>
+<td>caught (hanging <code>targets</code>)</td>
+</tr>
+<tr>
+<td><strong>Negative:</strong> <code>sacramento_gameplay_kiscule_c2v1</code> retained</td>
+<td>26 findings, <code>check</code> alone finds 0</td>
+</tr>
+<tr>
+<td><strong>Negative:</strong> Start Duplicate</td>
+<td>caught</td>
+</tr>
+<tr>
+<td>5 optional groups with wrapper</td>
+<td>validate</td>
+</tr>
+<tr>
+<td>Retail Precedence over 39 Maps</td>
+<td>exactly 1 Worldspawn and ≥ 1 Start; 0 idGameChallenge; c06p2 without instances; only bonusmap01 without <code>.pvs</code></td>
+</tr>
+<tr>
+<td>Code Anchors / shifted by 1 byte</td>
+<td>37/37 + 3/3 / 0/37 + 0/3 (<code>--shift 1</code> ends with exit 1)</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="5-open-and-risks">5. Open and Risks</h2>
+<ul>
+<li><strong>Not covered by Retail:</strong> There are <strong>no</strong> Retail maps without idKisculeEntity, without idSoundPortal, or without idSoundEnvironment. The skeleton has null values for all three. It sounds incorrect on the first test, but bringing back O2/O3 fixes it; both groups are closed.</li>
+<li><strong>No Level End:</strong> Without Kiscule, there are no objectives, no <code>NextMap</code>, and no Chronicle completion. The map can be played but not finished. This requires a new Kiscule (Text-Decl in compfile, not yet built). Additionally, without O1, the collection map <code>map_dlc_c2v1</code> is missing, and the chapter's secret statistics remain open.</li>
+<li><strong>Which Start is taken</strong> is only unambiguous with the recommended name.</li>
+<li><strong>Lighting:</strong> The Ambient SH (<code>c2v1.ambientsh</code>) remains baked from the old build as long as it is not cleared. If it is empty, there is only a warning (<code>0x75A5C7</code>). What it looks like then is unknown.</li>
+<li><strong>For the Geometry Step:</strong> All 7306 Retail instances are listed in the <code>.proc</code>. New instance names without a <code>.proc</code> entry do not exist in Retail. Only a single instance is not megatextured: <code>c2v1_geo_lobby_func_staticinstance_1</code> (<code>models/editor/box.lwo</code>, <code>megatexturedModel = false</code>).</li>
+<li><strong>Reference Depth:</strong> The Kiscule references were found via quoted values that exactly match an Entity name. A reference using other spellings would be missing.</li>
+</ul>
+<h2 id="6-commands">6. Commands</h2>
+<pre><code>python tools/survey_kitmap_skeleton.py            # all Gates, writes re_probes/kitmap/skeleton/, exit 1 on FAIL
+python tools/survey_kitmap_skeleton.py --shift 1  # Negative Control Code: 0/37, 0/3, exit 1
+</code></pre></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Kitmap-Kit-Survey.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Kit-Survey c2v1: Components for a New Map</a><a class="next" href="Kitmap-Design-Report.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Kitmap c2v1: Level Design &quot;Atriumhall&quot;</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

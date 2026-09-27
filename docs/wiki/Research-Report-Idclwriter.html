@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IDCL-Writer: Write the four hashes instead of copying – Wolfenstein Modloader</title>
+<meta name="description" content="A writer that recalculates all four archive hashes of Wolfenstein II and repairs a broken map bundle.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>IDCL-Writer: Write the four hashes instead of copying</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Idclwriter"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result-in-one-sentence">Result in one sentence</a></li><li><a href="#1-the-defect-reproduced-before-every-change">1. The Defect, Reproduced Before Every Change</a></li><li><a href="#2-the-writer">2. The Writer</a></li><li><a href="#3-the-round-trip----the-carrying-control">3. The Round-Trip -- the Carrying Control</a></li><li><a href="#4-two-measurement-corrections-in-the-docstring-of-wolfsdkidclpy">4. Two Measurement Corrections in the Docstring of wolfsdk/idcl.py</a></li><li><a href="#5-the-repair">5. The Repair</a></li><li><a href="#6-evidence-instead-of-assertions">6. Evidence instead of Assertions</a></li><li><a href="#7-what-remains-open">7. What Remains Open</a></li><li><a href="#8-reproduction">8. Reproduction</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein II (TNC) <span class="t" data-t="archive">archives</span> carry four kinds of <span class="t" data-t="hash">hash</span> fingerprints that must match their contents. This report adds a writer that recalculates all four in the right order. It rewrites three original archives byte-for-byte identical, and it repairs a custom map bundle whose four new files still carried old fingerprints, which could crash the game when a checking setting is on, without changing any data.</p><ul><li>3 of 3 original archives rewritten byte-identical, from 401 KB to 97 MB.</li><li>Repaired bundle: 7,127 of 7,127 checkable entries now correct (was 7,123).</li><li>All 7,128 file contents stay identical; only 6 table fields and 2 header fields changed.</li><li>6 of 6 deliberate error tests are caught.</li><li>One entry per container with a special compression mode cannot be checked.</li></ul></div><div class="de"><p class="lede">Die <span class="t" data-t="archive">Archive</span> von Wolfenstein II (TNC) tragen vier Arten von <span class="t" data-t="hash">Hash</span>-Fingerabdrücken, die zum Inhalt passen müssen. Dieser Bericht ergänzt ein Schreibwerkzeug, das alle vier in der richtigen Reihenfolge neu berechnet. Es schreibt drei Original-Archive byte-genau identisch zurück und repariert ein eigenes Karten-Paket, dessen vier neue Dateien noch alte Fingerabdrücke trugen, was bei aktivierter Prüfeinstellung das Spiel abstürzen lassen könnte, ohne dabei Daten zu verändern.</p><ul><li>3 von 3 Original-Archiven byte-gleich neu geschrieben, von 401 KB bis 97 MB.</li><li>Repariertes Paket: 7.127 von 7.127 prüfbaren Einträgen jetzt korrekt (vorher 7.123).</li><li>Alle 7.128 Dateiinhalte bleiben identisch; nur 6 Tabellenfelder und 2 Kopffelder ändern sich.</li><li>6 von 6 absichtlichen Fehlertests werden erkannt.</li><li>Ein Eintrag pro Container mit einem Sonder-Kompressionsmodus lässt sich nicht prüfen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-idclwriter-a1</code>, 2026-09-23.
+New: <code>wolfsdk/idclwrite.py</code>, <code>tools/probe_idclwriter.py</code>, <code>re_probes/idclwriter/</code>.</p>
+<h2 id="result-in-one-sentence">Result in one sentence</h2>
+<p>The Writer writes three Retail containers byte-for-byte identical and recalculates all four hashes during this process; the defective Bundle container of the other Master session is repaired and drops from 7123/7127 to 7127/7127 without a single Payload byte changing.</p>
+<h2 id="1-the-defect-reproduced-before-every-change">1. The Defect, Reproduced Before Every Change</h2>
+<pre><code>python tools/probe_datahash.py re_probes/map_alias_v3/bundle_headerfixed/base/chunk_22.resources
+   BAD compfile:maps/game/dlc/c02/c2v1_custom.entities            comp=0 usize=256319
+   BAD extkisclule:.../sacramento_gameplay_kiscule_combat_sim_screen_fx_893872923.decl
+                                                                  comp=0 usize=1643
+   BAD json:maps/game/dlc/c02/c2v1_custom/devmapinfo.json         comp=0 usize=304
+   BAD file:generated/buildgame/game/dlc/c02/c2v1_custom.mapresources
+                                                                  comp=2 usize=2150169
+chunk_22.resources  7123/7127  (skipped 1 of 7128 entries, mode 4)
+</code></pre>
+<p>Exactly the four Payloads generated by the Bundle itself, exactly as described in the order. They carry the <code>+0x50</code> of their template. With <code>resourceStorage_checkDataCheckSum</code> set to the default 0, no one reads it; with 1, it is a FatalError -- a latent crash, not a cosmetic error.</p>
+<p><code>re_probes/map_alias_v3/</code> was only read. The repaired container lies in <code>re_probes/idclwriter/chunk_22.resources</code>.</p>
+<h2 id="2-the-writer">2. The Writer</h2>
+<p><code>wolfsdk/idclwrite.py</code>, stdlib plus the existing Oodle integration. No compressor added -- it is not needed for this repair either, see Section 5.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>finalize(path, oo, data=True)</code></td>
+<td>Recalculate the four hashes at the container in situ. Writes only the first <code>addr_data</code> bytes.</td>
+</tr>
+<tr>
+<td><code>write(archive, dest, changes, oo)</code></td>
+<td><code>idcl.Archive.rebuild()</code> plus <code>finalize()</code>. With empty <code>changes</code>, the Round-Trip.</td>
+</tr>
+<tr>
+<td><code>repair(src, dest, oo)</code></td>
+<td>Copy and <code>finalize()</code> -- for containers whose Payloads match but whose Hashes do not.</td>
+</tr>
+<tr>
+<td><code>stale_data_hashes(path, oo)</code></td>
+<td>The check that the Engine makes with a set CVar, as a library call.</td>
+</tr>
+<tr>
+<td><code>stale_dep_hashes(archive)</code></td>
+<td>Dependency records holding a <code>+0x60</code> that no local entry carries anymore.</td>
+</tr>
+<tr>
+<td><code>hash60_rule(alt50, alt60, neu50)</code></td>
+<td>What becomes of <code>+0x60</code> -- see Section 4.</td>
+</tr>
+</tbody>
+</table></div>
+<p>The order is the only one that works, and it is documented in the module:</p>
+<ol>
+<li>Entry <code>+0x50</code> = <code>MurmurHash64B(decompressed Payload, Seed 0xDEADBEEF)</code>, length from <code>usize</code> at <code>+0x48</code>.</li>
+<li>Entry <code>+0x60</code> according to the rule from Section 4, then follow <code>dep+0x18</code>.</li>
+<li>Header <code>+0x20</code> = <code>FarmHash64</code> over the metadata <code>+0x78</code> up to and including the IDCL marker -- contains entry and dependency tables, so must wait until (1) and (2) are done.</li>
+<li>Header <code>+0x08</code> over the <em>finished</em> header. <code>+0x20</code> lies within <code>header[0x10:0x78]</code>, therefore last.</li>
+</ol>
+<p>The hash implementations are imported from <code>tools/probe_datahash.py</code> and <code>tools/probe_idclhash.py</code>, not rewritten: an implementation of a carrying hash, not two that can diverge.</p>
+<h2 id="3-the-round-trip----the-carrying-control">3. The Round-Trip -- the Carrying Control</h2>
+<p><code>python tools/probe_idclwriter.py --roundtrip</code>. Read Retail, write unchanged back, compare bytes. This can fail in two independent ways: the layout can deviate, and every newly calculated hash must land on the value that the delivered file already carries.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Archive</th>
+<th>Bytes</th>
+<th>Entries</th>
+<th>Newly Calculated</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>patch_4_chunkbase_6.resources</code></td>
+<td>401 255</td>
+<td>25</td>
+<td>25</td>
+<td>identical</td>
+</tr>
+<tr>
+<td><code>chunk_8.resources</code></td>
+<td>27 861 331</td>
+<td>1 562</td>
+<td>1 562</td>
+<td>identical</td>
+</tr>
+<tr>
+<td><code>chunk_16.resources</code></td>
+<td>97 392 281</td>
+<td>2 867</td>
+<td>2 866 (1x Mode 4)</td>
+<td>identical</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>3/3 byte-identical</strong>, with 4,453 of 4,454 entry data hashes plus 3x <code>+0x20</code> and 3x <code>+0x08</code> recalculated and exactly matched. SHA256 of the sources (and thus the outputs):</p>
+<pre><code>3937cfe5c1f9ec03a7a68d90a0491f05257add72f3b2c9acd212544765396fab  patch_4_chunkbase_6
+2f01439bf3854b544079c31415fadad3ebfeef2dc9dcec25560cfb8b4480aa35  chunk_8
+2dac9300fdacefa1c7308c5a06e7dfabade431b2d3eccaacf2e7da5bdc862325  chunk_16
+</code></pre>
+<p>The driver additionally checks that <code>finalize()</code> moves <em>nothing</em> in an unchanged file (<code>data_hash</code>/<code>hash_0x60</code>/<code>deps</code> all 0) -- otherwise an identical file with secretly shifted fields would be visible. The copies are deleted after comparison; a byte-identical second build of 125 MB Retail adds nothing that the digest does not already state (<code>--keep</code> preserves them).</p>
+<h2 id="4-two-measurement-corrections-in-the-docstring-of-wolfsdkidclpy">4. Two Measurement Corrections in the Docstring of <code>wolfsdk/idcl.py</code></h2>
+<p>Both concern assumptions on which the Writer must act, so they are measured here rather than copied.</p>
+<p><strong>(a) <code>+0x60</code> also deviates for type <code>cm</code>.</strong> The docstring lists image/extkisclule/cfile/compfile. Across four archives (chunk_8, chunk_16, gameresources, Retail-chunk_22, 62,293 entries), an additional 21 <code>cm</code> entries deviate (gameresources 16, chunk_22 5). The Writer therefore ignores the type entirely: <code>+0x60</code> follows <code>+0x50</code> only where it was already equal to it beforehand, and otherwise stops. This is a No-Op by construction on an unchanged container -- precisely what causes the Round-Trip to fail.</p>
+<p><strong>(b) <code>dep+0x18</code> applies only to the 64-bit Records of the <code>+0x60</code> mirror.</strong> The statement "the same value must be in <code>dep+0x18</code> of every Record that references the entry" holds for Records that carry a 64-bit value at all -- all 233 locally resolvable <code>skeleton</code> references in gameresources match it. It does not hold generally:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Archive</th>
+<th>locally resolvable, <code>dep_type=2</code></th>
+<th>carries <code>+0x60</code></th>
+<th>does not carry it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gameresources</td>
+<td>3,741</td>
+<td>233</td>
+<td>3,508</td>
+</tr>
+<tr>
+<td>chunk_8</td>
+<td>26</td>
+<td>3</td>
+<td>23</td>
+</tr>
+<tr>
+<td>Retail-chunk_22</td>
+<td>290</td>
+<td>5</td>
+<td>285</td>
+</tr>
+</tbody>
+</table></div>
+<p>The 3,508 are material/renderParm/sound and carry 32-bit values unrelated to <code>+0x60</code> and never had them. All <code>dep_type=5</code> Records (11,545 in gameresources, 1,214 in chunk_22) are <code>rs_emb_sfile</code> with names of the form <code>image#path.tga$mtl</code> and resolve to <em>no</em> entry of the archive. Propagating solely over (Type, Name) would thus destroy these Records. The Writer updates only Records that actually carried the <em>old</em> value. Changes to <code>+0x60</code> on a (Type, Name) shared by multiple entries (860 <code>renderProgResource</code> pairs per archive) are not propagated at all: which entry is meant cannot be determined, and guessing writes an incorrect hash into foreign Records. In chunk_22 there are 0 such pairs.</p>
+<h2 id="5-the-repair">5. The Repair</h2>
+<p><code>python tools/probe_idclwriter.py --repair</code></p>
+<pre><code>stale +0x50 in the source: 4
+   [7079] compfile:maps/game/dlc/c02/c2v1_custom.entities
+          44391c8b57bc24be -&gt; 7eb399dc78f13f40
+   [7113] extkisclule:.../sacramento_gameplay_kiscule_combat_sim_screen_fx_893872923.decl
+          f27e3773c8834680 -&gt; bfd0ad86e7e503de
+   [7116] json:maps/game/dlc/c02/c2v1_custom/devmapinfo.json
+          c443cc8e7041f11b -&gt; 315df24b4cd12bec
+   [7125] file:generated/buildgame/game/dlc/c02/c2v1_custom.mapresources
+          43b978e93afe35df -&gt; 01e4556138289e61
+{'entries': 7128, 'skipped': 1, 'data_hash': 4, 'hash_0x60': 2, 'deps': 0}
+stale +0x50 afterwards: 0     header +0x08 OK   +0x20 OK     stale dep+0x18: 0
+</code></pre>
+<p><code>hash_0x60: 2</code> are the json and file entries whose <code>+0x60</code> was equal to <code>+0x50</code>; for compfile and extkisclule it deviates and stops (Section 4a). <code>deps: 0</code>, because none of the 1,943 dependency records referenced one of the four entries -- measured, not assumed.</p>
+<p>Header: <code>+0x08 c729da551d3803c1 -&gt; 96ce3ba05494deae</code>,
+<code>+0x20 500bb10c8f8f27f2 -&gt; 98564e06dfa20da7</code>.</p>
+<p>sha256 Source    95236c3ebcaffb73a0f367bedbec71b720537677c3ab2aa3d87bd8cafd5fe2c2
+sha256 repaired b41f25135bd3374e594a7c37fe9896d9f66966c75351340b15bd76891bb945f4
+151 702 019 Bytes, unchanged</p>
+<p><strong>No compressor is involved.</strong> The four payloads are already what they should be -- the only error was the hash above them. The repair copies the file and rewrites exclusively the header and table entries. The question "can the original codec be reproduced" does not arise for this container; <code>idcl.pack_payload</code> (Oodle-DLL) is used only when a caller passes <code>changes</code>, which here happens only in Control 3 on a disposable copy.</p>
+<h2 id="6-evidence-instead-of-assertions">6. Evidence instead of Assertions</h2>
+<p><strong>Payload Identity</strong> (<code>--payloads</code>), Source vs repaired, all 7 128 entries individually:</p>
+<pre><code>payloads identical 7128/7128
+entry fields changed: {'0x50': 4, '0x60': 2}
+dependency fields changed: none
+header fields changed: ['0x8', '0x20']
+</code></pre>
+<p>This is more than required: not only are the payloads identical, but also every other field of the entry table, the complete dependency block, and the rest of the header.</p>
+<p><strong>Independent Verifiers</strong> on the repaired container:</p>
+<pre><code>python tools/probe_datahash.py re_probes/idclwriter/chunk_22.resources
+   -&gt; 7127/7127   (1 entry Mode 4, no decoder)
+python tools/probe_idclhash.py re_probes/idclwriter/chunk_22.resources
+   -&gt; +0x08 1/1   +0x20 1/1
+</code></pre>
+<p><strong>Negative Controls</strong> (<code>--negative</code>), each with Positive Anchor, 6/6 caught:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Payload byte flipped, <code>+0x50</code> not recomputed</td>
+<td>caught (1 stale)</td>
+</tr>
+<tr>
+<td>same file after <code>finalize()</code></td>
+<td>clean (0 stale)</td>
+</tr>
+<tr>
+<td><code>+0x08</code> computed before <code>+0x20</code></td>
+<td>caught (<code>023bf655…</code> != <code>764a6aea…</code>)</td>
+</tr>
+<tr>
+<td>correct order on same file</td>
+<td><code>+0x08</code> and <code>+0x20</code> OK</td>
+</tr>
+<tr>
+<td><code>+0x60</code> shifted, <code>dep+0x18</code> pulled from <code>finalize()</code></td>
+<td>1 Record updated, 0 stale</td>
+</tr>
+<tr>
+<td>same step skipped</td>
+<td>caught (1 stale Record)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Control 3 is real, not simulated: the payload of <code>skeleton:models/mapobjects/c04p2/c04p2_elevator_piston/…</code> in chunk_8 is actually changed, recompressed, and rehashed; <code>dep#8</code> carries its <code>+0x60</code>.</p>
+<h2 id="7-what-remains-open">7. What Remains Open</h2>
+<ul>
+<li><strong>One entry per container with compression mode 4 remains unchecked.</strong> In chunk_22 this is <code>staticShadowGeom:maps/game/dlc/c02/c2v2/_combo/_world.bshadows</code> (usize 29 227 487). For the 12-byte prefix there is no decoder, so its <code>+0x50</code> cannot be recomputed or verified. It comes unchanged from the Retail Archive and is therefore presumably correct, but that is a conclusion, not a measurement. With the set Cvar it is the only entry of the container for which this work makes no statement. <code>finalize()</code> leaves it intentionally in place, rather than guessing.</li>
+<li><strong><code>+0x60</code> for image/cm/cfile/compfile/extkisclule remains underived.</strong> The Writer conserves the value. For a <em>newly invented</em> entry of these types there is thus no correct <code>+0x60</code> -- it is checked by no read code path, but whoever chooses it freely must keep <code>dep+0x18</code> consistent themselves.</li>
+<li><strong><code>re_probes/idclwriter/</code> is excluded via <code>.gitignore</code> (<code>re_probes/*</code>).</strong> Intentionally not released: the content is a 151-MB binary artifact that is reproducible at any time from source plus tools.</li>
+<li>The Round-Trip ran on 3 of 24 Retail Archives (401 KB to 97 MB). <code>gameresources.resources</code> (702 MB, 50 839 entries) was not round-tripped due to runtime reasons; the <code>+0x60</code> and <code>dep+0x18</code> collections from Section 4 include it instead.</li>
+</ul>
+<h2 id="8-reproduction">8. Reproduction</h2>
+<pre><code>python tools/probe_idclwriter.py              # all: Round-Trip, Repair,
+                                              # Payload Identity, Controls
+python tools/probe_idclwriter.py --roundtrip --keep
+python tools/probe_idclwriter.py --repair
+python tools/probe_idclwriter.py --payloads
+python tools/probe_idclwriter.py --negative
+</code></pre></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Idclhash.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>IDCL Header <code>+0x08</code> — Solved (derived from code, not a hash sweep)</a><a class="next" href="Research-Report-Loose-Assets.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC Retail: lose/external load paths (read-only findings only)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

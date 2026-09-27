@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map-Manifest: What a map must know about an asset – Wolfenstein Modloader</title>
+<meta name="description" content="What a TNC map must list to use a new asset: just one optional preload line; the baked data stays untouched.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Map-Manifest: What a map must know about an asset</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Mapmanifest"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result-in-one-sentence">Result in one sentence</a></li><li><a href="#1-mapresources--format-and-round-trip">1. .mapresources – Format and Round-Trip</a></li><li><a href="#2-is-the-manifest-the-definitive-list-no-its-a-preload-list">2. Is the Manifest the Definitive List? No, It&#x27;s a Preload List.</a></li><li><a href="#3-the-four-questions">3. The Four Questions</a></li><li><a href="#4-the-result-minimal-change-amount-for-a-new-asset">4. THE RESULT: minimal change amount for a new asset</a></li><li><a href="#5-what-cannot-be-shown-offline">5. What cannot be shown offline</a></li><li><a href="#6-corrections-to-a1">6. Corrections to a1</a></li><li><a href="#7-commands-all-from-repo-root">7. Commands (all from repo root)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">When you add a new object to a map in Wolfenstein II: The New Colossus, which of the map&#x27;s many data files must know about it? This report found that only the <span class="t" data-t="mapresources">.mapresources</span> list needs one line per resource, and even that is only a preload hint, because the engine loads missing assets on first use. Precomputed data like texture streaming, visibility, baked shadows and the AI <span class="t" data-t="navmesh">navmesh</span> does not need changes and cannot be rebuilt anyway. All of this comes from the code and files; nothing is confirmed at runtime.</p><ul><li>The .mapresources reader and writer round-trips 129 of 129 manifest copies byte-exactly and rejects 12 of 12 broken variants.</li><li>Six runtime load counters from real game logs are reproduced exactly from the manifests.</li><li>A new asset needs +1 manifest line (optional) plus an entity that places it; nothing else must change.</li><li>Consequence: new geometry casts no baked shadows, blocks no visibility and is not walkable ground for enemies.</li><li>Gap: no tool yet adds a new entry to an existing archive container.</li></ul></div><div class="de"><p class="lede">Wenn du in Wolfenstein II: The New Colossus ein neues Objekt in eine Karte setzt: Welche der vielen Kartendateien müssen davon wissen? Dieser Bericht zeigt, dass nur die <span class="t" data-t="mapresources">.mapresources</span>-Liste eine Zeile pro Ressource braucht, und selbst das ist nur ein Hinweis zum Vorladen, denn die Engine lädt fehlende Assets bei der ersten Verwendung nach. Vorberechnete Daten wie Textur-Streaming, Sichtbarkeit, gebackene Schatten und das KI-<span class="t" data-t="navmesh">Navmesh</span> müssen nicht geändert werden und lassen sich ohnehin nicht neu erzeugen. Alles stammt aus Code und Dateien; im laufenden Spiel ist nichts bestätigt.</p><ul><li>Leser und Schreiber für .mapresources geben 129 von 129 Manifest-Kopien byte-genau wieder und lehnen 12 von 12 kaputte Varianten ab.</li><li>Sechs Ladezähler aus echten Spiel-Logs lassen sich exakt aus den Manifesten nachrechnen.</li><li>Ein neues Asset braucht +1 Manifest-Zeile (optional) und eine Entity, die es platziert; sonst muss sich nichts ändern.</li><li>Folge: Neue Geometrie wirft keine gebackenen Schatten, verdeckt nichts und ist für Gegner kein begehbarer Boden.</li><li>Lücke: Noch kein Werkzeug fügt einem bestehenden Archiv-Container einen neuen Eintrag hinzu.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-mapmanifest-a2</code> (Attempt 3; a1 paused, a2 aborted due to session limit). All numbers below are newly generated for this run.
+New/Changed: <code>tools/probe_mapmanifest.py</code>, <code>re_probes/mapmanifest/</code>.</p>
+<h2 id="result-in-one-sentence">Result in one sentence</h2>
+<p>A new asset requires <strong>exactly one manifest line per resource</strong> at the map level (and even that is just a preload, not a permission). Stream-Tree, Modelstream, PVS/Tome, Static-Shadows, and Navmesh are <strong>not</strong> touched. All five are precalculated and only reusable. Any path accepts an object that does not appear in them; this is documented by code but unverified at runtime.</p>
+<h2 id="1-mapresources--format-and-round-trip">1. <code>.mapresources</code> – Format and Round-Trip</h2>
+<p>MRL v1, read from <code>0xABFE30</code> and called from
+<code>idResourceManagerLocal::LoadNamedResourceBlock</code> (<code>0xAC1730</code>), which opens
+<code>generated/buildGame/%s.mapResources</code> via <code>idResourceList::Load</code> (<code>0xABA110</code>):</p>
+<pre><code>'MRL\x01' | vec&lt;str&gt; layers | vec&lt;u32&gt; default_layers | vec&lt;{str, vec&lt;u32&gt;}&gt; groups
+| vec&lt;str&gt; types | u32 n, n × (u32 type, str name, u8[24] mask) | vec&lt;str&gt; maps
+</code></pre>
+<p>A line remains valid if <code>mask &amp; active != 0</code> holds (<code>0xAC070D..0xAC0726</code>).
+<code>0xAC047C</code> sets bit 191 unconditionally, so the mask <code>00×23 + 80</code> means "always load". In the 41 effective manifests, 629,035 of 787,053 lines have exactly this mask; 158,018 have only layer bits, neither. Zero lines have string bits.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>roundtrip</code> (all copies in Install)</td>
+<td><strong>129/129 byte-identical</strong>, 126 different contents</td>
+</tr>
+<tr>
+<td><code>roundtrip --extra</code> (+ all 29 copies in <code>re_probes/</code>, including <code>c2v1_custom</code> in bundle)</td>
+<td><strong>158/158</strong> (6 broken probe containers reported as SKIP, they contain no manifests)</td>
+</tr>
+<tr>
+<td><code>negative</code> (halved, 1 byte too short, empty, Magic, line count ±1, type index, layer index, trailing byte, string length; Duplicate, 23-byte mask)</td>
+<td><strong>12/12 rejected</strong></td>
+</tr>
+<tr>
+<td><code>select</code>: runtime counters "Load %i resources" / "skipped by layer tests" from qconsole-logs only recalculated from the manifest</td>
+<td><strong>6/6 matched</strong>; Counter samples (lowest patch copy, bit 191 removed, ignoreLayers where it differs) <strong>0/12 matched</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The read copy is the one with the highest patch level. This proves <code>select</code>: The lowest copy matches the counter states in none of the 6 cases.</p>
+<h2 id="2-is-the-manifest-the-definitive-list-no-its-a-preload-list">2. Is the Manifest the Definitive List? No, It's a Preload List.</h2>
+<ul>
+<li><strong>Code:</strong> <code>Load</code> (<code>0xABA110</code>) searches for the name (<code>0xAB8F80</code>). If missing, the function creates and loads the resource (vtable <code>+0xC8</code>, <code>+0x28</code>). The only brake is <code>resource_errorInGame</code>: 1 = Warning (<code>0xABA419</code>), 2 = FatalError (<code>0xABA446</code>). The <strong>live value in the running game is 0</strong>, default "0", description "0 - Nothing. 1 - Warning. 2 - Fatal Error - if loaded during gameplay" (idCVar at <code>0x2F53F70</code>, name at +0x18).</li>
+<li><strong>Convention:</strong> Each of the 17 Retail map chunks lists <strong>100%</strong> of its entries (144,713 entries, 0 unlisted). The counter sample <code>gameresources</code> shows 37,790 unlisted entries, so the check can fail.</li>
+<li><strong>Cross-container:</strong> 612,969 of 786,228 resolvable manifest lines exist <strong>only outside</strong> the chunk of the map. The name is resolved across all mounted containers, so the new asset may reside in its own container.</li>
+<li>825 Retail lines name resources that do not exist in any container (anim 713, image 90, model 20, cm 2). One line before its payload is thus Retail practice.</li>
+</ul>
+<h2 id="3-the-four-questions">3. The Four Questions</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What it is</th>
+<th>New Asset</th>
+<th>Authorable?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>mapresources</strong></td>
+<td>Per-map/layer preload list</td>
+<td>+1 line, mask <code>…80</code> (recommended, not mandatory)</td>
+<td><strong>yes</strong>, <code>author</code></td>
+<td>§1, §2</td>
+</tr>
+<tr>
+<td><strong>staticStreamTree</strong></td>
+<td><strong>Texture</strong>-streaming (references Images, not models)</td>
+<td>no action</td>
+<td>reuse only; if missing, <strong>the engine builds it at runtime</strong></td>
+<td>Load <code>0x3820AF</code> only if <code>image_useLooseStreaming</code> (live 1) and global <code>0x30B54E8 ≥ 2</code> (live 2); NULL → <code>0x803995</code> → <code>BuildStaticStreamTree</code> <code>0x798480</code>. Corpus <code>sst</code>: only <strong>35,482/131,894 (26.9 %)</strong> of <code>$streamed</code>-Images reside in their map's tree; <code>c06p2</code> provides a 44-byte tree with 0 names</td>
+</tr>
+<tr>
+<td><strong>modelstream</strong></td>
+<td>only <strong>Vertex-Paint</strong> per instance</td>
+<td>no action</td>
+<td>–</td>
+<td>all 249 in chunk_22 named <code>…/vertexpaint/…vpaint$model=…</code>; <code>0x5981A0</code> loads only if the instance's vpaint field is non-empty (<code>0xA47845</code>, <code>0x5982CC</code>)</td>
+</tr>
+<tr>
+<td><strong>pvs + tome</strong></td>
+<td>Umbra-cell PVS, anchored at the Tome</td>
+<td>no action</td>
+<td><strong>reuse-only</strong> (Umbra-Precompute)</td>
+<td><code>0x6DC130</code>: <code>pvs+0x70 != tome+8</code> → Warning "PVS '%s' is stale, not using", PVS=NULL; queries then return −1 (<code>0x6DC4B1</code>). <code>.pvs</code> (11.7 KB) and <code>.tome</code> name <strong>no single object</strong>, so a new object cannot be "missing" therein. <code>bonusmap01</code> is delivered without <code>.pvs</code>. What the caller does with −1 is <strong>not traced</strong></td>
+</tr>
+<tr>
+<td><strong>staticShadowGeom</strong></td>
+<td>baked shadow geometry (11 MB at c2v1)</td>
+<td>no action (impossible)</td>
+<td><strong>reuse-only</strong></td>
+<td><code>0x381F92</code>: only if <code>r_useStaticShadows</code> (live 1), NULL is silently skipped. The new object is not in the bake; whether it casts dynamic shadows is <strong>unconfirmed</strong></td>
+</tr>
+<tr>
+<td><strong>hknavmesh</strong></td>
+<td>baked Havok AI Navmesh</td>
+<td>no action (impossible)</td>
+<td><strong>reuse-only</strong></td>
+<td>NULL → only warning "Failed to load navmesh" (<code>0xEA29E5</code>, <code>0x12385C0</code> = Warning). Runtime cutter exists (<code>hkaiNavMeshCutter</code>-RTTI, <code>idEntity::InitNavObstacle</code>); Retail uses <code>isNavObstacle = true;</code> at <strong>28</strong> <code>func/separable/compound</code>-Entities (c2v3, c04p2). New <strong>traversable</strong> area: not possible</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Follow-up for new geometry:</strong> It occludes nothing (no Occluder), is not in static shadows, and is not ground for the AI. Obstacles can only be handled via the runtime cutter. Therefore, it belongs where these three things do not interfere.</p>
+<h2 id="4-the-result-minimal-change-amount-for-a-new-asset">4. THE RESULT: minimal change amount for a new asset</h2>
+<ol>
+<li><strong>Payload</strong> under exactly the name the Entity forms (e.g., <code>models/wolfsdk/box.lwo$static_instance=1$lodgroup=default</code>, see meshfmt), in <strong>any mounted</strong> container. <em>Gap:</em> No tool adds a <strong>new</strong> entry to an existing IDCL container (<code>idcl.rebuild</code> replaces only). <code>tools/dlcmod.baue_archiv</code> builds a new container without dependency records; whether models load without Dep-Records is open.</li>
+<li><strong>Manifest:</strong> +1 line per resource, mask <code>000…0080</code>, in the copy with highest priority:
+   <code>python tools/probe_mapmanifest.py author --source re_probes/idclwriter/chunk_22.resources \
+     --map game/dlc/c02/c2v1_custom \
+     --type model --name 'models/wolfsdk/box.lwo$static_instance=1$lodgroup=default' \
+     --type cm    --name 'models/wolfsdk/box.lwo$filterclip=18$simplify=20$filteroccluders=true' \
+     --out re_probes/mapmanifest/c2v1_custom_plus2.mapresources \
+     --container re_probes/mapmanifest/c2v1_custom_plus2/base/chunk_22.resources</code>
+   Result: 7/7 Manifest checks (old lines unchanged, header byte-identical, preload count +2), 4/4 Container checks. Independently verified: <code>probe_datahash</code> <strong>7127/7127</strong>, <code>probe_idclhash</code> <strong>+0x08/+0x20 OK</strong>. Exactly 1 data hash moved, 0 Dep-Records. The cm name format comes from the corpus (1,217 cm lines under <code>models/</code> in c2v1) and must be confirmed by cmfmt.</li>
+<li><strong>Entity</strong> that places the asset (entitypipe). Without it, nothing loads, because the manifest places nothing.</li>
+<li><strong>Not needed:</strong> modelstream, staticStreamTree, pvs, tome, bshadows, hknavmesh.</li>
+</ol>
+<p>Point 2 is strictly optional: Without the line, <code>Load</code> loads the asset on first reference, silently with errorInGame=0. With the line, it preloads when loading the map, just as Retail does to 100%.</p>
+<h2 id="5-what-cannot-be-shown-offline">5. What cannot be shown offline</h2>
+<p>"Listed" does not mean "loaded at runtime". Everything above is <strong>structurally valid after these checks, runtime unconfirmed</strong>. This applies particularly to behavior without a Stream-Tree entry, without static shadows, with PVS −1, and for Navmesh-Cutting on an <code>idStaticInstanceEntity</code>. The container <code>c2v1_custom_plus2</code> references a box whose payload is not yet in any container (Point 1). It is a mechanic proof, not a test candidate.</p>
+<h2 id="6-corrections-to-a1">6. Corrections to a1</h2>
+<ul>
+<li>"PVS stale → nothing gets culled": <strong>not substantiated</strong>. Only PVS=NULL and −1 from queries are substantiated.</li>
+<li>"Skipping very large static shadows" makes missing bshadows non-critical: <strong>incorrectly justified</strong>. This is a console hack (<code>r_discardLargeStatShadowsAtLoadHack</code>, live −1 = on PC off). Missing bshadows are non-critical due to the NULL-test in <code>0x382036</code>.</li>
+<li><code>global_resolution.json</code> was an outdated duplicate of <code>resolve.json</code> and has been deleted.</li>
+</ul>
+<h2 id="7-commands-all-from-repo-root">7. Commands (all from repo root)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Expected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>python tools/probe_mapmanifest.py roundtrip</code></td>
+<td><code>round-trip byte-exact: 129/129</code>, exit 0</td>
+</tr>
+<tr>
+<td><code>python tools/probe_mapmanifest.py negative</code></td>
+<td><code>negative controls: 12/12 rejected</code></td>
+</tr>
+<tr>
+<td><code>python tools/probe_mapmanifest.py select</code></td>
+<td><code>runtime counters reproduced: 6/6   negative controls matching: 0/12</code></td>
+</tr>
+<tr>
+<td><code>python tools/probe_mapmanifest.py coverage</code></td>
+<td>17 map-chunks <code>unlisted=   0</code>, gameresources <code>unlisted=37790</code></td>
+</tr>
+<tr>
+<td><code>python tools/probe_mapmanifest.py resolve --show 0</code></td>
+<td><code>rows 787053, resolvable 786228, unresolvable 825</code>, <code>ONLY outside …: 612969</code></td>
+</tr>
+<tr>
+<td><code>python tools/probe_mapmanifest.py presence</code></td>
+<td><code>maps 39; absent … 'pvs': 1</code> (bonusmap01), otherwise 0</td>
+</tr>
+<tr>
+<td><code>python tools/probe_mapmanifest.py sst</code></td>
+<td><code>streamed image rows 131894, named … 35482 (26.9%)</code></td>
+</tr>
+<tr>
+<td><code>python tools/probe_mapmanifest.py code</code></td>
+<td><code>anchors confirmed: 56/56, cvars confirmed: 6/6 (shift 0)</code>; with <code>--shift 1</code> <code>0/56, 0/6</code>, exit 1</td>
+</tr>
+<tr>
+<td><code>python tools/probe_datahash.py re_probes/mapmanifest/c2v1_custom_plus2/base/chunk_22.resources</code></td>
+<td><code>7127/7127</code>, exit 0 (counter-check: unrepaired <code>map_alias_v3/bundle_headerfixed</code> gives <code>7123/7127</code>, exit 1)</td>
+</tr>
+<tr>
+<td><code>python tools/probe_mapmanifest.py author --map game/dlc/c02/c2v1 --type file --name maps/game/dlc/c02/c2v1/_combo/_world.tome</code></td>
+<td>rejected, <code>already listed</code>, exit 1</td>
+</tr>
+</tbody>
+</table></div></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Map-Selection.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Map/DLC Selection Logic (Static Findings)</a><a class="next" href="Research-Report-Mapview.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>3D Map View: Server, CLI, and Loader Button</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

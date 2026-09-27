@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Developer Mode — What It Unlocks and Where the Retail Lock Remains – Wolfenstein Modloader</title>
+<meta name="description" content="What the hidden Developer Mode in The New Colossus unlocks, compared with the hard retail lock in The New Order.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tnc"><span class="en">The New Colossus</span><span class="de">The New Colossus</span></a></p>
+<h1>Developer Mode — What It Unlocks and Where the Retail Lock Remains</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Developer-Mode"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#evidence-grades">Evidence Grades</a></li><li><a href="#1-the-summary">1. The Summary</a></li><li><a href="#2-the-retail-lock-in-the-new-order">2. The Retail Lock in The New Order</a></li><li><a href="#3-what-stands-in-its-place-in-the-new-colossus">3. What stands in its place in The New Colossus</a></li><li><a href="#4-what-developer-mode-costs">4. What Developer Mode Costs</a></li><li><a href="#5-names-and-their-descriptions">5. Names and Their Descriptions</a></li><li><a href="#6-com_production-and-production-toggles">6. com_production and Production Toggles</a></li><li><a href="#7-experimental-arrangements">7. Experimental Arrangements</a></li><li><a href="#8-what-remains-open">8. What remains open</a></li><li><a href="#9-tool">9. Tool</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page compares how both games block cheat settings, using only text strings found in the two game files. The New Order simply refuses locked <span class="t" data-t="cvar">settings</span> in the retail version. The New Colossus instead asks you to turn on a Developer Mode (devMode_enable), which disables online features and permanently marks save games as cheat saves. None of this was tested in the game; the page lists experiments that would confirm or refute each idea.</p><ul><li>The New Order has no Developer Mode at all; locked settings show &#x27;CANNOT be set in retail!&#x27;.</li><li>The New Colossus replaces that message with &#x27;Attempting to set a developer cvar&#x27; and points to devMode_enable.</li><li>The game&#x27;s own text says Developer Mode turns off network play and marks saves permanently as &#x27;cheat&#x27;.</li><li>A setting called com_gameMode has a value 5 named MOD; what it does is not documented.</li><li>Everything here comes from reading the game files; no finding was checked in a running game.</li></ul></div><div class="de"><p class="lede">Diese Seite vergleicht, wie beide Spiele Cheat-Einstellungen blockieren, nur anhand von Texten in den Programmdateien. The New Order lehnt gesperrte <span class="t" data-t="cvar">Einstellungen</span> in der Verkaufsversion einfach ab. The New Colossus verlangt stattdessen, einen Entwicklermodus (devMode_enable) einzuschalten, der Online-Funktionen abschaltet und Spielstände dauerhaft als Cheat markiert. Nichts davon wurde im Spiel getestet; die Seite nennt Experimente, die jede Annahme bestätigen oder widerlegen würden.</p><ul><li>The New Order hat gar keinen Entwicklermodus; gesperrte Einstellungen melden &#x27;CANNOT be set in retail!&#x27;.</li><li>The New Colossus ersetzt diese Meldung durch &#x27;Attempting to set a developer cvar&#x27; und verweist auf devMode_enable.</li><li>Laut Spieltext schaltet der Entwicklermodus das Netzwerkspiel ab und markiert Spielstände dauerhaft als &#x27;cheat&#x27;.</li><li>Die Einstellung com_gameMode hat einen Wert 5 namens MOD; was er bewirkt, ist nicht dokumentiert.</li><li>Alles stammt aus dem Lesen der Programmdateien; kein Ergebnis wurde im laufenden Spiel geprüft.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>All information here originates from the unencrypted <code>.rdata</code> sections of both game executables. Tool: <code>python tools/probe_devmode.py</code>. Every entry includes a file offset and virtual address; <code>--self-check</code> verifies that these locations remain valid.</p>
+<p><strong>No findings in this document stem from an active game.</strong> Section 6 specifies for each hypothesis which startup command it tests and what would indicate the opposite.</p>
+<h2 id="evidence-grades">Evidence Grades</h2>
+<p>Four levels, consistently distinguished in this text:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Grade</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>String</strong></td>
+<td>The string literal is demonstrably present in the file. Nothing is said about its usage.</td>
+</tr>
+<tr>
+<td><strong>Cvar</strong></td>
+<td>The name follows CVar naming conventions and has a description next to it. It is not yet a console command.</td>
+</tr>
+<tr>
+<td><strong>Mechanism</strong></td>
+<td>Two or more strings appear in an arrangement that allows only one interpretation — such as a message referring to its own switch, or the same function group in both executables with exactly one line changed.</td>
+</tr>
+<tr>
+<td><strong>In Game</strong></td>
+<td>Measured. There is <strong>nothing</strong> of this kind here.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Why not higher: The <code>.text</code> sections of both executables are SteamStub-encrypted (Section <code>.bind</code>, EntryPoint therein). There is no readable call site that links a name with the code that checks it.</p>
+<p>A methodological false lead, as it would have almost led to a negative finding: <code>walk_strings</code> from <code>tools/mine_cvars_tnc.py</code> filters via <code>str.isprintable()</code> and <strong>discards every string containing <code>\n</code></strong> — including <code>Resetting cheat cvar: %s\n</code>, which exists in both executables. A negative finding from this filter is worthless. <code>probe_devmode.py</code> therefore uses its own pass that iterates through <code>\n\t\r</code> and checks this difference in the Self-Check.</p>
+<hr />
+<h2 id="1-the-summary">1. The Summary</h2>
+<p>Two sentences, both at level <strong>Mechanism</strong>:</p>
+<ol>
+<li>
+<p><strong>The New Order locks, The New Colossus asks.</strong> The message <code>%s CANNOT be set in retail!</code> exists in <code>NewColossus_x64vk.exe</code> <strong>not at all</strong> — not even the fragment <code>in retail</code>. At the exact point where Part 1 leads, Part 2 leads to <code>Attempting to set a developer cvar '%s'.</code></p>
+</li>
+<li>
+<p><strong>Developer Mode is absent in Part 1.</strong> Neither <code>devMode</code> nor <code>DevMode</code>, <code>DEVMODE</code>, <code>Dev Mode</code>, or <code>enableDeveloperMode</code> appear anywhere in <code>WolfNewOrder_x64.exe</code> — zero hits out of eight search patterns, while the reverse check (<code>developer mode</code>, lowercase) yields four hits. The search works; there is nothing there.</p>
+</li>
+</ol>
+<p>Developer Mode does not lift the Retail lock. <strong>It has replaced it.</strong></p>
+<hr />
+<h2 id="2-the-retail-lock-in-the-new-order">2. The Retail Lock in The New Order</h2>
+<p><strong>Grade: Mechanism.</strong></p>
+<pre><code>010503B0  VA 1410519B0  '%s can only be set on the command line\n'
+010503D8  VA 1410519D8  '%s is read only\n'
+010503EC  VA 1410519EC  'reset'
+010503F8  VA 1410519F8  '%s CANNOT be set in retail!'     &lt;---
+01050418  VA 141051A18  &quot;Archived CVar '%s' in production mode&quot;
+01050440  VA 141051A40  '&quot;%s&quot; is:&quot;%s&quot;^7 default:&quot;%s&quot;\n'
+01050460  VA 141051A60  'Resetting cheat cvar: %s\n'
+01050498  VA 141051A98  'toggles a cvar'
+</code></pre>
+<p>Three rejection reasons in succession — command-line requirement, read-only protection, Retail — then the archive message, then the Cheat Reset. This is <code>idCVarSystemLocal</code>, a single translation unit whose literals are laid down contiguously by the linker.</p>
+<p>The CVar flags of Part 1, from the Reflection table in <code>.rdata</code> (there Name and numeric value are demonstrably linked together, unlike in the code):</p>
+<pre><code>014CC258  CVAR_BOOL       = 0x000001      014CC2D0  CVAR_INIT      = 0x004000
+014CC270  CVAR_INTEGER    = 0x000002      014CC2E8  CVAR_ROM       = 0x008000
+014CC288  CVAR_FLOAT      = 0x000004      014CC300  CVAR_ARCHIVE   = 0x010000
+014CC2A0  CVAR_CHEAT      = 0x000008      014CC318  CVAR_MODIFIED  = 0x020000
+014CC2B8  CVAR_NOCHEAT    = 0x000010      014CC330  CVAR_MODIFIED2 = 0x040000
+</code></pre>
+<p><strong>There is no <code>CVAR_DEVELOPER</code></strong> — in neither of the two Exes. Anyone searching for this flag is looking for something the engine does not know about. The lock from Part 1 runs via <code>CVAR_CHEAT</code> (0x8); this aligns with the measured log from <code>docs/limits.md</code>, where exactly those locked Cvars are also wiped by the cheat reset.</p>
+<hr />
+<h2 id="3-what-stands-in-its-place-in-the-new-colossus">3. What stands in its place in The New Colossus</h2>
+<p><strong>Grade: Mechanism.</strong> Same functional group, identifiable by identical neighbors:</p>
+<pre><code>0297B3E0  VA 14297C1E0  '%s can only be set on the command line\n'
+0297B850  VA 14297C650  &quot;Archived CVar '%s' in production mode&quot;
+0297B878  VA 14297C678  '&quot;%s&quot; is:&quot;%s&quot;^7 default:&quot;%s&quot;\n'
+0297B898  VA 14297C698  '%s is read only\n'
+0297B8B0  VA 14297C6B0  &quot;Attempting to set a developer cvar '%s'.&quot;   &lt;---
+0297B8E0  VA 14297C6E0  'toggles a cvar'
+0297B9C8  VA 14297C7C8  'Resetting cheat cvar: %s\n'
+</code></pre>
+<p>Line for line, the same repertoire. One line has been swapped out.</p>
+<p>And it did not stop at one place. The same lock sits in both the command system and session management:</p>
+<pre><code>02981960  VA 142982760  &quot;Attempting to call a developer command '%s'.&quot;
+026E32E0  VA 1426E40E0  &quot;Entering Developer Mode without it being enabled.\n
+                          Set cvar '%s' to enable Dev Mode.&quot;
+</code></pre>
+<p>Three lock points — setting a Cvar, calling a command, entering the mode — and a common blueprint. The latter is open:</p>
+<pre><code>02981728  VA 142982528  'Enable entering developer mode'
+02981748  VA 142982548  'devMode_enable'
+02981758  VA 142982558  &quot;%s\nSet cvar '%s' to enable Dev Mode.&quot;
+02981780  VA 142982580  &quot;Dev Mode is not enabled and action cannot be
+                          completed. Set cvar '%s' to enable developer
+                          options.&quot;
+029817E8  VA 1429825E8  'FatalError rather than enter Dev Mode'
+02981810  VA 142982610  'devMode_fatalErrorOnEnter'
+</code></pre>
+<p><code>"%s\nSet cvar '%s' to enable Dev Mode."</code> takes two placeholders: the reason and the Cvar name. The two reasons are listed above. The Cvar name stands immediately next to them and is the only one in question: <code>devMode_enable</code>.</p>
+<p><strong>This is the answer to the guiding question.</strong> The Dev Mode does not lift the lock — the lock <em>is</em> the Dev Mode query. Part 1 says "does not go in Retail", Part 2 says "turn on <code>devMode_enable</code>".</p>
+<h3 id="the-flag-behind-it">The Flag Behind It</h3>
+<p><strong>Grade: Indication, not Mechanism.</strong> What makes a Cvar a "developer cvar" is not proven. The comparison stands in the encrypted <code>.text</code>. What speaks in favor of it being <code>CVAR_SHIPPINGDISABLED</code>:</p>
+<pre><code>   The New Colossus                            The New Order
+   ----------------------------------------    ----------------------
+   CVAR_STRING            = 0x000000           (missing)
+   CVAR_BOOL              = 0x000001           0x000001
+   CVAR_INTEGER           = 0x000002           0x000002
+   CVAR_FLOAT             = 0x000004           0x000004
+   CVAR_CHEAT             = 0x000008           0x000008
+   CVAR_NOCHEAT           = 0x000010           0x000010
+   CVAR_TIME_MS           = 0x000020           (missing)
+   CVAR_NETWORKSYNC       = 0x002000           (missing)
+   CVAR_INIT              = 0x004000           0x004000
+   CVAR_ROM               = 0x008000           0x008000
+   CVAR_ARCHIVE           = 0x010000           0x010000
+   CVAR_LOCAL_SETTING     = 0x020000           (missing)
+   CVAR_MODIFIED          = 0x040000           0x020000
+   CVAR_MODIFIED2         = 0x080000           0x040000
+   CVAR_SHADERSYNC        = 0x100000           (missing)
+   CVAR_EXPOSE            = 0x200000           (missing)
+   CVAR_SHIPPINGDISABLED  = 0x400000           (missing)     &lt;---
+</code></pre>
+<p><code>CVAR_SHIPPINGDISABLED</code> is exactly new in the part where the Retail message disappeared. This is added to the correspondence in the command system, where the same lock message sits:</p>
+<pre><code>0247F7F8  CMD_NOCHEAT          = 0x2
+0247F810  CMD_EXPOSE           = 0x4
+0247F828  CMD_SHIPPINGDISABLED = 0x8
+</code></pre>
+<p><code>CMD_SHIPPINGDISABLED</code> does not exist in Part 1 either. Two parallel flags, both new, both located where the new message appears — this is a good indicator but not proof. <code>CVAR_CHEAT</code> remains the second possibility; both systems coexist because <code>Resetting cheat cvar: %s</code> exists unchanged in Part 2.</p>
+<hr />
+<h2 id="4-what-developer-mode-costs">4. What Developer Mode Costs</h2>
+<p><strong>Grade: Mechanism.</strong> The game states it itself, at <code>0x026E3390 / VA 0x1426E4190</code>:</p>
+<blockquote>
+<p>You have enabled Developer Mode by using a developer tool.</p>
+<p>Network gameplay and online services have been disabled. Save games (including SnapMaps) updated or created in Developer Mode will be permanently marked as "cheat", automatically re-triggering Developer Mode any time they are accessed.</p>
+<p>To disable Developer Mode, restart the game without accessing any developer tools on the command line, configuration files, or console.</p>
+</blockquote>
+<p>Three things stand out here that are documented nowhere else:</p>
+<ol>
+<li><strong>Network off.</strong> Confirmed by <code>0x02686F68 'Network features unavailable while using developer tools'</code> and its neighbor <code>idSessionLocalWin::InviteFriends</code>.</li>
+<li><strong>Save games are permanently marked as "cheat"</strong> and subsequently trigger Developer Mode themselves. This closes the loop on the Save Game Agent's finding: <code>0x02686ED0 'Loading Dev Mode or corrupted save game.'</code> and <code>devMode_skipCorruptedSaves</code> are the same thing from opposite sides. A save with a false <code>.verify</code> is not rejected, but <strong>loaded as a Developer Mode save</strong> — thereby pulling in the Developer Mode marking with it.</li>
+<li><strong>The trigger is explicitly triple:</strong> Command line, <em>configuration files</em>, and console. This is the sharpest difference from Part 1, where <code>.cfg</code> files were the only channel the ban did not penetrate (<code>docs/limits.md</code>, Section 2).</li>
+</ol>
+<p>The counterpart to activation: <code>0x026E3338 'Entering Developer Mode'</code> and <code>0x026E3548 'NotifyCheating'</code> lie immediately adjacent, thus in the same function.</p>
+<hr />
+<h2 id="5-names-and-their-descriptions">5. Names and Their Descriptions</h2>
+<h3 id="51-the-three-devmode_-cvars">5.1 The three <code>devMode_*</code> Cvars</h3>
+<p><strong>Grade: Cvar.</strong> Names are hard-coded; descriptions rely on neighborhood, not call site — but each stands immediately before its name and matches in wording.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>02981748</code> / VA <code>142982548</code></td>
+<td><code>devMode_enable</code></td>
+<td>Enable entering developer mode (<code>02981728</code>)</td>
+</tr>
+<tr>
+<td><code>02981810</code> / VA <code>142982610</code></td>
+<td><code>devMode_fatalErrorOnEnter</code></td>
+<td>FatalError rather than enter Dev Mode (<code>029817E8</code>)</td>
+</tr>
+<tr>
+<td><code>02686898</code> / VA <code>142687698</code></td>
+<td><code>devMode_skipCorruptedSaves</code></td>
+<td>Skip entering developer mode when loading corrupted saves (<code>02686858</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>devMode_fatalErrorOnEnter</code> warrants a warning: The description text states that the game <strong>intentionally crashes</strong> upon entering Dev Mode rather than entering it. This is a developer tool to find accidental activation — nothing one would want to enable.</p>
+<p><strong>None of the three appear in <code>docs/cvars_tnc.json</code>.</strong> This is not a contradiction, but a gap in the Miner's work: <code>tools/mine_cvars_tnc.py</code> filters via a fixed prefix list, and <code>devMode_</code> does not belong there (<code>devgui</code> as a prefixless name equally so). Anyone reading the catalog as complete will miss exactly this group.</p>
+<p><code>devMode_skipCorruptedSaves</code> is the most interesting of the three: If it stands at 1, a corrupted save game does <strong>not</strong> trigger Developer Mode. For modding purposes, the value 0 (presumably the default) is more useful — then every save with a false <code>.verify</code> becomes a Developer Mode key.</p>
+<h3 id="52-the-command-line-environment">5.2 The Command Line Environment</h3>
+<p><strong>Grade: String.</strong> Two entries lie in a storage area with arguments that the engine evaluates early itself:</p>
+<p>026C1268  '+s_noSound'                      026C12F0  '+net_'
+026C1278  '+menu_enableInitialAgreements'   026C1310  '+fs_basepath'
+026C1298  '+telemetry_'                     026C1320  '+set'
+026C12A8  '+r_fullscreen'                   026C1328  '+fs_savepath'
+026C12B8  '+devMode_'          &lt;---         026C1338  '+net_versionchecksum'
+026C12C8  '+com_enableDeveloperMode'  &lt;---</p>
+<p><code>+devMode_</code> is a <strong>prefix</strong> (covers all three Cvars),
+<code>+com_enableDeveloperMode</code> an exact name. The fact that <code>+set</code> and <code>+fs_basepath</code> appear in the same list indicates: These are arguments with special handling before normal Cvar processing. Whether this involves pre-evaluation, passing via a restart (<code>' +com_restarted 1'</code> is located 200 bytes further), or an allowlist — this information resides in the encrypted <code>.text</code> section. <strong>Not substantiated.</strong></p>
+<p><code>com_enableDeveloperMode</code> itself has <strong>no</strong> description next to it, unlike practically every other <code>com_</code> Cvar. Its neighbors are <code>set</code>, <code>fs_basepath</code>, <code>devMode_</code> — components of the command-line parser, not a Cvar registration. Whether it is actually a registered Cvar or merely an argument recognized by the parser remains open.</p>
+<h3 id="53-the-state-devmode_t">5.3 The State: <code>devMode_t</code></h3>
+<p><strong>Grade: Mechanism</strong> (Value and Name from Reflection Table):</p>
+<pre><code>DEVMODE_PRODUCTION = 0
+DEVMODE_DEVELOPER  = 1
+</code></pre>
+<p>An enumeration type <code>devMode_t</code> (<code>0x02717608</code>, RTTI <code>.?AW4devMode_t@@</code> at <code>0x0303A838</code>) with two states. No intermediate state, no levels.</p>
+<h3 id="54-the-devgui">5.4 The DevGUI</h3>
+<p><strong>Grade: Cvar.</strong> <code>devgui</code> has six modes in Part 2 instead of three:</p>
+<blockquote>
+<p>0 = disable DevGUI, 1 = enable DevGUI, 2 = enable DevGUI with key legend,
+3 = ImGUI only, 4 = ImGUI with custom windows, 5 = custom ImGUI windows only
+— <code>0x0294F6C0</code></p>
+</blockquote>
+<p>In Part 1, the same description ends at 2 (<code>0x01038310</code>). Part 2 therefore includes a complete ImGui interface. The pages are named in the Exe: <code>VirtualTexturing</code>, <code>UmbraDebug</code>, <code>LightDebug</code>, <code>RenderingStats</code>, <code>Render_Reload</code>, <code>RenderModes</code>, <code>Set_Team</code>, <code>Weapon_Offsets</code>, <code>AI_NavDebug</code>, <code>Spawn_AI</code>, <code>Time_Scale</code> (<code>0x0294F5F8</code>–<code>0x0294F6A0</code>).</p>
+<p>Incidental finding: <strong><code>com_allowConsole</code> does not exist in Part 2.</strong> In Part 1, it is the locked Cvar that prevents the console (<code>0x00E67C18</code>); in Part 2 there is no such Cvar. This fits with the screenshot showing the input line <code>]</code>: There is nothing in Part 2 that holds the console via a Cvar.</p>
+<hr />
+<h2 id="6-com_production-and-production-toggles">6. <code>com_production</code> and Production Toggles</h2>
+<p><strong>Grade: Cvar.</strong> All four exist, three with descriptions:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Part 1</th>
+<th>Part 2</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>com_production</code></td>
+<td><code>0104D308</code></td>
+<td><code>0297AF08</code></td>
+<td>Used to enable and/or inhibit specific behaviour during production building mode. <strong>All demo and retail builds are built with this on.</strong></td>
+</tr>
+<tr>
+<td><code>com_forceProductionCvars</code></td>
+<td>—</td>
+<td><code>026C0648</code></td>
+<td>Set to force production cvars to specific values during build</td>
+</tr>
+<tr>
+<td><code>com_requireNonProductionSignIn</code></td>
+<td><code>00F17650</code></td>
+<td><code>026E3F40</code></td>
+<td>If true, will require sign in, even on non production builds.</td>
+</tr>
+<tr>
+<td><code>com_gameMode</code></td>
+<td>—</td>
+<td><code>026C06A8</code></td>
+<td>determines asset load pattern and runtime behaviour for production builds only, 0 - ALL, 1 - SP, 2 - MP, 3 - SNAP, 4 - SHELL, 5 - MOD</td>
+</tr>
+</tbody>
+</table></div>
+<p>Two of them exist only in Part 2.</p>
+<p><strong><code>com_production</code> is the master toggle, and its own description states that.</strong> "All demo and retail builds are built with this on" — that is the Retail property encapsulated in a single Cvar. The name fits <code>DEVMODE_PRODUCTION = 0</code>: production is the opposite of developer.</p>
+<p>However, be careful; this is the most likely way to waste time here:
+<code>com_production</code> controls far more than cheat unlocks. In the same executable, attached to it are the resource loader (<code>"couldn't read production file for decl"</code>, <code>'Resource loaded in production mode: %s : %s'</code>), the entity loader (<code>'if set use .entities files instead of .map files for production'</code>), the sound bank loader, and virtual textures (<code>vt_productionFilePath</code>). A retail game with <code>com_production 0</code> searches for files that do not exist in a retail installation. If <code>com_production</code> is actually settable at runtime, the expected outcome is a crash on the next resource access — exactly the pattern from <code>docs/limits.md</code>, Section 3.</p>
+<p><code>com_gameMode</code> is the more restrained switch of the same family. The values are documented:</p>
+<pre><code>GAMEMODE_ALL = 0   GAMEMODE_MP   = 2   GAMEMODE_SHELL = 4
+GAMEMODE_SP  = 1   GAMEMODE_SNAP = 3   GAMEMODE_MOD   = 5
+</code></pre>
+<p><strong><code>GAMEMODE_MOD = 5</code> deserves its own attention.</strong> A mode named MOD, which according to the description determines "asset load pattern and runtime behaviour", is immediately relevant for a modloader project — regardless of dev mode. The engine also carries <code>' +com_gameMode '</code> (with spaces, <code>026C14C0</code>) and <code>'+com_gameMode'</code> (<code>026C16C0</code>), so the value is appended to a command line as well as read from one. What Mode 5 specifically changes — custom load path, custom <code>.resources</code>, relaxed checks — is <strong>not documented</strong>.</p>
+<hr />
+<h2 id="7-experimental-arrangements">7. Experimental Arrangements</h2>
+<p>Everything below here is untested. For each experiment, it states what confirms and what refutes it. The log is located under
+<code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein II The New Colossus\base\qconsole.log</code>
+and logs every rejected assignment.</p>
+<p><strong>Above all: <code>checkpoint.dat</code>, <code>profile.bin</code>, and <code>progression.bin</code> must be backed up.</strong> The warning text explicitly states that touched save games will be <em>permanently</em> marked as "cheat". This is not a side-effect risk, but announced behavior.</p>
+<h3 id="v1--what-is-the-switch-com_enabledevelopermode-or-devmode_enable">V1 — What is the switch: <code>com_enableDeveloperMode</code> or <code>devMode_enable</code>?</h3>
+<pre><code>NewColossus_x64vk.exe +com_enableDeveloperMode 1
+NewColossus_x64vk.exe +devMode_enable 1
+NewColossus_x64vk.exe +com_enableDeveloperMode 1 +devMode_enable 1
+</code></pre>
+<p><em>Confirmed</em> by the warning text from Section 4 as a dialog box, or by <code>Entering Developer Mode</code> in the log. The third variant shows whether both are needed.
+<em>Refuted</em> by <code>Dev Mode is not enabled and action cannot be completed</code> on the first dev action — then the set cvar is not the one being queried. From the screenshot it is known that Variant 1 opens the console; open is whether the cvar lock also falls with it.</p>
+<h3 id="v2--does-the-lock-really-fall-the-guiding-question">V2 — Does the lock really fall? (the guiding question)</h3>
+<p>Start beforehand without dev mode, enter <code>g_infiniteAmmo 1</code> in the console, and note the message. Then do the same with dev mode.</p>
+<p><em>Confirmed</em>, if without dev mode
+<code>Attempting to set a developer cvar 'g_infiniteAmmo'.</code> appears and with dev mode no word — and <code>g_infiniteAmmo</code> afterwards returns 1.
+<em>Refuted</em>, if the message appears in both cases or is absent in both. In the first case <code>devMode_enable</code> is not what the query reads; in the second <code>g_infiniteAmmo</code> is not led as a developer cvar at all and the attempt needs another candidate. Checked from <code>docs/cvars_tnc.json</code> for existing and suitable: <code>g_EnableGore</code>, <code>g_debugGore</code>, <code>ai_damageScale</code>, <code>g_freeCamSpeed</code>, <code>pm_noclipspeed</code>. (The Part-1 names from <code>docs/limits.md</code> do not serve as candidates — <code>g_showThinks</code>, <code>ai_invulnerable</code>, <code>g_gameDifficulty</code>, <code>com_showFPS</code>, and <code>g_permaGodMode</code> exist in Part 2 all <strong>not</strong>.)</p>
+<p>This is the one experiment that matters. It is cheap, it needs no save game, and it answers the question in two starts.</p>
+<h3 id="v3--does-the-lock-only-warn-or-reject">V3 — Does the lock only warn or reject?</h3>
+<p>Same structure as V2, but <strong>without</strong> Dev Mode: set <code>g_infiniteAmmo 1</code> and then query <code>g_infiniteAmmo</code> without arguments.</p>
+<p><em>Confirms</em> if the value remains 0 — in that case, Part 2 behaves like Part 1 and the text is merely more polite.
+<em>Warns only</em> if the value becomes 1. Then the lock in the CVar system would be toothless, and the real hurdle would lie deeper, during the evaluation of the value. This outcome would explain why the text reads "Attempting to …" instead of "Cannot …".</p>
+<h3 id="v4--is-a-configuration-file-sufficient">V4 — Is a configuration file sufficient?</h3>
+<p>The warning text mentions <em>"command line, configuration files, or console"</em>. In Part 1, the <code>.cfg</code> was one channel that the lock reliably blocked.</p>
+<p>In Part 2 there is <strong>no</strong> <code>autoexec.cfg</code> — the name does not appear in the Exe. The executable file on disk is <code>binary.cfg</code> in the game folder (<code>exec "%s/binary.cfg" -s</code>, <code>0x026E31B0</code>; it is demonstrably searched according to <code>docs/ladepfade.md</code>):</p>
+<pre><code>echo devMode_enable 1 &gt; D:\...\Wolfenstein.II.The.New.Colossus\binary.cfg
+NewColossus_x64vk.exe
+</code></pre>
+<p><em>Confirmed</em> by the Dev Mode dialog without any command-line arguments.
+<em>Refuted</em> by silence in the Log. First, verify that the file is actually executed — write a harmless line like <code>g_showHud 0</code> and check if the HUD disappears. Otherwise, you are blaming Dev Mode for a file that no one reads.</p>
+<h3 id="v5--is-a-corrupted-save-game-a-dev-mode-key">V5 — Is a corrupted save game a Dev Mode key?</h3>
+<p>Take a <strong>copy</strong> of a save game, change one byte in <code>checkpoint.dat</code>, leave the associated <code>.verify</code> unchanged, and load it.</p>
+<p><em>Confirmed</em> by "Loading Dev Mode or corrupted save game." in the Log plus the Dev Mode dialog. Then the <code>.verify</code> is not a loading barrier but a Dev Mode trigger — and an entry into Dev Mode that does not require command-line arguments.
+<em>Refuted</em> by rejection of the save game.
+<em>Control test:</em> Restart subsequently with <code>+devMode_skipCorruptedSaves 1</code> and load the same save game. If Dev Mode does <strong>not</strong> appear, then the CVar→Behavior mapping from Section 5.1 is confirmed.</p>
+<p><strong>Make this attempt last.</strong> It is the only one that permanently marks a save game.</p>
+<h3 id="v6--com_gamemode-5-mod">V6 — <code>com_gameMode 5</code> (MOD)</h3>
+<pre><code>NewColossus_x64vk.exe +com_gameMode 5
+</code></pre>
+<p><em>Confirmed</em> by a different load path in the Log — different <code>.resources</code>, different Decl root, a different start menu.
+<em>Refuted</em> by an unchanged start, or by <code>read only</code> / <code>can only be set on the command line</code>. A crash during loading is the third likely outcome and also a result: it shows that Mode 5 expects files that a Retail installation does not have.</p>
+<p>Value 3 (SNAP) and 4 (SHELL) are cheap comparison runs and show whether the CVar has any effect at all.</p>
+<h3 id="v7--com_production-0">V7 — <code>com_production 0</code></h3>
+<p><strong>The riskiest attempt, and the one with the lowest chance of success.</strong> See Section 6: <code>com_production</code> controls resource, entity, sound, and text loaders. Only use this with secured save games and only if V2 through V6 yield nothing.</p>
+<p><em>Confirmed</em> by a start that reaches the menu at all.
+<em>Refuted</em> — and expected — by <code>couldn't read production file for decl</code> followed by a crash at an unrelated location. This pattern is known from <code>docs/limits.md</code> Section 3: a single read error disables the entire resource loader, and the visible crash occurs much later.</p>
+<hr />
+<h2 id="8-what-remains-open">8. What remains open</h2>
+<ul>
+<li><strong>Which flag</strong> triggers <code>Attempting to set a developer cvar</code>.
+  <code>CVAR_SHIPPINGDISABLED</code> (0x400000) is the best indicator; <code>CVAR_CHEAT</code> (0x8) is the alternative. Decidable only via V2 with multiple candidate Cvars.</li>
+<li><strong>Whether the ban is rejected or merely warned</strong> — V3.</li>
+<li><strong>What <code>+devMode_</code> and <code>+com_enableDeveloperMode</code> do in their list.</strong> The proximity to <code>+set</code>, <code>+fs_basepath</code>, and <code>' +com_restarted 1'</code> suggests a pre-evaluation or passing via restart. Not substantiated.</li>
+<li><strong>Whether <code>com_enableDeveloperMode</code> is actually a registered Cvar.</strong> It is the only <code>com_</code> name without a description in its environment.</li>
+<li><strong>Which Cvars and commands qualify as "developer".</strong> The catalog in <code>docs/cvars_tnc.json</code> lists 2231 names without flags — the flags are located in the encrypted <code>.text</code>. The only way to reach them is to try them out in-game and evaluate the log, exactly as described in <code>docs/limits.md</code> for Part 1.</li>
+<li><strong>What <code>GAMEMODE_MOD</code> changes.</strong></li>
+</ul>
+<h2 id="9-tool">9. Tool</h2>
+<pre><code>python tools/probe_devmode.py              # full report with addresses
+python tools/probe_devmode.py --self-check # only the invariants
+</code></pre>
+<p>The Self-Check verifies: the four anchor points at their address, the absence of <code>in retail</code> in Part 2 and <code>devMode</code> in Part 1, that the search actually yields results (otherwise every negative finding would be worthless), the <code>isprintable</code> trap of <code>walk_strings</code>, and the flag and enum values this document relies on.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNC-Texture-Database.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>The <code>.texdb</code> Format (Wolfenstein II: The New Colossus)</a><a class="next" href="Cfile-Encryption.html"><small><span class="en">Next</span><span class="de">Weiter</span></small><code>cfile</code> — the encrypted Resource type of Wolfenstein II</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>
