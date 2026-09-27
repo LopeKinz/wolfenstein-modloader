@@ -370,8 +370,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
-   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
+   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
+   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
   }
  },
  "Virtual-Texture-Planes": {
@@ -497,6 +497,10 @@
     "Die 40 textures.cache-Dateien der Karten sind gleich aufgebaut; die Engine prüft nur einen 8-Byte-Kennwert, ohne Hash- oder Größenprüfung.",
     "Auf dieser Seite noch offen: welcher Schlüssel zu welcher Textur gehört und das innere Format einer Kachel."
    ]
+  },
+  "update": {
+   "en": "Newer than this page: custom weapon skins now show up correctly in The New Colossus (27 Sep 2026).",
+   "de": "Neuer als diese Seite: Eigene Waffen-Skins erscheinen inzwischen korrekt in The New Colossus (27.09.2026)."
   }
  },
  "Research-Report-Texdbkey": {
@@ -522,6 +526,10 @@
     "Die Größe jedes Texturblocks steht in der Mip-Tabelle der Bilddatei selbst, nicht in der .texdb.",
     "Nicht im Spiel getestet: ob ein selbst gebautes Texturpaar tatsächlich angezeigt wird."
    ]
+  },
+  "update": {
+   "en": "Newer than this page: custom weapon skins now show up correctly in The New Colossus (27 Sep 2026).",
+   "de": "Neuer als diese Seite: Eigene Waffen-Skins erscheinen inzwischen korrekt in The New Colossus (27.09.2026)."
   }
  },
  "Research-Report-Cfilekey2": {
@@ -824,8 +832,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
-   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
+   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
+   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
   }
  },
  "Research-Report-Texdb-Rewrite": {
@@ -849,6 +857,10 @@
     "Eine leere 32-Byte-Texturdatenbank taugt nur für einen Mount-Test, nicht für eine Karte mit echten Texturen.",
     "Empfohlener nächster Test: ein Bundle mit unveränderten Ressourcennamen plus der vollständigen Original-Texturdatenbank."
    ]
+  },
+  "update": {
+   "en": "Newer than this page: custom weapon skins now show up correctly in The New Colossus (27 Sep 2026).",
+   "de": "Neuer als diese Seite: Eigene Waffen-Skins erscheinen inzwischen korrekt in The New Colossus (27.09.2026)."
   }
  },
  "Research-Brief-Command-Queue": {
@@ -1022,6 +1034,10 @@
     "Eine Testdatei ersetzt 218 Kartentexturen durch Magenta und lässt 6.767 andere Einträge unverändert; sie ist fertig, aber nicht im Spiel getestet.",
     "10 von 10 absichtlich kaputten Testfällen werden vom Prüfer erkannt."
    ]
+  },
+  "update": {
+   "en": "Newer than this page: custom weapon skins now show up correctly in The New Colossus (27 Sep 2026).",
+   "de": "Neuer als diese Seite: Eigene Waffen-Skins erscheinen inzwischen korrekt in The New Colossus (27.09.2026)."
   }
  },
  "Research-Report-Missions": {
@@ -1418,8 +1434,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
-   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
+   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
+   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
   }
  },
  "TNC-Modding-Surface": {
@@ -1722,8 +1738,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
-   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
+   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
+   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
   }
  },
  "Research-Report-Chunklist": {
@@ -1899,8 +1915,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: the project owner reports that a custom map was loaded and played in The New Colossus (27 Sep 2026). The log and screenshots have not been added to the wiki yet, so the text below still shows the earlier state.",
-   "de": "Neuer als diese Seite: Der Projektinhaber berichtet, dass eine eigene Karte in The New Colossus geladen und gespielt wurde (27.09.2026). Log und Screenshots stehen noch nicht im Wiki; der Text unten zeigt daher noch den früheren Stand."
+   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
+   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
   }
  },
  "Research-Report-C2v1-Identity": {
