@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search Task: Loose Assets and External Load Paths – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: search Wolfenstein II for ways to load modified files from outside the original archives.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Search Task: Loose Assets and External Load Paths</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Loose-Assets"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This is an assignment, not a result. It asks a worker to search Wolfenstein II: The New Colossus for ways to load modified files from outside the game&#x27;s original <span class="t" data-t="archive">archives</span>, using only read access. Sources are program strings, config files, logs and existing notes about loose assets, developer mode, reloading definitions, workshop or mod folders. It notes that the DLC search path setting &#x27;resource_dlcDbgSearchPath&#x27; is an unknown command in the retail game.</p><ul><li>The game must not be started and no file in the Steam installation may be changed.</li><li>A self-made DLC folder is already recognized by the game.</li><li>Only verifiable candidates with the exact string or path and where it was found are accepted.</li><li>Each candidate must be labeled as confirmed, plausible or refuted.</li></ul></div><div class="de"><p class="lede">Dies ist ein Auftrag, kein Ergebnis. Ein Bearbeiter soll in Wolfenstein II: The New Colossus nur lesend nach Wegen suchen, geänderte Dateien außerhalb der Original-<span class="t" data-t="archive">Archive</span> des Spiels zu laden. Quellen sind Texte im Programm, Config-Dateien, Logs und vorhandene Notizen zu losen Assets, Entwicklermodus, Neuladen von Definitionen, Workshop oder Mod-Ordnern. Er hält fest, dass die DLC-Suchpfad-Einstellung „resource_dlcDbgSearchPath“ im Verkaufsspiel ein unbekannter Befehl ist.</p><ul><li>Das Spiel darf nicht gestartet und keine Datei der Steam-Installation verändert werden.</li><li>Ein selbst gebauter DLC-Ordner wird vom Spiel bereits erkannt.</li><li>Nur überprüfbare Kandidaten mit genauem Text oder Pfad und Fundstelle zählen.</li><li>Jeder Kandidat muss als bestätigt, plausibel oder widerlegt gekennzeichnet werden.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p><strong>Goal:</strong> Find exclusively read-accessible modding paths for <em>Wolfenstein II: The New Colossus</em> where modified files can be loaded outside the original base containers.</p>
+<p><strong>Context:</strong></p>
+<ul>
+<li>The retail installation is located under <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus</code>.</li>
+<li>A dedicated DLC folder is recognized, but <code>resource_dlcDbgSearchPath</code> is an unknown command in this retail version.</li>
+<li>The engine/game process must not be started. Do not modify any file within the Steam installation.</li>
+</ul>
+<p><strong>Investigate:</strong> EXE strings, existing configurations, logs, and local tools/documentation for specific Cvars, command-line parameters, or file paths related to Loose Assets, Dev-Mode, Decl-Reload, Workshop, or mod directories.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li>Only verifiable candidates with exact string/path and source location.</li>
+<li>Clearly distinguish between confirmed, plausible, and refuted items.</li>
+<li>No modifications except optionally a single exclusive report at <code>re_probes/agent_reports/loose_assets.md</code>.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Idclwriter.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Idclwriter</a><a class="next" href="Research-Brief-Map-Bundle-V3.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Map Bundle V3</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

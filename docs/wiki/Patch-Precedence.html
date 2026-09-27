@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Do `patch_*.resources` take precedence? — 670 MB against 300 KB – Wolfenstein Modloader</title>
+<meta name="description" content="Do Wolfenstein II patch archives override the base archives? Strong evidence says yes, not yet proven.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#systems"><span class="en">Game systems</span><span class="de">Spielsysteme</span></a></p>
+<h1>Do <code>patch_*.resources</code> take precedence? — 670 MB against 300 KB</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Patch-Precedence"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-answer-with-evidence-grade">0. Answer with Evidence Grade</a></li><li><a href="#1-packagemapspecjson--fully-evaluated">1. packagemapspec.json — fully evaluated</a></li><li><a href="#2-the-1701-duplicates">2. The 1,701 Duplicates</a></li><li><a href="#3-do-the-duplicates-differ-in-content">3. Do the Duplicates differ in content?</a></li><li><a href="#4-the-loading-logic-in-the-exe">4. The Loading Logic in the Exe</a></li><li><a href="#5-what-could-not-be-shown">5. What Could Not Be Shown</a></li><li><a href="#6-the-decisive-experiment">6. The Decisive Experiment</a></li><li><a href="#7-if-the-answer-is-no">7. If the Answer is No</a></li><li><a href="#sources">Sources</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">In Wolfenstein II (TNC), about 1,700 game files exist twice: in a base archive and in a later patch archive. This page asks which copy the game uses, because that decides whether a mod needs only a small extra archive or a rebuild of a 670 MB file. Everything measurable without starting the game points to the patch copy winning, but this is not proven. The page describes a test that changes two bytes and needs one game start.</p><ul><li>1,013 files exist only in patch archives, so patch archives are definitely loaded.</li><li>In 1,680 duplicate pairs the patch copy is newer 1,635 times and never older.</li><li>The game program knows a container type named PATCH and a field named patchPriority.</li><li>A new patch_5 would likely need &#x27;patchlevel&#x27; raised to 5 in a settings file (deduced, not tested).</li><li>Decisive test: change the throwing-knife limit in both copies and read the number in the HUD.</li></ul></div><div class="de"><p class="lede">In Wolfenstein II (TNC) liegen rund 1.700 Spieldateien doppelt vor: in einem Basis-Archiv und in einem späteren Patch-Archiv. Die Seite fragt, welche Kopie das Spiel nutzt, denn davon hängt ab, ob ein Mod nur ein kleines Zusatzarchiv braucht oder eine 670 MB große Datei neu gebaut werden muss. Alles, was sich ohne Spielstart messen lässt, spricht für die Patch-Kopie, bewiesen ist es aber nicht. Die Seite beschreibt einen Test, der zwei Bytes ändert und einen Spielstart braucht.</p><ul><li>1.013 Dateien gibt es nur in Patch-Archiven, also werden Patch-Archive sicher geladen.</li><li>Bei 1.680 doppelten Paaren ist die Patch-Kopie 1.635 Mal neuer und nie älter.</li><li>Das Spielprogramm kennt einen Container-Typ namens PATCH und ein Feld namens patchPriority.</li><li>Ein eigenes patch_5 bräuchte wohl „patchlevel“ 5 in einer Einstellungsdatei (abgeleitet, nicht getestet).</li><li>Entscheidender Test: das Wurfmesser-Limit in beiden Kopien ändern und die Zahl im HUD ablesen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>The question determines the cost of a mod for <em>Wolfenstein II</em>. If the Patch copy wins, only a small custom archive is needed. If it does not win, every change requires rebuilding <code>gameresources.resources</code> (670 MiB) and a backup of 3.4 GiB.</p>
+<p>All findings here are extracted <strong>read-only</strong> from the unmodified Retail installation at <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus</code>. Reproducible with:</p>
+<pre><code class="language-bash">python tools/probe_patchprec.py --spec         # packagemapspec.json, base + dlc
+python tools/probe_patchprec.py --dupes        # the 1 701 duplicated pairs
+python tools/probe_patchprec.py --diff 10      # byte-wise comparison examples
+python tools/probe_patchprec.py --candidates   # pairs where precedence can be measured
+python tools/probe_patchprec.py --strings --window 1426cf000-1426d1000
+</code></pre>
+<p>Each statement carries a grade: <strong>MEASURED</strong> (read from files), <strong>DEDUCED</strong> (inferred from structure, not directly observed), or <strong>SPECULATED</strong> (plausible but unsecured).</p>
+<hr />
+<h2 id="0-answer-with-evidence-grade">0. Answer with Evidence Grade</h2>
+<blockquote>
+<p><strong>Short:</strong> Anything measurable without starting the game supports Patch archive precedence, and <strong>no single finding argues against it</strong>. It is not proven — precedence is runtime behavior. The evidence grade ranges from "strong" to "overwhelming," but not to "proven." The final piece costs <strong>one game start and two changed bytes</strong>, see Section 6.</p>
+</blockquote>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Grade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1 013 <code>(Type,Name)</code> pairs exist <strong>exclusively</strong> in Patch archives — including 287 <code>image</code>, 265 <code>material</code>, 6 <code>perks</code>, 5 <code>upgrade</code>, 4 <code>table</code>. They are nowhere else.</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>2</td>
+<td>In 1 680 Base/Patch collisions, the Patch copy is <strong>1 635 times younger, 45 times same age, 0 times older</strong>.</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>3</td>
+<td>The Exe knows an enumeration type <code>idResourceStorage::containerType_t</code> with exactly three values: <strong><code>MAIN</code>, <code>MAP</code>, <code>PATCH</code></strong>.</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>4</td>
+<td>The Exe knows a struct field named <strong><code>patchPriority</code></strong>, immediately next to <code>containerFileName</code>, <code>resourceName</code>, <code>containerIndex</code>, <code>dataOffset</code>.</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A rollback case: <code>geistidentity:geist/identity/elite.identity</code> lies in <code>gameresources</code> with hash <code>7f78958e…</code>, is modified in <code>patch_2</code> and <code>patch_3</code>, and set <strong>exactly to the Base hash in <code>patch_4</code></strong>. A higher layer takes back from a lower one.</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>6</td>
+<td>The contents of Patch copies are consistently corrections: fields added, broken references fixed, numbers rounded — never regressions.</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>patchlevel</code> is a <strong>search upper bound</strong>, not a guarantee of existing files: the three DLCs report <code>patchlevel</code> 2 or 3 and deliver <strong>null</strong> <code>patch_*.resources</code>.</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Therefore: the Engine searches Patch layers from bottom to top, skips missing ones, and the highest present one wins.</td>
+<td>DEDUCED</td>
+</tr>
+<tr>
+<td>9</td>
+<td>A custom <code>patch_5</code> is only reachable if <code>patchlevel</code> in <code>packagemapspec.json</code> is increased to 5.</td>
+<td>DEDUCED</td>
+</tr>
+</tbody>
+</table></div>
+<p>Finding 1 alone already proves that Patch archives are <strong>mounted and searched</strong> — otherwise the game would be missing 287 images and 265 materials. Only the question of <em>direction</em> on collision remains open. Findings 2–6 support this.</p>
+<hr />
+<h2 id="1-packagemapspecjson--fully-evaluated">1. <code>packagemapspec.json</code> — fully evaluated</h2>
+<p>Clear-text JSON next to the archives. The Engine reads it; the key names appear as literals in the Exe, close together — that is the parser block:</p>
+<pre><code>0x1426d0228  refchunks
+0x1426d0238  chunkid
+0x1426d0240  basechunkid
+0x1426d0250  packagemapspec.json
+0x1426d0268  patchinfo
+</code></pre>
+<p><strong>MEASURED</strong>, four files:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Spec</th>
+<th style="text-align: right;">Maps</th>
+<th style="text-align: right;"><code>patchlevel</code></th>
+<th style="text-align: right;"><code>layer</code></th>
+<th style="text-align: right;"><code>chunkid</code></th>
+<th style="text-align: right;"><code>basechunkid</code></th>
+<th style="text-align: right;"><code>refchunks</code></th>
+<th style="text-align: right;"><code>patch_*.resources</code> alongside</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base/</code></td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;"><strong>4</strong></td>
+<td style="text-align: right;">0 (9×), 1 (22×)</td>
+<td style="text-align: right;">0,1,3,4,5,7–16</td>
+<td style="text-align: right;">0, 6</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>8</strong></td>
+</tr>
+<tr>
+<td><code>dlc/dlc_1/base/</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">9,12,13</td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>dlc/dlc_2/base/</code></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">9,13</td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>dlc/dlc_3/base/</code></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">−1</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="meaning-of-the-fields">Meaning of the Fields</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+<th>Grade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>Map name, as loaded by the game</td>
+<td>MEASURED (matches <code>base/maps/…</code>)</td>
+</tr>
+<tr>
+<td><code>chunkid</code></td>
+<td>In which <code>chunk_&lt;id&gt;.resources</code>/<code>.texdb</code> the map resides</td>
+<td>MEASURED (1,3,4,5,7–16 ↔ exactly the existing files)</td>
+</tr>
+<tr>
+<td><code>basechunkid</code></td>
+<td>Shared base archive of the map: 0 = none (only <code>gameresources</code>), 6 = <code>chunkbase_6</code></td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td><code>isbasechunk</code></td>
+<td>Only <code>common</code> and <code>init</code>, both <code>chunkid 0</code></td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td><code>layer</code></td>
+<td>0 or 1 in the main game, −1 in DLC. <strong>Matches 1:1 with <code>basechunkid</code></strong>: <code>layer 0</code> ⇔ <code>basechunkid 0</code>, <code>layer 1</code> ⇔ <code>basechunkid 6</code>, without exception across all 31 maps</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td><code>refchunks</code></td>
+<td>Only in DLC Specs: additional chunks to load</td>
+<td>MEASURED</td>
+</tr>
+<tr>
+<td><code>patchinfo.patchlevel</code></td>
+<td>How many patch layers are searched</td>
+<td>UNREVEALED, see below</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong><code>layer</code> is a runtime concept, not a pure ordering marker.</strong> The Exe carries the Cvar <code>resource_ignoreLayers</code> (<code>0x1426cf068</code>) and, alongside it in the same string block, the description <em>"ignore layer bits and load all layers during map loads"</em> (<code>0x1426cee38</code>). Thus there are <strong>Layer-Bits</strong> that decide which packages to mount when loading a map — and a switch to ignore them. This fits <code>com_forceAllMapLayersToLoad</code> (<code>0x1426c41f0</code>).
+<em>(The Name↔Description mapping is unproven due to MSVC string pooling; the two strings lie 0x30 apart in the same block. UNREVEALED.)</em></p>
+<h3 id="patchlevel--search-limit-not-file-list"><code>patchlevel</code> — Search Limit, Not File List</h3>
+<p>This is the sharpest single finding of this section. <code>base/</code> reports <code>patchlevel 4</code> and has exactly eight matching files:
+<code>patch_1..patch_4</code> and <code>patch_1_chunkbase_6..patch_4_chunkbase_6</code>. Alone, this would be ambiguous.</p>
+<p>The DLCs resolve the ambiguity: <strong><code>dlc_1</code> reports <code>patchlevel 2</code>, <code>dlc_2</code> and <code>dlc_3</code> report <code>patchlevel 3</code> — and in none of the three <code>base</code> folders does a single <code>patch_*.resources</code> exist.</strong> There is only <code>chunk_20</code>/<code>chunk_22</code>/<code>chunk_24</code>. The three DLCs function correctly in the Retail game.</p>
+<p><strong>UNREVEALED:</strong> The engine loops <code>n = 1 … patchlevel</code>, attempts to open each layer, and <strong>skips missing ones silently</strong>. <code>patchlevel</code> is an upper limit for the search. A missing layer is not an error — precisely the property that makes a self-built patch archive usable.</p>
+<p><strong>UNREVEALED, Flip Side:</strong> A <code>patch_5.resources</code> will <strong>never be searched</strong> at <code>patchlevel 4</code>. To add a new layer, one must increase <code>patchlevel</code> to 5 — a 130-byte plaintext file managed by Steam and overwritten with every update.</p>
+<h3 id="name-formation">Name Formation</h3>
+<p>Four literals lie directly adjacent in the Exe — this is the kit for archive names:</p>
+<pre><code>0x1426cedf4  .texdb
+0x1426cedfc  patch
+0x1426cee04  chunk
+0x1426cee10  chunkbase
+</code></pre>
+<p>and the format string <code>%s_%d_%s_%d</code> (<code>0x1426cf720</code>) builds <code>patch_&lt;n&gt;_chunkbase_&lt;m&gt;</code> from them. The same schema is used verbatim by the sound system: <code>sound/soundbanks/%s/patch_%d_sound.pack</code> (<code>0x14268c120</code>), and <code>sound/soundbanks/%s/prodspec.json</code> also carries <code>patchlevel</code> — according to <code>docs/audio.md</code> on 4. <strong>MEASURED.</strong> The patch layer model is thus not restricted to <code>.resources</code>, but engine-wide.</p>
+<h3 id="which-patch-family-covers-which-base">Which Patch Family Covers Which Base?</h3>
+<p><strong>MEASURED</strong> across all 1,696 archive-spanning collisions, resolved by <code>basechunkid</code> of the partner base archive:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Patch Family</th>
+<th style="text-align: right;">Partner with <code>basechunkid 0</code></th>
+<th style="text-align: right;">Partner with <code>basechunkid 6</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>patch_N</code> (no suffix)</td>
+<td style="text-align: right;"><strong>1 321</strong></td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td><code>patch_N_chunkbase_6</code></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>830</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Families therefore follow <code>layer</code>/<code>basechunkid</code> — to 99.86 %.</p>
+<p><code>patch_N_chunkbase_6</code> contains <strong>exclusively</strong> Layer-1 archives.</p>
+<p><code>patch_N</code> contains almost exclusively Layer-0 archives, with <strong>exactly three exceptions</strong>, all from <code>chunk_16</code> (Layer 1):</p>
+<pre><code>ammo       ammo/player/sp/knife              chunk_16 → patch_3
+weapon     weapon/player/sp/joe_melee        chunk_16 → patch_2
+projectile projectile/player/joe_throw_can   chunk_16 → patch_2
+</code></pre>
+<p><strong>Two interpretations, both open (SPECULATED):</strong></p>
+<ul>
+<li>The flat family <code>patch_N</code> is the <strong>global</strong> Patch Layer (partner: <code>gameresources</code>, <code>chunkid 0</code>), which is mounted with every map — in that case, the three <code>chunk_16</code> cases are regular, and the search runs globally over all mounted containers.</li>
+<li>Or <code>patch_N</code> is strictly bound to Layer 0 — in that case, the three entries are dead loads that are never read.</li>
+</ul>
+<p>Which interpretation is correct decides the same experiment (Section 6, Variant A against B).</p>
+<p>The base archives found, <strong>MEASURED</strong>:</p>
+<pre><code>patch_N              gameresources 848, chunk_5 118, chunk_3 31, chunk_4 28, chunk_1 20, chunk_16 3
+patch_N_chunkbase_6  chunk_10 170, chunk_16 166, chunk_13 90, chunk_9 70, chunk_12 33,
+                     chunkbase_6 30, chunk_14 29, chunk_11 21, chunk_15 14, chunk_7 5, chunk_8 4
+</code></pre>
+<hr />
+<h2 id="2-the-1701-duplicates">2. The 1,701 Duplicates</h2>
+<p><code>python tools/probe_patchprec.py --dupes</code>. <strong>MEASURED</strong>, 24 archives, 178,077 entries, 167,694 unique <code>(Type,Name)</code> pairs.</p>
+<pre><code>stored multiple times                              5,983
+of which with differing data_hash                  1,701
+   of which cross-archive                          1,696
+   of which only within a single archive            5   (all renderProgResource)
+only present in Patch archives                     1,013
+</code></pre>
+<p>This breaks down the number 1,701 from <code>docs/moddingflaeche-tnc.md</code> precisely.</p>
+<h3 id="form-of-collisions">Form of Collisions</h3>
+<pre><code>1,372  Base + Patch
+  156  Base + Patch + Patch
+  138  Base + Patch + Patch + Patch
+   14  Base + Patch + Patch + Patch + Patch
+   16  Patch + Patch            (without base copy)
+</code></pre>
+<h3 id="the-timestamps--the-strongest-numerical-finding">The Timestamps — the strongest numerical finding</h3>
+<p>Every IDCL entry carries <code>timestamp_us</code> (Unix microseconds, see <code>wolfsdk/idcl.py</code>). Over all 1,680 collisions with Base <strong>and</strong> Patch copies:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Patch copy <strong>younger</strong> than base copy</td>
+<td style="text-align: right;"><strong>1,635</strong></td>
+</tr>
+<tr>
+<td>Patch copy <strong>same age</strong></td>
+<td style="text-align: right;">45</td>
+</tr>
+<tr>
+<td>Patch copy <strong>older</strong></td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Not a single counterexample in 1,680 pairs. <strong>MEASURED.</strong></p>
+<p>And the time window per archive cleanly orders the layers:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Archive group</th>
+<th>youngest entry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all 14 <code>chunk_*</code> + <code>chunkbase_6</code> + <code>gameresources</code></td>
+<td>2017‑10‑30 (<code>chunk_16</code>: 2017‑11‑03)</td>
+</tr>
+<tr>
+<td><code>patch_1</code>, <code>patch_1_chunkbase_6</code></td>
+<td>2017‑11‑03</td>
+</tr>
+<tr>
+<td><code>patch_2</code>, <code>patch_2_chunkbase_6</code></td>
+<td>2017‑12‑07</td>
+</tr>
+<tr>
+<td><code>patch_3</code>, <code>patch_3_chunkbase_6</code></td>
+<td>2018‑02‑24</td>
+</tr>
+<tr>
+<td><code>patch_4</code></td>
+<td>2018‑11‑21</td>
+</tr>
+<tr>
+<td><code>patch_4_chunkbase_6</code></td>
+<td>2018‑09‑18</td>
+</tr>
+</tbody>
+</table></div>
+<p>The game released on 27.10.2017. Base archives end three days later, and the Patch layers follow strictly monotonically behind. <strong>The layer number is the time axis.</strong> MEASURED.</p>
+<h3 id="the-rollback-test--the-sharpest-single-finding">The Rollback Test — the sharpest single finding</h3>
+<p>If a higher layer wins, it must be possible to revert a change by re-storing the <strong>original content in a higher layer</strong>. If instead the Base wins, such an entry would be meaningless from the outset. Sought: pairs where the highest Patch layer has the same <code>data_hash</code> as the Base, but the lowest does not.</p>
+<p><strong>MEASURED — one hit:</strong></p>
+<pre><code>geistidentity : geist/identity/elite.identity
+   gameresources   37297 B  2017-10-08  hash 7f78958e0f28e61c
+   patch_2         37297 B  2017-10-11  hash bbd330ed0007235b
+   patch_3         37297 B  2017-10-10  hash ef3df1f595b341f6
+   patch_4         37297 B  2018-09-18  hash 7f78958e0f28e61c   ← back to base
+</code></pre>
+<p><code>patch_4</code> delivers the exact content of the base copy. Assuming "Base wins," both this entry and the two changes in <code>patch_2</code> and <code>patch_3</code> would have been ineffective from the start — three pointless entries in a row. Assuming "Highest layer wins," it is a clean retraction of an error from Patch 2/3.</p>
+<p><strong>Honest limitation:</strong> one single case. In the reverse direction (lowest patch layer equals base, highest deviating), there are 45 cases — these are neutral, they are compatible with both assumptions.</p>
+<hr />
+<h2 id="3-do-the-duplicates-differ-in-content">3. Do the Duplicates differ in content?</h2>
+<p><code>python tools/probe_patchprec.py --diff 10</code>. Ten text assets from both copies are unpacked and compared. <strong>MEASURED: byte-identical 0, different 10.</strong> There is no case where only the hash differs while the content remains identical.</p>
+<p>The differences are readable and unidirectional — Patch 3 (February 2018) incorporates the same Balancing change line by line:</p>
+<pre><code>entityDef player_c01_coma           chunk_1 242 B  →  patch_3 291 B
+   +    playerHealth = { damageScale = 0.75; }
+
+entityDef player_firefighter        chunk_9 411 B  →  patch_3_chunkbase_6 460 B
+   +    playerHealth = { damageScale = 0.75; }
+
+entityDef player_powerarmor         gameresources 400 B  →  patch_3 424 B
+   +    damageScale = 0.75;
+
+entityDef player_manhattan          gameresources 398 B  →  patch_3 414 B
+   +    damageScale = 0.75;
+   -    armoredDamageScale = 0.150000006;
+   +    armoredDamageScale = 0.1;
+</code></pre>
+<p>Patch 1 (November 2017) appears as a bug fix:</p>
+<pre><code>entityDef ai/zerstorer/zerstorer_base   chunkbase_6 4324 B → patch_1_chunkbase_6 4409 B
+   -    declBehaviorVo = &quot;mercury/vo/zerstorer&quot;;
+   +    decl = &quot;behaviors/zitadelle&quot;;
+   +    declBehaviorVo = &quot;mercury/vo/default&quot;;
+   +    declBehaviorEvents = &quot;behaviorevents/default&quot;;
+</code></pre>
+<p>A missing <code>decl</code> and a missing <code>declBehaviorEvents</code> are supplemented, and a sound reference to an existing one is bent around. This is the signature of a patch that repairs a crash or silent enemy behavior.</p>
+<p><strong>ELUCIDATED:</strong> These changes are unilaterally sensible. A player for whom the base copy wins would have received none of the advertised Balancing updates in the February patch and would still possess the broken Zerstorer reference.</p>
+<p>A counterfinding that must be mentioned: the patch copy is <strong>not always larger</strong>. 596 times larger, 817 times equal size, 267 times smaller. Patches therefore also remove fields (<code>ai/zitadelle/zitadelle_base</code>: <code>patch_3</code> removes a <code>declBehaviorVo</code> line relative to the base). This fits "replace," not "supplement" — a patch delivers the <strong>complete</strong> asset content, not a delta record. <strong>MEASURED.</strong></p>
+<hr />
+<h2 id="4-the-loading-logic-in-the-exe">4. The Loading Logic in the Exe</h2>
+<p><code>NewColossus_x64vk.exe</code>, 58 062 032 bytes. The <code>.text</code> section is SteamStub-encrypted (entropy 8,000, see <code>docs/ghidra.md</code>), so the code itself is not readable. What is readable: <code>.rdata</code> and <code>.data</code>.</p>
+<h3 id="the-discovery-containertype_t-has-its-own-value-patch">The Discovery: <code>containerType_t</code> has its own value <code>PATCH</code></h3>
+<pre><code>0x14279a7b8  idResourceStorage::containerType_t::PATCH
+0x14279a7e8  idResourceStorage::containerType_t::MAIN
+0x14279a818  idResourceStorage::containerType_t::MAP
+0x142818820  idResourceStorage::containerType_t
+</code></pre>
+<p><strong>MEASURED.</strong> The engine distinguishes three container types, and one of them is named <code>PATCH</code>. This matches exactly with the file layout:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Container Type</th>
+<th>Files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MAIN</code></td>
+<td><code>gameresources.resources</code></td>
+</tr>
+<tr>
+<td><code>MAP</code></td>
+<td><code>chunk_1..16</code>, <code>chunkbase_6</code></td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><code>patch_1..4</code>, <code>patch_1..4_chunkbase_6</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>ELUCIDATED:</strong> A dedicated container type for patches is only necessary if patch containers are <strong>handled differently</strong> when being looked up compared to the others. If they were equivalent, <code>MAIN</code>/<code>MAP</code> would suffice.</p>
+<h3 id="the-second-discovery-a-field-named-patchpriority">The second discovery: a field named <code>patchPriority</code></h3>
+<p>In the reflection block of the resource structure, <code>0x14271c200</code>–<code>0x14271c500</code>:</p>
+<p>resourceTypeIndex · compressionMode · compressedSize · descStringIndex
+nameStringIndex · containerIndex · dataOffset · containerFileName
+resourceName · patchPriority · typeIndex · metaDataList · …</p>
+<p><strong>MEASURED.</strong> A field literally named <code>patchPriority</code> exists between <code>resourceName</code> and <code>typeIndex</code>, immediately adjacent to <code>containerFileName</code> and <code>dataOffset</code>. This is the field list of a resource entry.</p>
+<p><strong>ELUCIDATED:</strong> There is an explicit, per-entry patch ordering. The name leaves no room for alternative interpretation.</p>
+<p><strong>What could not be shown (Negative finding, MEASURED):</strong> Which byte in the IDCL entry corresponds to <code>patchPriority</code> remains open. The field list originates from the reflection block of the build structure <code>idResourceEntryOptions</code> — there are also pure tool fields like <code>pendingCompression</code>, <code>finalize</code>, and <code>includeEmbeddedDependencies</code>. <code>patchPriority</code> could therefore be a pure build tool field that does not land in the file, but instead determines layer assignment during building. The IDCL entries have several unnamed fields (<code>unknown_0x28</code>, <code>unknown_0x30</code>, <code>unknown_0x71</code>, <code>unknown_0x74</code>, <code>unknown_0x78</code>, <code>unknown_0x88</code>) — all are 0 in every Retail entry, so none of them could serve as a filled priority. <strong>SPECULATED:</strong> The priority is derived at runtime from the mount order, not from a field in the file.</p>
+<h3 id="the-third-finding-a-container-comparator">The third finding: a container comparator</h3>
+<pre><code>0x14279a6f8  idResourceStorage::compareEntryFilter_t::IN_ANY
+0x14279a728  idResourceStorage::compareEntryFilter_t::IN_BOTH
+0x14279a760  idResourceStorage::compareEntryFilter_t::IN_CONTAINER_0
+0x1426d1b60  idResourceStorage::CompareContainers: Could not open container %s
+</code></pre>
+<p><strong>MEASURED.</strong> The engine can diff two containers against each other and filter by "in both" / "only in the first". <strong>ELUCIDATED:</strong> This is exactly the tool used to <em>build</em> a patch container — one compares old against new and writes the differences. The fact that this tool exists in the Retail build does not mean it is accessible.</p>
+<h3 id="what-is-not-present-at-that-location">What is NOT present at that location</h3>
+<p><strong>Negative finding, MEASURED.</strong> There is in the entire Exe:</p>
+<ul>
+<li>no format string <code>%s.resources</code> — only the three fixed names <code>gameresources.resources</code> (<code>0x1426c21a8</code>), <code>mp_gameresources.resources</code>, <code>snap_gameresources.resources</code> and the bare suffix <code>.resources</code> (<code>0x1426c21e0</code>);</li>
+<li>no message like "duplicate resource", "overriding", "shadowed by" or "already provided by" in the resource area;</li>
+<li><strong>no Cvar that switches priority.</strong></li>
+</ul>
+<p>The location where the engine decides between two copies is therefore <strong>in the encrypted code</strong> and not accessible via strings. One cannot proceed further without a SteamStub unpacker. This is the hard limit of this investigation.</p>
+<h3 id="tools-for-the-attempt-which-were-noticed">Tools for the attempt, which were noticed</h3>
+<p><strong>MEASURED</strong> (Names exact; descriptions lie in the same string block, the mapping Name↔Description is <strong>not proven</strong> due to string pooling):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Description in the same block</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resource_spewPakSpam</code></td>
+<td>"Set to 1 for huge console spew"</td>
+</tr>
+<tr>
+<td><code>resource_updatePakCacheTable</code></td>
+<td>"print verbose information when updating the cache table from a pak file or remvoing preload entries"</td>
+</tr>
+<tr>
+<td><code>resource_debugLevel</code>, <code>resource_debugName</code>, <code>resource_showLoads</code>, <code>resource_spamLoads</code>, <code>resource_warnOnLoad</code>, <code>resource_printMatchingId</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>resource_ignoreLayers</code></td>
+<td>"ignore layer bits and load all layers during map loads"</td>
+</tr>
+<tr>
+<td><code>resource_loadLooseAssets</code></td>
+<td>"check for loose assets when satisfying file io from a resource file"</td>
+</tr>
+<tr>
+<td><code>resourceStorage_checkDataCheckSum</code></td>
+<td>"check resource data checksums on resource load"</td>
+</tr>
+<tr>
+<td><code>resourceStorage_validateDeclHashes</code></td>
+<td>"makes sure the hash stored for decls matches the hash of the actual decl"</td>
+</tr>
+<tr>
+<td><code>resource_verifyResources</code></td>
+<td>"verify resources"</td>
+</tr>
+</tbody>
+</table></div>
+<p>The last three are the danger zone for every write attempt. This fits the runtime message</p>
+<p>0x1426ce4b0  idResourceList::Resource_GetEmbeddedStreamingFile: default hash mismatch (resource updated on disk?) loaded: %llx, container …</p>
+<p>And, for debugging purposes in the attempt, these three <strong>MEASURED</strong>:</p>
+<pre><code>0x1426cddf8  container entry defaulted: %s
+0x1426cdf98  %s:%s:%s container entry defaulted
+0x1426ce2e0  resource '%s' of type '%s' is orphaned (no container contains it anymore)
+</code></pre>
+<p>If a self-built patch archive does not carry the file, the diagnosis is in the log: <code>container entry defaulted</code> means "found but unusable", <code>orphaned</code> means "no container knows the name anymore".</p>
+<p><strong>REVEALED:</strong> There is a hash check that <em>can</em> detect a resource changed on disk. Whether it is active in the Retail build is open — <code>docs/stand.md</code> notes that Part 1 loaded flawlessly with 373 patched assets, but that is a different engine. <strong>Unverified for Part 2.</strong></p>
+<p><strong>Important for expectation management:</strong> <code>docs/cvars_tnc_echt.json</code> (304 Cvars actually observed in-game) contains exactly <strong>one</strong> of all these names: <code>resource_usePersistHeap</code>. The remaining <code>resource_*</code> Cvars are present as strings in the Exe but do not appear in any <code>listCvars</code> dump. <strong>SPECULATED:</strong> They are either registered dev-only or filtered by <code>listCvars</code>. Therefore, the first step of every attempt is <code>listCvars resource</code> in the console.</p>
+<hr />
+<h2 id="5-what-could-not-be-shown">5. What Could Not Be Shown</h2>
+<p>Full negative findings so that no one searches for them again.</p>
+<ul>
+<li><strong>No dependency from Base on Patch.</strong> Across all 16 Base archives and their 52,417 entries with dependency lists, there are <strong>zero</strong> references to any of the 1,013 patch-only assets. <strong>MEASURED.</strong> Logically: the Base archives were built before the Patch assets existed. The idea of deriving a precedence proof via dependency graphs is thus dead.</li>
+<li><strong>No Cvar pointers readable.</strong> The attempt to link Cvar name and description via pointer pairs in <code>.data</code> finds <strong>zero</strong> hits: the pointers are loaded in encrypted <code>.text</code> via <code>lea</code>. <strong>MEASURED.</strong> Therefore, the descriptions above remain unassigned.</li>
+<li><strong>No format string for archive names</strong>, see Section 4.</li>
+<li><strong>The decision point itself</strong> is not findable because <code>.text</code> is encrypted.</li>
+</ul>
+<hr />
+<h2 id="6-the-decisive-experiment">6. The Decisive Experiment</h2>
+<p>Not performed — here is how to do it.</p>
+<h3 id="stage-0-observe-without-touching-a-file">Stage 0: Observe without touching a file</h3>
+<p>The Retail files contradict each other at one place that is <strong>visible in the HUD</strong>. <code>ammo:ammo/player/sp/knife</code> (Throwing Knife), both copies stored uncompressed (Mode 0):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Copy</th>
+<th>File</th>
+<th style="text-align: right;"><code>maxCount</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Base</td>
+<td><code>chunk_16.resources</code>, Offset 28,553,856</td>
+<td style="text-align: right;"><strong>6</strong></td>
+</tr>
+<tr>
+<td>Patch</td>
+<td><code>patch_3.resources</code>, Offset 248,832</td>
+<td style="text-align: right;"><strong>3</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>MEASURED.</strong> Start a Freedom Chronicles mission from <code>game/dlc/c00/…</code> (the three c00 maps lie in <code>chunk_16</code> and belong to the base game), collect knives, read the upper limit in the HUD:</p>
+<ul>
+<li><strong>3</strong> → the Patch copy wins.</li>
+<li><strong>6</strong> → the Base copy wins, <strong>or</strong> <code>patch_3</code> is not mounted at all for a Layer-1 map (see Section 1, the three exceptions). Ambiguous — therefore Stage 1.</li>
+</ul>
+<p>The read-only diagnostic path has since been cleared: The complete stored Cvar dump of a real TNC session contains from this family only <code>resource_usePersistHeap</code>. <code>resource_spewPakSpam</code>, <code>resource_debugLevel</code>, <code>resource_showLoads</code>, <code>resourceStorage_checkDataCheckSum</code> and <code>resourceStorage_validateDeclHashes</code> are <strong>not registered</strong> there. The strings exist in the EXE but are not reachable as settable Cvars in this Retail build. This path cannot decide precedence.</p>
+<h3 id="stage-1-two-bytes-one-pass-three-possible-outcomes">Stage 1: Two Bytes, One Pass, Three Possible Outcomes</h3>
+<p>Both copies are <strong>Mode 0 (uncompressed)</strong>, and both changes are <strong>length-neutral</strong> — <code>csize</code> remains equal, the entry table is not touched, no Oodle, no archive rebuild. A hex editor suffices.</p>
+<p><strong>Variant A — Flat Patch Family over a Layer-1 Card</strong> (tests Priority <em>and</em> the global Mount question simultaneously):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th style="text-align: right;">Absolute Byte</th>
+<th>is</th>
+<th>set to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base\chunk_16.resources</code></td>
+<td style="text-align: right;"><strong>28 554 020</strong></td>
+<td><code>6</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>base\patch_3.resources</code></td>
+<td style="text-align: right;"><strong>249 110</strong></td>
+<td><code>3</code></td>
+<td><code>9</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Context for verification before writing (both locations):
+<code>…4/knife";\r\n\t\tmaxCount = &lt;Number&gt;;\r\n\t\tprojectile…</code></p>
+<p>Then start a c00 mission and read the knife limit in the HUD:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Conclusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>9</strong></td>
+<td><strong>Patch wins.</strong> The question is answered; a Mod costs a small archive.</td>
+</tr>
+<tr>
+<td><strong>1</strong></td>
+<td><strong>Base wins.</strong> Every Mod costs a full rebuild.</td>
+</tr>
+<tr>
+<td><strong>6</strong></td>
+<td>The Base copy is used, but the change to it was discarded → Integrity check active (<code>resourceStorage_checkDataCheckSum</code>).</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>The Patch copy is used, but the change was discarded → same thing, just reversed.</td>
+</tr>
+<tr>
+<td>something else</td>
+<td>It's not this <code>ammo</code> Decl setting the limit. Switch targets.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Outcomes <strong>6</strong> and <strong>3</strong> are the reason why both sides are changed simultaneously: they cleanly separate "the copy loses" from "the change is rejected".</p>
+<p><strong>Variant B — Always Mounted Pairing</strong> (<code>gameresources</code> ↔ <code>patch_3</code>, no Layer reservation). <code>entityDef:player_manhattan</code>, also both modes 0:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th style="text-align: right;">Absolute Byte</th>
+<th>Field</th>
+<th>is</th>
+<th>set to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base\gameresources.resources</code></td>
+<td style="text-align: right;"><strong>564 755 916</strong></td>
+<td><code>armoredDamageScale</code></td>
+<td><code>0.150000006</code> (11 chars)</td>
+<td><code>0.000000000</code></td>
+</tr>
+<tr>
+<td><code>base\patch_3.resources</code></td>
+<td style="text-align: right;"><strong>21 721 956</strong></td>
+<td><code>armoredDamageScale</code></td>
+<td><code>0.1</code> (3 chars)</td>
+<td><code>9.9</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Start the Manhattan chapter over the Chapter selection, taking a hit with armor:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Conclusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Armor swallows everything, health bar does not move</td>
+<td><strong>Base wins</strong></td>
+</tr>
+<tr>
+<td>A hit clears both armor and life</td>
+<td><strong>Patch wins</strong></td>
+</tr>
+<tr>
+<td>Normal damage</td>
+<td>neither of the two changes applies → Integrity check</td>
+</tr>
+</tbody>
+</table></div>
+<p>Variant B is the cleaner test (both containers are mounted on every card), Variant A is the cheaper accessible one. <strong>Together they also separate the second open question:</strong> if A applies but not B, something is wrong with <code>gameresources</code>; if B applies but not A, the flat Patch Family is not global but bound to Layer 0.</p>
+<h3 id="security">Security</h3>
+<ul>
+<li>Backup <code>chunk_16.resources</code>, <code>patch_3.resources</code> and possibly <code>gameresources.resources</code> beforehand — or, cheaper, note the four changed bytes with their original values; the changes are length-neutral and can be reversed byte by byte.</li>
+<li><code>patch_3.resources</code> is 35.5 MiB, <code>chunk_16.resources</code> is 92.9 MiB, <code>gameresources.resources</code> is 669.6 MiB. For Variant A, a 129 MiB backup is sufficient.</li>
+<li>Steam's "Verify Files" restores everything but costs the download.</li>
+<li>A savegame can store values between runs — <strong>start new</strong> for each run, do not load.</li>
+</ul>
+<h3 id="after-the-cheap-way-if-the-answer-is-yes">After: the cheap way, if the answer is Yes</h3>
+<p><strong>UNLOCKED</strong>, three paths, ascending by risk:</p>
+<ol>
+<li>
+<p><strong>Rebuild <code>patch_4_chunkbase_6.resources</code>.</strong> This results in the <strong>smallest archive of the game at 401,255 bytes and 25 entries</strong> (all <code>geistidentity</code>). Take the 25 assets along with their own assets; that's complete. It covers Layer-1 cards (<code>chunkbase_6</code>, <code>chunk_7..16</code>).<br />
+<strong>Side note, MEASURED:</strong> The associated <code>patch_4_chunkbase_6.texdb</code> is <strong>32 bytes</strong> in size — Magic <code>4fa5c2292ef3c761</code>, two hashes, entry count 0. An empty texture container is therefore valid and delivered.</p>
+</li>
+<li>
+<p><strong>Rebuild <code>patch_4.resources</code></strong> (58 MiB, 2,649 entries) for Layer-0 cards and <code>gameresources</code>. Still one-twelfth of a fresh <code>gameresources</code> rebuild.</p>
+</li>
+<li>
+<p><strong>Set <code>patchlevel</code> to 5</strong> and place a fresh <code>patch_5.resources</code> + <code>patch_5_chunkbase_6.resources</code> alongside only the own assets — that's the promised few hundred KiB. Cost: an intervention in <code>packagemapspec.json</code>, which Steam resets on every update, and the unverified assumption from Finding 9.</p>
+</li>
+</ol>
+<p>Paths 1 and 2 do not rely on <code>packagemapspec.json</code> and are therefore more robust. All three remain <strong>OPEN</strong> until Stage 1 has run.</p>
+<hr />
+<h2 id="7-if-the-answer-is-no">7. If the Answer is No</h2>
+<p>Then this isn't a null result, but a planning basis — and the numbers for it are already in <code>docs/moddingflaeche-tnc.md</code> 4.4:</p>
+<ul>
+<li>Rebuild <code>gameresources.resources</code> completely: ≈ 25 seconds at 26.9 MiB/s measured Oodle throughput, all 24 archives ≈ 2 minutes. <strong>Computation time is not the problem.</strong></li>
+<li>Backup copy of all <code>.resources</code>: <strong>3.4 GiB</strong>. That is the problem.</li>
+<li>The solution that then works: the In-Place path from <code>wolfsdk/idcl.py</code> (<code>plan_in_place</code>/<code>write_in_place</code>). A change that fits into <code>csize</code> plus the null-filled gap behind it requires <strong>no rebuild</strong> — according to 4.1 this applies to 21/25 <code>weapon</code>, 12/12 <code>damage</code>, 23/25 <code>entityDef</code>. The 1,701 duplicates would then be simply irrelevant, and one always edits the base copy.</li>
+</ul>
+<p>In this case, it must also be clarified what the 1,013 patch-only assets are for — 287 images and 265 materials that lie nowhere else. If the Base wins, there must be a second mechanism that searches the Patch containers even if the Base doesn't know the name ("Base wins on collision, Patch fills gaps"). This is the only hypothesis compatible with <em>all</em> findings of this document except number 5 — and Stage 1 refutes or confirms it equally.</p>
+<hr />
+<h2 id="sources">Sources</h2>
+<ul>
+<li><code>tools/probe_patchprec.py</code> — all numbers in this document</li>
+<li><code>wolfsdk/idcl.py</code> — archive format, <code>timestamp_us</code>, <code>data_hash</code></li>
+<li><code>tools/extract_tnc.py</code> — extraction</li>
+<li><code>docs/moddingflaeche-tnc.md</code> 4.4/4.5/4.6 — cost accounting, duplicate names</li>
+<li><code>docs/ladepfade.md</code> — <code>packagemapspec.json</code>, DLC folders, log files</li>
+<li><code>docs/audio.md</code> — <code>prodspec.json</code> with the same <code>patchlevel 4</code></li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Asset-Loading-Paths.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Loading Paths: Loose Files Instead of Archive Rewriting?</a><a class="next" href="Save-Games-and-Profiles.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Save Games and Profiles for Both Wolfenstein Titles</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

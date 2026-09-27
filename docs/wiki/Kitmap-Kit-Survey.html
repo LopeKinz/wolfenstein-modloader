@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kit-Survey c2v1: Components for a New Map – Wolfenstein Modloader</title>
+<meta name="description" content="Catalog of 160 building pieces (walls, floors, doors, props) from a Wolfenstein II map for building a new map.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#maps"><span class="en">Custom maps and missions</span><span class="de">Eigene Karten und Missionen</span></a></p>
+<h1>Kit-Survey c2v1: Components for a New Map</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Kitmap-Kit-Survey"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#results">Results</a></li><li><a href="#dimensions-and-conventions-measured-from-vertices-not-from-names">Dimensions and Conventions (measured from Vertices, not from Names)</a></li><li><a href="#collision-the-cm-is-pre-scaled">Collision: the cm is pre-scaled</a></li><li><a href="#entity-defs-that-place">Entity-Defs that place</a></li><li><a href="#risks--open">Risks / open</a></li><li><a href="#tests-all-executed-all-green">Tests (all executed, all green)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This survey lists the modular building pieces found in the DLC map c2v1 of Wolfenstein II: The New Colossus, to help build a custom map. For each of the 160 pieces it records the real measured size, where it is stored, whether it has <span class="t" data-t="collision">collision</span>, and an example placement. The data is checked by automatic tests, but whether new maps built from it actually work in the game is not confirmed.</p><ul><li>160 pieces: 41 walls, 40 floors, 22 ceilings, 15 props and more; 151 of them are stored in chunk_22.</li><li>144 of 160 pieces have collision for their example placement; 16 have none.</li><li>Names can mislead: 27 pieces differ from their named size by more than 5 cm.</li><li>No door in c2v1 actually opens; all 45 door entities are invisible prompts.</li><li>New floors are not walkable for AI, because the <span class="t" data-t="navmesh">navmesh</span> can only be reused.</li></ul></div><div class="de"><p class="lede">Diese Erhebung listet die modularen Bauteile der DLC-Karte c2v1 von Wolfenstein II: The New Colossus, um den Bau einer eigenen Karte zu erleichtern. Für jedes der 160 Teile sind die echte gemessene Größe, der Speicherort, die <span class="t" data-t="collision">Kollision</span> und ein Platzierungsbeispiel erfasst. Die Daten sind durch automatische Tests geprüft; ob daraus gebaute neue Karten im Spiel wirklich funktionieren, ist aber nicht bestätigt.</p><ul><li>160 Teile: 41 Wände, 40 Böden, 22 Decken, 15 Requisiten und mehr; 151 davon liegen in chunk_22.</li><li>144 von 160 Teilen haben Kollision für ihre Beispielplatzierung; 16 haben keine.</li><li>Namen können täuschen: 27 Teile weichen um mehr als 5 cm von ihrer im Namen genannten Größe ab.</li><li>Keine Tür in c2v1 öffnet sich wirklich; alle 45 Tür-Objekte sind unsichtbare Hinweise.</li><li>Neue Böden sind für die KI nicht begehbar, weil das <span class="t" data-t="navmesh">Navmesh</span> nur wiederverwendet werden kann.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Tool: <code>tools/survey_kitmap_kit.py</code>, Output: <code>re_probes/kitmap/kit/kit.json</code>
+(160 components, 422 KB). Status 2026-09-24. <strong>Structurally valid, runtime unconfirmed.</strong></p>
+<h2 id="results">Results</h2>
+<ul>
+<li><strong>160 components, all resolvable in the c2v1 mount</strong>, both with the Retail <code>chunk_22</code> (dlc_2) and the installed <code>dlc/dlc_0/base/chunk_22.resources</code>. The installed dlc_0 archive contains all 6,985 Retail entries plus 143 proprietary ones. Categories: 41 walls, 40 floors, 22 ceilings, 7 trims (caps/corners), 6 pillars, 6 railings, 5 stairs, 5 door frames, 4 doors, 4 windows/glass, 5 miscellaneous, 15 props (tables, chairs, lamps, crates, bench/radiator/shelf).</li>
+<li><strong>151 of the 160 models are located within <code>chunk_22</code> itself</strong>, not in base. Anyone rebuilding <code>chunk_22</code> must retain these entries. Base contributes only 6 props from <code>gameresources</code>, <code>servicetable_01</code> from <code>chunkbase_6</code>, <code>neumond/floor_800x800cm_a</code> from <code>patch_2_chunkbase_6</code>, and <code>lab_pillar_a</code> from <code>chunk_9</code>.</li>
+<li>109 components exist in c2v1 and have a <strong>real example block</strong>, copied from <code>c2v1.entities</code> via the byte-exact parser of <code>build_custom_map</code>. Another 51 components lie in the mount but are only placed by c2v2/c2v3. For them, <code>example_entity: null</code> applies.</li>
+<li><strong>144 / 160 have collision</strong> for placement in the example. The example placement resolves exactly via the <code>CmIndex.resolve</code> rule. The cm bounds match the render bounds (under the cm-specific scaling) everywhere within at most 2.4 cm. Therefore, the cm truly belongs to this model.</li>
+</ul>
+<h2 id="dimensions-and-conventions-measured-from-vertices-not-from-names">Dimensions and Conventions (measured from Vertices, not from Names)</h2>
+<p>Model space in meters, +Z up. The Sacramento modules (<code>man_*</code>, Gestapo Kit) follow a grid:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Size x·y·z</th>
+<th>Origin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>man_wall_{100,200,300,400,600}x400_a</code></td>
+<td>B · 0.225 · 4.0</td>
+<td>x-min, z-min, wall lies at y −0.4..−0.175</td>
+</tr>
+<tr>
+<td><code>man_floor_200x200_a</code></td>
+<td>2.0 · 2.0 · 0</td>
+<td>x-min, y-max (the tile extends +x and −y), z=0</td>
+</tr>
+<tr>
+<td><code>man_floor_175x200_a</code> (535× in c2v1)</td>
+<td>2.0 · 1.75 · 0</td>
+<td>as above, occupies y −2.0..−0.25 of a 2×2 cell</td>
+</tr>
+<tr>
+<td><code>man_ceiling_200x200cm_a</code></td>
+<td>2.0 · 2.0 · 0.05</td>
+<td>x-min, y-max, z-max. Retail sets ceilings with scale z = −1</td>
+</tr>
+<tr>
+<td><code>man_pillar_50x400_b</code></td>
+<td>0.5 · 0.5 · 4.0</td>
+<td>Center, Center, z-min</td>
+</tr>
+<tr>
+<td><code>man_railing_400x100_a</code></td>
+<td>4.0 · 0.112 · 1.0</td>
+<td>x-min, y-center, z-min</td>
+</tr>
+<tr>
+<td><code>man_door_frame_400x400_a</code></td>
+<td>4.0 · 0.273 · 4.0</td>
+<td>x-min, z-min</td>
+</tr>
+<tr>
+<td><code>man_door_a</code></td>
+<td>1.2 · 0.267 · 2.5</td>
+<td>x-min, z-min</td>
+</tr>
+<tr>
+<td><code>man_stairs_225x450_a</code></td>
+<td>4.525 · 4.1 · 2.25</td>
+<td>Offset, see kit.json</td>
+</tr>
+</tbody>
+</table></div>
+<p>Wall and door modules are 4 m high. Widths are whole meters; the floor uses a 2-m grid with 0.25-m strips (<code>man_floor_200x50</code>). 38 components <strong>tile demonstrably</strong>: Retail sets identical instances edge-to-edge (<code>tiling.abutting_same_piece_pairs</code>), e.g., <code>man_floor_175x200_a</code> with 624 pairs and <code>man_ceiling_200x200cm_a</code> with 571 pairs.</p>
+<p><strong>Names lie (Negative control, real hits):</strong> For 27 components, the geometry deviates from the named size by more than 5 cm. Examples: <code>man_ceiling_200x100cm_a</code> is 2.0 × <strong>0.75</strong> (placed 672 times), <code>man_floor_200x175_a</code> is 2.0 × <strong>0.75</strong>, <code>man_pillar_50x400_c</code> is <strong>6.5 m</strong> high, <code>man_pillar_50x400_a</code> measures <strong>0.7 × 0.7 × 4.5</strong>, <code>neumond/floor_1600x1000cm_a</code> measures <strong>16 × 8</strong>. The corners (<code>man_corner_*</code>) are L-profiles; their name describes no rectangle. Always take sizes from <code>size_m</code> / <code>bounds_*</code>.</p>
+<h2 id="collision-the-cm-is-pre-scaled">Collision: the cm is pre-scaled</h2>
+<p>The cm name carries the scaling (<code>$scale=%e,%e,%e</code>) and <code>$filterclip</code>. Therefore, collision exists <strong>only for a scaling from <code>collision_scales</code></strong>. <code>filterclip=18</code> belongs to <code>contentsFilter { playerClip = false; monsterClip = false; }</code>, the default of Static-Instances in c2v1.</p>
+<ul>
+<li>48 parts have <strong>no</strong> cm with scale 1 (<code>unit_scale_cm: false</code>), of which 20 are from the 22 ceilings (all except <code>ceiling_01_400x400cm_a/c</code>). Adopt the example for them (<code>example_scale</code>, usually z = −1); otherwise, a part without collision remains.</li>
+<li>16 parts have no resolvable cm for any placement (<code>has_collision: false</code>), such as <code>man_wall_200x400_b</code> or New Moon walls like <code>wall_600x600cm_*</code>. Use these parts only as decoration or secure them with a <code>func/collision_only</code> box.</li>
+</ul>
+<h2 id="entity-defs-that-place">Entity-Defs that place</h2>
+<ul>
+<li><code>idStaticInstanceEntity</code> / <code>func/staticinstance</code>: 4,533 placements of Kit parts. The example block contains <code>renderModelInfo.model</code>, optional <code>scale</code>, and <code>clipModelInfo</code> with <code>CLIPMODEL_AUTO</code>, <code>clipModelName</code> = model, <code>contentsFilter</code>, and <code>includeInNav = false</code>.</li>
+<li><code>idGlassEntity</code> / <code>func/glass</code> (41×, windows and glass walls): renders <code>&lt;model&gt;.glassmodel</code> and not the <code>model</code> entry. It collides with <code>.glassmodel$…$part=N</code>. <code>man_partition_glass_c</code> exists <strong>only</strong> as a glassmodel. Its size is not measured because the format is not decoded. Example block under <code>special_entities</code>.</li>
+<li><code>idDynamicEntity</code> / <code>func/dynamic</code> (35×, lamp models, one door).</li>
+<li><strong>Doors: c2v1 has no door that opens.</strong> All 45 door entities are invisible <code>idProp2</code> Use-Prompts (<code>prop/doors/unavaliable</code> 40×, <code>prop/doors/locked</code> 5×). They have no model and <code>CLIPMODEL_BOX</code> 0.2 × 1.2 × 1.0 and stand in front of a static <code>man_door_*</code>. Example blocks under <code>special_entities</code>.</li>
+</ul>
+<h2 id="risks--open">Risks / open</h2>
+<ul>
+<li><code>megatexturedModel = true</code> is present in <strong>all</strong> 4,533 Static placements of Kit parts. It is unknown whether a new instance requires data under a new name. Runtime unconfirmed.</li>
+<li>Navmesh is only reusable (mapmanifest). AI runs only where there was already floor in c2v1. New floors and stairs are not walkable for AI.</li>
+<li>Lamp models are only meshes; the light comes from their own Light entities.</li>
+<li>Categories come from name patterns (Regex). Individual assignments are discretionary, such as <code>man_elevator_a</code> under "door" and <code>man_blocker_a</code> (74 × 199 × 18.5 m) under "other".</li>
+</ul>
+<h2 id="tests-all-executed-all-green">Tests (all executed, all green)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Checks</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--selftest</code></td>
+<td>Name parser (cm/mm), axis assignment, pivot, edge contact including flat floors, categories</td>
+<td>ok</td>
+</tr>
+<tr>
+<td><code>--check</code></td>
+<td>every <code>model_resource</code> and every <code>cm_resource</code> in Retail- <strong>and</strong> in dlc_0-Mount; size newly from vertices (±1.5 mm); name/size re-evaluated; <code>unit_scale_cm</code> newly from raw cm names; the <code>$scale</code> of cm = <code>example_scale</code>; example block places exactly this model; glassmodel names resolvable</td>
+<td>160/160, OK</td>
+</tr>
+<tr>
+<td><code>--check</code>, built-in controls</td>
+<td>Fake model does not resolve; name+0.5 m is recognized; cm name without <code>$simplify</code> does not resolve</td>
+<td>all rejected</td>
+</tr>
+<tr>
+<td><code>--negative</code></td>
+<td>8 mutated kit.json copies (size, has_collision, unit_scale_cm, cm_scale, cm-name, example block, model name, name/size judgment)</td>
+<td>8/8 rejected, original accepted</td>
+</tr>
+</tbody>
+</table></div></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNC-DLC-C02-Runtime-Test.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Primary DLC Test c02p0</a><a class="next" href="Kitmap-Map-Skeleton.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Skeleton for a new map in c2v1</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

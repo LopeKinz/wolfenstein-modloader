@@ -1,13 +1,20 @@
 name: GitHub Pages
 
 # Publishes docs/ to https://lopekinz.github.io/wolfenstein-modloader/
+# The wiki section (docs/wiki/) is rebuilt from the GitHub wiki on every run,
+# so edits in the wiki reach the site automatically (the "gollum" event).
+#
 # One-time setup: Settings → Pages → Build and deployment → Source: "GitHub Actions".
-# (Alternative without Actions: Source "Deploy from a branch", branch main, folder /docs.)
+# (With "Deploy from a branch" → main → /docs the committed pages are served
+#  as they are, without the automatic wiki rebuild.)
 
 on:
   push:
     branches: [main]
-    paths: ["docs/**", ".github/workflows/pages.yml"]
+    paths: ["docs/**", "scripts/build_site.py", ".github/workflows/pages.yml"]
+  gollum:
+  schedule:
+    - cron: "17 4 * * *"
   workflow_dispatch:
 
 permissions:
@@ -27,6 +34,14 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Rebuild wiki pages from the GitHub wiki
+        run: |
+          git clone --depth 1 "https://github.com/${{ github.repository }}.wiki.git" "$RUNNER_TEMP/wiki"
+          pip install markdown
+          python scripts/build_site.py --wiki "$RUNNER_TEMP/wiki"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

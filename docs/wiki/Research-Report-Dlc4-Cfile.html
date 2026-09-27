@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>`dlc_4` Map plus `cfile:wolfsdk_test.cfg` – Wolfenstein Modloader</title>
+<meta name="description" content="A TNC map archive with an added encrypted command file, and why the game would not load it for the retail map.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1><code>dlc_4</code> Map plus <code>cfile:wolfsdk_test.cfg</code></h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Dlc4-Cfile"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result-in-two-sentences">Result in two sentences</a></li><li><a href="#1-the-container">1. The Container</a></li><li><a href="#2-which-chunk_22-is-mounted">2. Which chunk_22 is mounted</a></li><li><a href="#3-implications">3. Implications</a></li><li><a href="#4-counter-controls---negativ">4. Counter-controls (--negativ)</a></li><li><a href="#reproduction">Reproduction</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">The plan for Wolfenstein II: The New Colossus was to put a custom encrypted command file into a replacement map archive in the dlc_4 folder. The archive was built and passes 21 of 21 checks. However, the game&#x27;s code shows that the <span class="t" data-t="dlc">DLC</span> folder is chosen by the map name, and the first match wins. So for the normal map the game would mount the original dlc_2 archive, not the custom one. This comes from static code analysis, not from a test in the game.</p><ul><li>The built archive has 7,129 entries; all 7,128 old entries stay byte-identical apart from their position.</li><li>The new file decrypts correctly from inside the built archive; 7 of 7 negative controls fail as intended.</li><li>The engine searches the base game first, then the DLC list in order (dlc_1 to dlc_4), and the first match wins.</li><li>The custom archive would only be mounted when loading the custom map name c2v1_custom.</li><li>Untested idea: renaming the folder dlc_4 to dlc_0 might put it first; possible sound and ownership check risks are noted.</li></ul></div><div class="de"><p class="lede">Der Plan für Wolfenstein II: The New Colossus war, eine eigene verschlüsselte Befehlsdatei in ein Ersatz-Kartenarchiv im Ordner dlc_4 zu legen. Das Archiv ist gebaut und besteht 21 von 21 Prüfungen. Der Spielcode zeigt aber, dass der <span class="t" data-t="dlc">DLC</span>-Ordner über den Kartennamen gewählt wird und der erste Treffer gewinnt. Für die normale Karte würde das Spiel also das Original-Archiv aus dlc_2 einbinden, nicht das eigene. Das stammt aus statischer Codeanalyse, nicht aus einem Test im Spiel.</p><ul><li>Das gebaute Archiv hat 7.129 Einträge; alle 7.128 alten Einträge bleiben bis auf ihre Position byte-identisch.</li><li>Die neue Datei entschlüsselt korrekt aus dem gebauten Archiv heraus; 7 von 7 Gegenproben schlagen wie gewollt fehl.</li><li>Die Engine sucht zuerst im Hauptspiel, dann der Reihe nach in der DLC-Liste (dlc_1 bis dlc_4); der erste Treffer gewinnt.</li><li>Das eigene Archiv würde nur beim Laden des eigenen Kartennamens c2v1_custom eingebunden.</li><li>Ungetestete Idee: Den Ordner dlc_4 in dlc_0 umzubenennen, könnte ihn nach vorne bringen; mögliche Risiken bei Sound und Besitzprüfung sind notiert.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Route <code>cfileindlc4</code>, 2026-09-23. New: <code>tools/build_dlc4_with_cfile.py</code>, <code>re_probes/dlc4_cfile/chunk_22.resources</code>. Nothing installed, the game was not started, nothing written under <code>D:/SteamLibrary</code> or <code>Saved Games</code> (only read there).</p>
+<h2 id="result-in-two-sentences">Result in two sentences</h2>
+<p>The container is built and passes 21/21 checks. <strong>However, the idea behind it does not hold</strong>: The Exe selects the DLC directory via the <strong>map name</strong>, not via the chunk ID. When loading the retail game state <code>game/dlc/c02/c2v1</code>, it mounts <code>../dlc//dlc_2/base/chunk_22.resources</code>. This also applies with today's <code>dlc_4</code> spec (18:35), which lists <code>c2v1</code> as well, because <code>dlc_2</code> appears before <code>dlc_4</code> in the DLC list. Our <code>chunk_22</code> is only mounted when loading <code>c2v1_custom</code>. This finding stems from static analysis of the running Exe and was not measured within the game itself.</p>
+<h2 id="1-the-container">1. The Container</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source</td>
+<td><code>re_probes/entitypipe/base/chunk_22.resources</code>, 7128 entries, sha256 <code>a8da9e4e…</code> (= installed dlc_4)</td>
+</tr>
+<tr>
+<td>Target</td>
+<td><code>re_probes/dlc4_cfile/chunk_22.resources</code>, 7129 entries, 151 703 648 bytes, sha256 <code>cb3d8bac6fa574173212cc681f75c3043d1a8bc7d925497c4db93f493c807f03</code></td>
+</tr>
+<tr>
+<td>New Entry</td>
+<td>Last table position, <code>cfile:wolfsdk_test.cfg</code>, comp 0, csize = usize = 96, 0 dependencies, payload byte-identical to <code>re_probes/cfilekey/wolfsdk_test.cfg.cfile</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Nothing new was written for the build. It is appended using <code>tools/build_tnc_map_alias_v3.write_archive</code>, the function that previously attached 143 alias entries to this container. The line template is the entry from the exe carrier. Afterwards, <code>wolfsdk/idclwrite.finalize</code> runs. Nothing needed recalculation (<code>data_hash 0, hash_0x60 0</code> changed), so the hashes of <code>write_archive</code> were already correct. The string table grows at the back by <code>cfile</code> and <code>wolfsdk_test.cfg</code>, and the string index pool by 2 entries. All old indices remain valid; therefore, nothing changes in any old entry except the offset.</p>
+<p>Running <code>python tools/build_dlc4_with_cfile.py --pruefen</code> yields <strong>21/21</strong>:</p>
+<ul>
+<li>7129 entries on re-read with <code>wolfsdk/idcl.py</code>.</li>
+<li>7128 old table lines are byte-identical except for <code>+0x38</code> (offset). The check compared all 144 bytes, including <code>+0x50/+0x60</code>, versions, flags, and run indices.</li>
+<li>7128 payloads are byte-identical. Dependency records (1943) and Dep-index pool are byte-identical. The old string index pool, the old 8821 strings, and their raw bytes are each prefixes of the new ones.</li>
+<li>No payload overlaps another, and the last one ends at the file end. The 5 empty <code>cm</code> entries share an offset like in Retail. My first, stricter check for unique offsets therefore failed and was corrected.</li>
+<li>The new cfile decrypts <strong>from the built container</strong> to <code>b'map game/dlc/c02/c2v1_custom\n'</code>. With <code>base/</code> names or 16 appended filler bytes, the tag fails.</li>
+<li><code>probe_datahash</code>: <code>+0x50 7128/7128</code> (1 entry with compression mode 4 skipped, same as in source), rc 0. <code>probe_idclhash</code>: <code>+0x08 1/1 +0x20 1/1</code>, rc 0.</li>
+</ul>
+<p>The control runs with <code>--negativ</code> on a disposable copy in the Temp directory. There, a ciphertext byte and the header byte <code>0x18</code> are flipped. Afterwards, <code>probe_datahash</code>, <code>probe_idclhash</code>, and <code>pruefe()</code> must fail. Additionally, <code>zeilen_diff</code> must see changes at <code>+0x50</code>, <code>string_index</code>, and <code>compression</code>, and report nothing on the offset. See §4 for the result.</p>
+<h2 id="2-which-chunk_22-is-mounted">2. Which <code>chunk_22</code> is mounted</h2>
+<p>The check runs with <code>python tools/build_dlc4_with_cfile.py --vorrang</code> (<strong>35/35</strong>). It checks 29 instructions and 4 strings at fixed RVAs in <code>re_probes/runtime_87400/module.bin</code>. The control run with addresses shifted by about 1 byte hits none of them.</p>
+<ul>
+<li><strong>LoadNamedResourceBlock (<code>0xac1730</code>)</strong>: <code>r13</code> holds the map name, populated by the format argument of <code>chunk missing in LoadNamedResourceBlock for map %s</code>. The execution flow is as follows:<ul>
+<li><code>0xabf440(MapName)</code> retrieves the Spec entry; the chunk ID resides at <code>[r15+0x30]</code>.</li>
+<li><code>0xabf500(MapName)</code> retrieves the directory prefix.</li>
+<li><code>0xabd940(chunkID)</code> constructs <code>chunk_22.resources</code> without a directory path.</li>
+<li><code>0x1211e70</code> combines the prefix and name, then mounts at <code>0xacc6b0</code>.</li>
+</ul>
+</li>
+</ul>
+<p>The same logic applies to <code>.texdb</code>. The RefChunks (<code>chunk_9</code>, <code>chunk_13</code>) and <code>chunkbase_6</code> are mounted <strong>without</strong> a prefix from <code>base/</code>.
+* <strong><code>0xabf500</code> and <code>0xabf440</code></strong>: Both first search in <code>base/packagemapspec.json</code> (<code>this+8</code>), then in the DLC list (<code>this+0x30</code>, 160 bytes per entry, MapSpec at <code>+0x138</code>). The <strong>first match</strong> wins (<code>jne</code> exits the loop). The prefix is <code>"%s/%s" % (DLC-Path, "base/")</code>. The chunk ID is never compared across DLCs. Therefore, the question "dlc_2 or dlc_4 with the same chunk ID 22" is not posed to the engine at all.
+* <strong>Order of the DLC List</strong>: SearchDLC (<code>0xabdcf0</code>) skips an already existing dlcid (the first wins), otherwise it hangs (<code>0xabe2c6</code>) and logs immediately after <code>found dlc id %d at %s</code> (<code>0xabe503</code>). Thus, the log order corresponds to the list order. Measured in <code>qconsole.loadsave.log</code>: <code>dlc_1, dlc_2, dlc_3, dlc_4</code>.
+* <strong>Simulated against installed Specs</strong> (read-only):
+  <code>c2v1 -&gt; ../dlc//dlc_2/base/chunk_22.resources</code>,
+  <code>c2v1_custom -&gt; ../dlc//dlc_4/base/chunk_22.resources</code>.
+* Consistent with today's measurement at 18:27: The startup routine <code>0xabdaa0</code> mounts only <code>gameresources</code> and Patches. DLC Chunks come exclusively via LoadNamedResourceBlock. Therefore, <code>resourceExec</code> finds nothing in the main menu.
+* <code>packagechunklist.json</code> is read at <code>0xb76330</code> (<code>chunks</code>/<code>chunkid</code>/<code>packagechunks</code>). This lies in the neighborhood of idStreamingInstallManager, so the file is <strong>UNLOCKED</strong> as a Streaming-Install Manifest and not a Mount List. The warning is irrelevant for this question.</p>
+<p><strong>Summary</strong>: <code>dlc_primary.md</code> and <code>map_selection.md</code> held precedence for equal names as "statically unproven". For the directory path, it is now statically proven: first match in order base, then DLC list. Only what a runtime measurement would show remains open. A contradiction in the game would imply this interpretation is false.</p>
+<h2 id="3-implications">3. Implications</h2>
+<ul>
+<li><strong>The planned path</strong> (Loading Retail-Save c2v1, then <code>resourceExec wolfsdk_test.cfg</code>) again predicts <code>can't generate in production</code> because <code>dlc_2/chunk_22</code> is mounted. This is a cheap falsification test of this analysis.</li>
+<li><strong>Our container is mounted when <code>c2v1_custom</code> loads.</strong> Then the cfile is superfluous because one is already in the map. It only proves that a custom cfile in the game is resolvable.</li>
+<li><strong>Leverage without Retail write access (not tested):</strong> Rename the folder <code>dlc/dlc_4</code> to <code>dlc/dlc_0</code>. The dlcid 4 remains, and the Spec already lists <code>c2v1</code>. If the directory enumeration is alphabetical (the measured order 1–4 fits this, but it has not been proven), then <code>dlc_0</code> precedes <code>dlc_2</code>. Then for the Retail-Save, <strong>our</strong> <code>chunk_22</code> will be mounted. It contains all 6985 c2v1 retail payloads byte-identically. Risks:<ul>
+<li>The same prefix goes to a virtual call at <code>0xac1a47..0xac1a8d</code>. It is <strong>SUSPECTED</strong> that this is the DLC Sound Mount, and <code>dlc_4</code> has no <code>sound/</code> folder.</li>
+<li>An entitlement check for DLC 2 for the Save cannot be ruled out.</li>
+</ul>
+</li>
+</ul>
+<p>Log evidence that the lever works: <code>found dlc id 4 at ../dlc//dlc_0</code> appears <strong>before</strong> <code>found dlc id 1</code>.</p>
+<h2 id="4-counter-controls---negativ">4. Counter-controls (<code>--negativ</code>)</h2>
+<p><strong>7/7</strong>, rc 0:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Manipulation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>zeilen_diff</code>: one bit in <code>+0x50</code>, <code>string_index</code>, and <code>compression</code></td>
+<td>all three detected</td>
+</tr>
+<tr>
+<td><code>zeilen_diff</code>: a bit in the offset</td>
+<td>ignored, as intended</td>
+</tr>
+<tr>
+<td>Ciphertext byte and header byte <code>0x18</code> flipped (copy)</td>
+<td><code>probe_datahash 7127/7128</code> rc 1, <code>probe_idclhash +0x08 0/1</code> rc 1</td>
+</tr>
+<tr>
+<td><code>pruefe()</code> on the same copy</td>
+<td>17/21: Payload, Decryption (<code>HMAC-Tag incorrect</code>), and both checks fail</td>
+</tr>
+</tbody>
+</table></div>
+<p>Limitation: The equality checks of the old entries were only tested against manipulation (<code>zeilen_diff</code>) in memory, not with a second damaged 150-MB copy.</p>
+<h2 id="reproduction">Reproduction</h2>
+<pre><code>python tools/build_dlc4_with_cfile.py            # build + 21 checks (~2.5 min)
+python tools/build_dlc4_with_cfile.py --pruefen  # check only
+python tools/build_dlc4_with_cfile.py --negativ  # negative controls, copy in temp directory
+python tools/build_dlc4_with_cfile.py --vorrang # Mount rule on module.bin, 35 checks
+</code></pre></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Dlc-Primary.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>DLC-/Patch Container as Primary Source — Static Finding</a><a class="next" href="Research-Report-Dlc4-Override.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Override-Chunk: Custom edits under the Retail card name <code>c2v1</code></a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alias Package v3 – Wolfenstein Modloader</title>
+<meta name="description" content="Short result: a Wolfenstein II custom map alias bundle (v3) built with a cyan lobby light as a visible change.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Alias Package v3</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Map-Bundle-V3"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This short report describes version 3 of an alias map bundle for Wolfenstein II: The New Colossus, based on the DLC map c2v1. The bundle keeps all original content unchanged, adds 143 new alias names and one visible change, a cyan-colored lobby light. Both archive <span class="t" data-t="header">header</span> checksums were recalculated and the offline checks passed. It has not been installed or loaded in the game.</p><ul><li>6,985 original entries are kept byte-identical.</li><li>143 new aliases and 140 rewritten resource paths were added, plus two new layer declarations.</li><li>The only visible test change is a cyan lobby light; the map geometry is unchanged.</li><li>The texture database from the original DLC 2 must be used when mounting.</li><li>Per-entry hashes and effects in the running game remain open.</li></ul></div><div class="de"><p class="lede">Dieser kurze Bericht beschreibt Version 3 eines Alias-Kartenpakets für Wolfenstein II: The New Colossus auf Basis der DLC-Karte c2v1. Das Paket lässt alle Originalinhalte unverändert, fügt 143 neue Alias-Namen und eine sichtbare Änderung hinzu, ein cyanfarbenes Lobbylicht. Beide <span class="t" data-t="header">Header</span>-Prüfsummen des Archivs wurden neu berechnet, und die Offline-Prüfungen bestanden. Im Spiel wurde es weder installiert noch geladen.</p><ul><li>6.985 Originaleinträge bleiben byte-identisch.</li><li>143 neue Aliase und 140 umgeschriebene Ressourcenpfade kamen hinzu, dazu zwei neue Ebenen-Deklarationen.</li><li>Die einzige sichtbare Teständerung ist ein cyanfarbenes Lobbylicht; die Kartengeometrie bleibt unverändert.</li><li>Beim Einbinden muss die Texturdatenbank aus dem Original-DLC 2 verwendet werden.</li><li>Hashes pro Eintrag und die Wirkung im laufenden Spiel sind noch offen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>The original worker was dropped due to usage limits. Astra took over the length-aware MRL parser and extended the full candidate.</p>
+<p>Result: <code>re_probes/map_alias_v3/bundle_headerfixed</code>, SHA256 of Resources <code>95236c3ebcaffb73a0f367bedbec71b720537677c3ab2aa3d87bd8cafd5fe2c2</code>.
+6.985 original payload bytes byte-identical, 143 new aliases, 20,832 MRL entries,
+140 rewritten resource paths, two new layer declarations. Both IDCL header hashes recalculated, positive and negative offline checks passed.</p>
+<p>Visible test content: cyan-colored lobby light. Original geometry remains unchanged.
+TexDB must use the original DLC2 during mount. No live installation claimed, no successful mount/map-load asserted. Per-entry hashes and runtime effects remain open. Full report:
+<code>docs/tnc_astra_findings_20260923.md</code>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Loose-Assets.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC Retail: lose/external load paths (read-only findings only)</a><a class="next" href="Research-Report-Map-Selection.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Map/DLC Selection Logic (Static Findings)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

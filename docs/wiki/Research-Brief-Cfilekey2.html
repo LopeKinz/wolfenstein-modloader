@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Cfilekey2 – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: find how Wolfenstein II derives the key for its encrypted script files (cfile).">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Cfilekey2</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Cfilekey2"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is a task description for Wolfenstein II: The New Colossus, not a result. A console command that can run scripts was found, but it only accepts scripts packed as encrypted &quot;cfile&quot; assets inside game archives, not loose files. The worker was asked to find the <span class="t" data-t="key">key</span> derivation in the unpacked game code, decrypt all 10 language files as proof, re-encrypt them byte for byte, and then build a new cfile that loads a custom map. If this works, it would open a route to loading custom maps; the result itself is on a separate report page.</p><ul><li>The console accepts exactly 34 commands; &#x27;map&#x27; is not among them, but &#x27;resourceExec&#x27; is.</li><li>resourceExec refuses loose script files in the retail build, so the script must be an encrypted cfile.</li><li>Known so far: files are handled by idEncryptedFileResource using AES via Windows CNG.</li><li>Required proof: decrypt 10/10 language files, byte-exact re-encryption, and failing negative controls.</li><li>Target: a new cfile containing &#x27;map game/dlc/c02/c2v1_custom&#x27;, clearly marked as untested in the game.</li></ul></div><div class="de"><p class="lede">Diese Seite ist eine Aufgabenbeschreibung für Wolfenstein II: The New Colossus, kein Ergebnis. Es wurde ein Konsolenbefehl gefunden, der Skripte ausführen kann, aber er akzeptiert nur Skripte als verschlüsselte &quot;cfile&quot;-Assets in Spielarchiven, keine losen Dateien. Der Worker sollte die Ableitung des <span class="t" data-t="key">Schlüssels</span> im entpackten Spielcode finden, zum Beweis alle 10 Sprachdateien entschlüsseln, sie byte-genau wieder verschlüsseln und dann eine neue cfile bauen, die eine eigene Karte lädt. Gelingt das, wäre ein Weg zum Laden eigener Karten offen; das Ergebnis steht auf einer eigenen Berichtsseite.</p><ul><li>Die Konsole nimmt genau 34 Befehle an; &#x27;map&#x27; gehört nicht dazu, &#x27;resourceExec&#x27; schon.</li><li>resourceExec lehnt lose Skriptdateien in der Verkaufsversion ab, das Skript muss eine verschlüsselte cfile sein.</li><li>Bekannt war: Die Dateien laufen über idEncryptedFileResource mit AES über Windows CNG.</li><li>Geforderter Beweis: 10/10 Sprachdateien entschlüsseln, byte-genaues Neuverschlüsseln und fehlschlagende Gegenproben.</li><li>Ziel: eine neue cfile mit &#x27;map game/dlc/c02/c2v1_custom&#x27;, klar als im Spiel ungetestet markiert.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-cfilekey2-a1</code>; task <code>cfilekey2</code>; research (read-only RE).
+Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
+Parallel: <code>w-idclwriter-a1</code> (container writer), <code>w-savestructure-a1</code>.</p>
+<h1 id="objective">Objective</h1>
+<p>Recover the <code>cfile</code> key derivation for Wolfenstein II. This is now the single item on the critical path to loading a custom map.</p>
+<p><code>docs/cfile.md</code> states the reason the earlier attempt failed, and it is the one thing that changed today:</p>
+<p>"The key is derived ... exclusively inside the SteamStub-encrypted <code>.text</code>. No ready-to-use key exists in a readable section."</p>
+<p>The previous worker only ever had the PACKED executable. <code>re_probes/runtime_87400/module.bin</code> is a read-only capture of the RUNNING, SteamStub-unpacked process - the <code>.text</code> that was unreadable is now plain. Five other format problems fell to exactly this today.</p>
+<h1 id="why-it-matters---the-chain-this-closes">Why it matters - the chain this closes</h1>
+<p>Measured at runtime today (<code>wolfsdk_dump.txt</code>, console session 15:48):</p>
+<ul>
+<li>The console dispatches exactly 34 commands. <code>map</code>, <code>devmap</code>, <code>fastmap</code> and <code>toggle</code> are registered but NOT among them. Static prediction and runtime agreed 34/34 with zero deviation.</li>
+<li><code>resourceExec</code> IS one of the 34. Per <code>re_probes/agent_reports/cmdtable.md</code> it sets the restriction level to 0 and buffers its script into the unrestricted command buffer - so a script run through it should reach all 234 commands, <code>map</code> included.</li>
+<li><code>resourceExec wolfsdk_test.cfg</code> on a LOOSE file answered:
+      WARNING: cfile:wolfsdk_test.cfg:NONE can't generate in production while loading cfile:wolfsdk_test.cfg
+      couldn't exec resource wolfsdk_test.cfg
+  So it resolves its argument as a <code>cfile</code> RESOURCE, and refuses to generate one from a loose file in a production build.</li>
+<li><code>com_production</code> and <code>resource_loadLooseAssets</code> are both registered but NOT exposed (<code>re_probes/cvartable/cvars_tnc_v2.json</code>), so no console cvar can change that.</li>
+</ul>
+<p>Therefore the script must exist as a <code>cfile</code> asset inside a mounted <code>.resources</code> archive. Building such an archive is solved as of today (<code>re_probes/agent_reports/idclhash.md</code>, <code>datahash.md</code>). Authoring the <code>cfile</code> payload is not - it is encrypted, and that is your task.</p>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li><code>re_probes/runtime_87400/module.bin</code> - virtual RVA layout (file offset == RVA), sections and image base in manifest.json, <code>.pdata</code> for function bounds.</li>
+<li><code>docs/cfile.md</code> - the prior analysis. It already located the ground: the handler is <code>idEncryptedFileResource</code>, AES through <code>bcrypt.dll</code> (CNG), and it lists the error strings with their .rdata addresses, e.g. 0x026C9580 "Failed to derive key", 0x026C9688 "could not derive key", and a nearby string describing "Salt erzeugen -&gt; Schluessel ableiten -&gt; verschluesseln". Take the xrefs from those strings into the now-readable <code>.text</code>. That is the shortest path.</li>
+<li><code>tools/cfile.py</code> - existing, READ-ONLY for you. It has a working <code>Aes</code> class, PKCS7 unpad, a plaintext scorer (<code>verify_plain</code>, <code>textiness</code>) and a cfile enumerator (<code>cfiles</code>, <code>head</code>). Reuse them; do not edit that file.</li>
+<li><code>re_probes/agent_reports/saveverify.md</code> - a sibling worker traced the OTHER bcrypt user in this binary (the save HMAC) and found <code>idSecureHMAC</code>, <code>BCryptCreateHash/HashData/FinishHash</code>, and a key built by SHA256 over a concatenation. The cfile path likely uses the same CNG wrappers - read that report before starting, the call shapes will look familiar.</li>
+<li>The 10 <code>strings/*.lang</code> cfiles are the corpus the earlier attempt used.</li>
+<li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p><code>tools/probe_cfilekey.py</code> (new), <code>re_probes/cfilekey/</code> (new dir),
+<code>re_probes/agent_reports/cfilekey2.md</code> (new).</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No game launch, no process attach, no writes under the Steam install or
+"C:/Users/‹user›/Saved Games". Do not edit tools/cfile.py, wolfsdk/<em>, docs/</em>,
+config.json, or any other worker's files (tools/probe_idclhash.py,
+probe_datahash.py, probe_cmdtable.py, probe_saveverify.py, probe_texdbkey.py,
+probe_cvartable.py, probe_save_structure.py, wolfsdk/idclwrite.py,
+re_probes/{idclhash,datahash,cmdtable,saveverify,texdbkey,cvartable,idclwriter,save_structure}/).
+No pip install.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib plus vendored capstone. The decryptor must be pure stdlib
+(tools/cfile.py already implements AES by hand for exactly this reason).
+Reproducible from the command line, no running game.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li>The derivation read out of the code: which function, what inputs, what salt,
+  what KDF, which AES mode, with the RVAs and the xref chain that got you there.</li>
+<li>Positive control at today's bar: DECRYPT real retail cfiles and show the
+  plaintext is genuinely plaintext - all 10 <code>strings/*.lang</code>, n/n, verified with
+  a structural check (the existing <code>verify_plain</code>/<code>declen</code> logic), not by
+  eyeballing that it "looks like text".</li>
+<li>Round-trip: re-encrypt a decrypted cfile and reproduce the original bytes
+  exactly. Without that, authoring a new cfile is guesswork.</li>
+<li>Negative controls: a wrong key, a flipped salt byte and a wrong mode must each
+  fail the structural check rather than producing plausible-looking output.</li>
+<li>Then the payoff: produce a NEW, valid cfile whose plaintext is
+  <code>map game/dlc/c02/c2v1_custom</code> and write it to re_probes/cfilekey/. State
+  plainly that it is untested at runtime.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Every important assurance needs a check that fails if it is false. "Decrypts to
+something with high textiness" is weak; the round-trip is strong. Keep "key
+found" and "key confirmed against the corpus" apart.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If the key turns out to be derived from a runtime value that is not in the
+image (as happened with the save <code>.verify</code> HMAC today - read that report, it is
+the cautionary case), say so immediately and name what it depends on. That is a
+valuable result, not a failure: it would mean the resourceExec route needs a
+different carrier and we should stop pushing on this one.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones. Publish a bus fact as soon as you can decrypt retail
+cfiles, and again when you can round-trip - the container writer worker needs
+the second one to put your payload into an archive. Concise German report in
+re_probes/agent_reports/cfilekey2.md. Finish the bus task when done.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="Research-Brief-Cmdtable.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Cmdtable</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

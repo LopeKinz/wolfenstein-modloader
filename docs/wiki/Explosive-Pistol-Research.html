@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pistol: Decl Chain and Explosive Pistol – Wolfenstein Modloader</title>
+<meta name="description" content="How TNC&#x27;s pistol is defined in data files, and a mod that makes its bullets explode like rockets.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Pistol: Decl Chain and Explosive Pistol</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Explosive-Pistol-Research"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#chain-of-the-player-pistol">Chain of the Player Pistol</a></li><li><a href="#what-explodes">What Explodes</a></li><li><a href="#the-mod-modstnc_waffe_explosivpistole">The Mod (mods/tnc_waffe_explosivpistole)</a></li><li><a href="#open-only-to-be-clarified-in-game">Open (only to be clarified in-game)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page traces the chain of <span class="t" data-t="decl">decl</span> data files behind the player&#x27;s pistol in Wolfenstein II: The New Colossus: weapon, ammo, projectile and damage. It then describes a small mod that lets the pistol&#x27;s projectile inherit from the rocket of the Kampfpistole, so every shot explodes, and raises the magazine to 30. The mod is structurally valid, but it has not been confirmed in the game.</p><ul><li>The pistol is a chain of four decls: weapon, ammo (10 rounds by default), projectile and damage (20).</li><li>All three ammo upgrades (silencer, elephant rounds and both combined) inherit from the base projectile, so they would explode too.</li><li>The rocket&#x27;s area damage is 250 in a radius of 2, and you take 25% self-damage.</li><li>The mod changes 3 assets: projectile inheritance, magazine 10 → 30, and the magazine upgrade 20 → 30.</li><li>Open in the game: whether the normal weapon class fires the rocket correctly, and whether enemies now react to every shot like a grenade.</li></ul></div><div class="de"><p class="lede">Diese Seite verfolgt die Kette der <span class="t" data-t="decl">Decl</span>-Datendateien hinter der Spielerpistole in Wolfenstein II: The New Colossus: Waffe, Munition, Projektil und Schaden. Dann beschreibt sie einen kleinen Mod, bei dem das Pistolenprojektil von der Rakete der Kampfpistole erbt, sodass jeder Schuss explodiert, und das Magazin auf 30 steigt. Der Mod ist strukturell gültig, im Spiel aber nicht bestätigt.</p><ul><li>Die Pistole ist eine Kette aus vier Decls: Waffe, Munition (standardmäßig 10 Schuss), Projektil und Schaden (20).</li><li>Alle drei Munitions-Upgrades (Schalldämpfer, Elefantenmunition und beides kombiniert) erben vom Basisprojektil und würden daher ebenfalls explodieren.</li><li>Der Flächenschaden der Rakete beträgt 250 im Radius 2; du selbst nimmst 25 % Schaden.</li><li>Der Mod ändert 3 Assets: Projektil-Vererbung, Magazin 10 → 30 und das Magazin-Upgrade 20 → 30.</li><li>Im Spiel offen: ob die normale Waffenklasse die Rakete richtig abfeuert und ob Gegner jetzt auf jeden Schuss wie auf eine Granate reagieren.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Status as of 2026-09-25, read from Retail installation (read-only only). All data resides in <code>gameresources.resources</code> (Container <code>MAIN</code>, always mounted); deviations are noted below. Verifiable via: <code>python tools/verify_weapon_mod.py</code>.
+Status: <strong>structurally valid, unconfirmed in-game</strong>.</p>
+<h2 id="chain-of-the-player-pistol">Chain of the Player Pistol</h2>
+<pre><code>weapon/player/sp/handgun           inherit handgun_nomesh; Model pistole61.md6, magazineEnt, casing
+weapon/player/sp/handgun_nomesh    inherit base_nomesh (no inventoryClass = Standard class)
+                                   initialAmmoDecl = ammo/player/sp/handgun
+                                   BURSTMODE_SINGLE, burstInterval 85, dualwieldable, maxCount 2
+                                   upgrades: magazine_size, silencer, elephantrounds, elephantrounds_silencer
+ammo/player/sp/handgun             inherit base_ammo (clipSize 30 as default)
+                                   clipSize 10, maxCount 80, lowAmmoInClip 3, 20 ammoCountMeshes
+                                   projectileDecl = projectile/player/pistol
+projectile/player/pistol           inherit projectile/player/default  -&gt; Hitscan (no hitscan=false)
+                                   damageDecl bullet_pistol, impactEffectTable handgun, tracers 2
+damage/firearm/bullet_pistol       inherit bullet_standard; 20/20, DAMAGETYPE_HANDGUN,
+                                   declGoreBehavior standard/pistol
+</code></pre>
+<p>Upgrades (<code>applyTo = weapon/player/sp/handgun</code>) swap the projectile via <code>modifiersData.item[].data.valueDecl</code>:
+<code>silencer</code> -&gt; <code>pistol_silenced</code>, <code>elephantrounds</code> -&gt; <code>pistol_elephant</code> (Damage <code>bullet_pistol_elephant</code> 30, Gore <code>standard/magnum</code>; newer version in <code>patch_2</code>), <code>elephantrounds_silencer</code> -&gt; <code>pistol_elephantrounds_silenced</code>.
+All three inherit (directly or via <code>pistol_elephant</code>) from <code>projectile/player/pistol</code>.
+<code>magazine_size</code>: <code>AMT_AMMO_CLIP_SIZE</code>, <code>valueInt = 20</code>, priority 4, without <code>opType</code>; located in <code>gameresources</code> <strong>and</strong> <code>patch_3</code> (there additionally <code>DMT_UPGRADE_ANIM</code>). All four Retail magazine upgrades set exactly double the base magazine (10/20, 30/60, 20/40, 45/90) - whether "set" or "add" is intended, the data does not specify.</p>
+<p>Decl entries in IDCL carry <strong>0 dependencies</strong>; references are resolved at runtime by name. <code>generated/buildgame/common.mapresources</code> (highest copy in <code>patch_4</code>) loads the entire chain with the Always bit.</p>
+<h2 id="what-explodes">What Explodes</h2>
+<p>Every Retail projectile with <code>splashDamageDecl</code> is an Entity projectile (<code>hitscan = false</code> + <code>notHitscanInfo.entityDef</code>); a hitscan with area damage does not exist. Candidates: Grenades, <code>dieselgun</code>, <code>ubergun</code>, <code>dkw_*</code>, Combat Pistol.</p>
+<p>Combat Pistol (<code>ammo/player/sp/kampfpistol</code>, 6 shots):</p>
+<ul>
+<li><code>projectile/player/kampf_pistol</code> - Grenade, parabolic trajectory, bounces off surfaces, ignites after 2.5s or upon contact with enemies (<code>explodeOnActorsAfterTime 200</code>).</li>
+<li>Launcher upgrade <code>weapons/kampf/launcher</code> -&gt; <code>projectile/player/kampf_pistol_rocket</code>:
+  <code>gravityFactor 0</code>, speed 70, Entity <code>projectile_ent/kampf_grenade_rocket</code> (<code>idProjectile_Grenade</code>, <code>explodeOnImpactAfterTime 75</code> ms, fuse 3s),
+  <code>splashDamageDecl damage/player/kampf_grenade</code>: 250 damage, Radius 2 (inner 1), <code>selfDamageScale 0.25</code>, Gore <code>standard/grenade</code> + radial.
+  Direct hit <code>damage/player/kampf_grenade/minorimpact</code>.</li>
+</ul>
+<h2 id="the-mod-modstnc_waffe_explosivpistole">The Mod (mods/tnc_waffe_explosivpistole)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Change</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>projectile:projectile/player/pistol</code></td>
+<td><code>inherit</code> default -&gt; <code>kampf_pistol_rocket</code></td>
+<td>408/448 B</td>
+</tr>
+<tr>
+<td><code>ammo:ammo/player/sp/handgun</code></td>
+<td><code>edit.clipSize</code> 10 -&gt; 30</td>
+<td>465/512 B</td>
+</tr>
+<tr>
+<td><code>upgrade:weapons/handgun/magazine_size</code></td>
+<td>patch_3-Retail without indentation, <code>valueInt</code> 20 -&gt; 30</td>
+<td>439/448 B (gameresources), 439/512 B (patch_3)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Why use <code>inherit</code> instead of <code>projectileDecl</code> for the ammunition: The upgrades replace the projectile, but all replacement projectiles inherit from <code>projectile/player/pistol</code>. This causes basic, silencer, and elephant ammunition to explode, while the pistol retains its bullet sound, spread, and its hit damage (<code>bullet_pistol</code> instead of <code>minorimpact</code>); additionally, it gains the area damage of the combat pistol rocket.</p>
+<p>Why the upgrade is a file: <code>Installation.read</code> reads the first copy (gameresources) and <code>apply</code> writes the result to <strong>every</strong> copy. A <code>set</code> would have taken <code>DMT_UPGRADE_ANIM</code> from the patch_3 copy. The indented patch_3 version packs to 467 bytes; the space in gameresources is 448 bytes—thus a rebuild of 702 MB. Without indentation (token-identical, as confirmed by the reviewer): 439 bytes.</p>
+<p>Retail examples: The hatchet (<code>weapon/player/sp/hatchet</code>, also standard class) fires an entity projectile (<code>axe_throw</code>, <code>hitscan = false</code>). A magazine larger than <code>ammoCountMeshes.num</code> is common (smg 45/1, battlerifle 30/3).</p>
+<h2 id="open-only-to-be-clarified-in-game">Open (only to be clarified in-game)</h2>
+<ul>
+<li>Whether the standard weapon class starts the rocket entity exactly like <code>idKampfpistol</code> (the hatchet example supports this).</li>
+<li>Whether the spawned entity takes damage from <code>projectile/player/pistol</code> or from its own <code>projectileDecl</code> (<code>kampf_pistol_rocket</code>) — it should explode in both cases.</li>
+<li>Setting or adding <code>AMT_AMMO_CLIP_SIZE</code>: with magazine upgrade 30 or 60.</li>
+<li>The rocket does not ignite on impact under ~5 m (75 ms at speed 70), but bounces off and ignites later — self-damage 25 %.</li>
+<li><code>aiEventDecl base/misc/grenade</code>: Enemies react to every shot as if it were a grenade; the silencer no longer makes the pistol silent.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="Research-Report-Assetviewer.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Asset Tab for Wolfenstein II (assetviewer)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

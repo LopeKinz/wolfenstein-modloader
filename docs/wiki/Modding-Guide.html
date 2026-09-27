@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modding Guide – Wolfenstein Modloader</title>
+<meta name="description" content="A practical guide to making mods: changing weapons, skins and enemies by editing the game&#x27;s text definitions.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
+<h1>Modding Guide</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Modding-Guide"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#core-principles">Core Principles</a></li><li><a href="#1-weapons">1. Weapons</a></li><li><a href="#2-weapon-skins">2. Weapon Skins</a></li><li><a href="#3-characters-and-clothing">3. Characters and Clothing</a></li><li><a href="#4-conflicts-and-load-order">4. Conflicts and Load-Order</a></li><li><a href="#5-pitfalls">5. Pitfalls</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This guide shows, step by step, how to build mods for Wolfenstein: The New Order with the project&#x27;s tool. Most interesting game data lives in text <span class="t" data-t="decl">definitions</span>, and a mod is a list of changes to them, either single values or whole files. Examples cover weapon damage and fire rate, weapon skins, and enemy looks, health and weapons. It also explains how mods are layered by priority and common pitfalls, such as inherited values and re-doing backups after a game update.</p><ul><li>Two kinds of change: &#x27;set&#x27; edits single values, &#x27;file&#x27; replaces a whole asset; &#x27;set&#x27; is usually better.</li><li>A dry run (verify_mods.py) shows every change as a diff before anything is written.</li><li>New 3D models are not possible; &#x27;new&#x27; weapons are built by recombining existing parts.</li><li>For weapon skins, the <span class="t" data-t="vt">virtual texture</span> coordinates (virtualmapping) must be changed along with the texture name.</li><li>When two mods set the same value, the higher priority wins and the conflict is reported.</li></ul></div><div class="de"><p class="lede">Diese Anleitung zeigt Schritt für Schritt, wie du mit dem Tool des Projekts Mods für Wolfenstein: The New Order baust. Die meisten interessanten Spieldaten liegen in Text-<span class="t" data-t="decl">Definitionen</span>, und ein Mod ist eine Liste von Änderungen daran, entweder einzelne Werte oder ganze Dateien. Beispiele zeigen Waffenschaden und Feuerrate, Waffen-Skins sowie Aussehen, Gesundheit und Bewaffnung von Gegnern. Außerdem erklärt sie, wie Mods nach Priorität übereinandergelegt werden, und nennt typische Stolperfallen wie geerbte Werte und neue Backups nach einem Spiel-Update.</p><ul><li>Zwei Arten von Änderungen: &#x27;set&#x27; ändert einzelne Werte, &#x27;file&#x27; ersetzt ein ganzes Asset; &#x27;set&#x27; ist meist besser.</li><li>Ein Probelauf (verify_mods.py) zeigt jede Änderung als Diff, bevor etwas geschrieben wird.</li><li>Neue 3D-Modelle sind nicht möglich; &#x27;neue&#x27; Waffen entstehen durch Kombination vorhandener Teile.</li><li>Bei Waffen-Skins müssen die <span class="t" data-t="vt">Virtual-Texture</span>-Koordinaten (virtualmapping) zusammen mit dem Texturnamen geändert werden.</li><li>Setzen zwei Mods denselben Wert, gewinnt die höhere Priorität, und der Konflikt wird gemeldet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>All examples have been tested against the actual game files. If a path is listed here, it exists.</p>
+<hr />
+<h2 id="core-principles">Core Principles</h2>
+<p>Almost everything interesting in the game resides in <strong>Decls</strong> — text files within the <code>.resources</code> archives. A mod is a list of changes to such Decls. There are two types:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Syntax</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Surgical</strong></td>
+<td><code>"set": { "path": value }</code></td>
+<td>Changes only this value; the rest of the file remains untouched</td>
+</tr>
+<tr>
+<td><strong>Full Replacement</strong></td>
+<td><code>"file": "decls/x.decl"</code></td>
+<td>Replaces the asset completely</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>set</code> is almost always the better choice: mods remain compatible with each other and survive detailed changes to locations they do not touch.</p>
+<h3 id="the-workflow">The Workflow</h3>
+<pre><code class="language-bash">python -m wolfsdk list --type weapon              # what exists?
+python -m wolfsdk cat weapon:weapon/shotgun_base  # what does it look like?
+python -m wolfsdk paths weapon:weapon/shotgun_base   # what can I change?
+# -&gt; write mod.json
+python tools/verify_mods.py                       # dry run with Diff
+python -m wolfsdk enable meine.mod &amp;&amp; python -m wolfsdk apply
+</code></pre>
+<p><code>verify_mods.py</code> writes nothing and shows you exactly what <code>apply</code> would do as a Diff. Always do this first.</p>
+<hr />
+<h2 id="1-weapons">1. Weapons</h2>
+<h3 id="changing-values">Changing Values</h3>
+<p>A weapon's damage does not reside <strong>in</strong> the weapon, but in its own <code>damage</code> Decl:</p>
+<pre><code class="language-bash">python -m wolfsdk list --type damage --grep tungsten
+python -m wolfsdk paths damage:damage/tungsten/mg60
+</code></pre>
+<pre><code>edit.damageParms.minDamage          12.5
+edit.damageParms.maxDamage          17.5
+edit.damageParms.ragdollImpulseMag  500
+edit.damageParms.goreTypes          &quot;GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND …&quot;
+edit.damageParms.declGoreBehavior   &quot;standard/heavy&quot;
+</code></pre>
+<pre><code class="language-json">&quot;damage:damage/tungsten/mg60&quot;: {
+  &quot;set&quot;: {
+    &quot;edit.damageParms.minDamage&quot;: 22.0,
+    &quot;edit.damageParms.maxDamage&quot;: 30.0,
+    &quot;edit.damageParms.ragdollImpulseMag&quot;: 1200
+  }
+}
+</code></pre>
+<h3 id="changing-behavior">Changing Behavior</h3>
+<p>The <code>weapon</code> Decl controls handling — in the shotgun base Decl there are 169 addressable values:</p>
+<pre><code>edit.isDualWieldable                        true
+edit.ammoPerShot                            1
+edit.allowSprintFire                        false
+edit.allowOneHandedReload                   true
+edit.firingIntervals.firingIntervals[0]     200      // milliseconds
+edit.burstCounts.burstCounts[2]             1
+edit.validAmmoClips.item[0].clipSize        20
+edit.handsFovScale                          0.90
+edit.handsModelMD6                          &quot;weapons/shotgun.md6&quot;
+edit.initialAmmoDecl                        &quot;ammo/shotgun&quot;
+</code></pre>
+<p>Fire faster and have a larger magazine:</p>
+<pre><code class="language-json">&quot;weapon:weapon/shotgun_base&quot;: {
+  &quot;set&quot;: {
+    &quot;edit.firingIntervals.firingIntervals[0]&quot;: 120,
+    &quot;edit.firingIntervals.firingIntervals[2]&quot;: 120,
+    &quot;edit.validAmmoClips.item[0].clipSize&quot;: 40
+  }
+}
+</code></pre>
+<p>Make it dual-wieldable when it otherwise isn't:</p>
+<pre><code class="language-json">&quot;weapon:weapon/lasercutter_base&quot;: { &quot;set&quot;: { &quot;edit.isDualWieldable&quot;: true } }
+</code></pre>
+<h3 id="building-a-new-weapon">Building a "New" Weapon</h3>
+<p>New 3D geometry is not possible (see <a href="Modding-Limits.html">limits.md</a>). A new weapon arises through <strong>Recombination</strong>, and that is more than it sounds:</p>
+<ol>
+<li>Copy an existing <code>weapon</code> Decl as a full replacement and rebuild it</li>
+<li>Set <code>handsModelMD6</code> to point to another existing model</li>
+<li>Run <code>initialAmmoDecl</code> through <code>ammo</code> → <code>projectile</code> → <code>damage</code></li>
+<li>Set fire rates, spread, magazine, and dual-wield freely</li>
+<li>Create your own <code>skins</code> set for the look</li>
+</ol>
+<p>Result: a quiet, fast-firing double shotgun with laser projectiles — mechanically a new weapon, optically composed of existing parts.</p>
+<p>Trace the chain:</p>
+<pre><code class="language-bash">python -m wolfsdk cat weapon:weapon/shotgun_base | grep -i ammo
+python -m wolfsdk paths ammo:ammo/shotgun        # -&gt; projectile/shotgun
+python -m wolfsdk cat projectile:projectile/shotgun
+</code></pre>
+<hr />
+<h2 id="2-weapon-skins">2. Weapon Skins</h2>
+<p>A skin is a <strong>Material</strong>. The pistol shows how it works — the game already provides a white variant:</p>
+<pre><code class="language-bash">python -m wolfsdk cat material:models/weapons/handgun/handgun_hg
+python -m wolfsdk cat material:models/weapons/handgun/handgun_white_hg
+</code></pre>
+<p>The difference is exactly two lines:</p>
+<pre><code>diffusemap      &quot;models/weapons/Handgun/Handgun&quot;            → &quot;…/Handgun_white_hg&quot;
+virtualmapping  { 0.015625, 0.015625, 0.078125, 0.031250 }  → { …, 0.000000, 0.062500 }
+</code></pre>
+<pre><code class="language-json">&quot;material:models/weapons/handgun/handgun_hg&quot;: {
+  &quot;set&quot;: {
+    &quot;diffusemap&quot;: &quot;models/weapons/Handgun/Handgun_white_hg&quot;,
+    &quot;virtualmapping&quot;: &quot;{ 0.015625, 0.015625, 0.000000, 0.062500 }&quot;
+  }
+}
+</code></pre>
+<blockquote>
+<p><strong><code>virtualmapping</code> included.</strong> The pixels lie in the Megatexture, not in the Material. These four numbers are the coordinates there. Changing only the <code>diffusemap</code> name is likely insufficient — take the values from the target material as well.</p>
+</blockquote>
+<p>Other knobs in the Material: <code>specularmap</code> (Specular), <code>bumpmap</code> (Surface relief), <code>powermip</code>.</p>
+<h3 id="skins-decls"><code>skins</code>-Decls</h3>
+<p>A <code>skins</code>-Decl is a named Material override table:</p>
+<pre><code>{
+    white {
+        &quot;models/weapons/handgun/handgun_hg&quot; &quot;models/weapons/handgun/handgun_white_hg&quot;
+        &quot;models/weapons/handgun/handgun_silencer&quot; &quot;…/handgun_silencer_white&quot;
+    }
+}
+</code></pre>
+<p>The game activates such a set via its name — for characters, via <code>damageSwapSkin</code>. Rebuilding an entire set is easiest as a full replacement via <code>"file"</code>.</p>
+<hr />
+<h2 id="3-characters-and-clothing">3. Characters and Clothing</h2>
+<p>An enemy is an <code>entityDef</code>. Example:</p>
+<pre><code class="language-bash">python -m wolfsdk paths entityDef:ai/tungsten/c10/part_01/rifle/infantry60_01
+</code></pre>
+<pre><code>edit.renderModelInfo.model                        &quot;templates/c10/part1/Commando.md6&quot;
+edit.damageSwapSkin                               &quot;commando_gore_dmg&quot;
+edit.aiHealth.components.components[0].max        65
+edit.startingInventory.item[0].inventoryDecl      &quot;weapon/ai/assaultrifle1960&quot;
+edit.clipModelInfo.size.z                         96
+</code></pre>
+<p>This yields four completely different mods:</p>
+<p><strong>Different Appearance</strong> — the soldier uses a different model:</p>
+<pre><code class="language-json">&quot;entityDef:ai/tungsten/c10/part_01/rifle/infantry60_01&quot;: {
+  &quot;set&quot;: { &quot;edit.renderModelInfo.model&quot;: &quot;characters/standard/soldiers/infantry60/infantry60_01.md6&quot; }
+}
+</code></pre>
+<p><strong>Different Clothing/Color</strong> — different skin set:</p>
+<pre><code class="language-json">&quot;set&quot;: { &quot;edit.damageSwapSkin&quot;: &quot;infantry60_gore_dmg&quot; }
+</code></pre>
+<p><strong>Tougher or weaker:</strong></p>
+<pre><code class="language-json">&quot;set&quot;: { &quot;edit.aiHealth.components.components[0].max&quot;: 200,
+         &quot;edit.aiHealth.components.components[0].cur&quot;: 200 }
+</code></pre>
+<p><strong>Different Weaponry:</strong></p>
+<pre><code class="language-json">&quot;set&quot;: { &quot;edit.startingInventory.item[0].inventoryDecl&quot;: &quot;weapon/ai/shotgun&quot; }
+</code></pre>
+<p>The model itself is an <code>md6Def</code> and also text:</p>
+<pre><code class="language-bash">python -m wolfsdk cat md6Def:characters/standard/soldiers/infantry60/infantry60_01.md6
+</code></pre>
+<pre><code>init {
+    inherit &quot;characters/standard/base.md6&quot;
+    multimesh { base &quot;md6/models/…/infantry60_01.md6mesh&quot; }
+}
+</code></pre>
+<p><code>multimesh.base</code> points to the actual geometry (<code>.md6mesh</code>, binary, not editable). But <code>inherit</code>, hitboxes (<code>jointGroups</code>), <code>modelCaps</code>, and appended objects can be freely modified.</p>
+<blockquote>
+<p>There are 3,182 <code>entityDef</code>s. Many enemies exist per chapter separately (<code>c02/…</code>, <code>c10/…</code>) — whoever wants to change an enemy type game-wide must capture all variants. <code>wolfsdk list --type entityDef --grep &lt;name&gt;</code> shows them.</p>
+</blockquote>
+<hr />
+<h2 id="4-conflicts-and-load-order">4. Conflicts and Load-Order</h2>
+<p>Mods are layered by <code>priority</code>, <strong>low first</strong>. Each mod works on the result of the previous one.</p>
+<ul>
+<li>Two mods change <strong>different</strong> values of the same Decl → both work.</li>
+<li>Two mods set the <strong>same</strong> path → higher priority wins, reported as a conflict.</li>
+<li>Two mods use <code>"file"</code> on the same asset → hard conflict, reported, higher priority wins.</li>
+</ul>
+<p>Conflicts do not block; they are reported — in the GUI in the message field, on the command line at <code>apply</code>.</p>
+<hr />
+<h2 id="5-pitfalls">5. Pitfalls</h2>
+<p><strong>Numbers do not automatically preserve their original formatting.</strong> <code>25</code> and <code>25.0</code> are different text in Decl. Write floating-point numbers as floating-point numbers if the original is one — <code>"maxDamage": 30.0</code>, not <code>30</code>.</p>
+<p><strong>Strings are automatically quoted</strong> if the original was quoted. For block values like <code>virtualmapping</code>, you must include the curly brackets yourself.</p>
+<p><strong>An asset can appear multiple times.</strong> The same <code>(type, name)</code> combination may exist in multiple chunks. The Patcher writes <strong>all</strong> occurrences so it does not matter which one the engine encounters first.</p>
+<p><strong>Inheritance.</strong> Many Decls have <code>inherit = "…"</code>. A value you do not see in the child is defined in the base. <code>wolfsdk cat</code> on the base Decl shows it. A <code>set</code> works only on paths that are located in <strong>this</strong> file.</p>
+<p><strong>After a game update</strong>, offsets no longer match. First run <code>revert</code>, then create a new Backup. <code>wolfsdk info</code> warns if something does not match.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Home.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Documentation — Getting Started</a><a class="next" href="File-Formats.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Format Reference</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

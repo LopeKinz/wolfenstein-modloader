@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Mapmanifest – Wolfenstein Modloader</title>
+<meta name="description" content="Task description: what must a Wolfenstein II map list or precompute so a new asset actually loads?">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Mapmanifest</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Mapmanifest"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Task description for custom maps in Wolfenstein II (TNC): what does a map need to know about a new object so that the game actually loads it? The worker is asked to study the <span class="t" data-t="mapresources">map resource list</span>, the streaming data, the visibility and shadow data, and the enemy <span class="t" data-t="navmesh">navigation mesh</span>. For each, the question is whether it can be written new or must be reused unchanged.</p><ul><li>A DLC map (c2v1) is made of many placed pieces, e.g. 2,795 collision and 955 model entries, not one big world file.</li><li>Writing archives is already solved and reproduces originals byte-identical.</li><li>Deliverable: the smallest set of edits needed to add one new asset to an existing map.</li><li>The map resource list must be read and written back byte-exact for every copy found.</li><li>Being listed in a manifest does not prove the game loads it; that needs a test in the game.</li></ul></div><div class="de"><p class="lede">Aufgabenbeschreibung zu eigenen Karten in Wolfenstein II (TNC): Was muss eine Karte über ein neues Objekt wissen, damit das Spiel es tatsächlich lädt? Der Worker soll die <span class="t" data-t="mapresources">Ressourcenliste der Karte</span>, die Streaming-Daten, die Sichtbarkeits- und Schattendaten sowie das <span class="t" data-t="navmesh">Navigationsnetz</span> der Gegner untersuchen. Für jeden Teil ist die Frage, ob er neu geschrieben werden kann oder unverändert wiederverwendet werden muss.</p><ul><li>Eine DLC-Karte (c2v1) besteht aus vielen platzierten Teilen, z. B. 2.795 Kollisions- und 955 Modell-Einträgen, nicht aus einer großen Weltdatei.</li><li>Das Schreiben von Archiven ist schon gelöst und reproduziert Originale byte-gleich.</li><li>Ergebnis: die kleinste Menge an Änderungen, um einer bestehenden Karte ein neues Asset hinzuzufügen.</li><li>Die Ressourcenliste der Karte muss bei jeder gefundenen Kopie byte-genau gelesen und zurückgeschrieben werden.</li><li>In einer Liste zu stehen beweist nicht, dass das Spiel es lädt; dafür braucht es einen Test im Spiel.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-mapmanifest-a1; task mapmanifest; research.
+Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Parallel: w-meshfmt-a1, w-cmfmt-a1, w-entitypipe-a1, w-matpipe-a1.
+You own the layer that decides what a map even consists of.</p>
+<h1 id="objective">Objective</h1>
+<p>The other four workers can author assets. You answer the question that decides
+whether an authored asset ever reaches the player: <strong>what does a map need to
+know about an asset so the engine loads it?</strong></p>
+<p>Specifically:</p>
+<ol>
+<li><code>file:generated/buildgame/&lt;map&gt;.mapresources</code> - what is in it, and is it the
+   authoritative list of a map's assets? If we add a <code>model</code>/<code>cm</code>/<code>image</code> to a
+   map chunk without listing it there, does it resolve?</li>
+<li><code>staticStreamTree</code> and <code>modelstream</code> - the streaming layer. What decides that
+   a model's data is fetched when the player walks into a room?</li>
+<li><code>pvs</code> and <code>staticShadowGeom</code> - visibility and shadow precomputation. If a new
+   object is not in them, is it invisible, unshadowed, or harmless?</li>
+<li><code>hknavmesh</code> - navigation. Can enemies path at all if it is unchanged, and
+   what happens to an AI that walks into newly added geometry?</li>
+</ol>
+<p>For each: can it be authored/extended, or must it be reused as-is? A precise
+"reuse only" answer is just as valuable as an authoring recipe, because it tells
+the other workers where the walls are.</p>
+<h1 id="what-is-already-solved---context-you-need">What is already solved - context you need</h1>
+<ul>
+<li>Container writing is finished and master-verified: <code>wolfsdk/idclwrite.py</code>
+  round-trips retail archives BYTE-IDENTICALLY, <code>finalize()</code> fixes all hashes.</li>
+<li>A map's composition, measured on <code>dlc_2/base/chunk_22.resources</code> (c2v1):
+  cm 2795, image 1462, model 955, material 388, modelAsset 253, modelstream 249,
+  sound 183, entityDef 78, extkisclule 68, md6Def 31, compfile 9, file 12.
+  So there is NO monolithic world blob - a map is placed instances plus this
+  manifest/streaming layer, which is why your piece matters so much.</li>
+<li><code>re_probes/agent_reports/small_custom_map.md</code> lists exactly these as the
+  unrewritten cross-references and calls them the real blocker for a new map ID.
+  That report is your starting point - it already named the problem, you answer it.</li>
+<li><code>re_probes/agent_reports/idclwriter.md</code> established that <code>dep+0x18</code> in
+  dependency records is NOT a general mirror of <code>+0x60</code> (only 233 of 3741
+  resolvable dep_type=2 records carry it) - dependency records are subtler than
+  they look, and they are part of your territory.</li>
+</ul>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li><code>re_probes/runtime_87400/module.bin</code> - read-only capture of the RUNNING,
+  unpacked executable (file offset == RVA, sections in manifest.json, <code>.pdata</code>
+  for function bounds). Today five formats fell to reading loaders in it.</li>
+<li><code>docs/ladepfade.md</code> (load paths), <code>docs/streamed.md</code>, <code>docs/karten.md</code>,
+  <code>docs/dlcmod.md</code>, <code>re_probes/agent_reports/{dlc_primary,loose_assets,
+  map_selection}.md</code>.</li>
+<li><code>tools/streamed.py</code>, <code>tools/dlcinfo.py</code>, <code>tools/dlcmod.py</code> - read-only.</li>
+<li>Retail corpus READ ONLY:
+  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+<li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/probe_mapmanifest.py (new), re_probes/mapmanifest/ (new dir),
+re_probes/agent_reports/mapmanifest.md (new).
+Everything else read-only.</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No game launch, no process attach, no writes under the Steam install or
+"C:/Users/‹user›/Saved Games". Do not edit wolfsdk/<em>, docs/</em>, config.json, or any
+other worker's file. No pip install.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib plus vendored capstone. Reproducible from the command line.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li><code>.mapresources</code> parsed with a byte-exact round-trip, n/n over every map's copy
+  you can reach (there are many - use them all, it is the cheapest corpus here).</li>
+<li>For each of the four questions: an answer backed by either a code path (with
+  RVA and xref chain) or a measurement over the corpus with counts. "Probably"
+  is not an answer; "unresolved, here is exactly what I tried" is.</li>
+<li>A single clear deliverable the other workers can act on: <strong>the minimum set of
+  manifest/streaming edits required to add one new asset to an existing map.</strong>
+  If some part of that set is not authorable, say which and what it costs.</li>
+<li>Negative controls: your parser must reject a truncated manifest and one with a
+  count that disagrees with its entries.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Every important assurance needs a check that can fail. Keep "listed in the
+manifest" and "actually loaded at runtime" apart - you cannot show the second
+offline, and you should say so.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If PVS/navmesh turn out to be precomputed structures that cannot be regenerated,
+that is a major, useful finding: it would mean authored geometry is limited to
+places where being outside the precomputed sets is harmless. Quantify it if you
+can - e.g. what a retail map does with objects that are not in the PVS.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones. Publish bus facts early and often here - the other
+four workers are authoring assets that may or may not need your manifest edits,
+and they would rather know at 30% than at the end. Concise German report in
+re_probes/agent_reports/mapmanifest.md. Finish the bus task.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Map-Selection.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research Task: Map/DLC Selection Logic</a><a class="next" href="Research-Brief-Matpipe.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Matpipe</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

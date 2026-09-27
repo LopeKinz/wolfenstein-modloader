@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The TexDB Key — Solved (from the code, not a hash sweep) – Wolfenstein Modloader</title>
+<meta name="description" content="The TNC texture database key is fully computable, so renamed or new textures can get working keys.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>The TexDB Key — Solved (from the code, not a hash sweep)</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Texdbkey"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-the-old-rule-was-not-wrong--it-was-off-by-one-nibble">1. The old rule was not wrong — it was off by one nibble</a></li><li><a href="#2-where-the-code-is-located">2. Where the code is located</a></li><li><a href="#3-side-finding-the-mip-table-of-the-tnc-bimage-is-decrypted">3. Side finding: the Mip table of the TNC .bimage is decrypted</a></li><li><a href="#4-positive-controls--re_probestexdbkeyderive_retailtxt">4. Positive controls — re_probes/texdbkey/derive_retail.txt</a></li><li><a href="#5-negative-controls--re_probestexdbkeynegative_controlstxt">5. Negative Controls — re_probes/texdbkey/negative_controls.txt</a></li><li><a href="#6-the-practical-answer">6. The Practical Answer</a></li><li><a href="#7-what-was-not-tested-honestly-labeled">7. What was not tested (honestly labeled)</a></li><li><a href="#8-artifacts">8. Artifacts</a></li><li><a href="#9-for-other-owners">9. For other owners</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">In Wolfenstein II: The New Colossus, textures in the .texdb files are found only by a 64-bit key. An earlier rule matched only about 5% of keys. By reading the game&#x27;s code, this report found the missing detail: the engine drops the top 4 bits of a stored <span class="t" data-t="hash">hash</span> and combines the rest with a mip slot number. The texture&#x27;s name plays no role, so modders can rename textures or add new ones with keys that resolve.</p><ul><li>The key formula matches 25,930 of 25,930 texture IDs across all 28 .texdb files, including DLC.</li><li>5,144 of 5,144 full keys also match the expected data length; six negative controls all give 0 hits.</li><li>The old rule failed because one instruction discards the top 4 bits, so it matched only about 1 in 16 cases.</li><li>The size of each texture block comes from the image file&#x27;s own mip table, not from the .texdb.</li><li>Not tested in the game: whether a self-built texture pair actually renders.</li></ul></div><div class="de"><p class="lede">In Wolfenstein II: The New Colossus werden Texturen in den .texdb-Dateien nur über einen 64-Bit-Schlüssel gefunden. Eine frühere Regel traf nur etwa 5 % der Schlüssel. Durch Lesen des Spielcodes fand dieser Bericht das fehlende Detail: Die Engine wirft die oberen 4 Bit eines gespeicherten <span class="t" data-t="hash">Hashes</span> weg und kombiniert den Rest mit einer Mip-Stufennummer. Der Name der Textur spielt keine Rolle. Modder können Texturen also umbenennen oder neue hinzufügen, deren Schlüssel funktionieren.</p><ul><li>Die Schlüsselformel trifft 25.930 von 25.930 Textur-IDs in allen 28 .texdb-Dateien, DLC eingeschlossen.</li><li>5.144 von 5.144 vollständigen Schlüsseln passen auch zur erwarteten Datenlänge; sechs Gegenproben liefern alle 0 Treffer.</li><li>Die alte Regel scheiterte, weil ein einziger Befehl die oberen 4 Bit verwirft; sie traf daher nur etwa jeden 16. Fall.</li><li>Die Größe jedes Texturblocks steht in der Mip-Tabelle der Bilddatei selbst, nicht in der .texdb.</li><li>Nicht im Spiel getestet: ob ein selbst gebautes Texturpaar tatsächlich angezeigt wird.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p><strong>Result: The key is fully computable. The asset name does not matter. A renamed or newly added texture can receive a key that resolves—the builder has nothing to guess.</strong></p>
+<pre><code class="language-python">key = ((entry_0x60 &amp; 0x0FFF_FFFF_FFFF_FFFF) &lt;&lt; 4) | (mip_base - mip_level)
+</code></pre>
+<ul>
+<li><code>entry_0x60</code> — the 64-bit field at offset <code>+0x60</code> of the 144-byte entry in <code>.resources</code> (the "default hash" from <code>re_probes/agent_reports/datahash.md</code>).</li>
+<li><code>mip_base</code> — u32 at offset <code>0x18</code> of the <code>.bimage</code> header. The measured value is <code>mip_base == log2(min(width, height)) - 1</code> (996 out of 997; one exception); the slot for a Mip level is thus <code>log2(its own shorter side) - 1</code> — e.g., 64 px → 5, 2048 px → 10. However, the field itself is decisive, and the tool calculates with it as well.</li>
+<li><code>mip_level</code> — 0 for full resolution, ascending downwards.</li>
+</ul>
+<p>Verified: <strong>25,930 / 25,930</strong> texture IDs across all 28 <code>.texdb</code> files of the game (24 × <code>base</code>, 4 × DLC) and <strong>5,144 / 5,144</strong> complete keys including payload length across three chunks. Six negative controls, all with 0 hits.</p>
+<hr />
+<h2 id="1-the-old-rule-was-not-wrong--it-was-off-by-one-nibble">1. The old rule was not wrong — it was off by one nibble</h2>
+<p>The now disproven formula was <code>texdb key = hash_0x60 &lt;&lt; 4 | level</code> and hit approximately 5%. The reason lies in a single instruction:</p>
+<pre><code>7a192d  shl  r14, 4
+</code></pre>
+<p><code>shl</code> on a 64-bit register <strong>discards the upper four bits</strong>. The key therefore carries only the lower 60 bits of <code>hash_0x60</code>. The sweep in <code>re_probes/datahash/hash60_survey.txt</code> compared the full 64-bit value against <code>key &gt;&gt; 4</code> with 60 bits — this can only match if the upper nibble is randomly 0, which occurs in <strong>1 out of 16</strong> cases. Measured results:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Sweep (unmasked)</th>
+<th>expected 1/16</th>
+<th>with mask</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chunk_8</td>
+<td>4/138 = 2.9 %</td>
+<td>6.25 %</td>
+<td>106/106 of IDs</td>
+</tr>
+<tr>
+<td>gameresources</td>
+<td>650/12194 = 5.3 %</td>
+<td>6.25 %</td>
+<td>—</td>
+</tr>
+<tr>
+<td>chunk_1</td>
+<td>38/732 = 5.2 %</td>
+<td>6.25 %</td>
+<td>—</td>
+</tr>
+<tr>
+<td>chunk_16</td>
+<td>20/357 = 5.6 %</td>
+<td>6.25 %</td>
+<td>—</td>
+</tr>
+<tr>
+<td>all 28 <code>.texdb</code></td>
+<td>1582/25930 = 6.1 %</td>
+<td>6.25 %</td>
+<td><strong>25930/25930</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Counter-check for the randomness argument: out of 1,002 drawn <code>$streamed</code> entries, 62 had an upper nibble of 0 — 6.2%, exactly 1/16. The upper nibble is uniformly distributed and discarded; the 5% was precisely this effect.</p>
+<p>The speculation in the assignment ("the Mip half might be right") was also correct — but it is not the <em>level</em>, but <code>mip_base - level</code>.</p>
+<h2 id="2-where-the-code-is-located">2. Where the code is located</h2>
+<p>Entry point via the error string <code>Couldn't find mip %d for texture '%s'</code> (<code>.rdata 0x26653D0</code>, Xref <code>0x7A1E5D</code>). It lies in</p>
+<p><strong><code>.text 0x7A18A0</code>–<code>0x7A1E74</code></strong> (boundaries from <code>.pdata</code>), the gather path in <code>u:\mercury\code\engine\renderer\imagestreaming_io.cpp</code>. Single caller: <code>0x79A65F</code>.</p>
+<pre><code>7a18ec  imul rcx, rax, 0xf8        ; rax = image index
+7a18fb  add  rcx, [rip+0x31988ae]  ; -&gt; .data 0x393A1B0, array of streaming images
+7a1906  mov  edi, [r11+r8*4+4]     ; r11 = .data 0x393A1D0, 12-byte set per image
+7a1917  mov  rbx, [rcx]            ; rbx = idResource of the image
+7a1929  mov  r14, [rbx+0x28]       ; resource+0x28 == entry+0x60
+7a192d  shl  r14, 4                ; &lt;-- upper nibble is dropped
+7a1964  mov  eax, edi
+7a1966  shr  eax, 3
+7a1969  and  eax, 0xf              ; 4-bit Mip base
+7a196c  sub  eax, r9d              ; minus requested Mip level
+7a1980  or   r9, r14               ; key = ID&lt;&lt;4 | Slot
+7a1990..7a19bc                     ; lower bound, step size 16 bytes
+7a19c7  cmp  [r8], r9              ; key exactly hit?
+7a19cc  mov  rcx, [r8+8]           ; offset from table entry
+</code></pre>
+<p>The block runs <strong>twice</strong>: once over the databases loaded via <code>MountMemoryDatabase</code> (<code>0x7A1948</code>, Array <code>.data 0x3992C70</code>), and once over those mounted from files (<code>0x7A1A1A</code>, Array <code>.data 0x3992CB8</code>, 0x48 Bytes per entry, counter <code>.data 0x3993100</code> — in the recording 5). <strong>Every texture is searched in all mounted <code>.texdb</code> files</strong>, not just the one belonging to its own <code>.resources</code>. This explains, incidentally, why chunk-local comparisons show gaps.</p>
+<p><code>resource+0x28</code> literally maps to <code>entry+0x60</code> (<code>0xAB6DF7</code>–<code>0xAB6E0A</code>, <code>lea rcx,[rdx+rdx*8]; add rcx,rcx</code> plus <code>*8</code> = 144 Bytes per entry), and <code>Resource_GetEmbeddedStreamingFile</code> (<code>0xAB83DA</code>–<code>0xAB8407</code>) compares the same value again against <code>entry+0x60</code>. This aligns with the read position list in <code>datahash.md</code>.</p>
+<p><strong>The read length is not stored in the <code>.texdb</code></strong> (which has no length field, see <code>docs/texdb.md</code> §3). It comes from the image's own Mip table:</p>
+<pre><code>7a1c7b  mov eax, [rsi + r10*4 + 0xc]   ; rsi = Mip table, r10 = level*5
+</code></pre>
+<p>This is the most important side effect for a builder: <strong>the size of the TexDB payload data is dictated by the <code>.bimage</code>, not by the <code>.texdb</code>.</strong></p>
+<p><code>MountDatabase</code> (<code>0x792E00</code>–<code>0x792FAF</code>) checks exclusively the Magic <code>4FA5C2292EF3C761</code> and the two read sizes. The 16 Bytes Build-ID are copied into the object (<code>+0x08</code>..<code>+0x17</code>) and then <strong>never compared</strong> — neither during mount nor in lookup. A self-built <code>.texdb</code> may carry arbitrary bytes there. The filename is derived from the container name (<code>0xABD9F0</code> attaches <code>.texdb</code>), so a new <code>chunk_N.resources</code> automatically mounts its corresponding <code>chunk_N.texdb</code>.</p>
+<h2 id="3-side-finding-the-mip-table-of-the-tnc-bimage-is-decrypted">3. Side finding: the Mip table of the TNC <code>.bimage</code> is decrypted</h2>
+<p>This was necessary to be able to check the slot half at all, and it closes two open points from <code>docs/texdb.md</code> §6.</p>
+<p>Header <code>BIM\x0e</code> (Version 14), little endian, 0x32 Bytes:</p>
+<pre><code>0x00 u32   'BIM' 0x0e
+0x08 u32   mtlkind  (1 albedo, 2 specular, 3 normal, 4 smoothness)
+0x0C u32   Breite
+0x10 u32   Hoehe
+0x18 u32   mip_base   &lt;-- the 4 bits from the Lookup
+           measured log2(min(Breite,Hoehe))-1, 996/997
+0x1D u32   Pixelformat (33 BC1, 25/24 BC3 variants)  -- unbestaetigt
+0x2E u16   Anzahl gestreamter Mip-Ebenen  (998/1002)
+</code></pre>
+<p>Starting at <code>0x32</code> follow entries of <strong>32 Bytes</strong>, one per Mip level:</p>
+<pre><code>u32 level, u32 (0), u32 width, u32 height,
+u32 raw_size, u32 streamed(1)/inline(0), u32 stored_size, u32 offset
+</code></pre>
+<p><code>stored_size</code> is exactly the length of the block in the <code>.texdb</code>, <code>raw_size</code> is the uncompressed size. Thus, the guessing about powers of two described in <code>docs/texdb.md</code> §4a is unnecessary: <strong>both sizes of every TexDB entry are present in the paired <code>.bimage</code>.</strong> For <code>inline</code> Mips, <code>offset</code> points into the <code>.bimage</code> itself.</p>
+<p>Practically, exactly those Mips with edge ≥ 64 are streamed; everything below that lies inline in the <code>.bimage</code>. Therefore, 5 is the most common smallest slot (21,266 of 25,930 IDs). The distribution of the smallest slot per ID: <code>1: 1138, 2: 245, 3: 661, 4: 2612, 5: 21266, 7: 8</code> — values below 5 belong to textures that are inherently smaller than 64 px. Images without a power-of-two edge (e.g., 324×152) have exactly one level and <code>mip_base = 1</code>, thus Slot 1.</p>
+<h2 id="4-positive-controls--re_probestexdbkeyderive_retailtxt">4. Positive controls — <code>re_probes/texdbkey/derive_retail.txt</code></h2>
+<pre><code>A) Texture IDs -&gt; image entries, 28 .texdb, 28 .resources
+   (hash_0x60 &amp; 0x0FFFFFFFFFFFFFFF) covers   25930/25930 IDs
+   Control: hash_0x60 unmasked covers      1582/25930 IDs
+
+B) Key calculated from Resource, looked up in the .texdb
+   chunk_1 ok                   3291
+   chunk_16 ok                  1286
+   chunk_8 ok                    567
+   not delivered                358
+   Hits with matching length: 5144/5144
+</code></pre>
+<p><strong>A</strong> is the direction that counts: <em>each individual</em> of the 25,930 different texture IDs in <em>all</em> <code>.texdb</code> files of the game — including the four DLC files, inclusive <code>gameresources.texdb</code> (8 GB) — corresponds to the masked <code>hash_0x60</code> of an <code>image</code> entry. No exception, no remainder.</p>
+<p><strong>B</strong> is the stricter check because two conditions must be met simultaneously: The key calculated from <code>.resources</code> must exist <em>and</em> the block immediately below it must have exactly as many bytes as the Mip set of <code>.bimage</code> specifies. A randomly correct key would land on an incorrect length. 5,144 out of 5,144.</p>
+<p>The 358 "not delivered" are not a rule violation: their distribution is <code>level 0: 225, level 1: 105, level 2: 24, level 3: 4</code> — exclusively the top levels, with none from level 4 onwards. This is a Mip cap of the build tool (the peak Mip was not delivered), not a key question; the engine then takes the next best available level.</p>
+<h2 id="5-negative-controls--re_probestexdbkeynegative_controlstxt">5. Negative Controls — <code>re_probes/texdbkey/negative_controls.txt</code></h2>
+<p>Each line is constructed so that it <em>should</em> fail if the derivation were incorrect.</p>
+<pre><code>hash_0x60 unmasked (the refuted rule)     0/4831 hits
+Mip level +1                               0/4072 hits
+Mip level -1                               0/4075 hits
+data_hash (+0x50) instead of hash_0x60    0/5144 hits
+hash_0x60 with a flipped bit               0/5144 hits
+Raw size instead of stored size            0/5144 hits
+</code></pre>
+<p><code>python tools/probe_texdbkey.py --negative</code> returns an exit code ≠ 0 as soon as one of them passes.</p>
+<p>Two denominators are smaller than 5,144, and this is intentional, not cosmetic:</p>
+<ul>
+<li><strong>Unmasked, 4,831 instead of 5,144.</strong> With a top nibble of 0, masked and unmasked keys are the same number; these 313 cases cannot refute anything and are therefore excluded from the count rather than counted as hits.</li>
+<li><strong>Mip ±1, ~4,070 instead of 5,144.</strong> A solid color texture compresses <em>every</em> Mip level to the same 42 bytes (<code>textures/system/constant_color/…</code> and similar). Where a neighbor slot offers a length matching one's own, the length test is blind — without this exception it reports 78/5,144 "hits", which are in reality only indistinguishability. With the exception: 0. That is the honest number, not the pretty one.</li>
+</ul>
+<h2 id="6-the-practical-answer">6. The Practical Answer</h2>
+<h3 id="can-a-renamed-or-new-texture-receive-a-resolving-key">Can a renamed or new texture receive a resolving key?</h3>
+<p><strong>Yes, and without any restriction depending on the name.</strong></p>
+<p>The name does not enter the key — neither directly nor via a hash. There are two ways:</p>
+<ol>
+<li><strong>Rename with identical pixels.</strong> Take <code>entry+0x60</code>, done. The key does not change, the Retail <code>.texdb</code> continues to work. That was exactly the open question from <code>re_probes/agent_reports/texdb_rewrite.md</code> ("not proven that old keys still work") — it is now proven: they work because the name enters nowhere.</li>
+<li><strong>New texture.</strong> Choose <code>entry+0x60</code> freely (no reader calculates it, see <code>datahash.md</code> §4), then write your own <code>.texdb</code> with lines at <code>((h &amp; 0x0FFF…) &lt;&lt; 4) | slot</code>. Block lengths must match <code>stored_size</code> in your own <code>.bimage</code> because the engine takes the read length from there.</li>
+</ol>
+<p>Keep in mind:</p>
+<ul>
+<li><strong>Only 60 bits are addressable.</strong> Two entries whose <code>hash_0x60</code> differs only in the top nibble land on the same key. Retail never pays for this: 0 out of 29,824 60-bit IDs carry more than one full <code>hash_0x60</code>. A builder should still set the top nibble to 0, then the stored value is identical to the ID.</li>
+<li>The table is <strong>sorted ascending by key</strong> (binary search, <code>0x7A1990</code>) — an unsorted table finds nothing.</li>
+<li><code>mip_base</code> must match the actual edge length (<code>log2(min(width,height))-1</code>), otherwise all slots of a picture will be off by the same amount.</li>
+</ul>
+<h3 id="what-breaks-if-two-entries-share-a-key">What breaks if two entries share a key?</h3>
+<p><strong>Nothing — Retail does it itself, in large numbers.</strong>
+<code>re_probes/texdbkey/key_reuse.txt</code>:</p>
+<p>Image entries with <code>$streamed</code>:            33805
+Various hash_0x60:                   26060
+hash_0x60, sharing multiple NAMEN:   570
+   ed5c1ec6dc4930f7  223 entries (allied46_trousers_s, vase_01_s, vase_02_s, …)
+   a8fec4ecc4b28135  213 entries
+   39ba9f62c49c39ee  200 entries
+64-Bit IDs with two different hash_0x60 falling on them: 0 of 29824
+Multiple users in chunk_8/chunk_1/chunk_16: same Mip signature 44, differing 0</p>
+<p><code>hash_0x60</code> is clearly an <strong>content</strong> hash for <code>image</code> entries: 570
+Values are shared by multiple names, the largest being 223 entries. This is deduplication — all specular maps that are flat constants share a block.</p>
+<p>The condition under which this works is also clear: co-users must have the same <strong>Mip signature</strong> (side length, <code>mip_base</code>, <code>stored_size</code> per level). In the sample: 44 multiple users, 44 identical signatures, 0 deviations. If a custom entry reuses a Retail key while specifying a different size or a different Mip chain, the engine reads the <em>incorrect byte count</em> from the Retail block — Oodle fails or delivers garbage pixels. The keys do not collide; the lengths do.</p>
+<p><strong>Short: Reusing a Retail key is allowed and yields the Retail pixels. If you want your own pixels, you need your own <code>hash_0x60</code> and your own <code>.texdb</code> lines — which is fully possible per Section 6.</strong></p>
+<h2 id="7-what-was-not-tested-honestly-labeled">7. What was not tested (honestly labeled)</h2>
+<ul>
+<li><strong>No runtime test.</strong> The assignment prohibits game startup; all statements come from disassembly and Retail files. That a self-built pair <code>.resources</code>/<code>.texdb</code> actually renders is therefore <strong>not</strong> shown, only that the Lookup must find it.</li>
+<li><strong><code>mip_base</code> as file field.</strong> In the Lookup, the four bits come from a runtime field (<code>.data 0x393A1D0</code>, 12 bytes per image), which is pre-filled with the default <code>0x07F9E078</code> (both 4-bit fields = 15) upon registration and later set by the Gather path. That it carries exactly <code>bimage[0x18]</code> is <strong>measured</strong> (5 144/5 144 including length), not read from the assignment site — we did not find that. For the builder, this makes no difference; for the formulation "according to code," it does.</li>
+<li><strong>Tile chains.</strong> Large Mips exist as tile chains (<code>docs/texdb.md</code> §4b). The length test covers them (<code>stored_size</code> is the length of the whole chain), but the internal format of a tile remains ununderstood.</li>
+<li><strong>Pixel format codes.</strong> <code>bimage[0x1D]</code> (33/25/24) correlates with BC1/BC3; the mapping is extrapolated from 3 cases and <strong>unverified</strong>.</li>
+<li><strong>Upper limit of mounted file databases.</strong> In the recording 5; a <code>MAX_…</code> limit like in <code>MountMemoryDatabase</code> ("No more database slots available, raise MAX_MEMORY_DATABASES") was not localized for the file path.</li>
+</ul>
+<h2 id="8-artifacts">8. Artifacts</h2>
+<ul>
+<li><code>tools/probe_texdbkey.py</code> — <code>texdb_key()</code>, <code>bim_mips()</code>, positive, negative, and reuse controls, <code>--selftest</code> (Py 3.11, stdlib + <code>wolfsdk.idcl</code>/<code>wolfsdk.oodle</code>)</li>
+<li><code>re_probes/texdbkey/derive_retail.txt</code> — 25930/25930 and 5144/5144</li>
+<li><code>re_probes/texdbkey/negative_controls.txt</code> — 6 controls, all 0</li>
+<li><code>re_probes/texdbkey/key_reuse.txt</code> — shared keys in Retail</li>
+<li><code>re_probes/texdbkey/disasm_texdbkey.txt</code> — Disassembly evidence (Lookup, Mount, <code>entry+0x60</code> → <code>resource+0x28</code>, read length)</li>
+</ul>
+<h2 id="9-for-other-owners">9. For other owners</h2>
+<ul>
+<li><strong><code>docs/texdb.md</code></strong> (foreign ownership) states in §3 that "Bits 63..4 are the Texture ID (Hash, origin unknown)" and in §6 that it is missing "the mapping Key → Asset Name" as well as "the uncompressed size for individual streams." Both issues are resolved: the ID is <code>entry+0x60 &amp; 0x0FFF…</code>, and both the raw and memory size of each block are listed in the Mip set of the paired <code>.bimage</code> (Section 3). The interpretation of the lower 4 bits as "Level, observed 1..12" is correct and more precisely defined as <code>log2(Edge)-1</code>.</li>
+<li><strong><code>re_probes/agent_reports/texdb_rewrite.md</code></strong> concludes that renaming it to <code>c3v1_custom</code> would make the old texture keys insecure. This is refuted: the name does not enter the key. The Retail TexDB remains valid as long as <code>entry+0x60</code> of the <code>image</code> entries is preserved.</li>
+<li><strong><code>wolfsdk/idcl.py</code></strong> can now treat <code>Entry.hash_0x60</code> for <code>image</code> entries as what it is: the texture's identity within the TexDB. Whoever changes it must bring the <code>.texdb</code> along.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Texdb-Rewrite.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC texdb / custom-map alias: findings</a><a class="next" href="Research-Report-Tnc-Custom-Maps.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC: Custom Map Registration and Load Path (Read-Only Finding)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

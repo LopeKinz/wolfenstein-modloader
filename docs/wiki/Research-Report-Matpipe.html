@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>matpipe: material → image → texdb, end-to-end – Wolfenstein Modloader</title>
+<meta name="description" content="Wolfenstein II materials, images and texture databases checked end to end; a magenta test texture is prepared.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>matpipe: material → image → texdb, end-to-end</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Matpipe"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-material-text-loosealbedo-is-the-albedo-slot">1. material: Text, loosealbedo is the Albedo Slot</a></li><li><a href="#2-image-bimx0e">2. image (BIM\x0e)</a></li><li><a href="#3-the-lookup-0x7a18a0-and-what-retail-reveals-about-it">3. The Lookup (0x7A18A0) and what Retail reveals about it</a></li><li><a href="#4-demo-re_probesmatpipedemo_streamedinlinebasechunk_31">4. Demo: re_probes/matpipe/demo_{streamed,inline}/base/chunk_31.*</a></li><li><a href="#5-runtime-test-for-the-user-re_probesmatpiperecolor_c2v1">5. Runtime test for the user: re_probes/matpipe/recolor_c2v1/</a></li><li><a href="#6-negative-controls---negative-cases-remain-for---check">6. Negative controls (--negative, cases remain for --check)</a></li><li><a href="#7-corrections-compared-to-the-abandoned-state">7. Corrections compared to the abandoned state</a></li><li><a href="#8-open">8. Open</a></li><li><a href="#9-reproduction-from-repo-root-directory">9. Reproduction (from repo root directory)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report follows the texture chain in Wolfenstein II: The New Colossus: a <span class="t" data-t="material">material</span> names an image, and the image&#x27;s detail levels are stored in a <span class="t" data-t="texdb">texture database</span>. The formats were read and rewritten byte-for-byte across the whole game, and a self-made flat magenta texture passes all offline checks and an independent second reader. A test file that turns 218 textures in the Gestapo Office DLC map magenta is ready for the player to try. Nothing has been confirmed in the running game yet, and arbitrary pictures cannot be written because no BC texture encoder exists.</p><ul><li>All 11,469 retail materials and 35,842 images match the format rules; 300 of 300 sampled images rewrite byte-for-byte.</li><li>Single-color textures can be written exactly: 22 of 22 retail single-color images were regenerated identically.</li><li>Arbitrary pixels are not possible yet because there is no <span class="t" data-t="bc">BC</span> compressor.</li><li>A test file replaces 218 map textures with magenta and leaves 6,767 other entries unchanged; it is ready but not run in the game.</li><li>10 of 10 deliberately broken test cases are caught by the checker.</li></ul></div><div class="de"><p class="lede">Dieser Bericht verfolgt die Texturkette in Wolfenstein II: The New Colossus: Ein <span class="t" data-t="material">Material</span> nennt ein Bild, und dessen Detailstufen liegen in einer <span class="t" data-t="texdb">Texturdatenbank</span>. Die Formate wurden im ganzen Spiel gelesen und byte-genau neu geschrieben, und eine selbst erstellte einfarbige Magenta-Textur besteht alle Offline-Prüfungen und einen unabhängigen zweiten Leser. Eine Testdatei, die 218 Texturen der DLC-Karte Gestapo-Büro magenta färbt, liegt zum Ausprobieren bereit. Im laufenden Spiel ist noch nichts bestätigt, und beliebige Bilder lassen sich nicht schreiben, weil kein BC-Textur-Encoder existiert.</p><ul><li>Alle 11.469 Materialien und 35.842 Bilder des Spiels folgen den Formatregeln; 300 von 300 Stichproben-Bildern werden byte-genau neu geschrieben.</li><li>Einfarbige Texturen lassen sich exakt schreiben: 22 von 22 einfarbigen Bildern des Spiels wurden identisch neu erzeugt.</li><li>Beliebige Pixel gehen noch nicht, weil es keinen <span class="t" data-t="bc">BC</span>-Kompressor gibt.</li><li>Eine Testdatei ersetzt 218 Kartentexturen durch Magenta und lässt 6.767 andere Einträge unverändert; sie ist fertig, aber nicht im Spiel getestet.</li><li>10 von 10 absichtlich kaputten Testfällen werden vom Prüfer erkannt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-matpipe-a2</code>, 2026-09-23. This is the second run of a2 (the first terminated due to usage limits; a1 was paused by the user). <strong>All numbers below originate from this run</strong>; nothing has been carried over from the aborted state.
+Tools: <code>tools/probe_matpipe.py</code>. Artifacts: <code>re_probes/matpipe/</code>.</p>
+<p><strong>Result:</strong> The chain is structurally valid after these checks; whether it renders remains unconfirmed at runtime. A material binds via <code>loosealbedo</code> to a self-written <code>image</code>, whose streaming mips reside in its own, sorted <code>.texdb</code>. Both hash validators—the validator itself and an independently written reader—accept the pair and read Magenta. New in this run: a <strong>runtime test</strong> that the user can try out in a window (§5). Flat colors are exactly encodable. For arbitrary pixels, a BC-Encoder is missing (§2.3).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Command</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Material Round-Trip, 3 Archives</td>
+<td><code>--material 300</code></td>
+<td><strong>300/300</strong> (chunk_1 197, chunk_7 69, chunk_8 34)</td>
+</tr>
+<tr>
+<td>… entire corpus</td>
+<td><code>--formats</code></td>
+<td><strong>11469/11469</strong> in 27 Retail Archives</td>
+</tr>
+<tr>
+<td><code>loose*</code> value → Retail <code>image</code></td>
+<td><code>--material 300</code></td>
+<td><strong>2024/2024</strong></td>
+</tr>
+<tr>
+<td><code>loosealbedo</code> → image with mtlkind 1</td>
+<td><code>--formats</code></td>
+<td><strong>7937/7938</strong>; the one remainder is a Retail reference to nothing</td>
+</tr>
+<tr>
+<td>Image Round-Trip, 3 Archives</td>
+<td><code>--image 300</code></td>
+<td><strong>300/300</strong> byte-exact, 300/300 contradiction-free</td>
+</tr>
+<tr>
+<td>Mip <code>stored</code> == <code>.texdb</code> block length</td>
+<td><code>--image 300</code></td>
+<td><strong>1576</strong> own + <strong>31</strong> foreign <code>.texdb</code>, <strong>0</strong> false</td>
+</tr>
+<tr>
+<td>BIM-v14 census</td>
+<td><code>--formats</code></td>
+<td><strong>35 842</strong> images, 382 114 mip sets, <strong>0</strong> violations</td>
+</tr>
+<tr>
+<td>Retail single-color images regenerated</td>
+<td><code>--author</code></td>
+<td><strong>22/22</strong> byte-identical</td>
+</tr>
+<tr>
+<td>Demo: Header/Mip table vs. Retail twins</td>
+<td><code>--demo</code></td>
+<td><strong>10/10</strong> and <strong>10/10</strong></td>
+</tr>
+<tr>
+<td>Demo: second reader (<code>wolfsdk/tncimage.py</code>)</td>
+<td><code>--demo</code></td>
+<td>87 376 + 336 pixels, all Magenta</td>
+</tr>
+<tr>
+<td>Demo: <code>probe_datahash</code> / <code>probe_idclhash</code></td>
+<td><code>--demo</code></td>
+<td>2/2, +0x08 1/1, +0x20 1/1 (both variants)</td>
+</tr>
+<tr>
+<td>Runtime test chunk c2v1</td>
+<td><code>--recolor …</code></td>
+<td>218/218 replaced, <strong>6767/6767</strong> unchanged byte-identical, datahash 6984/6984, idclhash OK</td>
+</tr>
+<tr>
+<td>Negative controls</td>
+<td><code>--negative</code></td>
+<td><strong>10/10</strong> caught, 2 anchors clean</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>python tools/probe_matpipe.py --selftest</code> summarizes everything except <code>--recolor</code> (rc 0, output in <code>re_probes/matpipe/selftest.txt</code>).</p>
+<h2 id="1-material-text-loosealbedo-is-the-albedo-slot">1. <code>material</code>: Text, <code>loosealbedo</code> is the Albedo Slot</h2>
+<p>The payload is UTF-8: <code>{</code>, newline, per property <code>key\tvalue</code>, then <code>}</code>, newline. All 11 469 Retail materials follow this byte-exactly. Two types:</p>
+<ul>
+<li><strong>7 938 "loose" materials</strong> (Standard PBR) carry all eight slots <code>loosealbedo/-normal/-spec/-smoothness/-cover/-sssmask/-colormask/-bloommask</code>. Their value is <strong>literally the name of an <code>image</code> entry</strong>. The material parser constructs it with <code>"%s$mtlkind=albedo$streamed"</code> (<code>.text 0x747099</code>).</li>
+<li>3 531 program materials (<code>stageprogram</code>, <code>ambientprogram</code>, …) refer to images under other keys (<code>spare1map</code>, <code>transmap</code>). The demo does not use them.</li>
+</ul>
+<p>Albedo is <code>loosealbedo</code>: 7 937 of the 7 938 values point to an image whose BIM header carries <code>mtlkind</code> 1, in every copy. The one remainder,
+<code>models/characters/boss/boss_head.tga$mtlkind=albedo$streamed</code>
+(Material in <code>gameresources</code>), exists in <strong>no</strong> archive. Retail thus provides a dangling reference itself. In the sample, additionally <code>loosealbedo == lower(diffusemap) + "$mtlkind=albedo$streamed"</code> holds (253/253).</p>
+<h2 id="2-image-bimx0e">2. <code>image</code> (<code>BIM\x0e</code>)</h2>
+<h3 id="21-header">2.1 Header</h3>
+<p>From the loader <code>0x75FC60</code> and the writer <code>0x75EC60</code>, all 0x32 bytes covered (<code>BIM_FIELDS</code>):</p>
+<pre><code>0x04 texture_type (2 = Cube)   0x08 mtlkind   0x0C w   0x10 h   0x14 depth
+0x18 numLevels                 0x1D format (u32, unaligned)
+0x2E u32 number of streaming sets   from 0x32: 32-byte sets
+     level, face, w, h, raw, codec (0 raw / 1 Oodle / 2 tilechain), stored, offset
+</code></pre>
+<ul>
+<li><strong><code>0x18</code> is numLevels.</strong> The slot in <code>.texdb</code> equals <code>numLevels − level</code>. The census checks that for each of the 35,842 images, exactly <code>numLevels × Faces</code> lines with edges <code>w&gt;&gt;level</code> follow, and the inline chain ends at the file end. There are 0 deviations.</li>
+<li><strong><code>0x2E</code> is a u32:</strong> Writer <code>0x75F19E</code>–<code>0x75F1BC</code>, <code>Lines − Inline Lines</code>, written with length 4. A line goes into <code>.texdb</code> if <code>max(w,h) &gt; 32</code>, compared at <code>0x75EFC8</code> with the int value of the CVar <code>image_streamingSeparatelyCompMip</code> (0x20).</li>
+<li>The remaining header bytes (0x1C, 0x21 … 0x2D) are uninterpreted. All 8,075 Retail-BC1_SRGB Albedos carry the same tuple, and exactly that is written by <code>author_flat()</code>.</li>
+</ul>
+<h3 id="22-formats-read-from-the-engine-not-copied">2.2 Formats: read from the engine, not copied</h3>
+<p><code>engine_formats()</code> reads the names (jump table <code>0x784C54</code>) and bits per pixel (<code>BitsForInternalFormat</code>, <code>0x783BA0</code>) directly from <code>module.bin</code>. The raw size of all 382,114 Mip lines matches these bits.</p>
+<p>BIM v14 in the 27 Retail Archives:</p>
+<pre><code>BC1_SRGB 15466   BC4 8302   BC5 7480   BC6H 2058   BC1 1382
+BC3 876          BC7 256    R8 15      RGBA8 7
+</code></pre>
+<p>This includes 600 older BIM v10–v13 and 6 entries in mode 4, which are not decoded.</p>
+<h3 id="23-what-we-can-write-and-what-we-cannot">2.3 What we can write, and what we cannot</h3>
+<ul>
+<li><strong>Flat color in BC1/BC1_SRGB: yes, exactly, without an encoder.</strong> Retail stores them the same way (c0 = c1, indices 0). <code>author_flat()</code> generates 22/22 Retail single-color images byte-identically.</li>
+<li><strong>Arbitrary pixels: no.</strong> We do not have a BC1/BC7 encoder and have not written one. Uncompressed only RGBA8 occurs (7 images, all mtlkind 0, one of which streams), plus R8 (15). <strong>No Albedo is uncompressed, RGBA8_SRGB never occurs.</strong> Whether the engine displays an RGBA8 Albedo correctly, including Gamma, is not evidenced.</li>
+</ul>
+<h2 id="3-the-lookup-0x7a18a0-and-what-retail-reveals-about-it">3. The Lookup (<code>0x7A18A0</code>) and what Retail reveals about it</h2>
+<p>The order is: Memory databases, then all mounted <code>.texdb</code> via binary search, then as fallback <code>GetEmbeddedStreamingFile</code> (<code>0x7A1BCC</code>). If none finds anything, follow
+<code>FatalError("Couldn't find mip %d for texture '%s'")</code> (<code>0x7A1E5D</code>). I read this in this run from the Disassembly.</p>
+<p>New measurements:</p>
+<ul>
+<li><strong>Sorting is unsigned.</strong> The search jumps with <code>jae</code>, and all 28 installed tables rise as <strong>u64 unsigned</strong>. Signed would be only 2 of 28 sorted, the two trivial ones with 0 and 4 lines. <code>write_texdb</code> sorts Python Ints, so unsigned.</li>
+<li><strong>Duplicate keys are legal.</strong> 24 of 28 tables contain them. Sample chunk_8, chunk_14, patch_1: 39 of 39 repeated keys point to byte-identical blocks. This was a one-time check and is not in the tool. The file branch (<code>0x7A1AB0</code>–<code>0x7A1B77</code>) runs over all equal keys and picks one. <code>check_bundle</code> allows repetitions but forbids descents.</li>
+<li><strong>Not every line is requested.</strong> In the 300-sample, 132 Streaming lines are missing in <strong>every</strong> installed <code>.texdb</code> (level 0: 101, level 1: 31). It is always an upper prefix, with no gap for any image. Since no Retail Archive contains a single <code>rs_emb_sfile</code> entry (one-time check over all tables), the fallback cannot deliver them either. Some upper limit prevents these peak Mips from being requested. Where this limit sits, I have <strong>not</strong> found it.</li>
+<li><strong><code>rs_emb_sfile</code>:</strong> 32,502 of 32,502 streaming Retail images carry exactly this one dependency record, 3,238 pure inline images none, 102 inline images nevertheless one. It is generated in the build branch of <code>resourcestorage.cpp</code> (<code>0xAC71E0</code>: name <code>"%s#%s#%x"</code>). Afterwards there <code>[res+0x28]</code> (= <code>+0x60</code>) is linked per <code>xor</code> with a value of the new record; that is presumably part of the origin of <code>+0x60</code>, I did not pursue it further. In the Lookup only the fallback path reads it. After other readers I have not searched. Our demo image carries no Record.</li>
+</ul>
+<h2 id="4-demo-re_probesmatpipedemo_streamedinlinebasechunk_31">4. Demo: <code>re_probes/matpipe/demo_{streamed,inline}/base/chunk_31.*</code></h2>
+<p>Each variant contains two entries:</p>
+<ul>
+<li><code>image matpipe/flat_magenta.tga$mtlkind=albedo$streamed</code>: BC1_SRGB, (255,0,255), <code>+0x60 = 0x0BADC0DEFACE0001</code> (upper nibble 0, no installed texture ID).</li>
+<li><code>material matpipe/flat_magenta</code>: a copy of the Retail material <code>textures/tiles/wood/fine_wood_03_blend_01</code> (chunk_10), read at build time. Only <code>diffusemap</code> and <code>loosealbedo</code> are replaced. The other seven slots point to constant images in <code>gameresources</code>.</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Image</th>
+<th><code>.texdb</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>demo_streamed</code></td>
+<td>256², numLevels 7, 3 Streaming sets</td>
+<td>3 lines, Slots 5/6/7, 41/42/42 B, sorted</td>
+</tr>
+<tr>
+<td><code>demo_inline</code></td>
+<td>16², numLevels 3, all inline</td>
+<td>empty (32 B, like Retail <code>patch_4_chunkbase_6.texdb</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<p>The checks are deliberately separated:</p>
+<ul>
+<li><strong>"The lookup finds our block":</strong> <code>check_bundle</code> computes every key from the <code>.resources</code> and verifies sorting, length against <code>stored</code>, and collisions with all 28 installed <code>.texdb</code>. It also checks whether the <code>loose*</code> slots resolve.</li>
+<li><strong>"The block decodes to our pixels":</strong> <code>decode_check</code> (custom BC1 decoder, calibrated against Retail: red, green, blue, white, black, and yellow yield 6/6) and additionally <strong><code>wolfsdk/tncimage.py</code></strong>, the texture viewer of another worker. It has its own parser, its own key function, its own binary search, and its own BC1 decoder. Both find 87,376 and 336 pixels respectively, all Magenta. The preview from the viewer is located in <code>demo_*/preview.png</code>: a flat magenta square, viewed.</li>
+<li><strong>Retail Twins:</strong> Ten Retail images of identical form (format, mtlkind, size, numLevels, 0x2E) have 10/10 the same 0x32 header bytes as ours. The Mip table also matches, except for codec/stored/offset of the Streaming sets, which depend on the compressor. The 256² case has 288 Retail predecessors with exactly 7 levels and 3 Streaming sets.</li>
+<li>The entry fields lie within the Retail distribution for <code>image</code> and <code>material</code> (desc −1, flags 0, version 14/0, nstr 2). This was a one-time check and is not part of the tool.</li>
+<li>Both containers are deterministic. sha256 <code>.resources</code>: streamed <code>e2caa496…</code>, inline <code>68f65ca1…</code>.</li>
+</ul>
+<p><strong>Boundary:</strong> <code>chunk_31</code> is mounted by nothing, and <code>matpipe/flat_magenta</code> is used by no surface. The demo proves the format. It becomes visible only when a model (meshfmt) or an entity (entitypipe) names the material and the map mounts the chunk (mapmanifest).</p>
+<h2 id="5-runtime-test-for-the-user-re_probesmatpiperecolor_c2v1">5. Runtime test for the user: <code>re_probes/matpipe/recolor_c2v1/</code></h2>
+<p>To allow one to <strong>see</strong> something without the open parts of the other workers: <code>--recolor</code> takes a map chunk and replaces the payload of every map-local BC1_SRGB albedo with the 16² magenta image from <code>demo_inline</code>. Map-local means: The name is not in any <code>base/*.resources</code>. Entry, Name, and <code>+0x60</code> remain; Materials and <code>.texdb</code> remain untouched. Because the new image is entirely inline, the engine reads no <code>.texdb</code> line for it. This exact form has Retail itself, e.g., <code>textures/system/constant_color/yellow$mtlkind=albedo$streamed</code> (16², 3 levels, 0x2E = 0, BC1_SRGB, mtlkind 1).</p>
+<pre><code>python tools/probe_matpipe.py --recolor D:/…/dlc/dlc_2/base/chunk_22.resources re_probes/matpipe/recolor_c2v1/base/chunk_22.resources
+   replaced               218 map-local BC1_SRGB albedo images (not in base/*.resources)
+   new payloads           218/218 parse, pass check_bimage and decode to (255, 0, 255)
+   untouched payloads     6767/6767 byte-identical to the source
+   finalize               data_hash 218 changed, hash_0x60 0 changed
+   +0x50 6984/6984 (1 mode-4 entry skipped)   +0x08 1/1   +0x20 1/1
+recolor clean
+</code></pre>
+<p>The build is deterministic: two runs produce the same sha256 <code>1383bc5e…</code>.<br />
+The list of 218 images is in <code>recolor_c2v1/recolored.txt</code>, including office requisites, lamps, files, flags, and the Blitzmensch figure.<br />
+<code>dlc_2/base/chunk_22.resources</code> and <code>dlc_4/base/chunk_22.resources</code> are byte-identical (sha256 <code>eccee9ec…</code>). The file therefore fits into both folders.</p>
+<p><strong>Suggested test window (the user decides, the tool never writes under Steam):</strong> backup <code>dlc_2/base/chunk_22.resources</code>, copy the file from <code>recolor_c2v1/base/</code> in there, start a DLC-2 card (c2v1/c2v2/c2v3 use this chunk), then restore the original.</p>
+<ul>
+<li>If requisites are magenta, it loads and displays our BIM engine without <code>.texdb</code>.</li>
+<li>If the game crashes or they appear black or with standard texture, that indicates the engine rejects our BIM; this is also a finding; the cause must be searched in the log.</li>
+<li><code>demo_streamed</code> additionally checks the <code>.texdb</code> path. For this, the chunk must be mounted and the material referenced (§4).</li>
+</ul>
+<h2 id="6-negative-controls---negative-cases-remain-for---check">6. Negative controls (<code>--negative</code>, cases remain for <code>--check</code>)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Case (<code>re_probes/matpipe/negative/&lt;fall&gt;/</code>)</th>
+<th>Error</th>
+<th><code>--check</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unsorted</code></td>
+<td><code>.texdb</code> descending</td>
+<td>rc 1, "table not sorted"</td>
+</tr>
+<tr>
+<td><code>top_nibble</code></td>
+<td><code>+0x60</code> with nibble 0xA, key <code>(h &amp; ~0xF) \| slot</code></td>
+<td>rc 1, "is not in"</td>
+</tr>
+<tr>
+<td><code>slot_is_level</code></td>
+<td>Slot = level instead of numLevels − level</td>
+<td>rc 1, "is not in"</td>
+</tr>
+<tr>
+<td><code>levels_plus1</code></td>
+<td>Header 0x18 +1</td>
+<td>rc 1, "record 7 is level …"</td>
+</tr>
+<tr>
+<td><code>levels_minus1</code></td>
+<td>Header 0x18 −1</td>
+<td>rc 1, Inline chain breaks</td>
+</tr>
+<tr>
+<td><code>streamed_minus1</code></td>
+<td>Header 0x2E −1</td>
+<td>rc 1, "0x2E says 2 …"</td>
+</tr>
+<tr>
+<td><code>short_block</code></td>
+<td>Block 1 byte shorter than <code>stored</code></td>
+<td>rc 1, "holds 41 bytes, … announces 42"</td>
+</tr>
+<tr>
+<td><code>retail_id</code></td>
+<td><code>+0x60</code> = Retail texture ID</td>
+<td>rc 1, "collides with a retail .texdb id"</td>
+</tr>
+<tr>
+<td><code>dangling_albedo</code></td>
+<td><code>loosealbedo</code> to empty</td>
+<td>rc 1, "which is no image entry"</td>
+</tr>
+<tr>
+<td><code>badpixel</code></td>
+<td>an inline block green</td>
+<td><code>--check</code> rc 0 <strong>intended</strong>; only <code>decode_check</code> catches it</td>
+</tr>
+<tr>
+<td><code>anchor_hinibble</code> (counter-anchor)</td>
+<td>upper nibble set, key correctly masked</td>
+<td>rc 0</td>
+</tr>
+</tbody>
+</table></div>
+<p>An untrimmed <code>(h &lt;&lt; 4) \| slot</code> does not fit into the 64-bit field. <code>write_texdb</code> rejects it. Outside my tool: a flipped byte in the demo container causes <code>probe_datahash</code> to fail with 1/2 and rc 1.</p>
+<h2 id="7-corrections-compared-to-the-abandoned-state">7. Corrections compared to the abandoned state</h2>
+<ul>
+<li><strong>dlc_4 is not Retail.</strong> It is the user's copy of dlc_2/chunk_22 (sha256 identical). The old census counted it as (37,304 images); the correct number is <strong>35,842</strong> in 27 archives. For collisions, all 28 installed <code>.texdb</code> files still count, because the engine searches every mounted one.</li>
+<li>The length cross-check ran only against its own <code>.texdb</code>. Now it runs against all. Of the previously 163 "missing" sentences, 31 lie with correct length in another <code>.texdb</code>; the remaining 132 in none (§3).</li>
+<li>Materials are now checked across the entire corpus (11,469), and the one dangling Retail reference is named.</li>
+<li>New: Sorting order and duplicates of <code>.texdb</code>, Retail twins, the second reader, thumbnails, <code>--check</code>, <code>--recolor</code>.</li>
+</ul>
+<h2 id="8-open">8. Open</h2>
+<ul>
+<li><strong>No runtime proof</strong>, for nothing here. §5 is the prepared test.</li>
+<li>Which surface <code>matpipe/flat_magenta</code> uses belongs to meshfmt or entitypipe. How a new chunk mounts belongs to mapmanifest (<code>packagemapspec.json</code>). Whether a second container overwrites a same-named Retail entry is not documented. <code>--recolor</code> bypasses the question by replacing entries in place.</li>
+<li>The upper limit that prevents requesting never-delivered mip levels is not localized. For 256² images it is presumably irrelevant, but this is not documented.</li>
+<li>No BC encoder, so no arbitrary pixels (§2.3).</li>
+<li>Header fields 0x1C, 0x21–0x2D are unexplained; they are Retail constants.</li>
+</ul>
+<h2 id="9-reproduction-from-repo-root-directory">9. Reproduction (from repo root directory)</h2>
+<pre><code>python tools/probe_matpipe.py --material 300   # 300/300, 2024/2024, 253/253
+python tools/probe_matpipe.py --image 300      # 300/300, 1576 + 31 ok, 0 wrong, 28/28 unsigned
+python tools/probe_matpipe.py --formats        # 35842 v14 0 problems; materials 11469/11469
+python tools/probe_matpipe.py --author         # 22/22, 6/6
+python tools/probe_matpipe.py --demo           # beide Varianten clean, Zwillinge 10/10
+python tools/probe_matpipe.py --negative       # caught 10/10, anchors ok
+python tools/probe_matpipe.py --check re_probes/matpipe/demo_streamed/base/chunk_31.resources
+python tools/probe_datahash.py re_probes/matpipe/demo_streamed/base/chunk_31.resources
+python tools/probe_idclhash.py re_probes/matpipe/demo_streamed/base/chunk_31.resources
+python tools/probe_idclhash.py re_probes/matpipe/recolor_c2v1/base/chunk_22.resources
+</code></pre></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Mapview.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>3D Map View: Server, CLI, and Loader Button</a><a class="next" href="Research-Report-Meshfmt.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Mesh Format (model / modelAsset / modelstream): Resolved, Box is writable</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

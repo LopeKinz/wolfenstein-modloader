@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contradictions in Documentation and Code – Wolfenstein Modloader</title>
+<meta name="description" content="Log of 20 contradictions found in the project&#x27;s docs and code, and how each one was resolved.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
+<h1>Contradictions in Documentation and Code</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Known-Contradictions"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#status">Status</a></li><li><a href="#w1--intro-skip">W1 — Intro-Skip</a></li><li><a href="#w2--readme-lists-locked-cvars-as-functions">W2 — README lists locked Cvars as functions</a></li><li><a href="#w3--2231-cvars-for-part-2">W3 — &quot;2231 Cvars&quot; for Part 2</a></li><li><a href="#w4--patch-mechanism">W4 — Patch Mechanism</a></li><li><a href="#w5--bim-encoder">W5 — BIM Encoder</a></li><li><a href="#w6--how-big-is-a-slot">W6 — How big is a slot?</a></li><li><a href="#w7--stringslang-raw-or-deflate">W7 — strings/*.lang: raw or deflate?</a></li><li><a href="#w8--idcl-solved-or-unsolved">W8 — IDCL: solved or unsolved?</a></li><li><a href="#w9--virtual-textures">W9 — Virtual Textures</a></li><li><a href="#w10--sample-audio-data-or-descriptor">W10 — sample: Audio data or Descriptor?</a></li><li><a href="#w11--devgui">W11 — DevGUI</a></li><li><a href="#w12--raw-write-path">W12 — Raw write path</a></li><li><a href="#w13--cvarspy-contradicts-itself-in-its-own-head">W13 — cvars.py contradicts itself in its own head</a></li><li><a href="#w14--two-references-in-cvarspy-point-to-nothing">W14 — Two references in cvars.py point to nothing</a></li><li><a href="#w15--wolfsdk-browse-does-not-exist">W15 — wolfsdk browse does not exist</a></li><li><a href="#w16--megatexture-34-gb-or-41-gb">W16 — Megatexture: 34 GB or 41 GB?</a></li><li><a href="#w17--80-or-84-text-types">W17 — 80 or 84 text types?</a></li><li><a href="#w18--60233-decls-or-25559">W18 — 60.233 Decls or 25.559?</a></li><li><a href="#w19--two-games-one-readme">W19 — Two Games, One README</a></li><li><a href="#w20--what-really-lies-in-the-backup">W20 — What Really Lies in the Backup?</a></li><li><a href="#newly-noticed-while-resolving">Newly Noticed While Resolving</a></li><li><a href="#what-was-checked-and-no-contradiction-exists">What was checked and no contradiction exists</a></li><li><a href="#method">Method</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is a cleanup log for the project&#x27;s documentation about modding Wolfenstein: The New Order and The New Colossus. All docs were compared with the code and with files on disk, and 20 places were found where they disagreed or presented a guess as a measurement. For each point the page says what was fixed and what stays open. The goal is to keep &quot;measured&quot; and &quot;assumed&quot; clearly apart.</p><ul><li>17 of 20 points are fixed; 3 still have an open remainder or exist only in the code.</li><li>The intro-skip <span class="t" data-t="cvar">setting</span> is passed on but wiped again by the game&#x27;s cheat reset, so the docs no longer promise it works.</li><li>A patched run of about 48 minutes loaded all 14 rewritten archives with 373 patched assets and 0 error lines in the log.</li><li>The megatexture folder was remeasured at 39 files and 35.6 GB, replacing the wrong figures of 34 and 41 GB.</li><li>Still open: whether the intro actually skips, whether self-made images look right on screen, and whether backups are bit-exact.</li></ul></div><div class="de"><p class="lede">Diese Seite ist ein Aufräumprotokoll für die Projektdoku zum Modding von Wolfenstein: The New Order und The New Colossus. Alle Dokumente wurden mit dem Code und den Dateien auf der Platte verglichen. Dabei fanden sich 20 Stellen, die sich widersprachen oder eine Vermutung als Messung ausgaben. Für jeden Punkt steht dort, was korrigiert wurde und was offen bleibt. Ziel ist, „gemessen“ und „angenommen“ klar zu trennen.</p><ul><li>17 von 20 Punkten sind behoben; bei 3 bleibt ein Rest offen oder sie betreffen nur den Code.</li><li>Die <span class="t" data-t="cvar">Einstellung</span> zum Überspringen des Intros kommt zwar an, wird aber vom Cheat-Reset des Spiels wieder gelöscht. Die Doku verspricht das daher nicht mehr.</li><li>Ein gepatchter Lauf von etwa 48 Minuten lud alle 14 neu geschriebenen Archive mit 373 gepatchten Assets, ohne eine einzige Fehlerzeile im Log.</li><li>Der Megatextur-Ordner wurde neu vermessen: 39 Dateien und 35,6 GB statt der falschen Angaben von 34 und 41 GB.</li><li>Noch offen: ob das Intro wirklich übersprungen wird, ob selbst gebaute Bilder im Spiel richtig aussehen und ob die Backups bitgenau sind.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Raised on 2026-09-21 by reading all files in <code>docs/</code>, comparing the header comments of all modules in <code>wolfsdk/</code> against the code and against files on disk. <strong>Resolved on 2026-09-21.</strong></p>
+<p>This document is now a <strong>resolution log</strong>, no longer an issue list. For each of the 20 points, it states what was changed—or why it remains open.</p>
+<p>Why this matters: this project sells itself on the distinction between <em>measured</em> and <em>assumed</em>. A document that treats an assumption as a measurement damages exactly that property—even if the assumption turns out to be correct. Therefore, when resolving issues, "missing" has never been softened to "works"; where evidence was lacking, it now states "unverified."</p>
+<hr />
+<h2 id="status">Status</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Topic</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#w1">W1</a></td>
+<td>Intro-Skip: locked but still set</td>
+<td><strong>fixed in text</strong>, code reported</td>
+</tr>
+<tr>
+<td><a href="#w2">W2</a></td>
+<td>README lists locked Cvars as functions</td>
+<td><strong>fixed</strong></td>
+</tr>
+<tr>
+<td><a href="#w3">W3</a></td>
+<td>"2231 Cvars" for Part 2 is a candidate list</td>
+<td><strong>fixed in text</strong>, GUI reported</td>
+</tr>
+<tr>
+<td><a href="#w4">W4</a></td>
+<td>Patch mechanics: append vs. in-place</td>
+<td><strong>fixed</strong></td>
+</tr>
+<tr>
+<td><a href="#w5">W5</a></td>
+<td>BIM-Encoder: six digits claim it fails</td>
+<td><strong>fixed</strong>, one remainder open</td>
+</tr>
+<tr>
+<td><a href="#w6">W6</a></td>
+<td>Slot size: <code>csize + 15</code> vs. exact <code>csize</code></td>
+<td><strong>fixed in text</strong>, code reported</td>
+</tr>
+<tr>
+<td><a href="#w7">W7</a></td>
+<td><code>strings/*.lang</code>: raw or deflate?</td>
+<td><strong>fixed</strong></td>
+</tr>
+<tr>
+<td><a href="#w8">W8</a></td>
+<td>IDCL: "unsolved" vs. read format</td>
+<td><strong>fixed</strong></td>
+</tr>
+<tr>
+<td><a href="#w9">W9</a></td>
+<td>Virtual Textures: "not examined"</td>
+<td><strong>fixed</strong></td>
+</tr>
+<tr>
+<td><a href="#w10">W10</a></td>
+<td><code>sample</code>: audio data or descriptor?</td>
+<td><strong>fixed in text</strong>, tool reported</td>
+</tr>
+<tr>
+<td><a href="#w11">W11</a></td>
+<td>DevGUI: module promises a menu</td>
+<td><strong>only in code</strong>, reported</td>
+</tr>
+<tr>
+<td><a href="#w12">W12</a></td>
+<td>Raw write path: "missing" vs. present</td>
+<td><strong>fixed</strong></td>
+</tr>
+<tr>
+<td><a href="#w13">W13</a></td>
+<td><code>cvars.py</code> contradicts itself in its own header</td>
+<td><strong>only in code</strong>, reported</td>
+</tr>
+<tr>
+<td><a href="#w14">W14</a></td>
+<td>Two references in <code>cvars.py</code> point to nothing</td>
+<td><strong>mitigated in text</strong>, code reported</td>
+</tr>
+<tr>
+<td><a href="#w15">W15</a></td>
+<td><code>wolfsdk browse</code> does not exist</td>
+<td><strong>only in code</strong>, reported</td>
+</tr>
+<tr>
+<td><a href="#w16">W16</a></td>
+<td>Megatexture: 34 GB vs. 41 GB</td>
+<td><strong>fixed, remeasured</strong></td>
+</tr>
+<tr>
+<td><a href="#w17">W17</a></td>
+<td>Type counting: 80 vs. 84 text types</td>
+<td><strong>fixed</strong></td>
+</tr>
+<tr>
+<td><a href="#w18">W18</a></td>
+<td>Decl counting: 60,233 vs. 25,559</td>
+<td><strong>fixed</strong></td>
+</tr>
+<tr>
+<td><a href="#w19">W19</a></td>
+<td>README describes only Part 1</td>
+<td><strong>fixed</strong></td>
+</tr>
+<tr>
+<td><a href="#w20">W20</a></td>
+<td>Backup content described incorrectly</td>
+<td><strong>fixed</strong>, one remainder open</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>17 fixed, 3 with remainder or exclusively in code.</strong> At the end, exactly three questions remain open, and all three require something this session was not allowed to do: a game start with inspection (W1, W5) and a Steam file check (W20).</p>
+<p>Not touched because it is out of hand: <code>wolfsdk/</code> and <code>tools/</code> code (multiple workers are working on them), <code>docs/ghidra/</code>, <code>docs/moddingflaeche-tnc.md</code>, <code>docs/stand.md</code>.</p>
+<hr />
+<p><a id="w1"></a></p>
+<h2 id="w1--intro-skip">W1 — Intro-Skip</h2>
+<p><strong>Fixed in text.</strong> The matter could be decided without a game start: the <code>qconsole.log</code> from the session of 2026-09-21 at 18:47 contains four lines under the command line</p>
+<pre><code>325: Resetting cheat cvar: pm_autoSprint
+326: Resetting cheat cvar: g_goreBloodyMess
+327: Resetting cheat cvar: com_allowConsole
+328: Resetting cheat cvar: com_skipIntroVideo
+</code></pre>
+<p>The value arrives and is wiped again by the Cheat-Reset. <code>Home.md</code> no longer promises that the intro is skipped, but states that the argument is provided and the signs speak against it. <code>Modding-Limits.md</code> §1 has added a new section "Two different Nows" regarding this.</p>
+<p><strong>Open:</strong> whether the intro skips <em>despite</em> this. No log says so; someone must inspect.</p>
+<p><strong>Reported in code:</strong> <code>wolfsdk/cvars.py:184</code> sets <code>com_skipIntroVideo</code> via <code>ALWAYS</code> on every start, with the justification "Sitting through the logo reel on each start is nobody's idea of quality of life" — this is a performance claim that contradicts the lock list twelve lines above. Harmless (an additional argument), but the comment needs correction.</p>
+<p><a id="w2"></a></p>
+<h2 id="w2--readme-lists-locked-cvars-as-functions">W2 — README lists locked Cvars as functions</h2>
+<p><strong>Fixed.</strong> The table in <code>Home.md</code> now lists only those items under Cheats/QoL that are not affected by the lock (Godmode, infinite ammo, damage factor, FOV, toggle sprint, HUD, FPS). Below it is a box explicitly listing Noclip, gravity, head-bob, intro-skip, console, and <code>pm_*</code> speeds as locked, with a reference to §1 of <code>Modding-Limits.md</code>.</p>
+<p>The second half — where the console was listed as <em>unverified</em> in the list of open questions, despite <code>Modding-Limits.md</code> having a measured no — is also corrected: The item now stands under "measured answered," supported by both forms of evidence (Config rejection and Cheat reset).</p>
+<p><strong>Additionally found:</strong> The quick-start line showed <code>launch --god --ammo --console --skip-intro --fov 105 --binds</code>, advertising two locked Cvars. The line is shortened, and below it states what the two switches are still useful for.</p>
+<hr />
+<p><a id="w3"></a></p>
+<h2 id="w3--2231-cvars-for-part-2">W3 — "2231 Cvars" for Part 2</h2>
+<p><strong>Fixed in text.</strong> <code>docs/cvars-tnc.md</code> now begins with a box identifying the file as a candidate list (222 of 2231 real, Quote 10%; the Engine reports 304, of which 82 are not present in this list at all) and references <code>TNC-CVar-Validation.md</code> as a reliable source. <code>docs/audio.md</code> §5 says the same at the point where it adopted the number.</p>
+<p><strong>Reported in code</strong> (four locations, all with the same phrasing "2231 mined cvar names" or "2231 Cvar names"):</p>
+<ul>
+<li><code>wolfsdk/gui.py:5</code>, <code>:28</code> — Module header and <code>ROW_LIMIT</code> comment.</li>
+<li><code>wolfsdk/gui.py:471</code> — Info text in the "Console &amp; Info" tab, visible to the user: "The New Colossus: 2231 Cvar names from the EXE".</li>
+<li><code>wolfsdk/cvars.py:241</code> — "The New Colossus has 2231 mined names and no measurements at all".</li>
+</ul>
+<p>The phrasing that fits everywhere: <em>2231 harvested candidates, of which 222 are real Cvars; the Engine knows 304.</em></p>
+<hr />
+<p><a id="w4"></a></p>
+<h2 id="w4--patch-mechanism">W4 — Patch Mechanism</h2>
+<p><strong>Fixed.</strong> <code>docs/formats.md</code> §3 "Patching" described appending to the file end — exactly the procedure that <code>Modding-Limits.md</code> §4 describes as a measured crash (<code>FileTable is out of order</code>). The section is replaced: Slot mechanism, <code>deflate_exact()</code>, raw path at <code>csize == usize</code>, rebuild as fallback path, plus a box marking the old procedure as refuted and referencing <code>Modding-Limits.md</code> §4.</p>
+<p>With the same change, the revert description there is corrected (three stages instead of "indices back and shorten"; a <code>.resources</code> is never shortened) — see W20.</p>
+<hr />
+<p><a id="w5"></a></p>
+<h2 id="w5--bim-encoder">W5 — BIM Encoder</h2>
+<p><strong>Fixed at all six locations</strong> (<code>Home.md</code>, <code>Modding-Limits.md</code> twice, <code>File-Formats.md</code> §5, <code>UI-Assets.md</code> twice). The phrasing is identical everywhere and deliberately not "goes":</p>
+<blockquote>
+<p>Reader, Decoder, and Encoder exist (<code>wolfsdk/image.py</code>, extracted as <code>wolfsdk image-export</code> / <code>image-import</code>). The Encoder writes <strong>only Format code 3 (RGBA8)</strong> and requires the replaced image as a header template. There is no BC1/BC3 compressor; thus a replacement will be larger than the original and usually forces an archive rebuild.</p>
+</blockquote>
+<p><code>formats.md:198</code> was doubly wrong ("a pixel decoder is missing") and is replaced by a table of four directions.</p>
+<p><strong>New evidence changing the rating:</strong> The mod <code>wolfsdk.gore_texturen</code> replaces four <code>image</code> assets with self-built BIMs. It was applied during the run of 21.09.2026, and the <code>qconsole.log</code> from this 48-minute session contains <strong>no</strong> error lines. The Engine accepts our BIMs.</p>
+<p><strong>One question remains open:</strong> whether a replaced image looks correct on screen. Someone needs to look into it. The test is cheap.</p>
+<hr />
+<p><a id="w6"></a></p>
+<h2 id="w6--how-big-is-a-slot">W6 — How big is a slot?</h2>
+<p><strong>Fixed in text.</strong> Both <code>Modding-Limits.md</code> §4 and <code>UI-Assets.md</code> §3 now state that the budget is <strong>exactly <code>csize</code></strong>. The up to 15 bytes of alignment padding between two payloads is not touched by the Patcher, because a shrinking <code>csize</code> shifts the addressing of all subsequent entries (<code>No address, error: 487</code>). Shorter streams are refilled to <code>csize</code>. Anyone calculating headroom calculates <code>csize − own Deflate</code>, as <code>TNO-Modding-Surface.md</code> §4.1 has always done.</p>
+<p><strong>Reported in code:</strong> <code>wolfsdk/patch.py:12-13</code> — "A slot holds the entry's compressed bytes plus up to 15 bytes of alignment padding, which is usually enough headroom for an edited decl." This contradicts <code>resources.write_in_place()</code> and <code>plan_in_place()</code> in the same repository. Description only, no malfunction.</p>
+<hr />
+<p><a id="w7"></a></p>
+<h2 id="w7--stringslang-raw-or-deflate">W7 — <code>strings/*.lang</code>: raw or deflate?</h2>
+<p><strong>Fixed.</strong> <code>TNO-Modding-Surface.md</code> §4.3 placed <code>.lang</code> under the same Rebuild reservation as <code>.entities</code>. Incorrect: <code>.lang</code> is stored raw in 6 of 6 entries in the archive. The section now refers to the raw write path in <code>resources.plan_in_place()</code>, states the condition (exactly equal length), and explicitly says that a Rebuild here would be the worse option because it would switch the entry from raw to Deflate — which is not measured.</p>
+<hr />
+<p><a id="w8"></a></p>
+<h2 id="w8--idcl-solved-or-unsolved">W8 — IDCL: solved or unsolved?</h2>
+<p><strong>Fixed.</strong> Four places said "unsolved". The corrected formulation separates Container and Content:</p>
+<ul>
+<li><code>docs/audio.md</code> §6, §7, and the conclusion in §7: The <code>IDCL</code> container format is read (<code>wolfsdk/idcl.py</code>, Layout checked against all 24 Retail <code>.resources</code>); for the Audio level this changes nothing, because the content is Wwise Banks, which are not connected to the Extractor, and Part 2 anyway has <code>mods=False</code>.</li>
+<li><code>docs/texdb.md</code> §6: The prerequisite listed as missing there exists, but is not connected.</li>
+</ul>
+<hr />
+<p><a id="w9"></a></p>
+<h2 id="w9--virtual-textures">W9 — Virtual Textures</h2>
+<p><strong>Fixed.</strong> <code>Modding-Limits.md</code> §7 and <code>File-Formats.md</code> §7 referred to the <code>.pages</code> format as "not investigated", while <code>docs/virtualtextures.md</code> contains a 26 kB format description with a self-test. Both places now refer to the Container as decrypted and verified, and the <strong>Pixel data</strong> as what is open (truncated JPEG-XR stream, <code>TNO-Virtual-Textures.md</code> §8). The derived Modding statement remains unchanged: Pixel swapping is not possible.</p>
+<hr />
+<p><a id="w10"></a></p>
+<h2 id="w10--sample-audio-data-or-descriptor">W10 — <code>sample</code>: Audio data or Descriptor?</h2>
+<p><strong>Fixed in text.</strong> <code>Engine-Modding-Surface.md</code> wrote "Raw Audio Data (Ogg Vorbis)", while <code>Audio.md</code> measured the opposite for all 61,318 entries. The line is corrected; <code>File-Formats.md</code> §6 is elevated from "Not further investigated" to the measured description (Descriptor, BE u32 20 bytes after the size triplet, 16384-byte grid, 0 deviations) along with the note that both streaming containers are not in the backup.</p>
+<p><strong>Reported in tool:</strong> <code>tools/survey_engine.py:45</code> continues to generate the incorrect line. <code>Engine-Modding-Surface.md</code> is a tool output — as long as the line is not re-added there, a new run brings back the error. This now stands as a hint under the block.</p>
+<hr />
+<p><a id="w11"></a></p>
+<h2 id="w11--devgui">W11 — DevGUI</h2>
+<p><strong>Not resolvable on the documentation side; reported in code.</strong> The documents are correct at this point: <code>UI-Assets.md</code> §5 and <code>docs/README.md</code> list DevGUI as "not possible — Renderer not connected in Retail", with both measurements as proof. Only the code is incorrect:</p>
+<ul>
+<li><code>wolfsdk/devmenu.py:18-19</code> — "Appending another page therefore gives a real in-game UI with no injection and no executable patch — the engine renders it, we only supply data." Two measurements explicitly exclude this (<code>Modding-Limits.md</code> §2, <code>UI-Assets.md</code> §5).</li>
+<li><code>wolfsdk/cli.py:583</code> — The command <code>ingame-menu</code> carries no caveat. A user creates a menu page with it that they never see.</li>
+<li><code>wolfsdk/cvars.py:170</code> — presents <code>devgui</code> as a usable command, "Debug GUI (Default F10)", without noting that F10 does nothing according to measurements.</li>
+</ul>
+<hr />
+<p><a id="w12"></a></p>
+<h2 id="w12--raw-write-path">W12 — Raw write path</h2>
+<p><strong>Fixed.</strong> The path exists:</p>
+<pre><code class="language-python">if entry.stored_raw:                       # csize == usize
+    return (data, len(data)) if len(data) == entry.csize else None
+</code></pre>
+<p><code>UI-Assets.md</code> §3 and §6 have been updated — including the assessment table, where Level 1 is no longer "small — a raw write path in the Patcher" as an effort, but "none". The fact that it exists is not evidence that the engine accepts the result: <code>mods/menue_marke</code> is built length-true (868.273 Bytes like the original), but was never applied.</p>
+<p>The question behind this remains expressly open and continues to be in <code>UI-Assets.md</code> §3: whether the engine forgives if a raw-deposited entry is switched to Deflate. The raw write path does not constitute it.</p>
+<p><strong>Not addressed:</strong> <code>docs/stand.md:74-76</code> continues to lead the path as missing. The document is a handover protocol and belongs to another worker.</p>
+<hr />
+<p><a id="w13"></a></p>
+<h2 id="w13--cvarspy-contradicts-itself-in-its-own-head">W13 — <code>cvars.py</code> contradicts itself in its own head</h2>
+<p><strong>In code only; reported.</strong></p>
+<ul>
+<li><code>wolfsdk/cvars.py:14-15</code> — "Nothing here has been confirmed in a running game yet."</li>
+<li><code>wolfsdk/cvars.py:26-30</code> — "Measured, not guessed. A probe config was fed to the retail build and the engine's own log was read back."</li>
+</ul>
+<p>Twelve lines apart, two incompatible statements. <code>Modding-Limits.md</code> §1 supports the second. It is presumably meant that the <strong>effect</strong> of the unlocked Cvars is unconfirmed, while the <strong>blocklist</strong> is measured. This is now supplemented by a third point: "unconfirmed" is no longer quite right either — the patched archives are measured (<code>Modding-Limits.md</code> §4), and four Cvars were observed in the log during the Cheat-Reset.</p>
+<hr />
+<p><a id="w14"></a></p>
+<h2 id="w14--two-references-in-cvarspy-point-to-nothing">W14 — Two references in <code>cvars.py</code> point to nothing</h2>
+<p><strong>Mitigated in text, reported in code.</strong> <code>docs/verifying-cvars.md</code> (<code>cvars.py:15</code>) and <code>tools/probe_retail_cvars.py</code> (<code>cvars.py:30</code>) both do not exist. The actual damage was that it remained unclear by what the blocklist was measured.</p>
+<p>Checked again: <strong>no</strong> tool in the repository generates it.
+<code>tools/probe_cvars.py</code>, <code>tools/probe_cheatvars.py</code>, and
+<code>tools/probe_retail_lock.py</code> all read only the EXE; none start the game. The list comes from a probe run driven by hand. This now stands as a box in <code>Modding-Limits.md</code> §1 — "measured once, but not traceable on button press" is the honest description.</p>
+<hr />
+<p><a id="w15"></a></p>
+<h2 id="w15--wolfsdk-browse-does-not-exist">W15 — <code>wolfsdk browse</code> does not exist</h2>
+<p><strong>In code only; reported.</strong> <code>wolfsdk/browser.py:3</code> — "Opens as a tab in the loader UI (or standalone via <code>wolfsdk browse</code>)." <code>wolfsdk/cli.py:519-601</code> registers 20 commands, <code>browse</code> is none of them. The browser is only accessible via <code>wolfsdk gui</code>. To remove is the bracketed addition.</p>
+<hr />
+<p><a id="w16"></a></p>
+<h2 id="w16--megatexture-34-gb-or-41-gb">W16 — Megatexture: 34 GB or 41 GB?</h2>
+<p><strong>Fixed, remeasured.</strong> Both numbers were wrong:</p>
+<pre><code>virtualtextures\   39 files   35 627 349 878 B   = 35.6 GB   = 33.2 GiB
+</code></pre>
+<p><code>File-Formats.md</code> §7, <code>Modding-Limits.md</code> §5 and <code>TNO-Virtual-Textures.md</code> §1 now uniformly name 39 files and 35.6 GB (33.2 GiB) with measurement date. The "~34 GB" were presumably a rounded GiB, the "41 GB" remains unexplained.</p>
+<hr />
+<p><a id="w17"></a></p>
+<h2 id="w17--80-or-84-text-types">W17 — 80 or 84 text types?</h2>
+<p><strong>Resolved, both sides using the counting rule.</strong> Recounted from the table in <code>Engine-Modding-Surface.md</code>: 105 types = <strong>80 TEXT + 5 mixed + 20 binary</strong>. The five mixed types are <code>sound</code>, <code>particle</code>, <code>renderProg</code>, <code>cuttableResource</code>, and <code>file</code>.</p>
+<p><code>TNO-Modding-Surface.md</code> cites 84/21 because <code>tools/survey_modding_surface.py</code> does not know a "mixed" class: <code>is_text()</code> decides based on type at <strong>one</strong> sample (over 95% printable characters in the first 4096 bytes). Four of the five mixed types end up on the text side, one on the binary — 80 + 4 = 84, 20 + 1 = 21.</p>
+<p>Both documents now carry the rule within themselves. "Directly editable without side effects" are the 80.</p>
+<hr />
+<p><a id="w18"></a></p>
+<h2 id="w18--60233-decls-or-25559">W18 — 60.233 Decls or 25.559?</h2>
+<p><strong>Resolved, counting basis written for both numbers.</strong> 60.233 are <strong>index entries</strong> in text types, with multiple copies counted across several chunks. 25.887 are unique <code>(type, name)</code> pairs, of which 25.559 are valid UTF-8; the 328 outliers consist of 327 embedded binary files under <code>file:</code> and one <code>renderProg</code>. No measurement error, two counting bases.</p>
+<p>Added to <code>Home.md</code>, <code>File-Formats.md</code> §4 (as a box), and <code>TNO-Modding-Surface.md</code> (header).</p>
+<hr />
+<p><a id="w19"></a></p>
+<h2 id="w19--two-games-one-readme">W19 — Two Games, One README</h2>
+<p><strong>Resolved.</strong> <code>Home.md</code> now mentions Part 2 in the second paragraph, including the decisive restriction (<code>mods=False</code>: read and started, not patched) with a reference to <code>docs/README.md</code>, which cleanly separates the scope of both titles.</p>
+<hr />
+<p><a id="w20"></a></p>
+<h2 id="w20--what-really-lies-in-the-backup">W20 — What Really Lies in the Backup?</h2>
+<p><strong>Resolved — and harmless.</strong> The observation was correct (all 14 <code>.index</code> <em>and</em> all 14 <code>.resources</code>, totaling 2.98 GB), but the conclusion was not. The journal explains it fully:</p>
+<pre><code>journal.json:  rebuilt = 14 files,  slots = 0,  assets = 373
+</code></pre>
+<p>All 14 archives had to be rewritten, so <code>_backup_resources()</code> created a full copy for all 14. This is exactly the described procedure and not a puzzle. <code>apply()</code> also resets first before copying — thus the copies come from the reset state.</p>
+<p><code>Home.md</code> now describes the folder correctly, citing the range from a few tens of MB to around 3 GB and the journal key <code>rebuilt</code>. <code>File-Formats.md</code> §3 describes the reset in three stages and explicitly states that a <code>.resources</code> is never truncated.</p>
+<p><strong>Verification check, purely reading:</strong> All 14 backup <code>.resources</code> have exactly the original length from <code>manifest.json</code> (14 of 14, 0 deviations).</p>
+<p><strong>One remaining open question:</strong> <code>verify_backup()</code> checks the <code>sha256</code> of the <strong>indexes</strong>, not the <code>.resources</code> — the manifest stores only size and timestamp for these. That the full copies are bit-exact is likely but unproven. A fresh Steam file check would be decisive. Until that is done, a small question mark remains after <code>Audio.md</code> and <code>TNO-Modding-Surface.md</code>, which derive their numbers from this folder; it is small because the lengths match and <code>revert</code> was sha256-identical over two cycles.</p>
+<hr />
+<h2 id="newly-noticed-while-resolving">Newly Noticed While Resolving</h2>
+<p>Four things that were not present in the initial survey:</p>
+<ol>
+<li>
+<p><strong>The log refutes the read method of the blacklist.</strong> From the command line, the engine does <strong>not</strong> output "CANNOT be set in retail" — it accepts the assignment and wipes it on cheat reset. The warning is the response to a <em>Config</em> line. Anyone searching the command line for <code>CANNOT be set</code> to check if a CVar passes through is looking at the wrong line. Newly documented in <code>Modding-Limits.md</code> §1.</p>
+</li>
+<li>
+<p><strong>Patched archives loaded.</strong> This was posed as the most critical open question in <code>Home.md</code>. The run on 21.09.2026 (Apply 18:47:35, Start 18:47:50, approximately 48 minutes until Chapter 12) rewrote all 14 <code>.resources</code> files, patched 373 Assets, and included four self-built BIMs in the archive — and <code>qconsole.log</code> contains 0 lines of <code>ERROR</code>, 0 <code>zlib inflate error</code>, 0 <code>FileTable is out of order</code>, and 0 <code>No address</code>. This was added to <code>Modding-Limits.md</code> §4, <code>Home.md</code>, and <code>docs/README.md</code>.</p>
+</li>
+<li>
+<p><strong><code>g_EnableGore</code> survives the reset.</strong> It was on the same command line, it is in the blacklist — and does not appear under "Resetting cheat cvar", unlike <code>g_goreBloodyMess</code> next to it. Whether it therefore <em>works</em>, the log does not say. Noted as an unverified side finding in <code>Modding-Limits.md</code> §1, not sold as a function.</p>
+</li>
+<li>
+<p><strong><code>wolfsdk tweaks</code> do not mark locked Cvars.</strong> The GUI writes <code>✕ in Retail locked</code> behind the affected lines (<code>wolfsdk/gui.py:326-327</code>), but <code>cmd_tweaks</code> in <code>wolfsdk/cli.py</code> does not, and even announces console commands with "need <code>com_allowConsole 1</code>", without stating that exactly this cannot be measured. Reported in code; <code>Home.md</code> notes the difference.</p>
+</li>
+</ol>
+<hr />
+<h2 id="what-was-checked-and-no-contradiction-exists">What was checked and <em>no</em> contradiction exists</h2>
+<p>Unchanged compared to the first report, so no one pulls the same threads twice:</p>
+<ul>
+<li><strong><code>binary.cfg</code></strong> — <code>Home.md</code>, <code>docs/ladepfade.md</code>, and <code>docs/limits.md</code> §2 agree on the same thing: it is executed, values are reset afterwards. (The current log confirms this incidentally with <code>couldn't exec …/binary.cfg</code> — in this installation, the file does not exist at all.)</li>
+<li><strong>Start only via Steam</strong> — <code>Home.md</code> and <code>docs/ladepfade.md</code> agree.</li>
+<li><strong>Particles</strong> — <code>TNO-Modding-Surface.md</code> §6.1, <code>UI-Assets.md</code> §3, and <code>Audio.md</code> §3 describe the same mechanism without contradiction.</li>
+<li><strong><code>.texdb</code> file count</strong> — 24 in <code>base/</code> against 27 in the entire game directory; the three DLC chunks explain the difference.</li>
+<li><strong>Virtual-Texture-Pixel</strong> — all documents agree: not replaceable.</li>
+<li><strong>Game saves</strong> — <code>Save-Games-and-Profiles.md</code> and <code>Research-Status-2026-09-21.md</code> match.</li>
+</ul>
+<hr />
+<h2 id="method">Method</h2>
+<p>All files in <code>docs/</code> (excluding the two JSON data files), <code>Home.md</code>, and the header comments of all modules in <code>wolfsdk/</code> were read and compared against the code. To resolve issues, three purely reading measurements were added:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Measurement</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cheat Reset, Command Line, Error-free patched run</td>
+<td><code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein The New Order\base\qconsole.log</code>, 4,858 lines, 21.09.2026 18:47</td>
+</tr>
+<tr>
+<td>Backup content, <code>rebuilt</code>/<code>slots</code>, original lengths</td>
+<td><code>base_wolfsdk_backup\journal.json</code> + <code>manifest.json</code></td>
+</tr>
+<tr>
+<td>Megatexture size</td>
+<td><code>virtualtextures\*.pages</code>, 39 files</td>
+</tr>
+</tbody>
+</table></div>
+<p>Not done: no game start, no write access under <code>D:\SteamLibrary</code>, no <code>apply</code>, no <code>revert</code>, no changes to code or tools. Where a contradiction exists in the code, it is reported above with file and line instead of being fixed.</p>
+<p>Changed: <code>Home.md</code>, <code>docs/README.md</code>, <code>docs/limits.md</code>, <code>docs/formats.md</code>, <code>docs/ui-assets.md</code>, <code>docs/audio.md</code>, <code>docs/engine-surface.md</code>, <code>docs/cvars-tnc.md</code>, <code>docs/texdb.md</code>, <code>docs/virtualtextures.md</code>, <code>docs/moddingflaeche-tno.md</code>, and this file.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Engine-Modding-Surface.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Modifiable Engine Interface</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

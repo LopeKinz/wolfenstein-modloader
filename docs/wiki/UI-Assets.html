@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User Interface — What Can and Cannot Be Changed – Wolfenstein Modloader</title>
+<meta name="description" content="Which parts of The New Order&#x27;s menus and HUD can be changed, and why a custom in-game menu is out of reach.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tno"><span class="en">The New Order</span><span class="de">The New Order</span></a></p>
+<h1>User Interface — What Can and Cannot Be Changed</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/UI-Assets"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#short-answer">Short Answer</a></li><li><a href="#1-what-actually-exists">1. What Actually Exists</a></li><li><a href="#2-the-format-not-scaleform-not-swf">2. The Format: Not Scaleform, Not SWF</a></li><li><a href="#3-do-they-fall-into-the-particle-trap-no--but-they-have-their-own">3. Do They Fall Into The Particle Trap? No — But They Have Their Own</a></li><li><a href="#4-what-can-be-changed-data-drivenly">4. What can be changed data-drivenly</a></li><li><a href="#5-the-existing-developer-interface">5. The existing developer interface</a></li><li><a href="#6-assessment-is-an-in-game-menu-realistic">6. Assessment: Is an In-Game Menu realistic?</a></li><li><a href="#7-unverified-traces">7. Unverified Traces</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page checks whether a mod could add its own in-game menu to Wolfenstein: The New Order. The menus are stored in idSWF, an undocumented <span class="t" data-t="binary">binary</span> format by id Software that no existing tool can write, so a real new menu is not feasible. What is possible is renaming existing menu entries, changing menu sounds and music, and editing loading-screen tips and tutorial texts. A test that replaced three menu strings was applied, but the change did not show up in the game.</p><ul><li>The 9 menu and HUD screens use idSWF version 20, not Adobe Flash or Scaleform.</li><li>7,154 text strings exist, 367 of them for the menu; replacements must keep exactly the same byte length.</li><li>New menu lines cannot be added; the game&#x27;s code decides which lines exist.</li><li>The hidden developer menu (<span class="t" data-t="devgui">DevGUI</span>) is not connected in the retail game.</li><li>A three-line menu text mod was applied, but it did not appear in the game.</li></ul></div><div class="de"><p class="lede">Diese Seite prüft, ob ein Mod ein eigenes Menü in Wolfenstein: The New Order einbauen könnte. Die Menüs liegen im idSWF-Format, einem undokumentierten <span class="t" data-t="binary">Binärformat</span> von id Software, das kein vorhandenes Tool schreiben kann; ein echtes neues Menü ist daher nicht machbar. Möglich ist, vorhandene Menüeinträge umzubenennen, Menüsounds und Musik zu ändern sowie Ladebildschirm-Tipps und Tutorialtexte zu bearbeiten. Ein Test, der drei Menütexte ersetzte, wurde eingespielt, aber die Änderung war im Spiel nicht zu sehen.</p><ul><li>Die 9 Menü- und HUD-Oberflächen nutzen idSWF Version 20, nicht Adobe Flash oder Scaleform.</li><li>Es gibt 7.154 Texte, 367 davon fürs Menü; Ersatztexte müssen exakt gleich viele Bytes lang sein.</li><li>Neue Menüzeilen lassen sich nicht hinzufügen; welche Zeilen es gibt, entscheidet der Programmcode.</li><li>Das versteckte Entwicklermenü (<span class="t" data-t="devgui">DevGUI</span>) ist in der Verkaufsversion nicht angeschlossen.</li><li>Ein Mod mit drei geänderten Menütexten wurde eingespielt, erschien im Spiel aber nicht.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Measured against the original archives in the backup using <code>tools/probe_ui_assets.py</code>.
+All numbers are derived from 14 archives containing 203,843 assets.</p>
+<hr />
+<h2 id="short-answer">Short Answer</h2>
+<p><strong>A genuine in-game menu styled like the game's main menu is not feasible.</strong> Not because the files are locked — they reside normally in the archive and can be overwritten. But because what one would need to write inside is an <strong>undocumented binary format from id Software</strong>, which appears nowhere else: <code>idSWF</code>, Version 20. No tool on Earth writes it, and generating it from nothing would be a reverse-engineering project of its own, whose only test would consist of starting the game and seeing if it crashes.</p>
+<p><strong>What is possible:</strong> rewriting every text string in the menu. Menu titles, option names, help lines, difficulty levels, journal entries — 7,154 strings, of which 367 are in the menu. This isn't a menu, but it's more than nothing: you can rename the existing menu.</p>
+<hr />
+<h2 id="1-what-actually-exists">1. What Actually Exists</h2>
+<p>There is <strong>no</strong> asset type <code>swf</code>, <code>gui</code>, <code>menu</code>, <code>hud</code>, or <code>shell</code>. The interface is distributed across three locations:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Location</th>
+<th>Content</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Type <code>file</code>, <code>generated/swf/*.bswf</code></td>
+<td>The surfaces themselves (Logic + Layout)</td>
+<td>9 variants</td>
+</tr>
+<tr>
+<td>Type <code>file</code>, <code>generated/swf/*.bimage</code></td>
+<td>The image atlas for each surface</td>
+<td>9 variants</td>
+</tr>
+<tr>
+<td>Type <code>file</code>, <code>strings/*.lang</code></td>
+<td>String tables, 6 languages</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Type <code>file</code>, <code>textures/guis/**/*.dct</code></td>
+<td>Collection object renderings</td>
+<td>144</td>
+</tr>
+<tr>
+<td>Type <code>swfresource</code></td>
+<td>Decls: Sounds, Fonts, Category Titles</td>
+<td>11</td>
+</tr>
+<tr>
+<td>Type <code>font</code></td>
+<td>Distance-Field Fonts</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Type <code>image</code> / <code>material</code> under <code>gui/</code>, <code>hud/</code></td>
+<td>HUD and Menu Graphics</td>
+<td>208 / 804</td>
+</tr>
+</tbody>
+</table></div>
+<p>The nine surfaces:</p>
+<pre><code>tungshell_new      371.411 B   Main Menu (Start, Chapter, Enigma, Options)
+tungpause_new      139.752 B   Pause Menu
+tunginventory_new  122.155 B   Journal / Collectibles
+tunghud            119.204 B   HUD
+tungtutorial_new    27.958 B   Tutorial Overlays
+tungload_new        14.360 B   Loading Screen
+tungmodelbrowser    13.661 B   Model Browser (Extras)
+tungdialog           9.241 B   Dialog Boxes
+vo                   2.423 B   Subtitles
+</code></pre>
+<p><code>tunghud</code>, <code>tunginventory_new</code>, <code>tungmodelbrowser</code>, <code>tungtutorial_new</code>, and <code>vo</code> appear in 13 of the 14 archives — any change must affect <strong>all copies</strong>.</p>
+<hr />
+<h2 id="2-the-format-not-scaleform-not-swf">2. The Format: Not Scaleform, Not SWF</h2>
+<p>The initial assumption was Scaleform. It is incorrect. The file header states:</p>
+<pre><code>42 53 57 14 ...    -&gt;  &quot;BSW&quot; + 0x14
+</code></pre>
+<p>No <code>FWS</code>, no <code>CWS</code>, no <code>ZWS</code> (Adobe SWF), no <code>GFX</code>/<code>CFX</code> (Scaleform). It is <strong>idSWF, Version 20</strong> — id Software's own Flash clone, present since Rage/Doom 3 BFG in id Tech. Confirmed by symbol names in the EXE:</p>
+<pre><code>idSWF, idSWFSprite, idSWFSpriteInstance, idSWFScriptFunctionAS2,
+idSWFConstantPoolAS2, SWF_DICT_SHAPE/SPRITE/FONT/EDITTEXT, swfTag_t,
+w:\tech5\engine\guis\swf\SWF_Load.cpp
+</code></pre>
+<p>A <code>.bswf</code> contains: String table (ActionScript-2 identifiers like <code>inhibitControl</code>, <code>_absLeft_settings</code>, <code>easeInOutSine</code>), compiled AS2 bytecode, Sprite/Shape/EditText dictionaries, and timelines. The image atlas is stored separately in <code>.bimage</code> — a <strong>BIM</strong> (<code>\x09MIB</code>, the same format as <code>image</code> assets; <code>wolfsdk/bim.py</code> already reads the header).</p>
+<p>Consequence: No existing tool opens it. JPEXS reads SWF, the Scaleform exporter reads GFX; neither applies here. Generating a <code>.bswf</code> would require writing serializers for the Dictionary, timeline, and AS2 bytecode — plus a matching BIM atlas. A BIM encoder now exists in this SDK (<code>wolfsdk/image.py</code>, <code>to_bim()</code>), but only for RGBA8 and only with the replacement image as the header template; see <code>docs/limits.md</code>, Section 5. This does not change the effort required to create an own <code>.bswf</code>.</p>
+<hr />
+<h2 id="3-do-they-fall-into-the-particle-trap-no--but-they-have-their-own">3. Do They Fall Into The Particle Trap? No — But They Have Their Own</h2>
+<p><strong>The particle trap does not apply here.</strong> Evidence:</p>
+<ul>
+<li><code>.bswf</code>, <code>.bimage</code>, and <code>.lang</code> are ordinary archive entries of type <code>file</code> with their own offset, <code>usize</code>, and <code>csize</code> — exactly like any Decl.</li>
+<li>There is <strong>no</strong> associated <code>.bin</code> under <code>base/generated/</code>. There are 76 files there that the game itself writes — 73 of them are particle caches, the rest are model and world caches. Nothing from <code>generated/swf/</code>.</li>
+<li>The log (<code>qconsole.log</code>, 4,858 lines) contains <strong>zero</strong> lines of <code>idFile_RingBuffer</code>.</li>
+</ul>
+<p><strong>But there is a second storage class, and the UI sits right in the middle.</strong> Within the <code>file</code> type, some endings are stored as 100% uncompressed while others are stored as 100% deflate-compressed — and this is not a compression heuristic:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Ending</th>
+<th>Entries</th>
+<th>raw</th>
+<th>deflate</th>
+<th>would compress to</th>
+<th>actually</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.bswf</code></td>
+<td>69</td>
+<td>69</td>
+<td>0</td>
+<td><strong>23 %</strong></td>
+<td>raw</td>
+</tr>
+<tr>
+<td><code>.bimage</code></td>
+<td>69</td>
+<td>69</td>
+<td>0</td>
+<td><strong>21 %</strong></td>
+<td>raw</td>
+</tr>
+<tr>
+<td><code>.lang</code></td>
+<td>6</td>
+<td>6</td>
+<td>0</td>
+<td><strong>28 %</strong></td>
+<td>raw</td>
+</tr>
+<tr>
+<td><code>.dct</code></td>
+<td>144</td>
+<td>144</td>
+<td>0</td>
+<td>100 %</td>
+<td>raw</td>
+</tr>
+<tr>
+<td><code>.png</code></td>
+<td>14</td>
+<td>14</td>
+<td>0</td>
+<td>100 %</td>
+<td>raw</td>
+</tr>
+<tr>
+<td><code>.script</code></td>
+<td>97</td>
+<td>0</td>
+<td>97</td>
+<td>20 %</td>
+<td>deflate</td>
+</tr>
+<tr>
+<td><code>.entities</code></td>
+<td>25</td>
+<td>0</td>
+<td>25</td>
+<td>7 %</td>
+<td>deflate</td>
+</tr>
+<tr>
+<td><code>.txt</code></td>
+<td>2</td>
+<td>0</td>
+<td>2</td>
+<td>6 %</td>
+<td>deflate</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>.dct</code> and <code>.png</code> are already compressed internally — applying Deflate to them yields no further benefit, so "raw" is the correct choice. <code>.bswf</code>, <code>.bimage</code>, and <code>.lang</code> would instead quarter in size. 5.6 MB of string tables lie uncompressed on disk, while 700 kB of scripts sit beside them compressed. This is not a coincidence; this is a <strong>decision</strong>: these files are apparently read via a path that requires the bytes verbatim — memory mapping or streaming rather than Inflate.</p>
+<p><strong>The Patcher can now do this.</strong> <code>resources.plan_in_place()</code> has a raw write path:</p>
+<pre><code class="language-python">if entry.stored_raw:                       # csize == usize
+    return (data, len(data)) if len(data) == entry.csize else None
+</code></pre>
+<p>A raw-stored entry thus accepts a replacement of <strong>exactly the same length</strong>, and the bytes go unchanged to their offset — no compression, no change of storage class. <code>Archive.rebuild()</code> receives the storage class as well (<code>packed = data if entry.stored_raw else _deflate(data)</code>).</p>
+<p>The question remains: whether the Engine tolerates a raw-stored entry being switched to Deflate is <strong>not measured</strong> — but based on this table, one should not bet on it. The raw write path does not even ask that question.</p>
+<p>This adds length fidelity: the margin is <strong>0 Bytes</strong>, not 3 to 15. Between the payloads lies alignment padding, but the Patcher does not touch it — a shrinking <code>csize</code> shifts the addressing of all subsequent entries (<code>No address, error: 487</code>, <code>Modding-Limits.md</code> §4). Going longer or shorter only works via <code>rebuild()</code>, which then writes a 151-MB archive (chunk0) or up to 2.8 GB anew if one touches <code>tunghud</code> in all 13 copies.</p>
+<h3 id="what-follows-from-this">What follows from this</h3>
+<p>If you want to change <code>strings/english.lang</code>, you have exactly one clean way: <strong>replace byte-length-faithfully and write raw back</strong>. That is the same trick as <code>_same_width()</code> in <code>tools/build_gore_deep.py</code>, just at the text level: "CONTINUE" can become "WEITER  ", not "WEITERSPIELEN".</p>
+<p>The write path for this <strong>exists</strong>: <code>plan_in_place()</code> places the bytes directly at the offset when <code>csize == usize</code>, instead of sending them through <code>deflate_exact()</code>, and marks a replacement of another length. Neither offset nor <code>csize</code> moves. This has already been built as <code>mods/menue_marke</code> — three lines of the English string table, padded on the right with spaces to the old width, 868.273 bytes like the original.
+<em>It was applied and viewed in-game but did not appear.</em></p>
+<blockquote>
+<p>Side note, historical: <code>deflate_exact()</code> on an 868-kB file would hang with a guaranteed empty result. Measured: a Deflate pass takes 0.10 s and shrinks the file from 868.273 to 246.796 Bytes. The function then attempts up to 4,608 fill variants — roughly <strong>8 minutes</strong> — to reach exactly 868.273 Bytes. It cannot: between these two sizes there are 621 kB, and the filler material reaches at most 4.6 kB in length. The raw write path also bypasses this — it does not call <code>deflate_exact()</code> for such entries at all.</p>
+</blockquote>
+<hr />
+<h2 id="4-what-can-be-changed-data-drivenly">4. What can be changed data-drivenly</h2>
+<h3 id="41-the-string-table--the-real-gain">4.1 The String Table — the real gain</h3>
+<p><code>strings/english.lang</code> is a plain text file (UTF-8 with BOM, CRLF) in the known Decl-near format:</p>
+<pre><code>// string table
+//
+
+{
+    &quot;#str_menu_continue&quot;    &quot;CONTINUE&quot;
+    &quot;#str_menu_game_difficulty&quot; &quot;DIFFICULTY&quot;
+    &quot;#str_menu_difficulty_veryhard&quot; &quot;ÜBER&quot;
+    &quot;#str_menu_difficulty_hard_help&quot;    &quot;Hard difficulty setting for the experienced gamer.&quot;
+    ...
+}
+</code></pre>
+<p>7,154 keys, of which <strong>367</strong> have the prefix <code>#str_menu_</code>. They contain practically the entire menu: title, tabs, option lines, help text, keybinding labels, difficulty names, chapter names, dialog boxes. Six languages: English, French, Italian, Polish, Russian, Spanish. <strong>German is not present in this installation.</strong></p>
+<p>This allows renaming existing menu entries — for example, an option line that you don't need anyway can be renamed to "GORE-MOD ACTIVE". What you <strong>cannot</strong> do: add a line. Which lines exist is decided by the code, not the table.</p>
+<h3 id="42-the-swfresource-decls">4.2 The <code>swfresource</code> Decls</h3>
+<p>Eleven text decls, normally patchable, small (26–2,340 B). They control:</p>
+<ul>
+<li><strong>Menu length</strong> — each tone after every click (<code>soundEffects</code>)</li>
+<li><strong>Menu music</strong> — <code>tungshell</code>: <code>music/menu/main_menu</code></li>
+<li><strong>Text effects</strong> — which outline to which font (<code>fontEffects</code>)</li>
+<li><strong>Representation</strong> — <code>snapToPixel</code>, <code>useBlackbars</code></li>
+<li><strong>Category titles</strong> in the Journal — <code>tunginventory_new</code> with nine <code>categoryDecls</code>, each Material + <code>#str_</code> key</li>
+</ul>
+<p>This is the one place where a decl directly impacts the menu. It is more than just cosmetics.</p>
+<h3 id="43-other-on-screen-text-types">4.3 Other on-screen text types</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Count</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>job</code></td>
+<td>169</td>
+<td>Jobs/Goals in the Journal</td>
+</tr>
+<tr>
+<td><code>tutorialEvent</code></td>
+<td>140</td>
+<td>Tutorial overlays (<code>screen</code>, <code>bindset</code>, <code>activateSound</code>)</td>
+</tr>
+<tr>
+<td><code>secrets</code></td>
+<td>78</td>
+<td>Collectibles</td>
+</tr>
+<tr>
+<td><code>achievement</code></td>
+<td>50</td>
+<td>Achievements</td>
+</tr>
+<tr>
+<td><code>loadingscreen</code></td>
+<td>33</td>
+<td>Loading screen tips (<code>tips</code>)</td>
+</tr>
+<tr>
+<td><code>secrettype</code></td>
+<td>11</td>
+<td>Categories of collectibles</td>
+</tr>
+</tbody>
+</table></div>
+<p>All text, all patchable. <code>loadingscreen</code> is the most convenient channel for a mod note: <code>load_general</code> has <code>tips = { num = 0; }</code> — there one could enter custom tips that appear on loading. (Untested, but it is an ordinary Decl.)</p>
+<h3 id="44-what-does-not-work-adding-lines">4.4 What does not work: adding lines</h3>
+<p>Verified: <code>tungshell_new.bswf</code> contains <strong>zero</strong> Cvar names. No trace of <code>g_</code>, <code>pm_</code>, <code>com_</code>, <code>r_</code>. Option lines are therefore not built from a table in the SWF, but generated by C++ code and passed into the SWF. The hope to bypass an unused option line by renaming a Cvar string to a custom Cvar is thus moot — the string does not exist.</p>
+<p>In the SWF there are only 14 <code>#str_</code> keys (Enigma tab, keybinding, loading indicator). Everything else comes at runtime.</p>
+<hr />
+<h2 id="5-the-existing-developer-interface">5. The existing developer interface</h2>
+<p><code>debugmenu.txt</code> (22,419 B) and <code>debugmenucheck.txt</code> (159,248 B) lie as text in the archive and are patchable.</p>
+<p><code>wolfsdk/devmenu.py</code> uses this: it attaches its own page "WOLFSDK" to <code>debugmenu.txt</code> — with Cheat toggles, movement speed, FOV, difficulty. The approach is <strong>flawless on the data side</strong>: <code>tools/verify_devmenu.py</code> checks four invariants (valid JSON, full file parses further, injection idempotent, removal restores original byte-exactly) and all hold. It is cleanly built work.</p>
+<p><strong>It still doesn't work.</strong> The DevGUI is not connected in the Retail build. According to <code>docs/limits.md</code> (Section 2): <code>devgui</code> can be set to 1 via <code>+toggle devgui</code> without a ban warning and without being deleted by the Cheat-Reset — yet F8 and F10 still do nothing. The page exists in the file, it is simply never rendered.</p>
+<p>The approach was therefore correctly conceived but applied at the wrong lever. It would be immediately usable if the Renderer were accessible — which fails in the Steam version due to the SteamStub encryption of the <code>.text</code> section.</p>
+<hr />
+<h2 id="6-assessment-is-an-in-game-menu-realistic">6. Assessment: Is an In-Game Menu realistic?</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>What</th>
+<th>Effort</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Rewrite menu text (<code>.lang</code>, length-preserving)</td>
+<td>none — the raw write path is in the Patcher</td>
+<td><strong>doable</strong>, untested in-game</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Menu sounds, music, font effects (<code>swfresource</code>)</td>
+<td>trivial, existing Decl-Pipeline</td>
+<td><strong>doable</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Loading screen tips, tutorial text, journal entries</td>
+<td>trivial</td>
+<td><strong>doable</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Replace HUD/menu graphics (<code>image</code>, <code>.bimage</code>)</td>
+<td>Encoder present (only RGBA8), size forces Rebuild</td>
+<td><strong>doable</strong>, appearance in-game unverified</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Change menu structure (rows, pages, logic)</td>
+<td>idSWF-Serializer + AS2-Assembler</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Custom Menu via DevGUI</td>
+<td>Renderer not connected in Retail</td>
+<td><strong>no</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The honest answer: no.</strong> A menu that looks and behaves like the game's menu, with its own pages and its own toggles, is not accessible via data files. Both paths to it — writing a custom <code>.bswf</code> or using the DevGUI — are blocked, for different reasons: one by an undocumented binary format, the other by the missing Renderer.</p>
+<p>What remains is <strong>renaming the existing menu</strong>. This is significantly less than hoped for, and we should not speak of it here as if it were more than it is. It suffices for "This installation runs with Mod X" in the main menu. It does not suffice for "Toggle mod on/off via button press".</p>
+<hr />
+<h2 id="7-unverified-traces">7. Unverified Traces</h2>
+<p>Three threads have been noticed and were <strong>not</strong> pursued because the game would need to be launched for that. They are listed here so they do not get lost — not as a promise.</p>
+<h3 id="71-swf_loadbinary">7.1 <code>swf_loadBinary</code></h3>
+<p>The EXE knows the Cvar <code>swf_loadBinary</code>, description: <em>"used to set whether to load binary swf from generated"</em>. If it is set to 0, the engine presumably loads a real Adobe <code>.swf</code> instead of the <code>.bswf</code>. Raw <code>.swf</code> files are <strong>not</strong> included in the archives — you would have to provide one yourself, and the SWF format is documented unlike idSWF.</p>
+<p>Open questions, all unresolved: Is the Cvar affected by the Retail ban? Does the engine search for files on disk at all in production mode? Under what path? And even if everything aligns: you would still have to rebuild the entire main menu in AS2, otherwise it is gone.</p>
+<h3 id="72-fs_overlaypath">7.2 <code>fs_overlaypath</code></h3>
+<p>Description in the EXE: <em>"(Read Only) Extra location for game files (with precedence over fs_basepath)"</em>. An overlay path with precedence would be the most convenient mod channel of all — no archives to touch, just place files alongside. Whether it still does something in the Retail build and whether it can be set via the command line is unverified.</p>
+<p>The fact that the engine reads from disk in production mode at all is shown by the log:
+<code>WARNING: Resource loaded in production mode: font : futura com book while loading font futura com book from swf tunginventory_new</code> — seven such lines per session, for <code>font</code>, <code>cm</code>, <code>aas</code>, and <code>foliageModel</code>.</p>
+<h3 id="73-the-script-language--the-most-interesting-thread">7.3 The Script Language — the most interesting thread</h3>
+<p><code>script/*.script</code> are <strong>text files in the archive</strong> — 37 different ones, of which 5 are shared (in 13 archives each) and 32 card-specific, totaling 97 entries. Deflate-compressed and thus patchable via the existing pipeline. <code>script/script_main.script</code> says about itself: <em>"This is the main script that is loaded before any level scripts load."</em> It exists in all 13 card archives.</p>
+<p>The script interface (<code>script/script_events.script</code>, 247 kB autogenerated typeinfo) includes, among others:</p>
+<pre><code>scriptEvent void   setcvar( string name, string value );
+scriptEvent string getcvar( string name );
+scriptEvent void   executeCommandText( string command );
+scriptEvent void   drawText( string text, vector origin, float scale,
+                             vector color, int align, float lifetime );
+scriptEvent float  getUserButtons();          // on $player1
+scriptEvent void   wait( float time );
+</code></pre>
+<p>Plus 23 <code>BUTTON_*</code> constants. In principle, this allows building a loop that reads key presses, draws text, and sets Cvars — a crude menu without any SWF involvement.</p>
+<p>However, the limitations are significant and should not be downplayed:</p>
+<ul>
+<li><code>drawText</code> draws at a <strong>world coordinate</strong>, not on the screen. You would have to calculate the text position every frame in front of the player's eyes. A screen-text event did not appear in the typeinfo.</li>
+<li>Whether <code>setcvar</code> bypasses the Retail lock is <strong>unknown</strong>. It is a direct script event, not a console path — but this has not been measured. <code>executeCommandText</code>, on the other hand, will likely fail against the lock just like <code>+exec</code>.</li>
+<li>A script error is fatal: the engine compiles when loading cards and aborts on syntax errors.</li>
+<li>And there remains an in-game text overlay, not a menu.</li>
+</ul>
+<p>Of the three traces, this is the only one that works without a new binary format. If this project intends to pursue further, this is the thread to pull — with the expectation of an overlay, not a menu.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Virtual-Texture-Planes.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>The Four Channel Layers of a Virtual-Texture Page — Block 0 and Block 1</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

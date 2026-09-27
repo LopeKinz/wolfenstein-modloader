@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The `.texdb` Format (Wolfenstein II: The New Colossus) – Wolfenstein Modloader</title>
+<meta name="description" content="The .texdb texture database format of TNC: readable in full, and a map texture cache that can be patched.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tnc"><span class="en">The New Colossus</span><span class="de">The New Colossus</span></a></p>
+<h1>The <code>.texdb</code> Format (Wolfenstein II: The New Colossus)</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNC-Texture-Database"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-what-a-texdb-is">1. What a .texdb Is</a></li><li><a href="#2-header">2. Header</a></li><li><a href="#3-entry-table">3. Entry Table</a></li><li><a href="#4-payload-data-yes-oodle">4. Payload Data: Yes, Oodle</a></li><li><a href="#5-verified-numbers">5. Verified Numbers</a></li><li><a href="#6-what-follows-from-this-and-what-does-not">6. What follows from this (and what does not)</a></li><li><a href="#7-tool">7. Tool</a></li><li><a href="#8-texturescache--the-texture-database-in-memory">8. textures.cache — the texture database in memory</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein II: The New Colossus stores its texture data in separate <span class="t" data-t="texdb">.texdb</span> files next to the game archives. This page decodes their layout: a sorted table of 64-bit keys pointing to <span class="t" data-t="oodle">Oodle</span>-compressed blocks, with no file names inside. Reading every block is now possible. A second part shows that each map&#x27;s textures.cache uses the same layout and can be patched so a custom pistol skin also shows at medium distance; this is derived from the code, not seen in the game.</p><ul><li>Verified against all 24 .texdb files: 21.5 GB and 437,706 table entries.</li><li>Keys repeat often: 437,706 rows share only 127,418 distinct keys, so the table must not be read as a simple dictionary.</li><li>Large textures are chains of tiles; one tested entry split into 32 tiles that all unpacked correctly.</li><li>The 40 per-map textures.cache files have the same layout; the engine only checks an 8-byte magic value, with no hash or size check.</li><li>Open on this page: which key belongs to which texture, and the internal format of a tile.</li></ul></div><div class="de"><p class="lede">Wolfenstein II: The New Colossus speichert seine Texturdaten in eigenen <span class="t" data-t="texdb">.texdb</span>-Dateien neben den Spielarchiven. Diese Seite entschlüsselt deren Aufbau: eine sortierte Tabelle mit 64-Bit-Schlüsseln, die auf <span class="t" data-t="oodle">Oodle</span>-komprimierte Blöcke zeigen, ganz ohne Dateinamen. Jeder Block lässt sich jetzt lesen. Ein zweiter Teil zeigt, dass der textures.cache jeder Karte gleich aufgebaut ist und sich so patchen lässt, dass ein eigener Pistolen-Skin auch auf mittlere Entfernung erscheint. Das ist aus dem Code abgeleitet, nicht im Spiel gesehen.</p><ul><li>Geprüft an allen 24 .texdb-Dateien: 21,5 GB und 437.706 Tabelleneinträge.</li><li>Schlüssel wiederholen sich oft: 437.706 Zeilen teilen sich nur 127.418 verschiedene Schlüssel. Die Tabelle darf daher nicht als einfaches Wörterbuch gelesen werden.</li><li>Große Texturen sind Ketten aus Kacheln; ein getesteter Eintrag zerfiel in 32 Kacheln, die sich alle korrekt entpacken ließen.</li><li>Die 40 textures.cache-Dateien der Karten sind gleich aufgebaut; die Engine prüft nur einen 8-Byte-Kennwert, ohne Hash- oder Größenprüfung.</li><li>Auf dieser Seite noch offen: welcher Schlüssel zu welcher Textur gehört und das innere Format einer Kachel.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>All information here is derived from reverse engineering the retail files (Steam, <code>NewColossus_x64vk.exe</code>, id Tech 6). Verified against all 24 <code>base/*.texdb</code> files, totaling 21,541,175,814 bytes and 437,706 table entries. Tool used: <code>tools/probe_texdb.py</code>. Any statements without evidence are explicitly marked as unverified.</p>
+<blockquote>
+<p><strong>Read-only.</strong> Nothing in this document describes a write operation. The game files were opened exclusively using <code>seek</code>/<code>read</code> — primarily because <code>gameresources.texdb</code> is 8 GB in size and never fits entirely into memory. The sole exception is §8 (writing to <code>textures.cache</code>), which was also executed only on copies.</p>
+</blockquote>
+<hr />
+<h2 id="1-what-a-texdb-is">1. What a <code>.texdb</code> Is</h2>
+<p>Each <code>chunkN.resources</code> file has exactly one corresponding <code>chunkN.texdb</code>. The <code>.resources</code> file holds the assets (id Tech 6, Magic <code>IDCL</code>, Version 12), while the <code>.texdb</code> holds the associated texture data. This separation is likely due to streaming: textures are loaded on demand and should not reside in memory alongside their declarations — <strong>unverified</strong>, but consistent with the tiles described in section 4b.</p>
+<p>A <code>.texdb</code> is a flat database: a header, followed by a key table, and then only user data. <strong>There are no filenames within it.</strong> Access occurs exclusively via a 64-bit key.</p>
+<h2 id="2-header">2. Header</h2>
+<pre><code>u8[8]    Magic  4F A5 C2 29 2E F3 C7 61
+u8[16]   Build-ID, unique per file, otherwise unverified
+LE u64   Number of table entries
+--- Table begins at 0x20 ---
+</code></pre>
+<p>The Magic value is identical across all 24 files. The 16 bytes following it appear to be a GUID or content hash of the build; they do not repeat in any other file, and their first quarter is missing even from the paired <code>.resources</code> file (e.g., <code>patch_4.resources</code>). Their purpose remains <strong>unverified</strong>.</p>
+<p>All integers are stored in Little Endian. This is the most notable difference compared to id Tech 5 archives from The New Order, which store sizes in Big Endian (see <code>docs/formats.md</code>).</p>
+<p>The file <code>patch_4_chunkbase_6.texdb</code> is exactly 32 bytes: a header with a count of 0 and nothing else. This serves as the best evidence that the header truly ends at offset 0x20.</p>
+<h2 id="3-entry-table">3. Entry Table</h2>
+<p>Each entry is 16 bytes, with no padding:</p>
+<pre><code>LE u64   Key
+LE u64   Offset to user data, absolute from file start
+</code></pre>
+<p>The table is sorted by key — in all 24 files, not descending, thus built for binary search. User data begins immediately after the table at <code>0x20 + count * 16</code>, and the first entry points exactly there in every file.</p>
+<h3 id="entry-length-is-never-stated">Entry Length Is Never Stated</h3>
+<p>There is no length field. The length is derived from the distance to the next entry <strong>in offset order</strong> — and because the table is sorted by key, this is not necessarily the immediate neighbor in the table.</p>
+<p>The validity of this calculation is measurable: if all offsets are sorted and the distances between them are summed, it yields exactly the size of the user data area in every verified file, with zero gaps. The blocks lie contiguously without alignment padding, and no offset is duplicated.</p>
+<h3 id="keys">Keys</h3>
+<pre><code>Bits 63..4   Texture ID (Hash, origin unknown)
+Bits  3..0   Level, observed 1..12, focus 5..8
+</code></pre>
+<p>The lower four bits increment sequentially within a texture ID (<code>…65, …66, …67, …68</code>), and the associated user data is approximately four times larger in each case. This represents a Mip chain; the exact meaning of the level number remains <strong>unverified</strong> (absolute level or index within the streamed sub-chain).</p>
+<p>Keys are <strong>not unique, and this is the norm.</strong> Across all 24 files, there are 437,706 rows for only 127,418 distinct keys — averaging about 3.4 rows per key. The rows appear directly adjacent and point to separate, equally sized blocks. These are likely array planes or cubemap faces — <strong>unverified</strong>.</p>
+<blockquote>
+<p>Anyone reading the table as a <code>dict</code> silently discards two-thirds of the entries. That is why <code>tools/probe_texdb.py</code> stores it as a list.</p>
+</blockquote>
+<h2 id="4-payload-data-yes-oodle">4. Payload Data: Yes, Oodle</h2>
+<p>The payload data is compressed with Oodle, almost exclusively <strong>Kraken</strong>. This was not a guess: <code>wolfsdk/oodle.py</code> links against the bundled <code>oo2core_5_win64.dll</code> (Oodle 2.5.5), and <code>tools/probe_texdb.py</code> actually unpacks samples. <code>OodleLZ_GetChunkCompressor</code> confirms the header additionally, but serves only as a hint: for a block stored uncompressed by Oodle, it reports <code>LZB16</code>, and for non-Oodle data, it invents an answer.</p>
+<p>There are two forms.</p>
+<h3 id="4a-single-oodle-stream">4a. Single Oodle Stream</h3>
+<p>The payload data begins directly with the Oodle block header (typically <code>8C 06</code> or <code>CC 06</code> for Kraken). No intermediate header, no length field.</p>
+<p><strong>The uncompressed size is not in the <code>.texdb</code>.</strong> It must come from the texture metadata of the paired <code>.resources</code> — the game knows the format and side length before it loads them.</p>
+<p>Almost all measured sizes are powers of two (4096, 16384, 65536, 131072, 262144, 524288 …), which is exactly what a block-compressed mip level weighs. <strong>But not all:</strong> <code>patch_3.texdb</code> contains entries with 124,200 and 1,036,800 bytes. 1,036,800 is exactly BC1 for 1920x1080 (480 x 270 blocks x 8 bytes), so presumably a full screen — loading image or UI. Anyone trying to guess the raw size should therefore not rely on powers of two.</p>
+<p><code>tools/probe_texdb.py</code> first tries a short list of plausible sizes, from large to small. The order is not a detail: Oodle unpacks willingly even just a <em>prefix</em> of a stream, so an attempt with 4 bytes succeeds against a 2-KB block. Only the largest still-successful attempt can be the true length, and attempts below the compressed size are simply not allowed.</p>
+<p>If the list is off, <code>--exact</code> finds the length exactly (<code>Oodle.raw_length</code>): first count the number of whole 256-KB blocks, then search downwards for the remainder. This is brute force — around 65,000 unpack attempts and several seconds per entry — and therefore not the normal path. There is no shortcut: only the exact length can be unpacked, and no computational path to it exists in the format.</p>
+<h3 id="4b-tile-chain">4b. Tile Chain</h3>
+<p>Large entries are a sequence of self-describing tiles:</p>
+<pre><code>repeated until end of block:
+  LE u32   Length of following Oodle data
+  LE u32   Uncompressed size
+  LE u32   Position: (Y &lt;&lt; 24) | X in texels
+  LE u16   512     presumably tile width
+  LE u16   256 or 512   presumably tile height
+  u8[8]    Unknown, constant within a chain
+           (e.g. 19 01 02 02 03 04 04 05)
+  u8[]     Oodle stream
+</code></pre>
+<p>This form is self-verifying, and that makes it robust: the chain continues over <code>24 + Length</code> bytes and must land exactly at the end of the block. For an entry from <code>chunk_11.texdb</code> that is 3,566,247 bytes long, this results in 32 tiles; all 32 unpack successfully, and the end position matches the block length exactly. The position fields run over 4 columns (X = 0, 512, 1024, 1536) and 8 rows — a 2048x2048 grid.</p>
+<p>The interpretation of the two <code>u16</code> as width and height is <strong>unconfirmed</strong>: the uncompressed tile size does not follow them. 512x256 results in 280,960 bytes, while 512x512 results in 274,624 — the larger tile is therefore smaller, which does not make sense with pure geometry. The tile content is thus itself a container (multiple channels or planes within a block). Unpacked, it looks like byte-separated planes — first a block with wide value range, then long stretches of <code>0x7F</code>, like a flat normal map. The format of this content is <strong>not decrypted</strong>.</p>
+<h2 id="5-verified-numbers">5. Verified Numbers</h2>
+<p>A pass over all 24 files with 25 randomly selected entries each (<code>--deep 25</code>, Seed 1):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Magic correct</td>
+<td>24 of 24</td>
+</tr>
+<tr>
+<td>First entry == Table end</td>
+<td>24 of 24</td>
+</tr>
+<tr>
+<td>Gap between blocks</td>
+<td>0 Bytes in 24 of 24</td>
+</tr>
+<tr>
+<td>Sample unpacked</td>
+<td>531 of 554</td>
+</tr>
+<tr>
+<td>Of individual stream / tile chain</td>
+<td>484 / 47</td>
+</tr>
+<tr>
+<td>Raw size not guessed</td>
+<td>23</td>
+</tr>
+</tbody>
+</table></div>
+<p>The 23 failures are <strong>not</strong> a format problem: the block header was an Oodle header in all cases; only the raw size was located next to the rate list (see 4a). They resolve with <code>--exact</code>. The tool's return value therefore depends on the first three lines of the table, not on the sample.</p>
+<h2 id="6-what-follows-from-this-and-what-does-not">6. What follows from this (and what does not)</h2>
+<p>Reading is solved: the table, lengths, compression, and tile chain are sufficiently complete to unpack every block.</p>
+<p>What is currently missing for <strong>replacing</strong> a texture:</p>
+<ul>
+<li>The mapping Key → Asset name. Without it, one knows <em>that</em> a block is a texture, but not which one.</li>
+<li>The internal format of a tile (Section 4b).</li>
+<li>The uncompressed size for individual streams. The prerequisite for this now exists — <code>wolfsdk/idcl.py</code> reads the <code>.resources</code> of the TNC build type (<code>IDCL</code> v12), and layout has been calculated against all 24 Retail files —, but it is not yet connected.</li>
+</ul>
+<p>Writing itself would be unpleasant but feasible: since there is no length field and the blocks lie contiguously, every size change affects <em>all</em> subsequent offsets — the file would have to be completely rewritten again. For <code>gameresources.texdb</code>, that is 8 GB.</p>
+<h2 id="7-tool">7. Tool</h2>
+<pre><code>python tools/probe_texdb.py                        # Overview of all files
+python tools/probe_texdb.py --deep 12              # unpack 12 entries per file
+python tools/probe_texdb.py --file patch_4.texdb --deep 4
+python tools/probe_texdb.py --file patch_3.texdb --deep 3 --exact   # slow
+</code></pre>
+<p>Example:</p>
+<pre><code>patch_4.texdb                    266903 B        4 entries    Table to 0x60
+     Build-ID 98321332643afd43af6a6111482b8732
+     Payload data 0x60..0x41297, first entry 0x60, Sum of lengths 266807 (Gap: 0)
+     key=f239f20d871bdf85      3991 B -&gt;      4096 B  oodle    individual
+     key=f239f20d871bdf86     14528 B -&gt;     16384 B  oodle    individual
+     key=f239f20d871bdf87     52861 B -&gt;     65536 B  oodle    individual
+     key=f239f20d871bdf88    195427 B -&gt;    262144 B  oodle    individual
+</code></pre>
+<p>Four Mip levels of a single texture, factor 4 per stage — the entire content of <code>patch_4.texdb</code>.</p>
+<hr />
+<h2 id="8-texturescache--the-texture-database-in-memory">8. <code>textures.cache</code> — the texture database in memory</h2>
+<p>Every map folder carries a <code>textures.cache</code>: 40 files under <code>base/maps/**</code> and <code>dlc/*/base/maps/**</code>, each around 67 MB, totaling 2 690 529 433 Bytes. <code>dlc/dlc_0/…/c02/c2v1/textures.cache</code> is a Hardlink to the one from <code>dlc_2</code> (39 different files, 40 names). Tool: <code>tools/probe_texcache.py</code>, output in <code>re_probes/texcache/</code>.</p>
+<h3 id="format-a-texdb-under-a-different-magic">Format: a <code>.texdb</code> under a different Magic</h3>
+<pre><code>u8[8]    Magic  06 4D 5E 3B 22 99 07 AB   (LE u64 0xab0799223b5e4d06)
+u8[16]   Build-ID, different per file (39 different), never compared
+LE u64   Number of table entries (the engine reads only the lower u32)
+--- from 0x20 ---
+Count x { LE u64 Key, LE u64 Offset }    sorted by key
+Blocks, contiguous, from table end to file end
+</code></pre>
+<p>Exactly the layout from §2–§3, also here without a length field: a block ends at the next offset, the last at the file end. Keys repeat (196 to 2 178 duplicate lines per file). Verified on all 40 files: Magic, sorted table, first block directly after the table end, no duplicate offsets — and a <strong>byte-accurate round trip</strong>: file split into header, rows, and blocks, reassembled in the measured block order, result identical to the file. 40 of 40.</p>
+<p>The blocks are the <code>.texdb</code> blocks of the same keys, byte for byte: Sample 979 of 979 (25 per file, keys without mod). The slots (lower 4 bits) lie almost exclusively at 4–8 (32–512 px): the cache holds the middle stages that a map needs immediately upon loading.</p>
+<h3 id="what-the-engine-checks--nothing-but-the-magic">What the Engine Checks — Nothing But the Magic</h3>
+<p>From <code>re_probes/runtime_87400/module.bin</code>, as facts in <code>python tools/probe_texcache.py --disasm</code> (17 of 17, listing in <code>re_probes/texcache/disasm.txt</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Instruction</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0xAC40B6</code></td>
+<td><code>lea</code> → <code>"%smaps/%s/textures.cache"</code></td>
+<td>Path derived from the map name, when loading the map</td>
+</tr>
+<tr>
+<td><code>0xAC40C9</code></td>
+<td><code>call 0x793090</code></td>
+<td><code>MountMemoryDatabase</code></td>
+</tr>
+<tr>
+<td><code>0x793142</code>, <code>0x7931C0</code></td>
+<td>Open file, get length</td>
+<td>Buffer = entire file</td>
+</tr>
+<tr>
+<td><code>0x793226</code></td>
+<td>Read in 1-MB chunks</td>
+<td>Entire file into memory</td>
+</tr>
+<tr>
+<td><code>0x7932C9</code></td>
+<td><code>movabs rdx, 0xab0799223b5e4d06</code></td>
+<td><strong>only content check</strong></td>
+</tr>
+<tr>
+<td><code>0x793397</code></td>
+<td><code>cmp eax, 1</code></td>
+<td><code>MAX_MEMORY_DATABASES</code> = 1</td>
+</tr>
+<tr>
+<td><code>0x7A1948</code></td>
+<td>Memory databases first</td>
+<td>Mip search</td>
+</tr>
+<tr>
+<td><code>0x7A196F</code>, <code>0x7A1972</code></td>
+<td>Count <code>[+0x18]</code> (u32), table from <code>+0x20</code></td>
+<td>Lower bound, 16 bytes per line</td>
+</tr>
+<tr>
+<td><code>0x7A19CC</code>, <code>0x7A19D0</code></td>
+<td>Offset + buffer start</td>
+<td>No boundary check</td>
+</tr>
+<tr>
+<td><code>0x7A19E8</code>, <code>0x7A19F2</code></td>
+<td>Hit → <code>0x7A1C24</code></td>
+<td><strong>the <code>.texdb</code> is skipped</strong></td>
+</tr>
+<tr>
+<td><code>0x7A1C38</code></td>
+<td>Read length <code>[rsi+r10*4+0xc]</code></td>
+<td><code>stored_size</code> from the <code>.bimage</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>No hash, no size, no build ID, no count check against file length. A file that grows is read entirely; an appended block thus lies in the buffer, and a wrapped offset points there. <code>UnmountMemoryDatabase</code> (<code>0x793460</code>) frees the buffer; at most one map is mounted.</p>
+<h3 id="why-this-matters-for-skins">Why This Matters for Skins</h3>
+<p>The key is the same as in §3 (<code>hash_0x60</code>, slot <code>mip_base - level</code>), and the search takes the first line carrying it. All 40 caches carry the keys for <code>pistole_61</code> and <code>pistole_61_blood</code> for slots 5 and 6 (64/128 px), plus 61 of the 80 image/map pairs additionally slot 7 (256 px). A mod that only writes the <code>.texdb</code> therefore shows the Retail Pistol from medium distance — and reads <code>stored_size</code> of the <em>new</em> Mip from the <em>old</em> block.</p>
+<h3 id="writing-wolfsdktncpatchpy">Writing (<code>wolfsdk/tncpatch.py</code>)</h3>
+<p>An asset <code>texdb:&lt;key&gt;</code> is now written into every <code>textures.cache</code> that carries the key, following the same rules as in the <code>.texdb</code>: if the block fits within its window, write there (original in <code>texdb.orig</code>); otherwise append to the file end and wrap the line. Journal entries, stamps (size + table hash) against game updates, bit-exact reset. In the journal, caches are named after their path from <code>base/</code> (<code>maps/game/wolf/c01/c01p1/textures.cache</code>, <code>../dlc/dlc_2/base/maps/…/textures.cache</code>); a <code>base/*.texdb</code> retains its bare filename, older journals remain readable.</p>
+<p><strong>Hardlinks are never rewritten.</strong> A file with multiple names gets a second name for its original in the backup folder (<code>os.link</code>, costs no space); changes go into a new copy beside the live name, and <code>os.replace</code> sets them in place. <code>dlc_0</code> and <code>dlc_2</code> each have their own patched file after this; the original remains unchanged. Resetting moves the backup name back — content, file ID, and link count are then as before. This decision was made because <code>dlc_0</code> is the user's own map: omitting it would leave the Retail Pistol there, while overwriting in <code>dlc_2</code> would silently alter <code>dlc_0</code>.</p>
+<p>A cache missing on reset (map uninstalled) is skipped rather than rejected: there is nothing more to incorrectly overwrite there, and the rest must still be restored. A missing <code>.texdb</code> continues to be rejected.</p>
+<h3 id="costs-measured-pistol-skin-tnc_skin_eigene_pistole">Costs (measured, Pistol Skin <code>tnc_skin_eigene_pistole</code>)</h3>
+<ul>
+<li>Each block in the mod is longer than those in the cache (e.g., 2,050/7,522/27,235 versus 1,679/5,002/17,988 bytes) — they are only appended: 19,144 to 73,614 bytes per cache, totaling 2,427,095 bytes across all 40.</li>
+<li>38 caches are described in place; the two hardlink names each cost a 67-MB copy as long as the mod is present.</li>
+<li>Reading all 40 tables: 6.8 MB.</li>
+<li>Execution times for applying/resetting to the copies: <code>re_probes/skins/eigene/verify.json</code> (<code>cache_seconds</code>).</li>
+</ul>
+<h3 id="proof">Proof</h3>
+<p><code>python tools/verify_skin_eigene.py</code> (on copies, never in the game folder):
+all 40 caches copied and verified against <code>re_probes/texcache/retail_sha256.json</code>, with dlc_0/dlc_2 as hardlinks like in-game; the mod applied via the loader path; for each map, every streamed pistol mip collected exactly as the engine does (first the map's memory cache, then the <code>.texdb</code>) — each is a block of the mod. Counter-check: unpatched yields the Retail cache. No writing through the hardlink (a third name of the original as witness), reset bit-for-bit, dlc_0/dlc_2 identical to the same file afterwards.
+<code>tools/verify_tncpatch.py</code> (<code>scenario_cache</code>) verifies the same on small copies, with crash-, foreign-change-, and backup-counter checks.</p>
+<p><strong>Structurally valid, not confirmed in-game.</strong> That the intermediate stages now show the custom skin in-game is derived from the code, not observed.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNC-CVar-Catalog.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Cvars: Wolfenstein II - The New Colossus</a><a class="next" href="Developer-Mode.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Developer Mode — What It Unlocks and Where the Retail Lock Remains</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

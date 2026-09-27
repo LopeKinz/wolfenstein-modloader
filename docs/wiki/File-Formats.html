@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Format Reference – Wolfenstein Modloader</title>
+<meta name="description" content="Reference of the main file formats in The New Order: archive index, resource files, text definitions, images, audio.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
+<h1>Format Reference</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/File-Formats"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-basemasterindex">1. base/master.index</a></li><li><a href="#2-basechunknindex">2. base/chunkN.index</a></li><li><a href="#3-basechunknresources">3. base/chunkN.resources</a></li><li><a href="#4-decls">4. Decls</a></li><li><a href="#5-bim-images-image">5. BIM Images (image)</a></li><li><a href="#6-audio">6. Audio</a></li><li><a href="#7-virtual-textures">7. Virtual Textures</a></li><li><a href="#8-cvars-and-start-arguments">8. Cvars and Start Arguments</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is a technical reference for the file formats of Wolfenstein: The New Order, checked against all 14 <span class="t" data-t="archive">archives</span> and 203,843 assets. It explains how the game lists its archives, how each index points to data, and how the text <span class="t" data-t="decl">definitions</span>, BIM images, audio and virtual textures are stored. It also explains how the mod tool patches files safely: new data goes into the existing slot, because the game crashes if entries are simply appended. Some parts, like the tail of each index entry and the virtual texture pixels, are still not understood.</p><ul><li>The index files have no checksum, so in-place patching is not detected by the game.</li><li>Appending data to the end crashed the game (&#x27;FileTable is out of order&#x27;); data must stay in its slot or the archive is rebuilt.</li><li>Editing and writing back 60,233 text definitions reproduces the original bytes exactly.</li><li>BIM images can be read in all 4 format codes, but only uncompressed RGBA8 images can be written back.</li><li>Virtual texture pixels cannot be replaced yet; their image data is not decoded.</li></ul></div><div class="de"><p class="lede">Diese Seite ist eine technische Referenz der Dateiformate von Wolfenstein: The New Order, geprüft an allen 14 <span class="t" data-t="archive">Archiven</span> und 203.843 Assets. Sie erklärt, wie das Spiel seine Archive auflistet, wie jeder Index auf die Daten zeigt und wie Text-<span class="t" data-t="decl">Definitionen</span>, BIM-Bilder, Audio und Virtual Textures gespeichert sind. Außerdem beschreibt sie, wie das Mod-Tool Dateien sicher patcht: Neue Daten kommen in den vorhandenen Platz, weil das Spiel abstürzt, wenn man sie einfach anhängt. Manches, etwa das Ende jedes Indexeintrags und die Pixel der Virtual Textures, ist noch nicht verstanden.</p><ul><li>Die Indexdateien haben keine Prüfsumme; direktes Patchen bemerkt das Spiel daher nicht.</li><li>Daten ans Ende anzuhängen ließ das Spiel abstürzen (&#x27;FileTable is out of order&#x27;); sie müssen im alten Platz bleiben oder das Archiv wird neu gebaut.</li><li>60.233 Textdefinitionen lassen sich bearbeiten und ergeben unverändert zurückgeschrieben exakt die Originalbytes.</li><li>BIM-Bilder sind in allen 4 Formatcodes lesbar, zurückschreiben lassen sich nur unkomprimierte RGBA8-Bilder.</li><li>Pixel der Virtual Textures lassen sich noch nicht ersetzen; ihre Bilddaten sind nicht entschlüsselt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>All of this information comes from the reverse engineering of the retail files for <em>Wolfenstein: The New Order</em> (Steam, <code>WolfNewOrder_x64.exe</code>, 26,345,040 bytes). Every statement has been verified against all 14 archives and 203,843 assets unless explicitly marked as unverified.</p>
+<hr />
+<h2 id="1-basemasterindex">1. <code>base/master.index</code></h2>
+<p>The root: a list of archive pairs.</p>
+<pre><code>u8[4]    Magic  03 53 45 52   (&quot;\x03SER&quot;)
+BE u32   Number of pairs      (Retail: 14)
+repeated 2 x Number:
+  LE u32  Length
+  char[]  Name, ASCII, null-terminated
+</code></pre>
+<p>The names alternate: <code>chunk0.index</code>, <code>chunk0.resources</code>, <code>chunk1.index</code>, … The file is 520 bytes in the retail version, which fits exactly: 8 bytes header + 10 x 36 + 4 x 38.</p>
+<blockquote>
+<p><strong>Mixed Endianness.</strong> The count is in Big Endian, while string lengths are in Little Endian. This is not a reading error; it applies consistently across all <code>.index</code> files.</p>
+</blockquote>
+<hr />
+<h2 id="2-basechunknindex">2. <code>base/chunkN.index</code></h2>
+<p>Table of contents for <code>chunkN.resources</code>.</p>
+<pre><code>u8[4]    Magic  03 53 45 52
+BE u32   Size of payload data (file size minus 32)
+u8[24]   Null bytes
+BE u32   Counter A          (chunk0: 12220)
+BE u32   Counter B          (chunk0: 15069, approximately equal to entry count)
+BE u32   0
+--- entries begin at offset 0x2C ---
+</code></pre>
+<p>An entry:</p>
+<pre><code>LE u32 + char[]   Type      e.g. &quot;weapon&quot;, &quot;image&quot;, &quot;material&quot;
+LE u32 + char[]   Name      e.g. &quot;weapon/shotgun_base&quot;
+LE u32 + char[]   Path      e.g. &quot;generated/decls/weapon/weapon/shotgun_base.decl&quot;
+BE u32            Offset    into the associated .resources file
+BE u32            usize     Uncompressed size
+BE u32            csize     Size on disk
+u8[?]             Rest      variable, mostly null bytes
+</code></pre>
+<p><strong>The trailing data at the end of an entry is not fully understood.</strong> For most types, it is 13 bytes (9 null bytes plus a sequential BE-u32 ID); for audio types like <code>sample</code> and <code>sound</code>, it is larger. Precisely because of this, this SDK serializes the index <strong>never</strong>: it keeps the original buffer and overwrites only the 12 bytes of offset/usize/csize during patching. All unknown data survives unchanged, verified by the fact that an unmodified index is written byte-for-byte back.</p>
+<p>To determine entry boundaries, the parser uses a plausibility check rather than fixed step size: three printable ASCII strings, followed by <code>0 &lt; csize &lt;= usize</code> and <code>offset + csize &lt;= file_size</code>. This maintains synchronization across the variable trailing data.</p>
+<p><strong>There is no checksum field.</strong> This is why patching in-place is safe and undetectable by the game.</p>
+<hr />
+<h2 id="3-basechunknresources">3. <code>base/chunkN.resources</code></h2>
+<p>Raw data blob, addressed via the index.</p>
+<pre><code>u8[4]    Magic  03 53 45 52
+u8[12]   Null bytes
+--- payload follows at offset 16, tightly packed ---
+</code></pre>
+<p>Per entry:</p>
+<ul>
+<li><code>csize == usize</code> → the bytes are stored <strong>uncompressed</strong>.</li>
+<li>otherwise → <strong>raw DEFLATE</strong> (<code>zlib.decompressobj(-15)</code>, no zlib header).</li>
+</ul>
+<p>The game itself stores verbatim whenever compression yields nothing; this SDK does the same.</p>
+<h3 id="patching">Patching</h3>
+<p>New data is written <strong>into the slot already occupied by the entry</strong>. Offset and <code>csize</code> remain unchanged; only <code>usize</code> moves. If the new deflate stream is shorter than <code>csize</code>, the <em>input</em> is padded with a Decl comment until the stream is exactly <code>csize</code> bytes long (<code>resources.deflate_exact()</code>); raw entries (<code>csize == usize</code>) accept only an exact replacement of equal length.</p>
+<blockquote>
+<p><strong>Appending is incorrect.</strong> An earlier version of the patcher appended new data to the end of the file and moved the index there. This passed every byte test but still caused the game to crash on startup: <code>FATAL ERROR: idBackgroundLoader::BeginBackgroundLoads: FileTable is out of order</code>. The engine requires ascending offsets. Similarly, <code>csize</code> must not shrink — otherwise subsequent entries shift (<code>No address, error: 487</code>). Both are measured; see <a href="Modding-Limits.html">limits.md</a> §4.</p>
+</blockquote>
+<p>If a replacement does not fit into its slot, the entire archive is rewritten in original order (<code>Archive.rebuild()</code>). Only then do offsets change — and they all change together, preserving the order.</p>
+<p>Reversion therefore occurs in three stages, in this order (<code>patch.revert()</code>):</p>
+<ol>
+<li>Replay fully copied <code>.resources</code> files from <code>base/_wolfsdk_backup/</code> — and delete the copy afterward.</li>
+<li>Rewrite individually overwritten slots from the Journal (the original bytes are base64-encoded in <code>journal.json</code>).</li>
+<li>Restore the backed-up <code>.index</code> files.</li>
+</ol>
+<p>A <code>.resources</code> file is <strong>never truncated</strong>: its length does not change due to patching at all.</p>
+<hr />
+<h2 id="4-decls">4. Decls</h2>
+<p>Text format, available in two dialects that coexist within the same file tree:</p>
+<pre><code>// weapon, entityDef, damage, inventoryItem
+{
+    edit = {
+        maxDamage = 25;
+        validAmmoClips = { num = 1; item[0] = { clipSize = 20; } }
+    }
+}
+
+// material, md6Def, skins
+{
+    diffusemap  &quot;models/weapons/Handgun/Handgun&quot;
+    virtualmapping { 0.015625, 0.015625, 0.078125, 0.031250 }
+    offset ( 0 0 0 )
+    prop &quot;_info&quot; { tag &quot;muzzle&quot; { trans ( 0 0 0 ) } }
+}
+</code></pre>
+<p>Features covered by the parser:</p>
+<ul>
+<li><code>=</code> and <code>;</code> are <strong>optional</strong></li>
+<li>Values: String, Word, Block <code>{…}</code>, Tuple <code>(…)</code></li>
+<li>Comments <code>//</code> and <code>/* */</code></li>
+<li>Qualified blocks: <code>prop "_info" { … }</code> → path <code>prop:_info</code></li>
+<li>Indexed fields: <code>item[0]</code> remains as <code>item[0]</code> part of the path</li>
+<li><code>inherit = "…"</code> refers to a base Decl (inheritance)</li>
+</ul>
+<h3 id="addressing">Addressing</h3>
+<p>Paths are dot-separated:</p>
+<pre><code>edit.damageParms.maxDamage
+edit.validAmmoClips.item[0].clipSize
+props.prop:_info.tag:muzzle.trans
+</code></pre>
+<p>Duplicate keys on the same level receive a suffix <code>#1</code>, <code>#2</code>, … starting from the second occurrence.</p>
+<p><code>python -m wolfsdk paths &lt;type:name&gt;</code> lists all paths of a Decl.</p>
+<h3 id="editing">Editing</h3>
+<p>The editor remembers the <strong>byte span</strong> for each value and replaces only this excerpt when writing. Nothing is reformatted or re-serialized. Verified against 60,233 Decls: parsing and unchanged reversion yields exactly the input.</p>
+<blockquote>
+<p><strong>Counting Basis.</strong> 60,233 are <strong>index entries</strong> in text types, counting multiple occurrences of the same asset in several chunks. When reduced to unique <code>(Type, Name)</code> pairs, there are 25,887, of which 25,559 are valid UTF-8 and parse correctly; the 328 outliers are 327 embedded binary files under <code>file:</code> and one <code>renderProg</code> with non-UTF-8 bytes (<code>TNO-Modding-Surface.md</code> header). Both numbers match; they count different things — "0 parse errors" and "328 outliers" are not contradictory.</p>
+</blockquote>
+<hr />
+<h2 id="5-bim-images-image">5. BIM Images (<code>image</code>)</h2>
+<pre><code>LE u32   Hash / ID            (Purpose unconfirmed)
+u8[4]    Magic  09 4D 49 42   (&quot;BIM&quot; + Version 9, byte-swapped)
+BE u32 x 13   Header fields
+--- then per Mip level: ---
+BE u32   Width
+BE u32   Height
+BE u32   Byte count
+u8[]     Data
+</code></pre>
+<p>Known header fields (index starting at 0 after Magic):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Texture type (0 = 2D, 2 = Cubemap face)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Width</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Height</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Depth</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Mip count</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Format code</strong></td>
+</tr>
+<tr>
+<td>11, 12</td>
+<td>Base width, base height</td>
+</tr>
+</tbody>
+</table></div>
+<p>Format codes, derived from bytes per pixel across all 2,566 images — each one matches exactly:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Format</th>
+<th>Bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>RGBA8</td>
+<td>4 / Pixel</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A8 / Distance Field</td>
+<td>1 / Pixel</td>
+</tr>
+<tr>
+<td>10</td>
+<td>BC1 / DXT1</td>
+<td>8 / 4x4 block</td>
+</tr>
+<tr>
+<td>11</td>
+<td>BC3 / DXT5</td>
+<td>16 / 4x4 block</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>python -m wolfsdk image-info &lt;name&gt;</code> provides all this information for an image.</p>
+<p><code>wolfsdk/bim.py</code> models the header, <code>wolfsdk/image.py</code> the pixels — in both directions:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Direction</th>
+<th>Function</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BIM → RGBA</td>
+<td><code>decode()</code>, <code>decode_preview()</code></td>
+<td>all four format codes, measured against 2,566 images</td>
+</tr>
+<tr>
+<td>RGBA → PNG</td>
+<td><code>to_png()</code></td>
+<td>Standard library, <code>zlib</code></td>
+</tr>
+<tr>
+<td>PNG → RGBA</td>
+<td><code>from_png()</code></td>
+<td>including filter removal</td>
+</tr>
+<tr>
+<td>RGBA → BIM</td>
+<td><code>to_bim()</code>, <code>png_to_bim()</code></td>
+<td><strong>only format code 3 (RGBA8)</strong>, header taken from the replaced image</td>
+</tr>
+</tbody>
+</table></div>
+<p>About the command line: <code>wolfsdk image-export</code> and <code>wolfsdk image-import</code>.</p>
+<p>Two limitations remain: There is <strong>no BC1/BC3 compressor</strong>, so a substitute is typically larger than the original and forces an archive rebuild; and <strong>whether a substituted image looks correct in-game is not verified</strong> — it is only documented that the engine successfully loaded four self-built BIMs without error messages (<a href="Modding-Limits.html">limits.md</a> §4). For weapon and character surfaces, this is not the lever: they reside in the Megatexture, see <a href="Modding-Limits.html">limits.md</a> §5.</p>
+<hr />
+<h2 id="6-audio">6. Audio</h2>
+<p><code>streamed.resources</code> and <code>english.streamed</code> are concatenated <strong>Ogg Vorbis streams</strong> (<code>OggS</code>-Magic immediately at the file start). Both containers are <strong>not</strong> in <code>master.index</code>.</p>
+<p>The <code>.index</code> entries for types <code>sample</code>, <code>sound</code>, and <code>voicetrack</code> contain <strong>no audio data</strong> themselves — they are descriptors pointing to it: 20 bytes after the offset/usize/csize triple stands as a BE u32 representing the byte offset into the container. Verified across all 61,318 <code>sample</code> entries by traversing the Ogg page chain up to the EOS page and comparing against the length in the descriptor: 0 deviations. The slots lie on a 16384-byte grid, non-overlapping.</p>
+<p>Anyone holding <code>sample</code> for the audio bytes is searching in the wrong container — and overlooking that <code>streamed.resources</code> and <code>english.streamed</code> are <strong>not in the backup</strong>. Details in <a href="Audio.html">audio.md</a> §3 and §6.</p>
+<hr />
+<h2 id="7-virtual-textures">7. Virtual Textures</h2>
+<p><code>virtualtextures/*.pages</code>, 39 files, totaling 35.6 GB (33.2 GiB; measured on 21.09.2026). Materials with <code>usevirtualmapping 1</code> derive their pixels from there, not from <code>image</code> assets. The field <code>virtualmapping { u, v, du, dv }</code> in the material represents the coordinates within the pages.</p>
+<p>The <strong>container is decrypted and verified</strong> — file header (32 bytes, all seven fields), offset scale, set header (40 bytes), page payload, quadtree derivation, self-test over seven fully traversed files with no unassigned bytes. The complete description is in <a href="TNO-Virtual-Textures.html">virtualtextures.md</a>.</p>
+<p>The only unresolved issue is the <strong>pixel data</strong> (a cropped JPEG-XR stream, <code>TNO-Virtual-Textures.md</code> §8). Therefore, it remains: Virtual texture pixels are not replaceable.</p>
+<hr />
+<h2 id="8-cvars-and-start-arguments">8. Cvars and Start Arguments</h2>
+<p>The engine accepts Cvar assignments directly on the command line:</p>
+<pre><code>WolfNewOrder_x64.exe +g_fov 105 +com_allowConsole 1 +bind F1 &quot;toggle g_permaGodMode 0 1&quot;
+</code></pre>
+<p>This confirms that the game-specific <code>base/build.cfg</code> uses exactly this syntax:</p>
+<pre><code>+feature_hq 1 +feature_lowgore 0 +sys_region &quot;ww&quot; +g_EnableGore 1 ...
+</code></pre>
+<p>The Retail EXE contains around 2,000 Cvar names, including fully preserved developer functions (<code>g_permaGodMode</code>, <code>g_permaInfiniteAmmo</code>, <code>com_allowConsole</code>, <code>devgui</code>) and commands <code>noclip</code>, <code>god</code>, <code>notarget</code>, <code>teleport</code>, <code>spawn</code>, <code>devmap</code>.</p>
+<p>The strings lie in the <code>.rdata</code> pool roughly as <code>Description \0 Default \0 Name \0</code>, but the linker frequently deduplicates common values like <code>"0"</code> and <code>"1"</code>, making it <strong>impossible to reliably assign Defaults</strong>. The names, however, are fine. There is no static registration table — MSVC passes the pointers RIP-relative in the code.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Modding-Guide.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Modding Guide</a><a class="next" href="Modding-Limits.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Limits — what works, what doesn&#x27;t, and why</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

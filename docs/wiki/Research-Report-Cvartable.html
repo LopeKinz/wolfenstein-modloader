@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Cvar Catalog – Runtime Image Analysis – Wolfenstein Modloader</title>
+<meta name="description" content="The true list of Wolfenstein II console variables: 3,256 registered, only 304 settable from outside.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>TNC Cvar Catalog – Runtime Image Analysis</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Cvartable"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-registry-structure">1. Registry Structure</a></li><li><a href="#2-two-independent-attacks">2. Two Independent Attacks</a></li><li><a href="#3-why-the-engine-only-shows-eight-to-eleven-g_-cvars">3. Why the Engine Only Shows Eight to Eleven g_ Cvars</a></li><li><a href="#4-controls">4. Controls</a></li><li><a href="#5-retail-block-the-flags-say-something-different-than-wolfsdkcvarspy">5. Retail Block: the flags say something different than wolfsdk/cvars.py</a></li><li><a href="#6-diff-against-docscvars_tncjson">6. Diff against docs/cvars_tnc.json</a></li><li><a href="#7-the-replacement-dataset">7. The Replacement Dataset</a></li><li><a href="#8-anomaly">8. Anomaly</a></li><li><a href="#9-open-points-and-risks">9. Open Points and Risks</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Console variables (<span class="t" data-t="cvar">cvars</span>) are the game&#x27;s settings switches. This report rebuilt the complete list for Wolfenstein II (TNC) by reading a memory image of the <span class="t" data-t="runtime">running</span> game, without starting or changing anything. It found 3,256 registered cvars, of which only 304 can be changed from the console or command line. The older list of 2,231 entries was wrong both ways: 409 names were not cvars and 1,434 real ones were missing.</p><ul><li>3,256 cvars are registered; exactly the 304 marked as exposed are settable, matching the game&#x27;s own output.</li><li>Two independent methods agree on all 3,256 names, defaults and descriptions.</li><li>189 descriptions in the old list belonged to a different cvar.</li><li>The intro-skip setting does not exist in TNC, so that start option has no effect.</li><li>Open: g_damageScale looks locked by its flags but was once recorded as accepted.</li></ul></div><div class="de"><p class="lede">Konsolenvariablen (<span class="t" data-t="cvar">Cvars</span>) sind die Einstellungsschalter des Spiels. Dieser Bericht hat die vollständige Liste für Wolfenstein II (TNC) neu aufgebaut, indem er ein Speicherabbild des <span class="t" data-t="runtime">laufenden</span> Spiels gelesen hat, ohne etwas zu starten oder zu ändern. Er fand 3.256 registrierte Cvars, von denen nur 304 über Konsole oder Kommandozeile änderbar sind. Die alte Liste mit 2.231 Einträgen war in beide Richtungen falsch: 409 Namen waren keine Cvars, und 1.434 echte fehlten.</p><ul><li>3.256 Cvars sind registriert; genau die 304 als „exposed“ markierten sind setzbar, passend zur Ausgabe des Spiels.</li><li>Zwei unabhängige Methoden stimmen bei allen 3.256 Namen, Standardwerten und Beschreibungen überein.</li><li>189 Beschreibungen der alten Liste gehörten zu einer anderen Cvar.</li><li>Die Einstellung zum Überspringen des Intros gibt es in TNC nicht, die Startoption wirkt also nicht.</li><li>Offen: g_damageScale wirkt laut Flags gesperrt, wurde aber einmal als angenommen protokolliert.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-cvartable-a1</code>, Task <code>cvartable2</code>. Source: <code>re_probes/runtime_87400/module.bin</code> (92,188,672 Bytes, Layout "virtual RVA", Base <code>0x7FF62C210000</code>, pid 87400).
+Tool: <code>tools/probe_cvartable.py</code>. Results: <code>re_probes/cvartable/cvars_tnc_v2.json</code> (Catalog) and <code>re_probes/cvartable/diff_vs_docs.json</code> (Checks + Diff).
+Purely static, read-only; no game launch, no process attach, no write access outside <code>re_probes/cvartable/</code> and <code>tools/probe_cvartable.py</code>.</p>
+<pre><code class="language-bash">PYTHONPATH=re_probes/python_deps python tools/probe_cvartable.py
+</code></pre>
+<h2 id="summary">Summary</h2>
+<p><strong>3256 Cvars are registered. Exactly 304 of them are accessible from outside.</strong></p>
+<p>Both figures are measurable and documented, not estimated:</p>
+<ul>
+<li>The length of the static Registrar list (3256) matches exactly with the counter of the live list in the Cvar system.</li>
+<li>The 304 with set <code>CVAR_EXPOSE</code> are <strong>count-equivalent</strong> to the 304 Cvars that the Engine itself outputs via <code>listCvars - help</code> (<code>docs/cvars_tnc_echt.json</code>). None are missing, none are extra.</li>
+</ul>
+<p>The 2231 entries in <code>docs/cvars_tnc.json</code> are therefore incorrect in two ways, both directions: <strong>409 names are not Cvars</strong>, and <strong>1434 real Cvars are missing</strong>. The file is thus not only "overestimated" but simultaneously "underestimated".</p>
+<p>The reason why the Engine outputs so little on <code>listCvars - help g_</code> is <strong>not</strong> that there are few <code>g_</code> Cvars (there are 287), but rather the same mechanism found by <code>w-cmdtable-a1</code> with commands: the Restriction Level. The Cvar search is gated just like the command search.</p>
+<h2 id="1-registry-structure">1. Registry Structure</h2>
+<p><code>idCVarSystemLocal</code> resides as a Singleton in <code>.data</code> at RVA <code>0x41244E0</code> (vtable <code>0x2978510</code>, verified). It contains two <code>idList</code> heads and two hash indices:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>RVA</th>
+<th>Meaning</th>
+<th>Status in Snapshot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+0x08 / +0x10 / +0x14</code></td>
+<td><code>0x41244E8</code></td>
+<td>List <strong>all</strong></td>
+<td>3256 / Capacity 4096</td>
+</tr>
+<tr>
+<td><code>+0x28 / +0x30 / +0x34</code></td>
+<td><code>0x4124508</code></td>
+<td>List <strong>exposed</strong></td>
+<td>304 / Capacity 512</td>
+</tr>
+<tr>
+<td><code>+0x48</code></td>
+<td><code>0x4124528</code></td>
+<td>Hash Index "all"</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>+0x70</code></td>
+<td><code>0x4124550</code></td>
+<td>Hash Index "exposed"</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>0x41244D8</code></td>
+<td>–</td>
+<td>Restriction Level (<strong>shared</strong> with the command system)</td>
+<td>0 (Idle state)</td>
+</tr>
+</tbody>
+</table></div>
+<p>The arrays themselves are Heap allocations (<code>0x2f4f8c0</code>, <code>0x2f578f0</code>) and lie outside the Module Capture — therefore, like with commands, enumeration had to run via registration.</p>
+<p><code>idCVar</code> object layout, 0x90 Bytes, read from constructor at <code>0x9ECA0</code> and Registrar loop at <code>0x123CD90</code>, not assumed:</p>
+<pre><code>+0x00 idStr value (vptr, data*, len, SSO buffer from +0x18)
++0x30 intValue     +0x34 floatValue
++0x48 name*        +0x50 resetString*   +0x58 description*
++0x60 flags        +0x64 valueMin       +0x68 valueMax
++0x70 valueStrings** +0x78 callback*   +0x88 next (static list)
+</code></pre>
+<p><code>valueMin = 1.0, valueMax = -1.0</code> is the sentinel for "unbounded"; 131 Cvars have real limits.</p>
+<p>The flag bits originate from the Reflection table in <code>.rdata</code>, read twice (24-Byte set at <code>0x2480670</code> as decimal text, 16-Byte set at <code>0x2517EF0</code> as number) — both say the same thing:</p>
+<pre><code>0x1 BOOL  0x2 INTEGER  0x4 FLOAT  (0x0 STRING, TYPE_MASK = 0|1|2|4)
+0x8 CHEAT  0x10 NOCHEAT  0x20 TIME_MS  0x2000 NETWORKSYNC  0x4000 INIT
+0x8000 ROM  0x10000 ARCHIVE  0x20000 LOCAL_SETTING  0x40000 MODIFIED
+0x80000 MODIFIED2  0x100000 SHADERSYNC  0x200000 EXPOSE
+0x400000 SHIPPINGDISABLED  0x800000/0x1000000 RESOURCE_DEPENDENCY_*
+</code></pre>
+<h2 id="2-two-independent-attacks">2. Two Independent Attacks</h2>
+<p><strong>Data Attack</strong> – <code>idCVarSystemLocal::RegisterStaticVars</code> (vtable slot 28, RVA <code>0x123CD40</code>, identified via the string <code>idCVarSystemLocal::RegisterStaticVars: '%s' was statically duplicated</code>) reads the list head at <code>0x123CD4D</code> from <strong>RVA <code>0x30B58F8</code></strong> — directly next to the command registrar <code>0x30B5900</code> — and links each node. Bit <code>0x200000</code> decides at <code>0x123CF18</code> regarding inclusion in the second list:</p>
+<p>0x123cf18  test dword [rbp+0x60], 0x200000   ; CVAR_EXPOSE
+0x123cf1f  je   0x123cfea                    ; otherwise only list 1
+0x123cfea  mov  rbp, [rbp+0x88]              ; next node</p>
+<p>The walk yields <strong>3256</strong> nodes, 3256 unique names, no duplicates.</p>
+<p><strong>Code Attack</strong> – the constructor is inlined at every declaration site and always ends with a call to the common value initializer <code>0x1238730</code> (identifiable by <code>idCvar: Init value '%s' is not valid for BOOL cvar %s</code>). There are <strong>3258</strong> such call sites, each in its own compiler-generated initialization function. A register/store tracker reads out <code>name</code>, <code>resetString</code>, <code>description</code>, <code>flags</code>, <code>min</code>, <code>max</code>. Result: <strong>3256</strong> objects; the two remaining call sites (<code>0x1239034</code>, <code>0x123932C</code>) lie within the Cvar system itself and have no object in <code>rcx</code> — these are set/reset paths, not registrations.</p>
+<p><strong>Cross-check: 3256 vs. 3256, identical object sets, 0 deviations in Name, Default, and Description.</strong> For Flags, 59 entries differ, and they differ <strong>exclusively</strong> in the runtime bits <code>CVAR_MODIFIED</code>/<code>MODIFIED2</code> — these are the 59 Cvars that were modified during the recorded session. The catalog masks these bits out and reports them separately as <code>session_modified</code>. 8 default values could not be resolved by the code attack (Build-Info Cvars, whose reset strings are interned at runtime); this is a gap in the code attack, not a contradiction, and is reported accordingly.</p>
+<h2 id="3-why-the-engine-only-shows-eight-to-eleven-g_-cvars">3. Why the Engine Only Shows Eight to Eleven <code>g_</code> Cvars</h2>
+<p><code>idCVarSystemLocal::Find</code> (vtable slot 4, RVA <code>0x1239700</code>) selects the hash index using the same restriction level as the command dispatcher:</p>
+<pre><code>0x1239737  mov   r10, [0x41244d8]     ; Restriction-Level
+0x1239744  mov   ecx, 0x48            ; Hash &quot;all&quot;
+0x1239749  mov   r14d, 0x70           ; Hash &quot;exposed&quot;
+0x1239754  cmove r14d, ecx            ; Level 0 -&gt; all, otherwise only exposed
+</code></pre>
+<p>The same pattern appears in <code>listCvars</code> (<code>0x123CA84</code>, selection between <code>+0x8</code> and <code>+0x28</code>). And the command dispatcher passes an unknown command at <code>0x126533E</code> to <code>idCVarSystemLocal::Command</code> (slot 17, <code>0x1239F20</code>), which in turn calls <code>Find</code> — both <code>+g_fov 100</code> on the command line and <code>g_fov 100</code> in the console run through this exact lookup.</p>
+<p>The console and <code>+</code>-prefixed parameters always run at Level 1 according to the command report. <strong>Consequently, exactly the 304 exposed Cvars are readable and settable from outside, while the remaining 2952 are not.</strong> "Registered" and "settable" are two different things in this engine, and the difference is a factor of 10.</p>
+<p>Testable counter-examples that would refute the model, and their outcomes:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Model Prediction</th>
+<th>Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>listCvars - help bot_</code> → "0 cvars listed"</td>
+<td><code>bot_fakePing</code>, <code>bot_minClients</code> exist but are not exposed</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td><code>g_infiniteAmmo</code>, <code>g_freeCamSpeed</code> → "Unknown command" (measured in <code>docs/stand.md</code>)</td>
+<td>both registered (<code>0xa</code>, <code>0xc</code>), both <strong>not</strong> exposed</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td><code>listCvars - help g_</code> yields few hits</td>
+<td>11 Expose-Cvars contain <code>g_</code>, all with descriptions</td>
+<td>confirmed, see below</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Correction in <code>docs/stand.md</code>:</strong> it states "eight Cvars" for <code>listCvars - help g_</code>. The dump log in <code>docs/cvars_tnc_echt.json</code> itself records for the search text <code>g_</code> that "found: 11, reported: 11", and my table provides exactly those same 11 (10 with prefix <code>g_</code> plus <code>popupDialog_debug</code>). The eight is an older, outdated number. This does not change the conclusion — 11 out of 287 registered <code>g_</code> Cvars is the same statement.</p>
+<h2 id="4-controls">4. Controls</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Positive control: all 304 from <code>docs/cvars_tnc_echt.json</code></td>
+<td><strong>0 missing</strong></td>
+</tr>
+<tr>
+<td>Descriptions against engine output</td>
+<td>295 identical, 9 differ only through console dump normalization, <strong>0 real discrepancies</strong></td>
+</tr>
+<tr>
+<td>Expose set == Engine set</td>
+<td><strong>yes</strong>, 304 == 304, in both directions</td>
+</tr>
+<tr>
+<td>Cross-check Code attack ↔ Data walk</td>
+<td>3256/3256, <code>only_data=0</code>, <code>only_code=0</code>, Name/Default/Description 0 discrepancies</td>
+</tr>
+<tr>
+<td>Negative control <code>--sec-delta 0x8 / 0x10 / 0x28 / -0x1000 / 0x200000</code></td>
+<td>Each terminated with Exit 2, no table found</td>
+</tr>
+<tr>
+<td>Negative control <code>--base-delta 0x10000</code></td>
+<td>Termination: <code>vtable 0x2968510 != expected 0x2978510</code></td>
+</tr>
+<tr>
+<td>Negative control <code>--sec-delta 0x8 --ignore-anchor</code> (anchor intentionally skipped)</td>
+<td>Walk yields <strong>0 nodes</strong></td>
+</tr>
+<tr>
+<td>Negative control <code>--validator-sweep</code></td>
+<td>see below</td>
+</tr>
+</tbody>
+</table></div>
+<p>Regarding the nine "Dump normalizations": in seven cases, the console dump swallowed a <code>/</code> or compressed spaces (<code>screenres / 8</code> → <code>screenres  8</code>, <code>1x2/2x1</code> → <code>1x2 2x1</code>). In two cases, my table is <strong>better</strong> than the engine output: <code>r_SSR</code> has no description there, while the table lists <code>1: Enable screen space reflections pass</code>. Thus, the discrepancies lie on the dump side, not the table side; the comparison script excludes them individually rather than removing them via normalization.</p>
+<p>The <code>--validator-sweep</code> is the most honest of the controls and partially fails negatively: running the Record Validator without a chain over all 4,547,850 8-byte offsets in <code>.data</code>, it accepts <strong>9,512</strong> of them — 3,256 true positives and <strong>6,256 false positives</strong>. However, the longest chain reachable from any of these false positives contains only <strong>2 nodes</strong>. Thus, the Record Validator alone is <em>not</em> a detector; what provides the proof is the chained list plus its length matching the live counter. A false head yields no plausible table but rather one or two nodes.</p>
+<h2 id="5-retail-block-the-flags-say-something-different-than-wolfsdkcvarspy">5. Retail Block: the flags say something different than <code>wolfsdk/cvars.py</code></h2>
+<p><strong><code>CVAR_SHIPPINGDISABLED</code> (0x400000) is set to null Cvars in this EXE and is never queried anywhere in the Cvar system.</strong> A complete scan of the Cvar code (<code>0x1214600</code>–<code>0x123D300</code>) for a test against <code>0x400000</code> yields no hit. The string <code>CANNOT be set in retail</code> does not exist in <code>NewColossus_x64vk.exe</code> — it originates from <em>The New Order</em>.</p>
+<p>Consequently, <code>RETAIL_BLOCKED</code> from <code>wolfsdk/cvars.py</code> is <strong>not measured against this EXE</strong>. The module docstring states this itself ("mined out of the retail WolfNewOrder_x64.exe"), but the loader uses the list for Part 2. Compared against the real table:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>measured <code>RETAIL_BLOCKED</code> names</td>
+<td>26</td>
+</tr>
+<tr>
+<td>of which <strong>not registered at all</strong> in TNC</td>
+<td>11</td>
+</tr>
+<tr>
+<td>of which registered but <strong>not exposed</strong> (model says: not settable)</td>
+<td>15</td>
+</tr>
+<tr>
+<td>of which exposed (would be a contradiction)</td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The eleven non-existent ones are: <code>ai_invulnerable</code>, <code>com_allowConsole</code>, <code>com_skipIntroVideo</code>, <code>g_AimAssist_Disable_All</code>, <code>g_gameDifficulty</code>, <code>g_goreBloodyMess</code>, <code>g_showThinks</code>, <code>g_useSavegameDifficulty</code>, <code>pm_autoSprint</code>, <code>pm_crouchspeed</code>, <code>pm_noBob</code>.</p>
+<p><strong>One true contradiction remains: <code>g_damageScale</code>.</strong> It is registered (<code>0xc</code> = FLOAT|CHEAT), <strong>not</strong> exposed — the flags thus say "unreachable" — but the measurement recorded it as "silently accepted". The resolution is likely that "silently accepted" constitutes no effect proof at all: <code>g_permaGodMode</code>, <code>g_permaInfiniteAmmo</code>, and <code>com_showFPS</code> were also evaluated as "accepted" and simply do not exist in TNC. A command line hitting an unknown name does not protest — it does nothing. I do not smooth this over: as long as <code>g_damageScale</code> is not clarified via runtime testing, here stands an unresolved contradiction, and a runtime test was forbidden to me.</p>
+<p>Also to be corrected: <code>ALWAYS = {"com_skipIntroVideo": "1"}</code> in <code>wolfsdk/cvars.py</code> hangs for Part 2 on an argument whose CVar does not exist in TNC. This is precisely the open point from <code>docs/stand.md</code> ("README still claims that the intro skip works") — it is now statically decided: in Wolfenstein II, this argument has no effect.</p>
+<p>Which of the 3256 are therefore "settable in retail"? The engine's answer: the 304 with <code>CVAR_EXPOSE</code>, and only those. <code>settable_in_retail</code> in the new dataset is exactly this bit and nothing else. Of these 304, all 68 are <code>CVAR_ARCHIVE</code> Cvars — that is, everything that <code>writeConfig</code> writes is also accessible.</p>
+<h2 id="6-diff-against-docscvars_tncjson">6. Diff against <code>docs/cvars_tnc.json</code></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Entries in the old file</td>
+<td>2231</td>
+</tr>
+<tr>
+<td>of which <strong>actually registered Cvars</strong></td>
+<td><strong>1822</strong></td>
+</tr>
+<tr>
+<td>of which <strong>Phantoms</strong> (no registered Cvar)</td>
+<td><strong>409</strong></td>
+</tr>
+<tr>
+<td>Phantoms that nevertheless carry an invented description</td>
+<td>27</td>
+</tr>
+<tr>
+<td>registered Cvars missing from the old file</td>
+<td><strong>1434</strong></td>
+</tr>
+<tr>
+<td>Entries with description (real names)</td>
+<td>1347</td>
+</tr>
+<tr>
+<td>of which description <strong>correct</strong></td>
+<td>1119</td>
+</tr>
+<tr>
+<td>of which description <strong>incorrect</strong></td>
+<td><strong>228</strong></td>
+</tr>
+<tr>
+<td>… and of which literally the description of another Cvar</td>
+<td><strong>189</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The 189 are the hard core of the assignment error: the old method distributed descriptions by neighborhood and word overlap in <code>.rdata</code>, and in 189 cases it assigned the text of another, real existing CVar. Examples:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>In the file</th>
+<th>Actually</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ai_interactionView_Distance</code></td>
+<td>"if where we are and where we think we are supposed to be ex…" (belongs to <code>ai_interactionView_CorrectionDistance</code>)</td>
+<td>"how far away from the ai"</td>
+</tr>
+<tr>
+<td><code>ai_searchThresholdDebug</code></td>
+<td>Text of <code>ai_searchTimeoutDebug</code></td>
+<td>"…how long the search timeout threshold is"</td>
+</tr>
+<tr>
+<td><code>ai_droppedProjectileZ</code></td>
+<td>"a grenade exists without a projectile decl…" (an error message)</td>
+<td>"random interval applied to dropped projectiles z component"</td>
+</tr>
+</tbody>
+</table></div>
+<p>The cross-check mentioned in <code>docs/stand.md</code> confirms itself: <code>com_assertNoDialog</code> appears in the new dataset with "bypass the popup assert dialog", exactly as output by the engine.</p>
+<h2 id="7-the-replacement-dataset">7. The Replacement Dataset</h2>
+<p><code>re_probes/cvartable/cvars_tnc_v2.json</code>, 3256 entries, 1.85 MB. Per CVar:</p>
+<pre><code>name, description, default, type, flags, flags_decoded, exposed,
+settable_in_retail, cheat, archived, read_only, init_only, min, max,
+value_strings, callback_rva, record_rva, session_value, session_modified
+</code></pre>
+<p>Distribution: 1138 bool, 950 int, 902 float, 235 string, 31 time_ms; 3044 with description, 212 without (there <code>null</code> stands, not guessed); 3142 with Default; 131 with real Min/Max bounds; 4 with <code>value_strings</code> (<code>sys_lang</code>, <code>mt_genVmtrCompression</code>, <code>mt_genPageCompression</code> — and <code>sys_lang</code> provides the twelve language names as a selection list); 2961 with <code>CVAR_CHEAT</code>, 68 <code>CVAR_ARCHIVE</code>, 119 <code>CVAR_INIT</code>, 20 <code>CVAR_ROM</code>.</p>
+<p>Two fields require a warning because they would otherwise be confused again:</p>
+<ul>
+<li><code>default</code> is the reset string declared in the binary image — this is the default value, which the old file unsuccessfully searched for.</li>
+<li><code>session_value</code> is the value <strong>in the Snapshot</strong>, i.e., of an ongoing session, and explicitly not a default value. For 25 Cvars it is <code>null</code>, because their value lies in the heap and not in the module capture.</li>
+</ul>
+<p>The dataset is a <strong>proposal</strong> and is deliberately not placed in <code>docs/</code>. For the Loader GUI, only <code>exposed == true</code> should be interesting: 304 lines guaranteed to work, instead of 2231, of which the majority do nothing.</p>
+<h2 id="8-anomaly">8. Anomaly</h2>
+<p>A Cvar is registered with an <strong>empty name</strong>: Record <code>0x2f0f0f0</code>, Default <code>-10.1</code>, Description "offset modifier for the top cutoff plane", Flags <code>0xc</code>. Both attacks agree on this point — the instruction at <code>0x9ECA0</code> loads the empty string <code>0x209CB3C</code> as the name in both constructor branches. The obviously intended name <code>snapEdit_topCutOffPlaneHeight</code> is located in <code>.rdata</code> at <code>0x2621CA0</code> directly before Default and Description, but is not referenced by any instruction. This is an Engine bug, and at the same time the clearest example of the separation we are discussing here: <code>snapEdit_topCutOffPlaneHeight</code> is a string in the binary and <strong>not</strong> a registered Cvar, while a registered Cvar without a name exists that can never be addressed.</p>
+<h2 id="9-open-points-and-risks">9. Open Points and Risks</h2>
+<ul>
+<li><code>g_damageScale</code> — see Section 5. Unclear contradiction between flag model and measured list. Verifiable with a start and <code>qconsole.log</code>, which was denied to me.</li>
+<li>The Snapshot is <strong>one</strong> session. Cvars that are only registered dynamically under certain conditions would not have been seen by me. The fact that the Live Counter exactly matches the length of the static list (3256 == 3256) means: in this session there was not a single dynamically registered Cvar. Whether this is always true, the Snapshot does not say.</li>
+<li>The Restriction-Level stood at 0 in the Snapshot. That Console and <code>+</code> parameters raise it to 1 is taken from the Command Report and not measured anew by me; my evidence for this are the three counter-examples in Section 3.</li>
+<li>8 Default values (Build-Info-Cvars) come only from the data walk, not from the code attack. They appear in the catalog but are not double-booked.</li>
+<li>"String present in <code>.rdata</code>" was consistently not evaluated as evidence. Each of the 3256 entries has both a decoded constructor instruction address and a validated node in the Registrar list.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Custom-Save-Registration.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC custom-save registration investigation</a><a class="next" href="Research-Report-Datahash.html"><small><span class="en">Next</span><span class="de">Weiter</span></small><code>entry+0x50</code> (data_hash) and <code>entry+0x60</code> (hash_0x60) — from the code</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

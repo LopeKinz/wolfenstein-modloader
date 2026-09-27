@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Cmdtable – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: find out whether TNC has any registered command that loads a map by name.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Cmdtable</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Cmdtable"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is the task description given to a research worker, not a result. The question for Wolfenstein II: The New Colossus: map and devmap answer &quot;unknown command&quot; in the <span class="t" data-t="console">console</span>, even with developer settings on. Is there any registered command that loads a map, and if so, what blocks it? The brief sets strict rules: read-only analysis of a memory image, two independent methods, and checks that must fail if a claim is false.</p><ul><li>Starting point: map and devmap are rejected even with com_enableDeveloperMode, devMode_enable and g_demoDevMode set to 1.</li><li>Three answers are allowed: no map command exists, one exists but is gated, or one exists and is reachable.</li><li>The full command list must include commands known to work, such as writeConfig, conDump and listCvars.</li><li>A text string in the game file is explicitly not accepted as proof that a command exists.</li><li>No game launch, no writes to the install; the result is reported in the separate Cmdtable research report.</li></ul></div><div class="de"><p class="lede">Diese Seite ist die Aufgabenstellung für einen Forschungs-Worker, kein Ergebnis. Die Frage zu Wolfenstein II: The New Colossus: map und devmap antworten in der <span class="t" data-t="console">Konsole</span> mit „unknown command“, selbst mit Entwickler-Einstellungen. Gibt es irgendeinen registrierten Befehl, der eine Karte lädt, und wenn ja, was blockiert ihn? Das Briefing setzt strenge Regeln: reine Leseanalyse eines Speicherabbilds, zwei unabhängige Methoden und Prüfungen, die fehlschlagen müssen, wenn eine Behauptung falsch ist.</p><ul><li>Ausgangslage: map und devmap werden abgelehnt, selbst wenn com_enableDeveloperMode, devMode_enable und g_demoDevMode auf 1 stehen.</li><li>Drei Antworten sind zulässig: Es gibt keinen Kartenbefehl, es gibt einen gesperrten oder es gibt einen erreichbaren.</li><li>Die Befehlsliste muss bekannte funktionierende Befehle wie writeConfig, conDump und listCvars enthalten.</li><li>Ein Text im Spielprogramm gilt ausdrücklich nicht als Beweis, dass ein Befehl existiert.</li><li>Kein Spielstart, kein Schreiben in die Installation; das Ergebnis steht im separaten Cmdtable-Forschungsbericht.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-cmdtable-a1; task cmdtable; research (read-only RE).
+Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+(identical copy at C:/Users/‹user›/.agents/skills/... ; use one consistently).
+Two other workers run in parallel on other hosts (astra-map-v3 = map bundle,
+astra-save-v3 = save serialization). Stay inside your ownership.</p>
+<h1 id="objective">Objective</h1>
+<p>Enumerate the TNC retail command registry from the captured runtime image and
+settle one question with evidence: is there ANY registered command in the retail
+build that loads a map by name, and if so under which name and which gate?</p>
+<p>Measured baseline you must explain, not contradict blindly: at runtime both
+<code>map</code> and <code>devmap</code> answer <code>unknown command</code>, even with com_enableDeveloperMode=1,
+devMode_enable=1, g_demoDevMode=1. Known to work at runtime: <code>writeConfig</code>,
+<code>conDump</code>, <code>listCvars</code>, <code>listCvars - help</code>. See docs/stand.md and
+re_probes/agent_reports/custom_save_registration.md.</p>
+<p>Three outcomes are all acceptable; pick the one the evidence supports:
+(a) no map-loading command is registered -&gt; the save/bundle route is the only route;
+(b) one is registered but flag-gated -&gt; name the flag, the check, and whether a
+    cvar or launch argument can satisfy it;
+(c) it is registered and reachable -&gt; give the exact console syntax and the
+    argument format it parses.</p>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li>re_probes/runtime_87400/module.bin  (92,188,672 bytes, layout "virtual RVA":
+  file offset == RVA; image base 140695279042560 = 0x7FF6xxxxxxxx, pid 87400,
+  captured 2026-09-23 00:26). manifest.json lists every section with rva/vsize.
+  .text rva 0x1000, .rdata rva 0x1E62000, .data rva 0x2E39000.</li>
+<li>Absolute pointers inside .data are runtime VAs: RVA = VA - base.</li>
+<li>capstone 5.0.7 is vendored, no install needed:
+  PYTHONPATH=re_probes/python_deps python ...</li>
+<li>id Tech heritage: idCmdSystemLocal::AddCommand(name, fn, flags, description,
+  argCompletion) keeps commandDef_t nodes {next, name<em>, args, function,
+  argCompletion, flags, description</em>} in a linked list plus a hash table. The
+  public Doom 3 / idTech 4 source is a legitimate reference for the layout;
+  verify the actual struct against this binary, do not assume it.</li>
+<li>Two independent attacks, use both and cross-check:<ol>
+<li>data-driven: find the command name strings in .rdata, find .data words
+ pointing at them, walk the surrounding struct, then walk <code>next</code>.</li>
+<li>code-driven: disassemble .text for <code>lea rcx,[rip+&lt;name-string&gt;]</code> feeding a
+ common call target; that target is the registration function. Enumerate all
+ its call sites to get every registered name plus its flags argument.</li>
+</ol>
+</li>
+<li>Existing string work: tools/probe_strings.py, tools/probe_devmode.py,
+  tools/cvar_table.py (same technique for the cvar table, likely reusable).</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/probe_cmdtable.py (new), re_probes/cmdtable/ (new dir, all artifacts),
+re_probes/agent_reports/cmdtable.md (new).</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No launching the game, no writing to the Steam install, no writing to
+"C:/Users/‹user›/Saved Games", no process attach or memory writes. Read module.bin
+read-only. Do not edit anything owned by others: tools/build_tnc_map_alias_v3.py,
+tools/verify_tnc_map_alias_v3.py, re_probes/map_alias_v3/,
+tools/build_custom_save_candidate.py, tools/probe_details_checksum.py,
+tools/verify_custom_save_candidate.py, re_probes/custom_save_candidates/,
+docs/<em>, wolfsdk/</em>, config.json. Do not pip install anything.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib plus the vendored capstone only. The probe must be
+reproducible from the command line and must not depend on a running game.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li>tools/probe_cmdtable.py prints and dumps re_probes/cmdtable/commands.json:
+  one record per registered command with name, flags (raw int and decoded),
+  description if present, function RVA.</li>
+<li>The table is complete enough to contain every command already measured as
+  working (<code>writeConfig</code>, <code>conDump</code>, <code>listCvars</code>, <code>exec</code>, <code>bind</code>, <code>toggle</code>,
+  <code>screenshot</code>). If one of those is missing, the enumeration is wrong - say so
+  and fix it, do not ship a partial list as complete.</li>
+<li>Explicit verdict on <code>map</code>, <code>devmap</code>, <code>spawn</code>, <code>teleport</code>, <code>god</code>, <code>noclip</code>,
+  <code>killMonsters</code>, <code>reloadDecls</code>, <code>listCmds</code> with the evidence per name.</li>
+<li>If a map command exists, decode its flag word against the flags of a command
+  known to work and a command known to be rejected, and state exactly what makes
+  the difference.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Every important assurance needs a check that FAILS if the assurance is false:</p>
+<ul>
+<li>Positive control: the list must contain the commands measured as working.</li>
+<li>Negative control: feed the same parser a deliberately wrong base/section offset
+  and show it produces garbage or refuses - a parser that "finds" a plausible
+  table at the wrong offset is not evidence.</li>
+<li>Cross-check: the two attacks (data walk and call-site scan) must agree on the
+  command set. Report the diff if they do not; the diff is the finding.</li>
+<li>The string "devmap" existing in .rdata is NOT evidence that the command is
+  registered. docs/stand.md already lists it from static strings and the runtime
+  contradicts it. Distinguish "string present" from "AddCommand called" from
+  "dispatchable at runtime".</li>
+</ul>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If the registry layout does not yield, report the exact obstacle with offsets and
+what you tried. A clear negative with evidence is a good result here and unblocks
+the other two workers. Do not produce a speculative command list.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at meaningful milestones (registration function located; table walked;
+controls passed). Publish as bus facts only what the other workers would otherwise
+rediscover - above all the verdict on map/devmap, because it decides whether the
+save-forging route is necessary at all. Final report in German, concise, in
+re_probes/agent_reports/cmdtable.md. Finish the bus task when done; a master verifies.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Cfilekey2.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Cfilekey2</a><a class="next" href="Research-Brief-Cmfmt.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Cmfmt</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

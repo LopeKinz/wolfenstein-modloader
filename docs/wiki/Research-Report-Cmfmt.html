@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cm (Collision): Layout, Round-Trip, Box-Hull, Binding – Wolfenstein Modloader</title>
+<meta name="description" content="Decoding and rewriting Wolfenstein II collision files, plus a newly generated box collision.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>cm (Collision): Layout, Round-Trip, Box-Hull, Binding</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Cmfmt"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result-in-one-sentence">Result in One Sentence</a></li><li><a href="#1-what-was-wrong-with-attempt-1-corrected-before-each-number">1. What Was Wrong with Attempt 1 (Corrected Before Each Number)</a></li><li><a href="#2-layout-code-evidence-from-re_probesruntime_87400modulebin">2. Layout (Code Evidence from re_probes/runtime_87400/module.bin)</a></li><li><a href="#3-round-trip---the-controlling-mechanism">3. Round-Trip - the controlling mechanism</a></li><li><a href="#4-negative-controls">4. Negative Controls</a></li><li><a href="#5-box-hull-new-runtime-untested">5. Box-Hull (new, RUNTIME UNTESTED)</a></li><li><a href="#6-what-a-hull-binds">6. What a Hull Binds</a></li><li><a href="#7-open">7. Open</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">The cm files hold <span class="t" data-t="collision">collision</span> shapes in Wolfenstein II (TNC): the invisible walls and floors the player bumps into. Researchers decoded the format, a small header plus Havok physics data, and can write 5,166 of 5,166 original files back byte-identical. They also generate a new box-shaped collision that matches the structure of an original box. Nothing has been tested in the game, and collision for a whole map cannot be recalculated yet.</p><ul><li>5,166 of 5,166 files from 3 archives <span class="t" data-t="roundtrip">round-trip</span> byte-identical.</li><li>299 deliberately broken files across 19 error types were all rejected.</li><li>A new 4,532-byte box collision matches the structure of an original game box of the same size.</li><li>Collision shapes are linked to objects only by name.</li><li>Open: recalculating the search trees needed for whole-map or mesh collision.</li></ul></div><div class="de"><p class="lede">Die cm-Dateien enthalten die <span class="t" data-t="collision">Kollisions</span>formen in Wolfenstein II (TNC): die unsichtbaren Wände und Böden, an die der Spieler stößt. Die Forscher haben das Format entschlüsselt, einen kleinen Kopf plus Havok-Physikdaten, und können 5.166 von 5.166 Originaldateien byte-gleich zurückschreiben. Außerdem erzeugen sie eine neue Box-Kollision, die im Aufbau einer Original-Box entspricht. Im Spiel ist nichts getestet, und die Kollision einer ganzen Karte lässt sich noch nicht neu berechnen.</p><ul><li>5.166 von 5.166 Dateien aus 3 Archiven überstehen den <span class="t" data-t="roundtrip">Roundtrip</span> byte-gleich.</li><li>299 absichtlich kaputte Dateien mit 19 Fehlerarten wurden alle abgelehnt.</li><li>Eine neue Box-Kollision mit 4.532 Bytes entspricht im Aufbau einer gleich großen Original-Box des Spiels.</li><li>Kollisionsformen sind nur über den Namen mit Objekten verbunden.</li><li>Offen: das Neuberechnen der Suchbäume für Kollision ganzer Karten oder Meshes.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-cmfmt-a2</code> (Attempt 2/3; Attempt 1 paused, Attempt 2 cut off by session limit), 2026-09-23.
+Files: <code>tools/probe_cmfmt.py</code>, <code>re_probes/cmfmt/</code>, this report.</p>
+<h2 id="result-in-one-sentence">Result in One Sentence</h2>
+<p><code>cm</code> is a small id-prefix (Surface Records) plus a <strong>Havok Binary Tagfile 2016 (hknp)</strong>; the parser reads every byte typed, and the writer writes back <strong>5166/5166 Retail Payloads from 3 Archives byte-identically</strong>, 19 mutation classes are accepted 0/299, and a new Box Hull is generated which is structurally equivalent to a Retail <code>func_collision_only</code> Box. <strong>Not tested at runtime.</strong></p>
+<h2 id="1-what-was-wrong-with-attempt-1-corrected-before-each-number">1. What Was Wrong with Attempt 1 (Corrected Before Each Number)</h2>
+<p>The aborted run placed two unmeasured Polytope rules into the parser; consequently, the Round-Trip fell to 5145/5166. Additionally, the Box was incorrect.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Claim Attempt 1</th>
+<th>Measured</th>
+<th>Now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vertex <code>w</code> = <code>0x3F000000 \| i</code> for all vertices</td>
+<td>21 files break this</td>
+<td>Array padded to a multiple of 4 with exact copies of the last real vertex, 23004/23004</td>
+</tr>
+<tr>
+<td>Faces tile the index array</td>
+<td>116 Polytope splits index runs (e.g., in <code>_combo/world.hkshape</code>)</td>
+<td>each Face-Range in the array, summing all indices</td>
+</tr>
+<tr>
+<td><code>vertexEdges[v]</code> = first outgoing edge</td>
+<td>0/22998 (last: also 0)</td>
+<td>only "one edge starting at v" holds (22998/22998); Box carries the Retail Array of identical topology</td>
+</tr>
+<tr>
+<td>Box carries Records from Template</td>
+<td>Template <code>amb_volume_hull_1</code> is a <strong>Trigger</strong> (0x4000)</td>
+<td>Default Record = that of Retail Solid Brushes</td>
+</tr>
+<tr>
+<td>Mass = Template values, "half floats"</td>
+<td>Incorrect: packed int16 vectors</td>
+<td>Recalculated from Box geometry (Section 5)</td>
+</tr>
+<tr>
+<td>TNA1 "not decoded" (old layout note)</td>
+<td>Outdated</td>
+<td><code>convex_layout.txt</code> deleted</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="2-layout-code-evidence-from-re_probesruntime_87400modulebin">2. Layout (Code Evidence from <code>re_probes/runtime_87400/module.bin</code>)</h2>
+<p>Type <code>cm</code> -&gt; <code>idHavokShapeResource</code> (Registration <code>.text 0xC0B64</code>, String <code>.rdata 0x2654790</code>).
+Loader <code>.text 0x723C30</code>, called from <code>0x7243AF</code> with <code>version = entry+0x68</code>
+(all 71672 cm entries across all archives: 21).</p>
+<pre><code>u32 n
+n x { u32 f0 -&gt; rt+0x08, f1 -&gt; rt+0x10, f2 -&gt; rt+0x0C,
+      f3 -&gt; rt+0x14 (only version &gt;= 0x12), f4 -&gt; rt+0x18, f5 -&gt; rt+0x1C, f6 -&gt; rt+0x20 }
+      (Runtime-Stride 0x38, rt+0 = pointer to the resource)
+u32 blob_size           (must land exactly at the Payload end)
+blob                    Havok &quot;TAG0&quot;, SDKV 20160200
+</code></pre>
+<p>After Havok Load: <code>0x72428B..0x7242AD</code> replaces for each Shape <code>shape+0x30</code> (<code>hknpShape.userData</code>) with <code>records + userData*0x38</code>. <strong>userData is the Record Index.</strong></p>
+<p>Tagfile, sections always <code>TAG0(SDKV DATA TYPE(TPTR TSTR TNA1 FSTR TBDY THSH TPAD) INDX(ITEM PTCH))</code>
+(5166/5166). Fully decoded: Type table (Names, Templates, Parents, Subtype Flags, Sizes, Members), DATA over the Type table (each byte leaf, pointer/array slot, or checked null), ITEM (12 bytes: type|flag, offset, count), PTCH (Offsets of slots that an ITEM-index refers to). The writer generates Layout, ITEM, PTCH, TSTR/FSTR/TNA1/TBDY/THSH and all section headers from the object graph; only leaf values are inherited.</p>
+<p>Root types: <code>hknpCompoundShape</code> 3514, <code>hknpCompressedMeshShape</code> 1256,
+<code>hknpConvexPolytopeShape</code> 396. Havok is indeed it - but without opaque bytes.</p>
+<h3 id="record-fields">Record Fields</h3>
+<p>Names from tables in the image:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+<th>Source</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>f0</td>
+<td>idContents Bitmask</td>
+<td>Pointer table <code>.rdata 0x2EEC880</code>, Index = Bit ("unused bit 9" at 9, "unused bit 24" at 24)</td>
+<td>Names with trigger/volume: 334/334 have bit 14 <code>trigger</code> (Base 7 %); <code>fx_func_water</code> = <code>water</code></td>
+</tr>
+<tr>
+<td>f1</td>
+<td>surfType_t</td>
+<td><code>.rdata 0x248A9A8</code>, 0..38</td>
+<td>glass names 66/68 GLASS* (Base 5 %), fabric 15/16 (4 %), rock 13/21 (7 %); water = LIQUID</td>
+</tr>
+<tr>
+<td>f2</td>
+<td>SURF_*-Flags</td>
+<td><code>.rdata 0x248AD68</code></td>
+<td>only 6 values: 0, COLLISION, NOIMPACT, NOAREAS, NOIMPACT|NOAREAS, SLICK|NOIMPACT|STEEP</td>
+</tr>
+<tr>
+<td>f3</td>
+<td>0</td>
+<td>-</td>
+<td>21673/21673</td>
+</tr>
+<tr>
+<td>f4..f6</td>
+<td>-1.0f</td>
+<td>-</td>
+<td>21673/21673, meaning open</td>
+</tr>
+</tbody>
+</table></div>
+<p>f0/f1 are correlation proofs, not consumer code interpretation. The first f1 correlation (only userData-Records) was negative and incorrectly configured; Record usage also occurs via other paths (referenced in 4729 files, no userData some Records - presumably Shape-Tags in Compressed Meshes, unaccounted for).</p>
+<h2 id="3-round-trip---the-controlling-mechanism">3. Round-Trip - the controlling mechanism</h2>
+<p><code>python tools/probe_cmfmt.py --roundtrip</code> -&gt; <code>re_probes/cmfmt/roundtrip.txt</code></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Archive</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base/chunk_8.resources</code></td>
+<td>907/907 byte-identical</td>
+</tr>
+<tr>
+<td><code>base/chunk_16.resources</code></td>
+<td>1469/1469</td>
+</tr>
+<tr>
+<td><code>dlc/dlc_2/base/chunk_22.resources</code></td>
+<td>2790/2790 (5 empty cm entries)</td>
+</tr>
+<tr>
+<td><strong>total</strong></td>
+<td><strong>5166/5166</strong>, 108 MB Payload</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>Cm.parse</code> is strict: type table fully resolvable, layout rule per ITEM, gaps null, non-field bytes null, every reference type-checked, PTCH == found slots, polytope count consistent.</p>
+<h2 id="4-negative-controls">4. Negative Controls</h2>
+<p><code>python tools/probe_cmfmt.py --negative</code> -&gt; <code>negative_controls.txt</code>, 299 Payloads (100 per archive, distributed by size). Accepts <strong>0</strong> for all 19 classes: Record count +-1, blob_size +-4, end -1/-16/+8, ITEM-Count +1, Primitive-Stride +4/+1, PTCH-Offset +4, byte in field padding, object pointer on array, SDKV, TNA1 count, Record-Stride 32/24, ITEM-Stride 16/8. The writer may fail: 16-&gt;8 Array Alignment changes 298/299. Additionally at the Box-File: broken Vertex <code>w</code> and Face-Range outside are rejected.</p>
+<h2 id="5-box-hull-new-runtime-untested">5. Box-Hull (new, RUNTIME UNTESTED)</h2>
+<p><code>python tools/probe_cmfmt.py --box OUT.cm --half-extents 32,32,64</code>
+-&gt; <code>re_probes/cmfmt/box_64x64x128.cm</code> (4532 B, sha256 <code>0f35940e…df3d</code>, deterministic).</p>
+<p>Inherited from the template: type table, root scalars (Flags, Type, Dispatch, convexRadius 0.01, Property-Key) and <code>vertexEdges</code> (identical topology; Havoks choice of outgoing edge is not reconstructed). Newly generated: Vertices, planes, faces, indices, <code>faceLinks</code> (twin half-edges, 22883/22883 Retail), mass, penetration, records, object graph.</p>
+<p>Mass, measured on 1762 retail axis boxes:</p>
+<ul>
+<li>Volume = product of edge lengths including 2x convexRadius, Mass = 1000 x Volume;</li>
+<li>Inertia = 1.5 x full cuboid tensor, 1762/1762 within 4 pack quanta (1742 in 1);</li>
+<li><code>hkPackedVector3</code>: 3x int16 + upper half of a float scaler, largest component in [2^14, 2^15): packs 45980/45980 retail vectors byte-exactly, zero vector <code>0000000000008019</code> (28/28); <code>majorAxisSpace</code> = <code>00800080008030f5</code> (1762/1762).</li>
+<li>Template rebuilt: inertia byte-identical, mass/volume 2 ulp off.</li>
+</ul>
+<p><code>maxAllowedPenetration</code> (hkHalf16 = upper 16 bits of float32): Value/(smallest half-edge + radius) in [0.3288, 0.3313] over 1762/1762. Exact rule <strong>not</strong> found; <code>round16(0.3305 x Basis)</code> hits 1673/1762 bit-exactly.</p>
+<p>Record Default <code>(0x1 solid, 1 METAL, 0x40 SURF_COLLISION, 0, -1, -1, -1)</code>: exactly the records from <code>maps/game/dlc/c02/c2v1/c2v1_geo_lobby_func_collision_only_2_1509497262.hkshape</code>, a retail box of identical file size (4532 B, 1 polytope, 8 vertices/6 faces, half-edges ~0.06 x 0.40 x 0.40). This retail box passes the Box Checker; its face order is different - both are thus retail practice.</p>
+<p>Checks (<code>check_box</code>, <code>--selftest</code>): strict parse + round-trip, corners, every plane supporting, winding outside, connectivity, mass, penetration; the same checker rejects false mass (32,32,65). <strong>None of this proves that the engine loads the file.</strong></p>
+<h2 id="6-what-a-hull-binds">6. What a Hull Binds</h2>
+<p>Exclusively the <strong>Name</strong>, built in code:</p>
+<ul>
+<li>Model: <code>&lt;model&gt;</code> + Suffixes in fixed order (<code>.text 0x725280</code>):
+  <code>$scale=%e,%e,%e $filterclip=%x $overridematerial=%s $simplify=%i
+  $convexdecomposition=%i,%g $part=%d $filteroccluders=true</code>.</li>
+<li>Entity with <code>clipModelName</code> -&gt; <code>&lt;clipModelName&gt;.hkshape</code> (<code>.hkshape</code> referenced at <code>.text 0xAF3317</code>). Retail example, exact case for a custom box:
+  <code>c2v1_geo_lobby_func_collision_only_2_1509497262</code>, <code>CLIPMODEL_AUTO</code>,
+  <code>clipModelName = "maps/game/dlc/c02/c2v1/c2v1_geo_lobby_func_collision_only_2_1509497262"</code>.</li>
+<li>World: <code>&lt;map&gt;</code> + <code>/_combo/world.hkshape</code> (<code>.text 0x4B0741</code>, String <code>.rdata 0x26232D0</code>).
+  c2v1: <code>hknpCompoundShape</code> from 34 Convex Polytopes + <code>hkcdDynamicTree</code> (69 Codec32 Nodes).</li>
+<li><code>CLIPMODEL_BOX/CYLINDER/SPHERE/RENDERMODEL_BOUNDS/NONE</code> do not carry a <code>clipModelName</code> in c2v1-3 (151/161/1/218/708) - thus no name lookup; the shape comes from <code>size</code> or similar.</li>
+</ul>
+<p><code>--bind</code> via entities of c2v1-3: 28151/28431 <code>clipModelName</code> resolves to an existing cm (Prefix level: exact suffix values are not reconstructed).</p>
+<p><strong>Evidence for Map Alias:</strong> the installed <code>dlc/dlc_4/base/chunk_22.resources</code> contains 0 of 6985 entries with <code>c2v1_custom</code> in the name, thus also no <code>maps/game/dlc/c02/c2v1_custom/_combo/world.hkshape</code>. The bundle <code>re_probes/idclwriter/chunk_22.resources</code> has it (byte copy of c2v1, parsed and round-tripped). Whether the engine searches for a world cm under an alias name follows from 0x4B0700 only if the alias name arrives there - unchecked.</p>
+<h2 id="7-open">7. Open</h2>
+<ul>
+<li>Rewriting World/Compound Collision requires the <code>hkcdDynamicTree</code> BVH and for Meshes the <code>hknpCompressedMeshShape</code> tree. Both are read and written byte-exactly but not recalculated. Reusing as a byte copy is possible; instances shifting or new world geometry requires a newly calculated BVH - not yet.</li>
+<li>Exact rule for <code>maxAllowedPenetration</code> and Havoks choice in <code>vertexEdges</code>.</li>
+<li>The semantics of f4..f6 and the path of records not referenced by any userData.</li>
+<li>Runtime: everything above is "structurally valid after these checks".</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Cmdtable.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC Command Registry – Runtime Image Analysis</a><a class="next" href="Research-Report-Command-Queue.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Static Research: Retail Command Queue (TNC)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

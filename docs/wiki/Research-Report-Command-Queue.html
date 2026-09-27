@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Static Research: Retail Command Queue (TNC) – Wolfenstein Modloader</title>
+<meta name="description" content="Which config files Wolfenstein II runs at startup, and why +map, +exec and +loadGame had no visible effect.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Static Research: Retail Command Queue (TNC)</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Command-Queue"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#results">Results</a></li><li><a href="#why-map-exec-loadgame-were-not-visible-in-direct-launch">Why +map, +exec, +loadGame were not visible in direct launch</a></li><li><a href="#actual-registration-vs-mere-string-occurrence">Actual Registration vs. Mere String Occurrence</a></li><li><a href="#more-precise-next-single-test">More precise next single test</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report reads the Wolfenstein II: The New Colossus program file and logs to find which config files run when the game starts. It finds a fixed internal order: build.cfg, then default configs from the game&#x27;s archives, video presets, binary.cfg in the game folder, and package.cfg. There is no autoexec.cfg. Launch options like +map, +exec and +loadGame show up in the log but had no visible effect before the menu; the report proposes one harmless binary.cfg test to confirm the queue.</p><ul><li>Startup order: build.cfg, default.cfg, default_sp/mp.cfg, initial_video cfg, binary.cfg, package.cfg.</li><li>Some configs are read from inside the game archives (&#x27;resourceExec&#x27;), others from loose files on disk.</li><li>The word &#x27;autoexec&#x27; appears 0 times in the retail program.</li><li>Logs show +map, +exec and +loadGame in the command line but no map load or save load.</li><li>Suggested next test: put a harmless Print line into binary.cfg and check whether it appears in the log. Not yet done.</li></ul></div><div class="de"><p class="lede">Dieser Bericht liest Programmdatei und Logs von Wolfenstein II: The New Colossus, um herauszufinden, welche Config-Dateien beim Start laufen. Er findet eine feste interne Reihenfolge: build.cfg, dann Standard-Configs aus den Archiven des Spiels, Video-Voreinstellungen, binary.cfg im Spielordner und package.cfg. Eine autoexec.cfg gibt es nicht. Startoptionen wie +map, +exec und +loadGame erscheinen im Log, hatten vor dem Menü aber keine sichtbare Wirkung; der Bericht schlägt einen harmlosen Test mit binary.cfg vor, um die Reihenfolge zu bestätigen.</p><ul><li>Startreihenfolge: build.cfg, default.cfg, default_sp/mp.cfg, initial_video-cfg, binary.cfg, package.cfg.</li><li>Manche Configs werden aus den Archiven des Spiels gelesen („resourceExec“), andere als lose Dateien von der Festplatte.</li><li>Das Wort „autoexec“ kommt im Programm des Verkaufsspiels 0-mal vor.</li><li>Die Logs zeigen +map, +exec und +loadGame in der Befehlszeile, aber kein Laden einer Karte oder eines Spielstands.</li><li>Vorgeschlagener nächster Test: eine harmlose Print-Zeile in binary.cfg schreiben und prüfen, ob sie im Log erscheint. Noch nicht gemacht.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><h2 id="results">Results</h2>
+<p>The robust retail init path is an internal queue within <code>idCommonLocal::Init()</code>, not the user file <code>Wolfenstein II The New ColossusConfig.cfg</code>. From the EXE string pool, the following order and origin are derived:</p>
+<ol>
+<li><code>Executing build.cfg...</code> → <code>base/build.cfg</code> (plaintext).</li>
+<li><code>resourceExec default.cfg -s</code> → <code>default.cfg</code> from the Resource-File (the loose file in <code>base/</code> is not proof of the used copy).</li>
+<li><code>resourceExec default_sp.cfg -s</code> or <code>default_mp.cfg</code> → Resource-File.</li>
+<li><code>exec initial_video_%s.cfg -s</code> → loose file in <code>base/</code>.</li>
+<li><code>exec "%s/binary.cfg" -s</code> → <code>binary.cfg</code> in the game folder.</li>
+<li><code>resourceExec package.cfg -s</code> → Resource-File.</li>
+</ol>
+<p>Evidence: <code>docs/ladepfade.md:240-269</code>; EXE <code>NewColossus_x64vk.exe</code>, string neighborhood at file offsets <code>0x26c1648</code> (Config name), <code>0x26c17d0</code> (<code>resourceExec</code>, <code>Executing default.cfg...</code>), <code>0x26e31b0</code> (<code>exec disclayout.cfg -s</code>, <code>exec candidate.cfg -s</code>, <code>exec "%s/binary.cfg" -s</code>, <code>resourceExec package.cfg -s</code>). The EXE string <code>USAGE: resourceExec &lt;filename&gt; -s [define]: execute a script file</code> is located at <code>0x26c5267</code>.</p>
+<p><code>autoexec.cfg</code> is not a found queue candidate: a byte search in the retail EXE for <code>autoexec</code> yields <strong>0 hits</strong>; the documentation also records this (<code>docs/devmodus.md:430-436</code>). <code>startup</code> appears only as a description of startup Cvars, not as a filename/queue command.</p>
+<h2 id="why-map-exec-loadgame-were-not-visible-in-direct-launch">Why <code>+map</code>, <code>+exec</code>, <code>+loadGame</code> were not visible in direct launch</h2>
+<p>The existing runtime logs show the arguments in the logged command line but do not show an apparent connection as a <code>LoadMap</code>/Save-Load route:</p>
+<ul>
+<li><code>C:\Users\‹user›\Saved Games\MachineGames\Wolfenstein II The New Colossus\base\qconsole.log:9182-9183</code> contains <code>... +map game/wolf/c02/c02p0</code>.</li>
+<li>The same log: <code>:9384-9385</code> contains <code>... +exec probe_map.cfg</code>; <code>:9790-9791</code> contains <code>... +exec load_save.cfg</code>.</li>
+<li>The isolated samples confirm the used file contents: <code>re_probes/tnc_dlc_test/runtime_primary_c02/probe_map.cfg:1</code> = <code>map game/wolf/c02/c02p0</code>; <code>load_save.cfg:1</code> = <code>loadGame savegame.user/‹steam-id›/SLOT2/GAME-AUTOSAVE0</code>.</li>
+<li>In all three relevant excerpts, following <code>idCommonLocal::Init()</code> comes the renderer/input initialization, followed only by the quadruple <code>Executing default.cfg ... Finished executing default.cfg</code>; in the probe logs (<code>qconsole.primary_v2.log:5-84</code>, <code>qconsole.loadsave.log:5-84</code>) there is no <code>Map loaded</code>, no <code>Map change</code>, and no Savegame-load evidence.</li>
+<li><code>re_probes/tnc_dlc_test/runtime_primary_c02/RESULT.md:17-18</code> documents this negative finding explicitly: direct retail launch ignores <code>+map</code>, <code>+exec</code>, <code>+loadGame</code> before the menu; no new <code>LoadMap</code> proof.</li>
+</ul>
+<p>The static explanation is therefore: Retail takes the arguments initially into the start line (they appear in the log), but executes the visible user/map route only via the subsequent engine/menu initialization. <code>+exec</code> is therefore not equivalent to "execute any file before the menu"; the provenly executed configs are the internal init queue above. <code>+loadGame</code> strings in the EXE are predominantly UI dialog actions, e.g., <code>exec default.cfg</code> followed by <code>loadGame %s dev slowcombo ...</code> at <code>0x2608895</code>; this proves text occurrence but not a freely registered retail launch option.</p>
+<h2 id="actual-registration-vs-mere-string-occurrence">Actual Registration vs. Mere String Occurrence</h2>
+<ul>
+<li><code>build.cfg</code> exists and is executed according to the Queue string. Its content consists solely of: <code>+sys_ratingversion 0</code>, <code>+sys_languages "..."</code>, <code>+image_useLooseStreaming 1</code>, <code>+image_materialEncoding 1</code> (D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\base\build.cfg, 192 Bytes). It contains neither <code>exec</code>, <code>map</code>, nor <code>loadGame</code>.</li>
+<li>Loose <code>base/default.cfg</code> contains only Bindings/<code>Print</code>; relevant lines are <code>bind F5 "savegame quicksave"</code>, <code>bind F9 "loadgame quicksave"</code>, and the End Print (File lines 78-83). The user config contains the same Bindings (<code>Wolfenstein II The New ColossusConfig.cfg</code>, lines 56 respectively Bindset block), but no Startup Queue.</li>
+<li><code>default.cfg</code>, <code>resourceExec</code>, <code>loadGame</code>, and <code>exec</code> are visible in the EXE as strings or configuration expressions. This alone does not prove registration as publicly accepted Retail start commands. As a negative control, <code>qconsole.log</code> explicitly shows real unregistered/incompatible commands as <code>Unknown command 'build_packageParent'</code> and <code>'build_packageBranch'</code> (e.g., <code>:9263-9264</code>), while no positive execution marker appears for the three start arguments.</li>
+<li><code>com_*</code> arguments are a different channel: the log documents, for example, <code>+com_skipIntroVideo</code>, <code>+com_allowConsole</code>, <code>+com_enableDeveloperMode</code>, followed by <code>Resetting cheat cvar: ...</code> or, in device configs, <code>Unknown command 'com_skipIntroVideo'</code> (<code>qconsole.before.log:8608-8610</code>). Therefore, an existing <code>com_*</code> string cannot be treated as evidence for <code>+map/+exec/+loadGame</code> execution.</li>
+</ul>
+<h2 id="more-precise-next-single-test">More precise next single test</h2>
+<p>Only if a run is permitted: a single harmless <code>binary.cfg</code> probe in the game folder (secure beforehand), e.g., a uniquely visible, non-game-changing <code>Print</code> line, then Retail start without <code>+map/+exec/+loadGame</code> and evaluation of <code>qconsole.log</code> for <code>Executing binary.cfg</code>/the Print line. This tests exactly the Queue candidate statically proven after <code>build.cfg</code>/<code>default*.cfg</code>. Negative criterion: file exists, but neither <code>Executing binary.cfg</code> nor Print → <code>binary.cfg</code> is not visibly executed in this Retail configuration. No statement can be derived from a mere EXE string search regarding actual registration.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Cmfmt.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>cm (Collision): Layout, Round-Trip, Box-Hull, Binding</a><a class="next" href="Research-Report-Custom-Save-Registration.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC custom-save registration investigation</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

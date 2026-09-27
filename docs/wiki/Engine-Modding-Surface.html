@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modifiable Engine Interface – Wolfenstein Modloader</title>
+<meta name="description" content="Table of all 105 asset types in Wolfenstein: The New Order, with counts and whether each is editable text.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
+<h1>Modifiable Engine Interface</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Engine-Modding-Surface"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#counting-rule">Counting Rule</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is a generated overview of every kind of game file in Wolfenstein: The New Order: 203,843 assets in 105 types. For each type it shows how many exist, whether it is plain text you can edit or <span class="t" data-t="binary">binary</span> data, and what it controls, such as weapons, enemies, sounds or gore. 80 types are fully text and can be edited directly; 5 are mixed and 20 are binary. It also explains why another page counts the same types as &quot;84 text, 21 binary&quot;: it uses a different counting rule, not a different measurement.</p><ul><li>203,843 assets in 105 types.</li><li>80 types are pure text and directly editable, 5 mixed, 20 binary.</li><li>Largest types: sample (61,318), sound (43,782), voicetrack (30,627).</li><li>Weapons, enemies, damage, gore and materials are text; 3D geometry, animations and collision are binary.</li><li>The &#x27;sample&#x27; type holds no audio data, only a descriptor; the tool&#x27;s old label was corrected by hand.</li></ul></div><div class="de"><p class="lede">Diese Seite ist eine generierte Übersicht über alle Arten von Spieldateien in Wolfenstein: The New Order: 203.843 Assets in 105 Typen. Für jeden Typ steht dort, wie viele es gibt, ob er reiner, editierbarer Text oder <span class="t" data-t="binary">Binärdaten</span> ist und was er steuert, etwa Waffen, Gegner, Sounds oder Gore. 80 Typen sind komplett Text und direkt bearbeitbar, 5 sind gemischt, 20 binär. Außerdem wird erklärt, warum eine andere Seite dieselben Typen als &quot;84 Text, 21 binär&quot; zählt: Sie nutzt eine andere Zählregel, keine andere Messung.</p><ul><li>203.843 Assets in 105 Typen.</li><li>80 Typen sind reiner Text und direkt editierbar, 5 gemischt, 20 binär.</li><li>Größte Typen: sample (61.318), sound (43.782), voicetrack (30.627).</li><li>Waffen, Gegner, Schaden, Gore und Materialien sind Text; 3D-Geometrie, Animationen und Kollision sind binär.</li><li>Der Typ &#x27;sample&#x27; enthält keine Audiodaten, nur eine Beschreibung; die alte Bezeichnung des Tools wurde von Hand korrigiert.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Generated via <code>tools/survey_engine.py</code> against the actual installation.
+Each line indicates: Type, count in-game, whether user data is text (editable) or binary, and what the type is responsible for.</p>
+<p>====================================================================================================
+WOLFENSTEIN: THE NEW ORDER - MODDB FILE SURFACE
+====================================================================================================
+Type              Count   Text?   Purpose / Most Common Fields</p>
+<hr />
+<p>sample            61318   binary  Descriptor for an Ogg stream, no audio data
+sound             43782   mixed   Sound shaders: volume, range, variants
+voicetrack        30627   binary<br />
+anim              20837   binary  Animation data - binary
+cm                8661    binary  Collision model - binary
+particle          5344    mixed   Particle systems: blood, smoke, sparks, explosions
+material          4172    TEXT    Texture references, shaders, virtual texture coordinates  [stageprogram
+entityDef         3182    TEXT    All living and placed entities: enemies, players, objects  [abilityNa
+voiceover         2880    TEXT    Voice output assignment  [tracks]
+model             2800    binary<br />
+image             2566    binary  Image data (BIM) - HUD and UI, not world surfaces
+md6Def            1600    TEXT    Model hull: mesh reference, hitboxes, tags, inheritance  [event,
+prtMeshDist       1484    binary<br />
+breakable         1331    TEXT    Breakable objects  [worldCollisionOnly, model, linearFriction]
+discreteAnimation 1319   binary<br />
+renderProg        846     mixed   Shader programs
+renderParm        810     TEXT    Render parameters
+baseModel         755     binary  Geometry (md6mesh) - binary, not editable
+cuttableResource  733     mixed   Cuttable geometry per map
+skeleton          663     binary  Skeleton - binary
+fx                654     TEXT    Effect composition (particles + sound + light + decals)  [type, star
+table             638     TEXT    Curves and value tables (falloff, time curve)
+env               627     TEXT    Environment/lighting profiles  [renderParms, userEnvMap, envMapRo
+file              627     mixed   Arbitrary files (e.g., debugmenu.txt, mapresources)
+cg                565     binary<br />
+jointconversion   439     binary<br />
+atlas             431     binary  Texture atlases
+damage            431     TEXT    Damage values, gore types, ragdoll impulse, cut radius  [damage
+animWeb           279     TEXT    Animation state graph  [edge, toState, blendParms]
+projectile        245     TEXT    Flight behavior, spread, aim assist, damage reference  [sound0, soun
+projectileImpactEffect   208   TEXT    sndImpact, particleImpact, decalMaterial, decalSize, fleshEffect
+ammo              207     TEXT    Ammo type, projectile reference  [projectileDecl, internal
+flare             189     TEXT    width, height, mtr, color, position
+weapon            176     TEXT    Handling: fire rate, magazine, dual-wield, zoom, models  [validA
+job               169     TEXT    jobNameId, jobSummaryId, jobType, jobParent, jobMaterial
+subWeb            158     TEXT    alias, name, wrap, edge, toState
+aiBehavior        149     TEXT    AI behavior building blocks  [setting, fireLeanLeft, fireLeanRight]
+skins             147     TEXT    Material override (Skins, clothing, blood variants)  [blood, wet, 
+modelLOD          147     TEXT    model, megatexturedModel, models, distance, dimShadows
+tutorialEvent     140     TEXT    tutorialImage, headingText, bodyText, bodyTextPC, unlockIndex
+gore              93      TEXT    Which body parts a model can lose (gorePieces)  [decal
+inventoryItem     90      TEXT    Inventory items, prices, icons, stackability  [internalName, icon
+secrets           78      TEXT    type, entityName, name, desc, secretType
+foliage                    75  TEXT    quadWidth, quadHeight, widthVariance, heightVariance, rndFlipHoriz
+playerArmor                73  TEXT    armorAmount, itemType, pickupName, icon, giveable
+aiBehaviorVo               72  TEXT    voiceOver, interval, intervalMax, priority, playOnce
+health                     71  TEXT    internalName, entityDef, quickSlotGroup, giveable, dropable
+aiTurnParms                57  TEXT    maxAngle, predictTurns
+impactSounds               56  TEXT    soundInterval, defaultSound, metalSound, stoneSound, fleshSound
+achievement                50  TEXT    Achievements [achievementName, description, perk]
+cloth                      46  TEXT    mass, gravity, friction, width, height
+destructiblePiece          44  TEXT    particleSystem, destructiblePieceInfo, soundToPlayWhenBroken, heal
+aiEvent                    39  TEXT    Events the AI reacts to [initialPoolSize, eventClass, pri
+mapInfo                    37  TEXT    videoFile, prettyMapName, discNumber, layerMask, vmtrChunkNumber
+aas                        37  binaer  AI Navigation Network - binaer
+articulatedFigure          35  TEXT    model, clipMask, selfCollision, contents, body1
+glass                      35  TEXT    destroySound, impactSound, impactParticle, destroyFillParticle, de
+loadingscreen              33  TEXT    tips, loadIndex, mapName, tauntImage, layers
+ribbon                     31  TEXT    material, duration, endWidth, fadeOutFraction, startWidth
+twitchPain                 30  TEXT    jointGroupName, aliasName, damageDir, jointGroups, damageDirection
+trackingParms              29  TEXT    value, kickScale, rate, acceleration, deceleration
+soundmixing                26  TEXT    bus, gain, name, enabled, compressor
+automap                    25  TEXT    worldMin, worldMax, screenMin, screenMax, mapMaterial
+glassModel                 25  binaer<br />
+vmtrPreload                24  TEXT    material, preloadList, spawnSpot, sharedList
+goreBehavior               23  TEXT    Probability per Gore Type, Scaling by Damage [goreType
+staticParticleModel        22  binaer<br />
+trailbeam                  21  TEXT    end, trailProperties, material, color, duration
+chapter                    18  TEXT    displayName, layers, map, type, parts
+ebolt                      15  TEXT    material, startWidth, endWidth, branchStartWidth, maxBranchAngle
+impactParticles            15  TEXT    metalPrt, stonePrt, woodPrt, cardboardPrt, liquidPrt
+batteryWeapon              12  TEXT    validAmmoDecl, scale, initialAmmoDecl, validAmmoClips, pitch
+laserCutterUpgrade         12  TEXT    lockUpgrade, internalName, icon, itemToUpgrade, removeOnUse
+playerUpgradeAmmo          12  TEXT    type, amount, slots
+throwable                  12  TEXT    projectileDecl
+secrettype                 11  TEXT    sortId, displayName, pickupName, bonusType, pickupSound
+swfresource                11  TEXT    name, sound, material, snapToPixel, font
+lasercutter                10  TEXT    meshesHiddenWithUpgrade, meshesShownWithUpgrade, validAmmoDecl, sc
+dragJoints                 10  TEXT    ghostJointDistance, maxBend, baseJoint, joints, subWebs
+foliageModel               10  binaer<br />
+faction                     8  TEXT    factionNameId, relationships, otherFaction, attitude, parentFactio
+walkIK                      8  TEXT    foot, ankle, knee, hip, forward
+facialAnimSet               7  TEXT    normalGlances, focusFidgets
+font                        6  binaer<br />
+visemeSet                   6  TEXT    alias, phonemeSet, visemeSilence, phonemeSilence, visemes
+difficultysetting           5  TEXT    aiIncomingDamageScale, playerIncomingDamageScale, check_respawnHea
+gamemodesp                  5  TEXT    startingHealth, startingArmor, gameModeType, gameDifficulty, displ
+weaponUpgrade               5  TEXT    internalName, icon, entityDef, weaponToUpgrade, lockUpgrade
+staticImage                 5  TEXT    fileName
+enigma                      4  TEXT    requiredSecrets, gameMode, codes
+layer                       4  TEXT  <br />
+video                       4  binaer<br />
+lootPool                    3  TEXT  <br />
+credits                     1  TEXT    entryType, localizedStr, entry0, creditList
+footstepEvents              1  TEXT    landEventDecl, sneakEventDecl, walkEventDecl, runEventDecl, sprint
+globalflag                  1  TEXT    name, saveID, flags
+handIK                      1  TEXT    attach, hand, foreArm, elbow, shoulder
+targetinglaser              1  TEXT    scale, retain, pitch, yaw, weaponSlot
+reachIK                     1  TEXT    armInfo, hand, elbow, shoulder
+playerProps                 1  TEXT    materialView, materialSide, frameDamageScale, fadeOut, fadeOutDura
+rollBones                   1  TEXT    rollSourceJoint, rollDestJoint, rollAmount, rollBones
+morphVertices               1  binaer<br />
+vehicle                     1  TEXT    maxSpeed, wheelJoint, wheelRadius, wheelOffset, suspensionUp
+vehicleWindowKit            1  TEXT    tagName, normalModelName, brokenModelName, collisionModelName, max
+specialEvent                1  TEXT    specialEventType</p>
+<hr />
+<p>203843 Assets, 105 Types -- of which 80 are fully text-based and thus directly editable</p>
+<h2 id="counting-rule">Counting Rule</h2>
+<p>The 105 types split here <strong>triply</strong>: <strong>80 TEXT</strong>, <strong>5 mixed</strong> (<code>sound</code>, <code>particle</code>, <code>renderProg</code>, <code>cuttableResource</code>, <code>file</code> — Text Decls and their binary counterparts under the same type name), and <strong>20 binary</strong>.</p>
+<p><code>TNO-Modding-Surface.md</code> refers to these same 105 types as "84 text, 21 binary". This is not a different measurement value, but a different counting rule: <code>tools/survey_modding_surface.py</code> knows no "mixed" class, but decides per type based on <strong>one</strong> sample (<code>is_text()</code>): over 95% printable characters in the first 4096 bytes. Four of the five mixed types end up on the text side, one on the binary — 80 + 4 = 84 and 20 + 1 = 21.</p>
+<p>Whoever quotes the number should therefore specify which of the two rules is meant. "Directly editable without side effects" are the 80.</p>
+<blockquote>
+<p><strong>Note on generation.</strong> The block above is the output of <code>tools/survey_engine.py</code>. The line for <code>sample</code> has been manually corrected here: <code>tools/survey_engine.py:45</code> continues to describe the type as "Raw audio data (Ogg Vorbis)", which <code>Audio.md</code> §3 refutes in all 61,318 entries. Until the line in the tool is updated, a rerun will bring back the error.</p>
+</blockquote></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Modding-Limits.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Limits — what works, what doesn&#x27;t, and why</a><a class="next" href="Known-Contradictions.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Contradictions in Documentation and Code</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

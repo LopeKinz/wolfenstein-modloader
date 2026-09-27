@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Custom-Map Prototype: Current Status – Wolfenstein Modloader</title>
+<meta name="description" content="Status of a Wolfenstein II custom map prototype: a renamed copy of a DLC map plus an edited save.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#maps"><span class="en">Custom maps and missions</span><span class="de">Eigene Karten und Missionen</span></a></p>
+<h1>TNC Custom-Map Prototype: Current Status</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNC-Custom-Map-Status"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#what-is-installed">What is Installed</a></li><li><a href="#save-registration">Save Registration</a></li><li><a href="#testing">Testing</a></li><li><a href="#known-limitations">Known Limitations</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Status of a custom map prototype for Wolfenstein II (TNC). It installs a copy of the DLC map Gestapo Office (c2v1) under a new name as an extra <span class="t" data-t="dlc">DLC</span> bundle, and prepares an edited <span class="t" data-t="savegame">save file</span> to load it. The game starts stably with the bundle, but loading the map through the save has not been confirmed, and the world geometry is not replaced yet.</p><ul><li>The bundle contains all 6,985 original entries and shares the original textures.</li><li>Earlier save attempts showed &#x27;File Corrupt&#x27;; version 2 also fixes the map name inside checkpoint.dat.</li><li>According to this page, map and devmap report &#x27;unknown command&#x27; in the console.</li><li>A patch to show the map in the developer menu crashed the game at startup and was removed.</li><li>The original saves are backed up and can be restored at any time.</li></ul></div><div class="de"><p class="lede">Stand eines Prototyps für eigene Karten in Wolfenstein II (TNC). Er installiert eine Kopie der DLC-Karte Gestapo-Büro (c2v1) unter neuem Namen als zusätzliches <span class="t" data-t="dlc">DLC</span>-Paket und bereitet einen bearbeiteten <span class="t" data-t="savegame">Spielstand</span> vor, der sie laden soll. Das Spiel startet mit dem Paket stabil, aber das Laden der Karte über den Spielstand ist nicht bestätigt, und die Weltgeometrie ist noch nicht ersetzt.</p><ul><li>Das Paket enthält alle 6.985 Originaleinträge und nutzt die Original-Texturen mit.</li><li>Frühere Versuche zeigten „File Corrupt“; Version 2 korrigiert zusätzlich den Kartennamen in checkpoint.dat.</li><li>Laut dieser Seite melden map und devmap in der Konsole „unknown command“.</li><li>Ein Patch, der die Karte im Entwicklermenü zeigen sollte, ließ das Spiel beim Start abstürzen und wurde entfernt.</li><li>Die Original-Spielstände sind gesichert und jederzeit wiederherstellbar.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><h2 id="what-is-installed">What is Installed</h2>
+<ul>
+<li>Target Game: Wolfenstein II: The New Colossus (TNC)</li>
+<li>Test Map: DLC2, <code>game/dlc/c02/c2v1</code> (Agent Silent Death / Gestapo Office)</li>
+<li>Alias: <code>game/dlc/c02/c2v1_custom</code></li>
+<li>Bundle: <code>dlc/dlc_4/base/chunk_22.resources</code></li>
+<li>Textures: Hardlink to DLC2 <code>chunk_22.texdb</code>, ensuring all unchanged texture keys remain valid.</li>
+<li>Current Probe Build: Complete hardlinks to Retail DLC2 Chunk 22 (6,985 entries), no longer the reduced 243-entry candidate.</li>
+<li>A targeted <code>devmapinfo.json</code> patch (<code>showInDevMenu=true</code>) was built in isolation but caused a crash on startup and has been discarded; the stable Full-Retail Bundle has been restored.</li>
+<li>Runtime Mods: Gore-CVars and <code>g_demoDevMode=1</code>.</li>
+<li>Save Candidate v2 additionally patches the NUL-terminated map entry in <code>checkpoint.dat</code>; v1 left this Retail path intact and was therefore rejected as "File Corrupt".</li>
+</ul>
+<h2 id="save-registration">Save Registration</h2>
+<p>The save candidate now resides in the actual used Freedom Chronicles subfolder (UI Progression Slot 1):</p>
+<p><code>%USERPROFILE%/Saved Games/MachineGames/Wolfenstein II The New Colossus/base/savegame.user/‹steam-id›/SLOT0/FC2-WOLF0</code></p>
+<p>Only the map/layer strings in <code>checkpoint_mapstart.dat</code> and <code>game.details</code> have been changed; the previous SLOT2 structure is preserved under:</p>
+<p><code>re_probes/save_backups/SLOT0_before_c2custom</code> (additionally, <code>SLOT2_before_c2custom</code> remains intact)</p>
+<h2 id="testing">Testing</h2>
+<p>The process starts stably with the installed Bundle. The first attempt in Slot 3 resulted in "File Corrupt" due to the incorrect slot; the unchanged Slot 3 has been restored. A second attempt in Slot 1 with v1 also remained corrupt without <code>.verify</code>, because <code>checkpoint.dat</code> still contained the Retail path. v2 corrects this entry and passes <code>tools/savehash.py pruefen</code>; additionally, the current Full-Retail Probe Build uses correct <code>patchlevel</code>/<code>refchunks</code> and all chunk entries. The runtime test must still be confirmed by loading the top Gestapo Office save into Progression Slot 1. Success criteria: Load without Map-Not Found/Crash and visible entry into the map.</p>
+<p>The direct Developer Command Test is negative: both <code>map</code> and <code>devmap</code> report "unknown command" in the TNC Retail Build. A <code>devmapinfo</code> payload patch for <code>showInDevMenu=true</code> caused a startup crash and was removed from the game folder. The last Steam launch requirement additionally failed due to Steam's message "no licenses"; this is an external license state, not a Mod/Save error.</p>
+<h2 id="known-limitations">Known Limitations</h2>
+<ul>
+<li>The console does not know the <code>map</code> command.</li>
+<li><code>devmap</code> is also unknown in the Retail Command set; Developer Mode CVars do not activate the removed commands.</li>
+<li>The prototype does not yet replace world geometry; it validates the alternative map path and DLC bundle resolution.</li>
+<li>For a truly new Map ID, IDCL identity, internal asset references, save/menu registration, and potentially PVS/Navmesh must be adjusted together.</li>
+<li>The original saves can be restored at any time from the mentioned backup.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="TNC-C3V1-Custom-Map-Prototype.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC c3v1_custom – Alias Prototype</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

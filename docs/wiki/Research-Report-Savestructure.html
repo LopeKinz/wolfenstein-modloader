@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why the edited save state was rejected — Structure of `checkpoint.dat` – Wolfenstein Modloader</title>
+<meta name="description" content="Why an edited Wolfenstein II save game was rejected: a length field that was not updated.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Why the edited save state was rejected — Structure of <code>checkpoint.dat</code></h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Savestructure"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-the-grammar--from-code-not-guessed">1. The Grammar — from code, not guessed</a></li><li><a href="#2-the-defect-named">2. The Defect, Named</a></li><li><a href="#3-the-test-tool-and-its-counter-tests">3. The Test Tool and Its Counter-tests</a></li><li><a href="#4-the-corrected-candidate">4. The Corrected Candidate</a></li><li><a href="#5-what-has-been-refuted">5. What Has Been Refuted</a></li><li><a href="#6-open">6. Open</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">A modified save game for Wolfenstein II: The New Colossus, with a renamed map, was rejected by the game. Reading the game&#x27;s code showed the cause: the map name got 7 characters longer, but the number stored in front of it that says how long the name is was not changed. A second error was a wrong checksum line in game.details. A corrected version (v3) fixes both and passes 33 of 33 offline checks, but whether the game actually loads it has not been tested.</p><ul><li>The length <span class="t" data-t="header">field</span> before the map name said 17 but should say 24 (and 14 instead of 21 in another file).</li><li>The game then read part of the name as a count of about 1.6 billion entries.</li><li>The checksum in game.details was also wrong (2007466474 instead of 499283768).</li><li>A version rebuilt from the decoded code is byte-identical to candidate v3 in all 14 files.</li><li>Whether the game accepts v3 is still unconfirmed; it cannot be checked without starting the game.</li></ul></div><div class="de"><p class="lede">Ein veränderter Spielstand für Wolfenstein II: The New Colossus mit umbenannter Karte wurde vom Spiel abgelehnt. Das Lesen des Programmcodes zeigte die Ursache: Der Kartenname wurde 7 Zeichen länger, aber die Zahl davor, die die Länge des Namens angibt, blieb gleich. Ein zweiter Fehler war eine falsche Prüfsummenzeile in game.details. Eine korrigierte Version (v3) behebt beides und besteht 33 von 33 Offline-Prüfungen; ob das Spiel sie wirklich lädt, ist aber nicht getestet.</p><ul><li>Das Längen-<span class="t" data-t="header">Feld</span> vor dem Kartennamen zeigte 17 statt 24 (in einer anderen Datei 14 statt 21).</li><li>Das Spiel las dadurch einen Teil des Namens als Anzahl von rund 1,6 Milliarden Einträgen.</li><li>Auch die Prüfsumme in game.details war falsch (2007466474 statt 499283768).</li><li>Eine aus dem Programmcode neu gebaute Version ist in allen 14 Dateien bytegleich mit Kandidat v3.</li><li>Ob das Spiel v3 annimmt, ist noch unbestätigt; ohne Spielstart lässt es sich nicht prüfen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Source of grammar: <code>re_probes/runtime_87400/module.bin</code> (running, extracted <code>NewColossus_x64vk.exe</code>, file offset == RVA). Tool: <code>tools/probe_save_structure.py</code>. Corpus: <code>re_probes/save_backups</code> (5 real save states) and the three candidates, all read-only. Writing was done exclusively to <code>re_probes/save_structure/</code>.</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<ol>
+<li><strong>The defect is a stale length prefix.</strong> Candidates v1 and v2 have extended the card name, but left the preceding <code>u32</code> length unchanged. At <code>checkpoint.dat</code> offset <strong><code>0xdf</code></strong>, there stands <strong>17</strong>; it should stand <strong>24</strong>. In <code>checkpoint_mapstart.dat</code>, this occurs six times (<code>0x14</code>, <code>0x8d</code>, <code>0x106</code>: 17 instead of 24; <code>0x44</code>, <code>0xbd</code>, <code>0x136</code>: 14 instead of 21).</li>
+<li><strong>Second, independent defect in v1/v2:</strong> the <code>checksum</code> line in <code>game.details</code> remained at <code>2007466474</code>; the correct value is <code>499283768</code>.</li>
+<li><strong>v3 fixes both.</strong> A candidate reconstructed from scratch based on the grammar read from code is <strong>byte-identical to v3 in all 14 files</strong>. 33 of 33 checks pass green.</li>
+<li><strong>Not claimed:</strong> that v3 loads. "File Corrupt" is not observable offline. The reliable statement is: <em>structurally consistent according to these tests, runtime unconfirmed.</em></li>
+<li><strong>Correction on the task:</strong> Branch (a) from <code>saveverify.md</code> (<code>Read(rumpf) != length-4</code> at <code>0x8b47c4</code>) is a pure short-read test on the <em>file</em> and cannot trigger here — the file delivers exactly <code>Length-4</code> bytes. The consumption error lies one level deeper, in the component reader. See Section 5.</li>
+</ol>
+<hr />
+<h2 id="1-the-grammar--from-code-not-guessed">1. The Grammar — from code, not guessed</h2>
+<p>Three functions carry everything necessary:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>RVA</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x11b9980</code></td>
+<td><code>idGameLocal::RestoreCheckpointInfo</code> — header of <code>checkpoint.dat</code></td>
+</tr>
+<tr>
+<td><code>0x11a5610</code> / <code>0x11a5710</code></td>
+<td><code>idGameMapMemoryManager::ReadFromFile</code> — card block</td>
+</tr>
+<tr>
+<td><code>0x11db420</code></td>
+<td>Writer of the tag-free block in <code>checkpoint_mapstart.dat</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The primitives (calls via serializer vtable):</p>
+<pre><code>[vtbl+0x28]  Read(puffer, n)      Raw bytes
+[vtbl+0x30]  Write(puffer, n)
+[vtbl+0xe8]  Serialize(idStr&amp;)    u32-LE length, then characters, no NUL
+[vtbl+0xf0]  SerializeCheck(tag, file, line)   writes/checks exactly such an idStr
+</code></pre>
+<p><strong>Endianness:</strong> Integers and floats are big-endian — the reader rotates them after each manual <code>Read(4)</code> (<code>0x11a57d4</code>–<code>0x11a57f1</code>, pattern 0↔3, 1↔2). The <strong>length prefixes of idStr are little-endian</strong>, they are written without rotation (<code>0x66ab58</code>–<code>0x66ab77</code>). This exact mixture confuses the format at first glance.</p>
+<h3 id="checkpointdat-header-0x11b99e40x11b9e4e"><code>checkpoint.dat</code>, header (<code>0x11b99e4</code>–<code>0x11b9e4e</code>)</h3>
+<pre><code>u32 LE   saveFormatVersion       must be &lt;= 0x444D0005, otherwise FatalError
+u32 LE   Subversion              here 0x26
+u8       Flag                    must be 1 (0x11b9dee, otherwise FatalError)
+u8       Flag
+  if Subversion &gt;= 0x26:  idStr, idStr        (Stand ID, SHA1-Hex)
+  if Subversion &gt; 0x21:  6 x u32
+tag &quot;idGameLocal_CheckpointInfo:10&quot;
+&lt;idGameMapMemoryManager::ReadFromFile&gt;
+tag &quot;idGameLocal_CheckpointInfo:11&quot;
+... from here, opaque component stream
+</code></pre>
+<h3 id="idgamemapmemorymanagerreadfromfile"><code>idGameMapMemoryManager::ReadFromFile</code></h3>
+<pre><code>tag &quot;idGameMapMemoryManager:10&quot;
+u32 BE   Magic  == 0x0060FFCD     otherwise &quot;Invalid Magic Number in idGameMapMemoryManager&quot;
+u32 BE   Version
+u32 BE   Count of card entries
+per entry:
+    tag &quot;idGameMapMemoryManager:20&quot;
+    idStr    Card name          &lt;== the edited location
+    u32 BE   Count of sub-entries
+    ... sub-entries (0x30 bytes each; in backup always 0 — unmeasured)
+    tag &quot;idGameMapMemoryManager:30&quot;
+</code></pre>
+<p>In the original from SLOT0, this fits perfectly: Tag at <code>0xb6</code>… Magic <code>0xb6</code>, Version <code>0xba</code>, Count <code>0xbe</code> = 1, Tag <code>:20</code> at <code>0xc2</code>, Card name at <code>0xdf</code> (Length 17, characters <code>0xe3</code>–<code>0xf3</code>), Sub-count <code>0xf4</code> = 0, Tag <code>:30</code> at <code>0xf8</code>.</p>
+<h3 id="checkpoint_mapstartdat--complete"><code>checkpoint_mapstart.dat</code> — complete</h3>
+<p>This file is tag-free and <strong>fully parseable</strong>:</p>
+<pre><code>4-Byte header, followed by k identical blocks:
+  u32 BE  Magic 0x0060FFCD
+  u32 BE  Version (3)
+  u32 BE  u32 BE
+  idStr   Card Name
+  idStr   idStr   idStr   idStr        (empty in inventory)
+  u32 BE  n   +  n x idStr             Layer
+  u32 BE  m   +  m x idStr
+  u32 BE  u32 BE  u32 BE  u32 BE
+  float BE  float BE  float BE
+</code></pre>
+<p>Block size at SLOT0: 107 bytes, three blocks, <code>4 + 3*107 = 325</code> = file size.
+At SLOT2 it is 451 bytes, also exact. This is the branch where the parser can <em>definitively</em> state how many bytes the reader has consumed.</p>
+<hr />
+<h2 id="2-the-defect-named">2. The Defect, Named</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Offset</th>
+<th>Is Present</th>
+<th>Should Be Present</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>checkpoint.dat</code></td>
+<td><code>0xdf</code></td>
+<td><code>11 00 00 00</code> (17)</td>
+<td><code>18 00 00 00</code> (24)</td>
+</tr>
+<tr>
+<td><code>checkpoint_mapstart.dat</code></td>
+<td><code>0x14</code>, <code>0x8d</code>, <code>0x106</code></td>
+<td>17</td>
+<td>24</td>
+</tr>
+<tr>
+<td><code>checkpoint_mapstart.dat</code></td>
+<td><code>0x44</code>, <code>0xbd</code>, <code>0x136</code></td>
+<td>14</td>
+<td>21</td>
+</tr>
+<tr>
+<td><code>game.details</code></td>
+<td><code>checksum=</code></td>
+<td><code>2007466474</code></td>
+<td><code>499283768</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The build step replaced <code>game/dlc/c02/c2v1</code> (17 bytes) with
+<code>game/dlc/c02/c2v1_custom</code> (24 bytes) and correctly grew the file by 7 bytes — only the <code>u32</code> preceding it remained at the old value. The 4-byte MD5 folding header was then recalculated, so the file branch (b) of the load path parses without issue. <strong>A valid header over an inconsistent body.</strong></p>
+<h3 id="what-the-reader-does-with-it">What the Reader Does With It</h3>
+<p><code>idGameMapMemoryManager::ReadFromFile</code> reads length 17 at <code>0xdf</code>, takes <code>game/dlc/c02/c2v1</code>, and then becomes <code>_cus…</code>. The next read operation is the BE32 count of sub-entries — it reads the ASCII bytes <code>5f 63 75 73</code> as <strong>1 600 353 651</strong>. The game subsequently attempts to reserve a list with 1.6 billion elements × 48 bytes (roughly 77 GB). The parser reports exactly this value when v2 is presented:</p>
+<pre><code>@0xf0: 1600353651 Sub-entries - Grammar unmeasured
+</code></pre>
+<p>In <code>checkpoint_mapstart.dat</code> it fails even earlier: there, the field behind the card name itself is again an idStr, and the reader retrieves the "length" 1 937 072 991 (<code>_cus</code> as u32 LE).</p>
+<hr />
+<h2 id="3-the-test-tool-and-its-counter-tests">3. The Test Tool and Its Counter-tests</h2>
+<pre><code>python tools/probe_save_structure.py parse &lt;file.dat&gt;
+python tools/probe_save_structure.py check &lt;folder&gt; [--original &lt;folder&gt;]
+python tools/probe_save_structure.py build --source … --target … \
+       --alt-map … --new-map … --alt-layer … --new-layer …
+python tools/probe_save_structure.py --selftest
+</code></pre>
+<p>The self-test is constructed so that it <strong>can fail</strong>:</p>
+<ul>
+<li><strong>Positive:</strong> all 5 unchanged game states from <code>re_probes/save_backups</code> are accepted; <code>checkpoint_mapstart.dat</code> consumes exactly the file length there (325 or 4×451).</li>
+<li><strong>Negative, real:</strong> v1 and v2 are rejected with the specific location in the message. This is the exact counter-test requested by the order — if the tester accepts both, it measures nothing.</li>
+<li><strong>Negative, synthetic:</strong><ol>
+<li>Card name extended, prefix stale, header recalculated → header is valid (<strong>branch (b) notices nothing</strong>), structure parse fails.</li>
+<li>a flipped byte → header fails.</li>
+<li>an inserted null byte before the tag <code>:30</code> → tag comparison fails.</li>
+<li>Identity renaming (same name) → byte-identical file.</li>
+</ol>
+</li>
+</ul>
+<p>Result: <strong>0 errors, Exit code 0.</strong></p>
+<p>During renaming, the parser accesses the idStr fields at their <em>parsed</em> offsets and writes prefix and characters together. The defect of v1/v2 is thus constructively excluded, not just checked retroactively.</p>
+<hr />
+<h2 id="4-the-corrected-candidate">4. The Corrected Candidate</h2>
+<p><code>re_probes/save_structure/FC2-WOLF0-c2v1_custom_struct</code>, built from
+<code>re_probes/save_backups/SLOT0_before_c2custom</code>. 33 tests, all green:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MD5 Header (Branch b)</td>
+<td>all 7 <code>.dat</code> files</td>
+</tr>
+<tr>
+<td>Structure parsing</td>
+<td><code>checkpoint.dat</code>, <code>checkpoint_mapstart.dat</code>, both <code>_alt.dat</code> files</td>
+</tr>
+<tr>
+<td>Consumption == File Length</td>
+<td>everywhere where the grammar is complete</td>
+</tr>
+<tr>
+<td><code>game.details</code> CRC32</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Strings == Original + Renaming</td>
+<td>per file, element-wise</td>
+</tr>
+<tr>
+<td>Unparsed End == Original</td>
+<td><code>checkpoint.dat</code>, from byte 317 or 310 onwards</td>
+</tr>
+<tr>
+<td>No framed old path anymore</td>
+<td>all <code>.dat</code> files</td>
+</tr>
+<tr>
+<td><code>.verify</code> unchanged</td>
+<td>all 7</td>
+</tr>
+</tbody>
+</table></div>
+<p>It is <strong>byte-for-byte identical</strong> to candidate v3 of the other Masters in <strong>all 14 files</strong>. This is an independent confirmation: v3 was created via framed text replacement, while this one was created via the grammar read from disassembly — two paths leading to the same result.</p>
+<h3 id="regarding-the-unparsed-remainder-of-checkpointdat">Regarding the Unparsed Remainder of <code>checkpoint.dat</code></h3>
+<p>Of the 476,231 bytes parsed by the tool, 317 are consumed and 475,914 remain unparsed; the grammar of the component stream behind it (1,036 length-prefixed strings, 577 <code>idQuickSaveStream</code> tags with Magic <code>0x3832E21A</code>, Havok Cloth blocks) is not measured. Instead of an excuse, there is a test: the remainder is <strong>byte-for-byte identical</strong> to that of the original, and the parser proves that the reader arrives at exactly the same position there (317 instead of 310, i.e., exactly +7). The original loads successfully. Therefore, the remainder does not need its own grammar.</p>
+<hr />
+<h2 id="5-what-has-been-refuted">5. What Has Been Refuted</h2>
+<ul>
+<li><strong>"Branch (a) at <code>0x8b47c4</code> is the trigger."</strong> No. That location only checks whether <code>Read(rumpf)</code> provides as many bytes as <code>Length()-4</code> — a short read test on the <strong>file</strong>. The candidate provides exactly <code>Length-4</code>. That location cannot fire here. The consumption error sits one level deeper, in <code>idGameMapMemoryManager::ReadFromFile</code>, which can set its own error code at <code>[stream+0x184]</code> or via <code>[vtbl+0xe0]</code> — a path that the scan after <code>mov dword [r15+0x270], 4</code> does not see. The direction of the instruction ("the deserializer consumes a different number of bytes than the file provides") was correct, only the specific code location was wrong.</li>
+<li><strong>"Somewhere there is still an old total length / an offset table."</strong> No. In <code>checkpoint.dat</code>, <strong>no</strong> <code>u32</code> and <strong>no</strong> <code>u64</code> exist at any position, neither LE nor BE, holding the value of the file or buffer length (476,224 / 476,220, old or new) — 0 hits. The 52 values in the range 470,000–480,000 are, except for ten outliers, a monotonically increasing float series at <code>0x5d5c5</code>, and the file end (last 256 bytes) consists of Havok floats, not a table. The block grammar of the map storage has no size field — the length of the name stands exactly once, in its own prefix.</li>
+<li><strong>"The map name is additionally stored as a hash in the file."</strong> No. Checked against <code>game/dlc/c02/c2v1</code>: CRC32, Adler32, FNV-1a 32/64, idStr-Hash, MD5/SHA-1/SHA-256 (first 4 or 8 bytes respectively), each LE and BE. <strong>0 hits</strong> in <code>checkpoint.dat</code>. For <code>checkpoint_mapstart.dat</code>, the question becomes moot: there every byte is covered by the grammar.</li>
+<li><strong>"All map names in a savegame must be identical."</strong> No — measured at SLOT2: the map storage in <code>checkpoint.dat</code> regularly also carries the <strong>previous</strong> map (<code>game/wolf/c01/c01p1</code> next to <code>game/wolf/c02/c02p0</code>), and <code>GAME-TRANSITION</code> even has three <code>mapstart</code> blocks with two different maps. Such a consistency check would be incorrect; instead, the tool compares against the original plus renaming.</li>
+<li><strong><code>.verify</code> remains untouched</strong> — confirmed by <code>saveverify.md</code>, here only rechecked to ensure the files were byte-identically copied over.</li>
+</ul>
+<hr />
+<h2 id="6-open">6. Open</h2>
+<ul>
+<li><strong>Runtime Proof.</strong> Whether the game <code>FC2-WOLF0-c2v1_custom_struct</code> (= v3) accepts is undecidable offline. To determine this, one would need to save the state in <code>C:\Users\‹user›\Saved Games</code> and launch the game — both of which are excluded here. Before attempting such a test: the backups under <code>re_probes/save_backups/</code> are the only copies of the real states.</li>
+<li><strong>Sub-entries in the Card Storage.</strong> The branch with <code>Anzahl &gt; 0</code> (elements at 0x30 bytes) does not exist in the entire inventory; the parser explicitly rejects it rather than guessing.</li>
+<li><strong>Component Stream from Byte ~0x2142.</strong> <code>idQuickSaveStream</code> with Magic <code>0x3832E21A</code> before each day, non-fatal tag comparison (<code>idQuickSaveStream::SerializeCheck: tag mismatch: is: %s, should be %s</code>, <code>0x66aa60</code>) and compressed heap sections. Excessive — whoever intends to modify munitions or upgrades there must start here.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Save-Load-Route.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC Save-/Menu Load Path (Static Research)</a><a class="next" href="Research-Report-Saveverify.html"><small><span class="en">Next</span><span class="de">Weiter</span></small><code>.verify</code> in Wolfenstein II — Generation, Verification, and Its Role During Loading</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

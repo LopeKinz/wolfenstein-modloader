@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC custom-save registration investigation – Wolfenstein Modloader</title>
+<meta name="description" content="Attempt to make a Wolfenstein II save game point to a new custom map, and why it still fails.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>TNC custom-save registration investigation</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Custom-Save-Registration"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#correction-which-dlc-is-loaded">Correction: Which DLC is loaded</a></li><li><a href="#save-structure">Save structure</a></li><li><a href="#safe-candidate-builder">Safe candidate builder</a></li><li><a href="#runtime-blocker--route">Runtime blocker / route</a></li><li><a href="#negative-checks-performed">Negative checks performed</a></li><li><a href="#file-corrupt-diagnosis-follow-up">File-Corrupt diagnosis (follow-up)</a></li><li><a href="#runtime-follow-up-v2-still-reports-file-corrupt">Runtime follow-up: v2 still reports File Corrupt</a></li><li><a href="#runtime-command-and-full-bundle-checks">Runtime command and full-bundle checks</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report tried to edit a Wolfenstein II: The New Colossus <span class="t" data-t="savegame">save game</span> so that it loads a custom copy of the DLC map c2v1. Candidate saves were built safely outside the game folder, with the map name changed and the 4-byte <span class="t" data-t="checksum">checksum</span> recomputed. In a runtime test, the corrected version v2 still showed &#x27;File Corrupt&#x27;. The conclusion is that a new map name cannot currently be registered by editing a save offline; a safer route is to override the existing c2v1 map data instead.</p><ul><li>The Gestapo Office save belongs to DLC 2 (map c2v1, chunk 22), not DLC 3.</li><li>Candidate v2 changed three files (checkpoint.dat, checkpoint_mapstart.dat, game.details) and still reported &#x27;File Corrupt&#x27;.</li><li>The game.details checksum was not identified at the time; this page treats .verify as unknown encrypted data.</li><li>The commands &#x27;map&#x27; and &#x27;devmap&#x27; are unknown in the retail game, even with developer options set.</li><li>The real save was restored from backup after every runtime attempt.</li></ul></div><div class="de"><p class="lede">Dieser Bericht versuchte, einen <span class="t" data-t="savegame">Spielstand</span> von Wolfenstein II: The New Colossus so zu ändern, dass er eine eigene Kopie der DLC-Karte c2v1 lädt. Kandidaten wurden sicher außerhalb des Spielordners gebaut, mit geändertem Kartennamen und neu berechneter 4-Byte-<span class="t" data-t="checksum">Prüfsumme</span>. Im Test im Spiel zeigte auch die korrigierte Version v2 noch &#x27;File Corrupt&#x27;. Fazit: Ein neuer Kartenname lässt sich derzeit nicht durch Offline-Bearbeitung eines Spielstands registrieren; sicherer ist es, die vorhandenen c2v1-Kartendaten zu überschreiben.</p><ul><li>Der Spielstand aus dem Gestapo-Büro gehört zu DLC 2 (Karte c2v1, Chunk 22), nicht zu DLC 3.</li><li>Kandidat v2 änderte drei Dateien (checkpoint.dat, checkpoint_mapstart.dat, game.details) und meldete trotzdem &#x27;File Corrupt&#x27;.</li><li>Die Prüfsumme in game.details war damals nicht bekannt; .verify gilt auf dieser Seite als unbekannte verschlüsselte Daten.</li><li>Die Befehle &#x27;map&#x27; und &#x27;devmap&#x27; sind in der Verkaufsversion unbekannt, auch mit gesetzten Entwickleroptionen.</li><li>Der echte Spielstand wurde nach jedem Test aus dem Backup wiederhergestellt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><h2 id="correction-which-dlc-is-loaded">Correction: Which DLC is loaded</h2>
+<p>The live save created from <strong>Freedom Chronicles / Volume 1 / Gestapo Office</strong> is not <code>c3v1</code>. Its on-disk save is <code>SLOT0/FC2-*</code> and <code>game.details</code> records:</p>
+<pre><code class="language-text">mapName=game/dlc/c02/c2v1   # FC2-WOLF0
+mapName=game/dlc/c02/c2v2   # FC2-AUTOSAVE0/1
+</code></pre>
+<p>Retail mapspec confirms DLC 2 uses <code>chunkid: 22</code> and maps <code>c2v1..c2v3</code>.
+DLC 3 (<code>chunkid: 24</code>) is the separate <code>c3v1..c3v3</code> package. Therefore a
+<code>c3v1_custom</code> mapspec cannot be exercised with the user's current Gestapo
+Office save; it needs a real DLC 3 save first.</p>
+<h2 id="save-structure">Save structure</h2>
+<p><code>checkpoint_mapstart.dat</code> contains the map and layer strings three times in
+fixed-size NUL-padded fields. The first four bytes are the idTech MD5-fold
+checksum documented by <code>tools/savehash.py</code>. <code>game.details</code> is ASCII text and
+contains a plain <code>mapName=</code> field plus a separate integer checksum. The
+associated <code>.verify</code> files are 40 bytes and their signing algorithm is not
+identified; they must not be regenerated by guesswork.</p>
+<h2 id="safe-candidate-builder">Safe candidate builder</h2>
+<p><code>tools/build_custom_save_candidate.py</code> copies a complete existing save folder
+to a new directory under <code>re_probes/custom_save_candidates</code>, rewrites only
+<code>checkpoint_mapstart.dat</code> and <code>game.details</code>, recomputes the DAT checksum, and
+copies <code>.verify</code> files unchanged. It refuses output inside <code>savegame.user</code> or
+over an existing destination.</p>
+<p>Generated candidate (not installed):</p>
+<pre><code class="language-text">re_probes/custom_save_candidates/FC2-WOLF0-c2v1_custom
+map: game/dlc/c02/c2v1 -&gt; game/dlc/c02/c2v1_custom
+layer: layer/dlc/c2v1 -&gt; layer/dlc/c2v1_custom
+checkpoint_mapstart.dat: 325 -&gt; 367 bytes; 3+3 replacements
+checksum: verified with tools/savehash.py
+</code></pre>
+<h2 id="runtime-blocker--route">Runtime blocker / route</h2>
+<p>The candidate cannot be tested without temporarily copying it into a spare
+live slot (or a separate Windows user profile), which was intentionally not
+done. The game's retail menu does not enumerate arbitrary map names; the
+custom map must first be present in a <code>packagemapspec.json</code> using the same
+map path and its full chunk bundle. A malformed candidate with unchanged
+<code>.verify</code> is expected to trigger the documented "Loading Dev Mode or corrupted
+save game" path, not silently register a menu entry. This is the safe next
+runtime experiment only after the chunk/map bundle is complete.</p>
+<h2 id="negative-checks-performed">Negative checks performed</h2>
+<ul>
+<li>Live save tree was never written by the builder.</li>
+<li>Existing <code>FC2-WOLF0</code> remains unchanged.</li>
+<li>New DAT checksum equals recomputed checksum.</li>
+<li>Candidate contains the new path in all three map/layer records and in
+  <code>game.details</code>.</li>
+</ul>
+<h2 id="file-corrupt-diagnosis-follow-up">File-Corrupt diagnosis (follow-up)</h2>
+<p>The first candidate was incomplete. <code>checkpoint.dat</code> itself contains one
+length-prefixed <code>game/dlc/c02/c2v1</code> field at byte offset 227. Leaving that
+field unchanged while changing <code>checkpoint_mapstart.dat</code> produces the runtime
+<code>File Corrupt</code> result because the serialized checkpoint and map-start metadata
+disagree. The corrected builder now rewrites this field and its little-endian
+length (<code>0x11</code> -&gt; <code>0x18</code>) and recomputes the DAT header.</p>
+<p>Corrected artifact:</p>
+<pre><code class="language-text">re_probes/custom_save_candidates/FC2-WOLF0-c2v1_custom_v2
+checkpoint.dat: 476224 -&gt; 476231 bytes, one length-prefixed map-path change
+checkpoint_mapstart.dat: 3 map + 3 layer changes
+all .dat MD5-fold headers: verified
+</code></pre>
+<p>The <code>.verify</code> files are intentionally copied unchanged. They are encrypted
+AES blobs with a per-write nonce; the existing research shows they trigger
+developer/corrupted-save handling rather than rejecting the save. No runtime
+copy of v2 was installed.</p>
+<h2 id="runtime-follow-up-v2-still-reports-file-corrupt">Runtime follow-up: v2 still reports <code>File Corrupt</code></h2>
+<p>The corrected candidate was tested in a separate slot and still displayed
+<code>File Corrupt</code>. A byte-for-byte comparison shows exactly three changed files:</p>
+<pre><code class="language-text">checkpoint.dat          476224 -&gt; 476231
+checkpoint_mapstart.dat      325 -&gt; 367
+game.details                 411 -&gt; 418
+</code></pre>
+<p>All six associated <code>.verify</code> files retain their retail values. Each <code>.verify</code> file is 40 bytes: an 8-byte per-write nonce followed by 32 bytes of AES ciphertext. The key/signing input is not available in the workspace. Therefore, the offline candidate cannot become a valid retail-signed save merely by fixing the DAT MD5-fold headers. The <code>game.details</code> integer checksum is also not a known CRC/MD5/SHA fold (tested across the live corpus).</p>
+<p><strong>Conclusion:</strong> A new map ID cannot currently be registered by editing a save offline. The safe playable route is to leave the save unchanged and override the existing <code>game/dlc/c02/c2v1</code> bundle with custom entities/geometry, or to make the game itself generate a save after an in-engine transition to the new map. Do not call v2 runtime-valid.</p>
+<h2 id="runtime-command-and-full-bundle-checks">Runtime command and full-bundle checks</h2>
+<p>Both <code>map</code> and <code>devmap</code> return <code>unknown command</code> in the TNC retail commandset, even when <code>com_enableDeveloperMode=1</code>, <code>devMode_enable=1</code>, and <code>g_demoDevMode=1</code> are supplied at launch. A full-retail alias probe was also tested: all 6,985 chunk-22 resource entries and the retail TexDB were hard-linked into <code>dlc_4</code>, with the correct DLC2 <code>patchlevel: 3</code> and <code>refchunks: [9, 13]</code>. This removes the reduced-bundle/missing-dependency hypothesis, but does not make the offline custom save loadable.</p>
+<p>The real <code>SLOT0/FC2-WOLF0</code> was restored from <code>re_probes/save_backups/SLOT0_before_c2custom</code> after each runtime attempt.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Command-Queue.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Static Research: Retail Command Queue (TNC)</a><a class="next" href="Research-Report-Cvartable.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC Cvar Catalog – Runtime Image Analysis</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

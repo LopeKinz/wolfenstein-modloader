@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entity-Pipeline: Custom map on Retail geometry via `.entities` – Wolfenstein Modloader</title>
+<meta name="description" content="A custom TNC map built by editing the entity file of an existing level: 49 visible changes, not yet tested in the game.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Entity-Pipeline: Custom map on Retail geometry via <code>.entities</code></h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Entitypipe"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result-in-one-sentence">Result in one sentence</a></li><li><a href="#1-what-was-corrected-in-this-run">1. What was corrected in this run</a></li><li><a href="#2-format----text-no-binary-format">2. Format -- Text, no binary format</a></li><li><a href="#3-evidence-all-in-this-run">3. Evidence (all in this run)</a></li><li><a href="#4-the-changes----what-a-player-sees">4. The Changes -- what a player sees</a></li><li><a href="#5-what-remains-open">5. What Remains Open</a></li><li><a href="#6-reproduction">6. Reproduction</a></li><li><a href="#runbook">Runbook</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report builds a pipeline that turns an existing map of Wolfenstein II: The New Colossus (the Gestapo office) into a custom map by editing its text-based <span class="t" data-t="entity">entity</span> file. It changes 49 things a player would notice: tougher enemies, food pickups turned into weapons and ammo, red and green lights, and swapped spawn points. The rebuilt archive passes every offline check. Whether it loads in the game has not been confirmed.</p><ul><li>The entity reader and writer <span class="t" data-t="roundtrip">round-trip</span> 85 of 85 entity files byte-exactly.</li><li>49 entities are changed: 4 enemies (for example 3 light soldiers become heavy elites), 10 pickups, 33 lights and 2 spawn points.</li><li>Changes reuse enemy and item setups that already exist in the same map, so no new assets are needed.</li><li>The checker rejects 8 of 8 broken test cases; all 7,127 other archive entries stay unchanged.</li><li>Runtime is unconfirmed; the page includes a short install-and-test runbook.</li></ul></div><div class="de"><p class="lede">Dieser Bericht baut eine Pipeline, die eine vorhandene Karte von Wolfenstein II: The New Colossus (das Gestapo-Büro) durch Bearbeiten ihrer textbasierten <span class="t" data-t="entity">Entity</span>-Datei in eine eigene Karte verwandelt. Sie ändert 49 Dinge, die man als Spieler bemerkt: stärkere Gegner, Essen wird zu Waffen und Munition, rote und grüne Lichter und vertauschte Startpunkte. Das neu gebaute Archiv besteht alle Offline-Prüfungen. Ob es im Spiel lädt, ist nicht bestätigt.</p><ul><li>Leser und Schreiber für Entity-Dateien schaffen den <span class="t" data-t="roundtrip">Roundtrip</span> bei 85 von 85 Dateien byte-genau.</li><li>49 Entities sind geändert: 4 Gegner (zum Beispiel werden 3 leichte Soldaten zu schweren Elitesoldaten), 10 Pickups, 33 Lichter und 2 Startpunkte.</li><li>Die Änderungen übernehmen Gegner- und Gegenstandsdaten, die in derselben Karte schon existieren. Neue Assets sind daher nicht nötig.</li><li>Der Prüfer lehnt 8 von 8 kaputten Testfällen ab; alle 7.127 anderen Archiveinträge bleiben unverändert.</li><li>Im Spiel unbestätigt; die Seite enthält eine kurze Anleitung zum Installieren und Testen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-entitypipe-a2</code>, Task <code>entitypipe</code>, 2026-09-23. Third run under this ID (User attempt 1 paused, User attempt 2 cut off by session limit). <strong>All numbers below are newly measured in this run</strong>; the bundle on disk was rebuilt.
+Files: <code>tools/build_custom_map.py</code>, <code>tools/probe_entitypipe.py</code>, <code>re_probes/entitypipe/</code>, this report.</p>
+<h2 id="result-in-one-sentence">Result in one sentence</h2>
+<p><code>re_probes/entitypipe/base/chunk_22.resources</code> is the alias map <code>game/dlc/c02/c2v1_custom</code> with 49 modified Entities across four classes (Enemies, Pickups, Lights, Spawn). It consists of <code>probe_datahash</code> 7127/7127, <code>probe_idclhash</code> +0x08/+0x20 OK, and the custom checker. A diff check allows only the 49 claimed Entities as modified, and none of the other 7127 entries are changed except the <code>.entities</code> entry.
+<strong>Structurally valid after these checks; runtime unconfirmed.</strong></p>
+<h2 id="1-what-was-corrected-in-this-run">1. What was corrected in this run</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Finding in Attempt 2</th>
+<th>measured</th>
+<th>now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reference checker knows 4 keys + <code>targets</code> ("62/62 in c2v1")</td>
+<td>In c2v1 hit <strong>6</strong> keys (+<code>mapUnlockSecret</code> 4/4, <code>automapMapImage</code> 4/4); across all 82 Retail maps <strong>21</strong> keys and <strong>5</strong> list blocks</td>
+<td><code>REF_KEYS</code> = the 21 measured, <code>REF_LIST_BLOCKS</code> = targets/parts/constraints/multiPositions/automapLootRevealEntities</td>
+</tr>
+<tr>
+<td>Build gate as set difference</td>
+<td>A second duplicate of a name that the source already had twice resulted in the same message and failed</td>
+<td>Multiset difference (<code>Counter</code>)</td>
+</tr>
+<tr>
+<td>custom compfile codec</td>
+<td>Duplicate of <code>wolfsdk/tnccrypt.compfile_unwrap/_wrap</code> (168/168 byte-identical, Master-checked)</td>
+<td>tnccrypt is used; Bundle bytes therefore <strong>unchanged</strong> (sha256 equal)</td>
+</tr>
+<tr>
+<td>Negative control "hanging reference"</td>
+<td>Hit any first reference</td>
+<td>additionally: Spawner <code>c2v1_combat_target_ai_spawn_firstarea</code> loses its Soldier -&gt; rejected</td>
+</tr>
+<tr>
+<td>TexDB pass only from <code>finalize()</code> counters</td>
+<td>Self-report of the writer</td>
+<td>independently: 7127/7127 other entries identical; Image <code>+0x60</code> 1462/1462 = Retail-dlc_2</td>
+</tr>
+</tbody>
+</table></div>
+<p>The 21 keys are measured, not guessed: every quoted value of each of the 82 different Retail <code>.entities</code> was held against the Entity names of the same file. 22,596 hits; the 314 non-hits (bindParent 238, bodyA 60, arcVolume 9, playFrom 7) are all Entity-form names of removed Entities (<code>..._devcomment_3</code>, Scene-Points) -- genuine Retail defects, no other value types. <code>ai = true</code> (172x) is unquoted and not counted.</p>
+<h2 id="2-format----text-no-binary-format">2. Format -- Text, no binary format</h2>
+<p><code>compfile:maps/game/dlc/c02/c2v1_custom.entities</code> = 16 bytes (<code>usize</code>, <code>csize</code>) + Kraken; therein <strong>text</strong>. The 411,568 lines of Retail <code>c2v1.entities</code> are exactly five forms: 2 headers (<code>Version 5</code>, <code>HierarchyVersion 2</code>), 103,461 <code>&lt;kopf&gt; {</code>, 103,461 <code>}</code>, 204,499 <code>schluessel = wert;</code>, 145 quoted layer names. Indentation is not depth (the <code>}</code> of <code>entityDef</code> stands one level further left), therefore each node remembers its tabs -- hence byte-exact instead of just equivalent. The alias source brings two non-Retail single lines from codex (<code>lightColor = { r = 0.05; g = 0.8; b = 1; }</code>); exactly this form is accepted, in Retail it occurs 0 times.</p>
+<p>8 of the 85 files are not valid UTF-8 (<code>name = "break\xa8"</code> in c09p1, c09p2, c1v3, c1v3_venus, each with patch copies); <code>surrogateescape</code> carries the byte unchanged through.</p>
+<h2 id="3-evidence-all-in-this-run">3. Evidence (all in this run)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Round-Trip over every <code>.entities</code> of the installation</td>
+<td><strong>85/85 byte-exact</strong> (82 distinct contents, 23 archives)</td>
+</tr>
+<tr>
+<td>Retail against Checker rules</td>
+<td>34/85 clean (with 6 keys it was 40/85); Findings: 23 duplicate names, 1050 dangling references; other finding types: 0 (otherwise failure)</td>
+</tr>
+<tr>
+<td>Surgical: 1 property changed</td>
+<td>Diff exactly <code>-lightIntensity = 16;</code> / <code>+lightIntensity = 7.5;</code>, 1 line different in position</td>
+</tr>
+<tr>
+<td>Negative controls</td>
+<td><strong>8/8</strong>: Positive anchors clean; extra <code>}</code> / unclosed block / missing <code>;</code> / dangling reference / Spawner-<code>targets</code> to empty / <code>inherit</code> without Chunk (<code>player/start_v2</code>) / duplicate name -- all rejected</td>
+</tr>
+<tr>
+<td><code>probe_datahash</code> on the Bundle</td>
+<td>7127/7127 (1 entry Mode 4 without decoder, unchanged from Retail)</td>
+</tr>
+<tr>
+<td><code>probe_idclhash</code> on the Bundle</td>
+<td>+0x08 1/1, +0x20 1/1</td>
+</tr>
+<tr>
+<td>Modified copy (1 byte in Entities payload)</td>
+<td><code>probe_datahash</code> exit 1, <code>BAD compfile:...c2v1_custom.entities</code></td>
+</tr>
+<tr>
+<td>Table-Diff Source -&gt; Bundle</td>
+<td>0 of 7127 other entries changed (Payload + all fields except Offset); on the Entity entry only <code>+0x40/+0x48/+0x50</code></td>
+</tr>
+<tr>
+<td>Image-<code>+0x60</code> (TexDB key) against Retail-dlc_2</td>
+<td>1462/1462 equal -&gt; the installed <code>chunk_22.texdb</code> fits</td>
+</tr>
+<tr>
+<td>Payload read back from container</td>
+<td>byte-exact Round-Trip, Checker clean including <code>inherit</code> against 996 entityDefs of mounted chunks</td>
+</tr>
+<tr>
+<td>New Asset-/Decl-names against source</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Diff Source against Bundle</td>
+<td>49 Entities changed, 49 claimed in manifest, no deviation</td>
+</tr>
+<tr>
+<td>Reproducibility</td>
+<td>two builds sha256-identical: <code>a8da9e4ed82e7e8793c467a66a56b3ff9363ee4b8646b69b4fc0fd8035a4d19a</code></td>
+</tr>
+<tr>
+<td>Uninstall assumption</td>
+<td>installed <code>dlc_4/base/chunk_22.resources</code> and <code>.texdb</code> byte-identical to dlc_2 via <code>cmp</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>finalize()</code> has exactly one entry rehashed (<code>[7079] compfile:...c2v1_custom.entities</code>),
+<code>hash_0x60: 0</code>, <code>deps: 0</code>.</p>
+<h2 id="4-the-changes----what-a-player-sees">4. The Changes -- what a player sees</h2>
+<p>Every type change is a <strong>Body Transplantation</strong> from a donor existing within c2v1 itself: <code>edit {}</code> is a full property dump, a new <code>inherit</code> alone changes nothing visible. Name, Position, Orientation, <code>targets</code>, and <code>bindParent</code> remain from the target. Since every donor is already in the map, Models, Sounds, and Decls are in the mounted chunks, and the Builder breaks if a new name appears. Measured: no transplanted body carries a reference from the donor area, every Soldier keeps its own Roam point (<code>roam_22/30/61/5</code>).</p>
+<h3 id="41-enemies-4">4.1 Enemies (4)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Entity</th>
+<th>before -&gt; after</th>
+<th>where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>..._soldier_generic_soldier_light_1</code></td>
+<td><code>soldier_light</code> -&gt; <code>elite/generic/elite_heavy</code></td>
+<td>Lobby (-7.4, -185.1)</td>
+</tr>
+<tr>
+<td><code>..._soldier_generic_soldier_light_3</code></td>
+<td>dito</td>
+<td>Lobby (-4.4, -192.5)</td>
+</tr>
+<tr>
+<td><code>..._soldier_generic_soldier_light_5</code></td>
+<td>dito</td>
+<td>Lobby (-1.3, -186.8)</td>
+</tr>
+<tr>
+<td><code>..._soldier_generic_soldier_heavy_3</code></td>
+<td><code>soldier_heavy</code> -&gt; <code>ubersoldat/ubersoldat_cannon</code></td>
+<td>Commander area (24.6, -30.6)</td>
+</tr>
+</tbody>
+</table></div>
+<p>All four have <code>flags { hide = true; }</code> (before, after, and from donor) and are spawned by <code>idTarget_AISpawn</code> (<code>c2v1_combat_target_ai_spawn_firstarea</code> or <code>..._commanderarea_initial</code>); the names remain, so the Spawners find them further. Player sees: in the first Lobby wave 3 heavily armored Elite Soldiers instead of light soldiers, in the Commander area an Ubersoldat with a cannon.</p>
+<h3 id="42-pickups-10----food-becomes-equipment">4.2 Pickups (10) -- Food becomes Equipment</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Entity</th>
+<th>after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>c2v1_pu_prop_pickup_health_food_pretzel_1_1</code></td>
+<td>MP (<code>weapons/smg/smg</code>), Lobby (-3.1, -176.1)</td>
+</tr>
+<tr>
+<td><code>..._pretzel_1_2</code></td>
+<td>Sturmgewehr (<code>battlerifle</code>)</td>
+</tr>
+<tr>
+<td><code>..._pretzel_1_3</code></td>
+<td>Pistole (<code>handgun</code>), (-2.3, -159.5)</td>
+</tr>
+<tr>
+<td><code>..._pretzel_1_4</code></td>
+<td>MP-Ammo</td>
+</tr>
+<tr>
+<td><code>..._fruit_01_1</code></td>
+<td>MP</td>
+</tr>
+<tr>
+<td><code>..._fruit_01_2</code></td>
+<td>Pistol Ammo</td>
+</tr>
+<tr>
+<td><code>..._fruit_02_1</code></td>
+<td>Sturmgewehr</td>
+</tr>
+<tr>
+<td><code>..._fruit_02_2</code></td>
+<td>Soldier Helmet (Armor), 4 m from Office Spawn</td>
+</tr>
+<tr>
+<td><code>..._grapes_1</code></td>
+<td>large Medikit</td>
+</tr>
+<tr>
+<td><code>..._meal_dogfood_1</code></td>
+<td>MP</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="43-lights-33">4.3 Lights (33)</h3>
+<p>All <code>LIGHT_POINT</code> (16) and <code>LIGHT_SPOT</code> (17) within the range of both Spawn Points: Lobby has 18 <strong>red</strong> lights (1, 0.12, 0.05), Office has 18 <strong>green</strong> lights (0.15, 1, 0.35), intensity at least 4 each (raised to 26). Spotlights and ambient light remain untouched.</p>
+<h3 id="44-spawn-2">4.4 Spawn (2)</h3>
+<p><code>c2v1</code> has exactly two <code>idPlayerStart</code>: <code>sacramento_gameplay_player_start_1</code> (Lobby, -18.3/-205.9) and <code>c2v1_ps_challenge_01</code> (Office, 29.1/-77.2). Which one applies on a <code>map</code> call is undecidable offline: the chapter variant <code>dlc/c2v1</code> requires <code>spawnSpot = "c2v1_gameplay_player_start_1"</code>, a name that <strong>neither</strong> Retail nor Alias Entities contain (0 hits); the Challenge variant requires <code>c2v1_ps_challenge_01</code>. The two starts therefore swap places: whichever the Engine picks, the player stands at the Retail location of the other. Both locations are spots where the game itself spawns a player; they are the only offline evidence for fixed ground. Side effect: the room in which you wake up reveals which start the Engine chose.</p>
+<h2 id="5-what-remains-open">5. What Remains Open</h2>
+<ul>
+<li><strong>Runtime.</strong> Nothing is seen in-game. The bundle inherits all open points from the Alias bundle (Mount of <code>dlc_4</code>, Alias names, load path via the <code>resourceExec</code> carrier, whose Mount timestamp in the main menu is unrecorded, see <code>execcarrier.md</code> §4), which itself was never loaded.</li>
+<li><strong>Mission Logic.</strong> Kiscule scripts can hang at Lobby Start (<code>idKisculeNodePlayerStartNotification</code> exists in the Exe). If the player starts in the Office, Intro/Objectives may be missed; combat and pickups are unaffected.</li>
+<li><strong>Lights.</strong> Direct light from point/spotlights is calculated at runtime; baked portions (Spotlights, Lightmaps) remain Retail-colored. How strongly the color shift affects gameplay is untested.</li>
+<li><strong>Spawners and Type.</strong> Whether <code>idTarget_AISpawn</code> generates a different enemy type under the same name without further checks has not been verified via disassembly. Whether the Navmesh in the Commander area is designed for the large Super Soldier is unverified offline (the donor stands 39 m further south, at -69.3). The Super Soldier brings <code>spawnSleepingDuration = -1</code> from its donor.</li>
+<li><strong>New Enemies instead of Type Conversion</strong> (Increase count) is not built: a new Entity name must also appear in a Spawner's <code>targets</code>, and whether the Engine requires more Pool/Streaming budget (<code>.mapresources</code>) for more instances is unrecorded. Type conversion and relocation work without new names.</li>
+<li><code>--roundtrip</code> takes ~10 min (82 files at ~10 MB each in pure Python).</li>
+</ul>
+<h2 id="6-reproduction">6. Reproduction</h2>
+<pre><code>python tools/build_custom_map.py                  # builds re_probes/entitypipe/ (~4 min)
+python tools/probe_entitypipe.py --roundtrip      # 85/85 byte-exact
+python tools/probe_entitypipe.py --surgical       # 1 line Diff
+python tools/probe_entitypipe.py --negative       # 8/8
+python tools/probe_entitypipe.py --bundle         # Hash samples, manipulation, table and entity diff (~2-6 min)
+</code></pre>
+<h2 id="runbook">Runbook</h2>
+<ol>
+<li><strong>Install</strong> (PowerShell, Repo root; delete first, then copy to avoid writing via a hardlink in DLC2): <code>$G="D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus"; Remove-Item "$G\dlc\dlc_4\base\chunk_22.resources"; Copy-Item re_probes\entitypipe\base\chunk_22.resources "$G\dlc\dlc_4\base\"; python tools/install_exec_carrier.py install</code></li>
+<li><strong>Start</strong>: Launch the game with <code>+com_enableDeveloperMode 1</code>, then in the main menu console: <code>resourceExec wolfsdk_test.cfg</code> (loads <code>map game/dlc/c02/c2v1_custom</code>; remains silent, use <code>resourceExec wolfsdk_test.cfg -s</code>).</li>
+<li><strong>Observe</strong>: Wake up in the <strong>red</strong>-lit entrance area or the <strong>green</strong>-lit office (the room reveals which start the engine took); in the office lies a soldier's helmet 4 meters away, and in the lobby at (-3, -176) there is an MP instead of a pretzel, and the first lobby wave brings 3 heavy elite soldiers.</li>
+<li><strong>Has worked</strong> if the map loads and the lights at spawn are red/green. If it loads with retail colors, our container is not being read; if it does not load at all, repeat the same test with <code>re_probes/idclwriter/chunk_22.resources</code> (alias without our edits) to separate the alias layer from the entity edit; if <code>can't generate in production</code> appears, the Traeger chunk was not mounted (<code>execcarrier.md</code> §4).</li>
+<li><strong>Uninstall</strong>: <code>Remove-Item "$G\dlc\dlc_4\base\chunk_22.resources"; Copy-Item "$G\dlc\dlc_2\base\chunk_22.resources" "$G\dlc\dlc_4\base\"; python tools/install_exec_carrier.py uninstall</code> -- restores the current state (the installed dlc_4 chunk today is byte-identical to dlc_2 per <code>cmp</code>).</li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Dlc4-Override.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Override-Chunk: Custom edits under the Retail card name <code>c2v1</code></a><a class="next" href="Research-Report-Execcarrier.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>The <code>cfile</code> Carrier: Smallest DLC to Carry a Resource</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

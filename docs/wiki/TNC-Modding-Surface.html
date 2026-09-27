@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modding Area: Wolfenstein II — The New Colossus – Wolfenstein Modloader</title>
+<meta name="description" content="A measured map of what can and cannot be modded in the Wolfenstein II game archives.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tnc"><span class="en">The New Colossus</span><span class="de">The New Colossus</span></a></p>
+<h1>Modding Area: Wolfenstein II — The New Colossus</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNC-Modding-Surface"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-summary">0. Summary</a></li><li><a href="#1-all-resource-types">1. All Resource Types</a></li><li><a href="#2-does-declpy-understand-the-decls-from-part-2">2. Does decl.py understand the Decls from Part 2?</a></li><li><a href="#3-the-levers">3. The Levers</a></li><li><a href="#4-the-cost-question">4. The Cost Question</a></li><li><a href="#5-entities-scripts-and-the-second-compression-layer">5. .entities, Scripts, and the Second Compression Layer</a></li><li><a href="#6-what-is-definitively-not-possible">6. What is definitively not possible</a></li><li><a href="#7-where-uncertainty-remains">7. Where uncertainty remains</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page surveys all 24 <span class="t" data-t="archive">archives</span> of Wolfenstein II: The New Colossus (TNC) and sorts what modders can change. Most gameplay values live in 141 readable text formats, and the project&#x27;s parser reads 44,140 of 44,374 text files without error and edits them correctly. The page lists the concrete levers for difficulty, enemy health, weapon damage, starting gear, gore and perks. Game text is <span class="t" data-t="encryption">encrypted</span> and out of reach, and whether patch archives win over base archives was still unmeasured.</p><ul><li>24 archives with 178,077 entries and 174 resource types were measured.</li><li>Test edits worked 1,432 of 1,432 times, and the parser never crashed.</li><li>Difficulty is seven tiny tables; &#x27;Mein Leben&#x27; uses the same 1.75 damage multiplier as &#x27;Nightmare&#x27;.</li><li>Recompressed data is byte-identical to the original game files (401 of 401 samples).</li><li>Nothing was tested in the game itself, because the game was not started.</li></ul></div><div class="de"><p class="lede">Diese Seite untersucht alle 24 <span class="t" data-t="archive">Archive</span> von Wolfenstein II: The New Colossus (TNC) und ordnet, was Modder ändern können. Die meisten Spielwerte stecken in 141 lesbaren Textformaten, und der Parser des Projekts liest 44.140 von 44.374 Textdateien fehlerfrei und bearbeitet sie korrekt. Die Seite nennt die konkreten Stellschrauben für Schwierigkeit, Gegnerleben, Waffenschaden, Startausrüstung, Gore und Perks. Die Spieltexte sind <span class="t" data-t="encryption">verschlüsselt</span> und nicht erreichbar, und ob Patch-Archive gegen Basis-Archive gewinnen, war noch nicht gemessen.</p><ul><li>24 Archive mit 178.077 Einträgen und 174 Ressourcentypen wurden vermessen.</li><li>Teständerungen klappten 1.432 von 1.432 Mal, der Parser stürzte nie ab.</li><li>Die Schwierigkeit steckt in sieben winzigen Tabellen; „Mein Leben“ nutzt denselben Schadensfaktor 1,75 wie „Albtraum“.</li><li>Neu komprimierte Daten sind byte-gleich mit den Originaldateien (401 von 401 Proben).</li><li>Im Spiel selbst wurde nichts getestet, weil das Spiel nicht gestartet wurde.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>The counterpart to <code>docs/moddingflaeche-tno.md</code>, for Part 2. A map of what can be changed, what cannot, and how to recognize the difference. <strong>All numbers and field names below are measured</strong>, not estimated — from the unmodified Retail installation under
+<code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\base\</code>
+(read-only). Reproducible with:</p>
+<pre><code class="language-bash">python tools/survey_tnc.py                     # full report
+python tools/survey_tnc.py --types             # type survey
+python tools/survey_tnc.py --parse             # decl.py against the dialect
+python tools/survey_tnc.py --budget            # the cost question
+python tools/survey_tnc.py --maps              # .entities and kiscule
+python tools/survey_tnc.py --type weapon --samples 2
+python tools/survey_tnc.py --grep &quot;aiHealth&quot;
+</code></pre>
+<p>Underlay: <code>wolfsdk/idcl.py</code> (archive format), <code>wolfsdk/oodle.py</code> (Kraken over the game DLL), <code>tools/extract_tnc.py</code> (unpacking). Proof that this is complete: <code>tools/verify_extract_tnc.py</code>.</p>
+<p>Status: <strong>24 Archives, 178 077 entries, 174 resource types</strong>, of which
+<strong>167 694 unique <code>(Type, Name)</code> pairs</strong>. Compression: 146 927 Kraken (Mode 2), 31 125 uncompressed (Mode 0), 25 Kraken behind a 12-byte prefix (Mode 4). 3.40 GiB <code>.resources</code> plus 20.06 GiB <code>.texdb</code> (Virtual Textures, not handled here).</p>
+<hr />
+<h2 id="0-summary">0. Summary</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rating</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Safe to go</strong></td>
+<td>141 text types, 44 126 text assets. <code>decl.py</code> parses <strong>44 140 of 44 374</strong> without error (0 <code>DeclError</code>), Roundtrip-Edit 1 432/1 432 correct. The levers: <code>table:playerdamage/*</code> (difficulty), <code>entityDef.aiHealth</code> (enemy health), <code>damage.damageParms</code> (weapon damage), <code>devInvLoadout</code> (starting equipment), <code>gorewounds</code>/<code>goreBehavior</code> (gore), <code>upgrade</code>/<code>perks</code></td>
+</tr>
+<tr>
+<td><strong>Possible, but one layer deeper</strong></td>
+<td><code>.entities</code> maps (29 maps, <strong>437 570 entity blocks</strong>, 397 MiB text, all 29 parse with <code>decl.py</code>), <code>extkisclule</code> (2 408 script files, 205 node types). Both are doubly compressed in the archive, see Section 5</td>
+</tr>
+<tr>
+<td><strong>Dialect deviation, measurable</strong></td>
+<td>2 242 Decls where <code>decl.py</code> inserts a punctuation mark as a value — lists without <code>=</code>. Affects almost only <code>material</code> (1 649), <code>renderParm</code> (296), <code>table</code> (189), <code>env</code> (88). Section 2</td>
+</tr>
+<tr>
+<td><strong>Proven not possible (yet)</strong></td>
+<td><code>cfile</code> — all 20 files underneath, including <strong>all 10 <code>strings/*.lang</code></strong>, are encrypted, not just compressed. Section 6</td>
+</tr>
+<tr>
+<td><strong>Unclear</strong></td>
+<td>Whether <code>patch_*.resources</code> wins on load (Retail lays down 1 701 pairs twice, so <em>must</em> win something — the rule is unmeasured); <code>particle</code> (impossible in Part 1, here text and unverified); 25 entries in Mode 4</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="1-all-resource-types">1. All Resource Types</h2>
+<p>Complete list: <code>python tools/survey_tnc.py --types</code>. The classification comes from four unpacked samples per type (the two smallest, one from the middle, the largest) and the proportion of printable bytes in the first 4 KiB.</p>
+<p><strong>Text — 141 types, 44 126 entries.</strong> The twenty largest:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">unique</th>
+<th>Type</th>
+<th></th>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">unique</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">10 372</td>
+<td style="text-align: right;">10 070</td>
+<td><code>material</code></td>
+<td></td>
+<td style="text-align: right;">383</td>
+<td style="text-align: right;">377</td>
+<td><code>tutorialEvent</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">10 365</td>
+<td style="text-align: right;">10 345</td>
+<td><code>sound</code></td>
+<td></td>
+<td style="text-align: right;">351</td>
+<td style="text-align: right;">338</td>
+<td><code>missionobj</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">7 622</td>
+<td style="text-align: right;">7 621</td>
+<td><code>modelAsset</code></td>
+<td></td>
+<td style="text-align: right;">265</td>
+<td style="text-align: right;">263</td>
+<td><code>fx</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3 307</td>
+<td style="text-align: right;">3 198</td>
+<td><code>voiceover</code></td>
+<td></td>
+<td style="text-align: right;">258</td>
+<td style="text-align: right;">254</td>
+<td><code>progressiondebug</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">1 661</td>
+<td style="text-align: right;">1 661</td>
+<td><code>renderParm</code></td>
+<td></td>
+<td style="text-align: right;">211</td>
+<td style="text-align: right;">201</td>
+<td><code>perks</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">1 461</td>
+<td style="text-align: right;">1 422</td>
+<td><code>entityDef</code></td>
+<td></td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">200</td>
+<td><code>upgrade</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">1 456</td>
+<td style="text-align: right;">1 422</td>
+<td><code>md6Def</code></td>
+<td></td>
+<td style="text-align: right;">189</td>
+<td style="text-align: right;">189</td>
+<td><code>table</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">1 127</td>
+<td style="text-align: right;">1 115</td>
+<td><code>midnightScene</code></td>
+<td></td>
+<td style="text-align: right;">175</td>
+<td style="text-align: right;">162</td>
+<td><code>breakable</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">797</td>
+<td style="text-align: right;">777</td>
+<td><code>particle</code></td>
+<td></td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">154</td>
+<td><code>projectileImpactEffect</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">383</td>
+<td style="text-align: right;">383</td>
+<td><code>gorewounds</code></td>
+<td></td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">151</td>
+<td><code>damage</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Binary — 32 types, 133,703 entries</strong>, uninteresting for Decl-modding:
+<code>cm</code> 50,699, <code>image</code> 32,182 (BIM, as in Part 1), <code>model</code> 17,983,
+<code>voicetrack</code> 6,875, <code>modelstream</code> 6,858, <code>anim</code> 4,963,
+<code>renderProgResource</code> 4,729, <code>geistanim</code> 2,808, <code>extkisclule</code> 2,492 (<em>see Section 5 — these are only apparently binary</em>), <code>decalatlas</code> 903,
+<code>animEvent</code> 624, <code>prtmeshdist</code> 483, <code>baseModel</code> 437, <code>skeleton</code> 391,
+<code>geistidentity</code> 248, <code>destructionmodeldata</code> 177, <code>glassmodel</code> 136,
+<code>compfile</code> 129 (<em>also Section 5</em>), <code>staticStreamTree</code> 110,
+<code>lightatlas</code> 82, <code>transsortatlas</code> 77, <code>cfile</code> 67, <code>hknavmesh</code> 45,
+<code>hkcloth</code> 40, <code>cgr</code> 37, <code>pvs</code> 30, <code>staticShadowGeom</code> 29, <code>font</code> 26,
+<code>geistanimpara</code> 24, <code>mannequinmodel</code> 10, <code>staticParticleModel</code> 7, <code>fga</code> 2.</p>
+<p><strong>Mixed — 1 type:</strong> <code>file</code> (248 entries, 148 unique) carries both.
+Endings: 32 <code>.ambientsh</code>, 31 <code>.mapresources</code>, 29 <code>.tome</code>, 29
+<code>.tome-metadata.json</code>, 18 <code>.bswf</code> (Scaleform-UI), <strong>6 <code>.wl6</code></strong> (the original data from Wolfenstein 3D, playable in the game), 2 <code>.png</code>,
+1 <code>.bin</code>.</p>
+<h3 id="which-text-types-are-decls">Which text types are Decls?</h3>
+<p>Practically all. Of the 141 text types, <strong>140 begin with <code>{</code></strong> and carry either <code>edit = { … }</code>, <code>inherit = "…"</code>, or both — this is exactly the format that <code>decl.py</code> recognizes as id-tech-5-Decl. The only exception is <code>json</code> (true JSON behind an 8-byte length prefix; 30 entries, all <code>devmapinfo.json</code>).</p>
+<p>Two sub-dialects, as in Part 1:</p>
+<ul>
+<li><strong><code>key = value;</code></strong> — the majority, including <code>weapon</code>, <code>damage</code>,
+  <code>entityDef</code>, <code>ammo</code>, <code>gorewounds</code>, <code>perks</code>, <code>upgrade</code>, <code>fx</code>, <code>sound</code>.</li>
+<li><strong><code>key value</code></strong> without <code>=</code> and without <code>;</code> — <code>material</code>
+  (<code>{ surfacetype 5.000000 }</code>), <code>renderParm</code> (<code>{ Vec 0 }</code>), <code>table</code>
+  (<code>{ snap { 0, 0, 0, 1 } }</code>), <code>md6Def</code> (<code>init { inherit "…" }</code>),
+  <code>articulatedFigure</code>, <code>visemeSet</code>, <code>env</code>.</li>
+</ul>
+<p>This second group is where the only measured weakness of <code>decl.py</code> lies, see below.</p>
+<hr />
+<h2 id="2-does-declpy-understand-the-decls-from-part-2">2. Does <code>decl.py</code> understand the Decls from Part 2?</h2>
+<p><strong>Measured, three tests, because "no exception" alone proves nothing.</strong>
+<code>python tools/survey_tnc.py --parse</code> sends every text asset through <code>Decl()</code>.</p>
+<h3 id="21-does-the-parser-crash-no">2.1 Does the parser crash? No.</h3>
+<pre><code>Textassets: 44374   parsed cleanly: 44140   DeclError: 0   no UTF-8: 234
+</code></pre>
+<p><strong>Zero <code>DeclError</code> over 44,140 Decls.</strong> The 234 failures are not a parser problem but lack of UTF-8: 219 <code>file</code> (the <code>.tome</code>, <code>.ambientsh</code>, and <code>.mapresources</code> binary files in the mixed type), 14 <code>json</code> (length prefix before the text) and one <code>fx</code>.</p>
+<h3 id="22-does-editing-work-yes-1432-of-1432">2.2 Does editing work? Yes, 1,432 of 1,432.</h3>
+<p>Per type up to 25 Decls: change a number with <code>set()</code> on <code>1234</code>, render new text, parse anew, read the same path back. <strong>1,432 correct, 0 incorrect.</strong> This is the test that truly counts — it checks not only if the parser runs through, but if the recorded byte spans match.</p>
+<h3 id="23-the-dialect-deviation-2242-decls">2.3 The Dialect Deviation: 2,242 Decls</h3>
+<p><code>decl.py</code> writes a punctuation mark as a value into a path in <strong>2,242 Decls</strong>. This is the signature of a misunderstanding: a list of multiple values behind a key without <code>=</code> is read as a chain of key/value pairs.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th style="text-align: right;">Decls</th>
+<th>Type</th>
+<th>what happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1,649</td>
+<td><code>material</code></td>
+<td><code>sssblurscale 2.5 1.0 0.6 0.1</code> → paths <code>2.500000:sssblurscale.1.000000</code> instead of a vector</td>
+</tr>
+<tr>
+<td style="text-align: right;">296</td>
+<td><code>renderParm</code></td>
+<td><code>{ Vec 0 0 0 }</code> → <code>Vec.0</code>, <code>Vec.0#1</code> instead of three components</td>
+</tr>
+<tr>
+<td style="text-align: right;">189</td>
+<td><code>table</code></td>
+<td><code>{0:1, 0.69:1}</code> → anchors land as keys</td>
+</tr>
+<tr>
+<td style="text-align: right;">88</td>
+<td><code>env</code></td>
+<td><code>colorCorrectionShadowsColor 0.72 1 0.8</code> → three nested paths</td>
+</tr>
+<tr>
+<td style="text-align: right;">15</td>
+<td><code>json</code></td>
+<td>no Decl, but JSON</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>articulatedFigure</code></td>
+<td><code>settings { 30 40 solid }</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>renderLayerDefinition</code></td>
+<td>comma-separated name list</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>entityDef</code> (<code>spline/path</code>)</td>
+<td>a single case in <code>editorVars</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>What this means:</strong> For the levers from Section 3, it doesn't matter — there, every value is listed as <code>key = value;</code>, and all 2,242 cases lie in types that are not touched by Balancing. However, if you want to generically rewrite <code>material</code> or <code>renderParm</code>, you need a vector mode in <code>decl.py</code> (summing multiple tokens after a key into <em>one</em> value as long as no <code>{</code>, <code>=</code>, or <code>;</code> follows).</p>
+<p><strong>Negative finding as result:</strong> In Part 2, there is <strong>not a single construct</strong> at which <code>decl.py</code> stops. The id-tech-5-parser fully covers the id-tech-6 dialect; the difference lies only in resolution, not in validity.</p>
+<hr />
+<h2 id="3-the-levers">3. The Levers</h2>
+<p>Part 1 had <code>weapon</code>, <code>damage</code>, <code>entityDef</code>, <code>gamemodesp</code>, <code>faction</code>.
+Part 2 has four of them — <code>gamemodesp</code> and <code>difficultysetting</code> do <strong>not</strong> exist; difficulty has moved elsewhere, to a place that is significantly easier to hit.</p>
+<h3 id="31-difficulty-levels-seven-table-single-lines--safe">3.1 Difficulty levels: seven <code>table</code> single-lines · <strong>safe</strong></h3>
+<p><code>entityDef:player</code> (gameresources, 13,165 bytes) contains:</p>
+<pre><code>veryEasyTable = &quot;playerdamage/veryeasy&quot;;
+easyTable = &quot;playerdamage/easy&quot;;
+normalTable = &quot;playerdamage/normal&quot;;
+hardTable = &quot;playerdamage/hard&quot;;
+veryHardTable = &quot;playerdamage/veryhard&quot;;
+nightmareTable = &quot;playerdamage/nightmare&quot;;
+meinLebenTable = &quot;playerdamage/meinleben&quot;;
+</code></pre>
+<p>These seven <code>table</code> Decls are <strong>each stored as a single line and uncompressed</strong> (Mode 0, <code>csize == usize</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Decl</th>
+<th>Content</th>
+<th style="text-align: right;">usize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>table:playerdamage/veryeasy</code></td>
+<td><code>{ spline clamp min 0.1 max 0.1 left 0 right 1 {0:0, 1:1} }</code></td>
+<td style="text-align: right;">58</td>
+</tr>
+<tr>
+<td><code>table:playerdamage/easy</code></td>
+<td><code>min 0.4 max 0.4</code></td>
+<td style="text-align: right;">58</td>
+</tr>
+<tr>
+<td><code>table:playerdamage/normal</code></td>
+<td><code>min 0.5 max 0.5</code></td>
+<td style="text-align: right;">58</td>
+</tr>
+<tr>
+<td><code>table:playerdamage/hard</code></td>
+<td><code>min 0.75 max 0.75</code></td>
+<td style="text-align: right;">60</td>
+</tr>
+<tr>
+<td><code>table:playerdamage/veryhard</code></td>
+<td><code>min 1.25 max 1.25</code></td>
+<td style="text-align: right;">60</td>
+</tr>
+<tr>
+<td><code>table:playerdamage/nightmare</code></td>
+<td><code>min 1.75 max 1.75</code></td>
+<td style="text-align: right;">60</td>
+</tr>
+<tr>
+<td><code>table:playerdamage/meinleben</code></td>
+<td><code>min 1.75 max 1.75</code></td>
+<td style="text-align: right;">60</td>
+</tr>
+</tbody>
+</table></div>
+<p>The value is the multiplier for player damage. <strong>Side finding: "My Life" is computationally identical to "Nightmare"</strong> (both 1.75) — the difference lies solely in Permadeath, not in difficulty.</p>
+<p>Immediately usable: a difficulty level mod that only changes seven numbers. <code>min 0.5 max 0.5</code> → <code>min 0.0 max 0.0</code> is Invulnerability on Normal, and since both strings are of equal length, this fits without any size calculation in <code>csize</code>.</p>
+<p>Additionally in <code>entityDef:player</code>:
+<code>autoSaveHealthDifficultyMultiplier[1..6]</code> (1, 1, 0, 0, 0, 0 — no health gift on autosave from difficulty 3 onwards) and
+<code>healthOverrides = { item[0] = "player/health_force_100"; item[1] = "player/armor_max_100"; }</code>, which point to <code>healthComponent</code> Decls (<code>edit.max</code>, <code>edit.cur</code>, <code>edit.component = "COMPONENT_ARMOR"</code>, <code>edit.stepIncrement</code>, <code>edit.setRegenSteps</code>).</p>
+<h3 id="32-enemy-health-entitydefhealthcomponents--safe">3.2 Enemy health: <code>entityDef.*Health.components</code> · <strong>safe</strong></h3>
+<p>Of 1,422 unique <code>entityDef</code>s, <strong>52</strong> have a health component:
+49× <code>aiHealth</code>, 1× <code>zeppelinHealth</code>, 1× <code>simpleHealth</code>, 1× <code>alarmHealth</code>.
+Path: <code>edit.aiHealth.components.components[0].max</code> (and <code>.cur</code>).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th style="text-align: right;">Value</th>
+<th>entityDef</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">3,000</td>
+<td><code>ai/zitadelle/zitadelle_base</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2,400</td>
+<td><code>ai/zerstorer/zerstorer_base</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2,000</td>
+<td><code>ai/panzerhund/panzerhund_base</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">800</td>
+<td><code>player/playercontrolled/panzerhund</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">500</td>
+<td><code>func/zeppelin</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">440</td>
+<td><code>ai/supersoldat/supersoldat_base</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">300</td>
+<td><code>ai/commander/uber/ubercommander_base</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">110</td>
+<td><code>ai/elite/venus/elite_venus_*</code> (light, heavy, sniper, shotgun)</td>
+</tr>
+<tr>
+<td style="text-align: right;">90</td>
+<td><code>ai/elite/elite_base</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">60</td>
+<td><code>ai/soldier/venus/soldier_venus_*</code>, <code>ai/commander/venus/*</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">50</td>
+<td><code>ai/kampfhund/kampfhund_base</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">45</td>
+<td><code>ai/soldier/soldier_base</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">40</td>
+<td><code>ai/commander/commander_base</code>, <code>.../scientist</code>, <code>.../engineer</code>, <code>.../robeman</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">25</td>
+<td><code>ai/resistance/resistance_base</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td><code>target/ai/newalarm</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Inheritance makes the work small: setting <code>ai/soldier/soldier_base</code> to 5 hits every soldier variant that inherits from it.</p>
+<p><code>aiGlobalSettings:default</code> contains <code>entityDifficultyMappings</code> with <code>defensiveModifiers.healthModifiers</code> for each <code>difficulty = "DIFFICULTY_NORMAL"</code> — the location where enemy health would scale based on difficulty. In Retail, this block is empty (<code>num = 2</code>, only <code>item[1]</code> is set without a numeric value); <strong>unclear</strong> whether a populated block is evaluated.</p>
+<h3 id="33-weapon-damage-the-chain-weapon--ammo--projectile--damage--safe">3.3 Weapon Damage: the chain <code>weapon → ammo → projectile → damage</code> · <strong>safe</strong></h3>
+<p>Four Decls, each with a single reference to the next one. Using the Pistol as an example, all four files read literally:</p>
+<pre><code>weapon:weapon/player/sp/handgun   →  initialAmmoDecl = &quot;ammo/player/sp/handgun&quot;;
+ammo:ammo/player/sp/handgun              →  projectileDecl  = &quot;projectile/player/pistol&quot;;
+                                            maxCount = 80; clipSize = 10; lowAmmoInClip = 3;
+projectile:projectile/player/pistol      →  damageDecl = &quot;damage/firearm/bullet_pistol&quot;;
+                                            maxRangeBeforeExtraSpread = 20; tracers = 2;
+damage:damage/firearm/bullet_pistol      →  minDamage = 20; maxDamage = 20;
+                                            damageTypes = &quot;DAMAGETYPE_HEALTH DAMAGETYPE_HANDGUN&quot;;
+                                            declGoreBehavior = &quot;standard/pistol&quot;;
+</code></pre>
+<p>The root is <code>damage:damage/firearm/bullet_standard</code> (<code>minDamage = 15; maxDamage = 15; ragdollImpulseMag = 256; damageSource = "DAMAGESRC_BULLET"</code>), from which 18 other <code>damage</code> Decls inherit. The Shotgun shows that the distance curve is also located here: <code>damage/firearm/bullet_shotgun</code> has <code>minDamage = 1; maxDamage = 10; startFalloffDistance = 3; endFalloffDistance = 15;</code>.</p>
+<p>Field frequencies across all 154 <code>damage</code> Decls:
+<code>damageParms.damageName</code> 134, <code>maxDamage</code> 134, <code>minDamage</code> 133,
+<code>damageTypes</code> 82, <code>radius</code> 67, <code>declGoreBehavior</code> 63, <code>damageSource</code> 57,
+<code>minKnockBack</code>/<code>maxKnockBack</code> each 55, <code>ragdollImpulseMag</code> 37,
+<code>selfDamageScale</code> 30, <code>radiusInner</code> 27, <code>isMelee</code> 24,
+<code>physicsExplosionParms</code> 22, <code>kickTime</code> 15, <code>ignoreArmor</code> 13,
+<code>kickAmplitude</code> 13.</p>
+<p>In <code>weapon</code> itself (96 Decls) lies the handling, not the damage:
+<code>firingInterval = 85</code>, <code>initialBurstMode = "BURSTMODE_FULLAUTO"</code>,
+<code>burstInfo.burstInfo[0].burstCount</code>, <code>maxOptimalRange = 15</code>,
+<code>dualwieldable = true</code>, <code>maxCount = 2</code>, <code>ironSightZoom.zoomedFOV = 85</code>,
+<code>heatInfo.heatIncrement</code> / <code>.heatDecrement</code>, <code>stressMod</code>,
+<code>weaponAutoSelectPrio</code>, <code>reticle</code>, <code>upgrades.item[0..3]</code>.</p>
+<p>Targeting assistance is separate in <code>aimAssist:aimassist/sp/default</code>:
+<code>targetAdhesionEnable = false</code>, <code>targetTrackingEnabled = false</code>,
+<code>targetSelection.maxDistance = 150</code> / <code>.maxDegrees = 90</code> / <code>.radius = 5</code>,
+<code>targetZoomSnap.optimalRadius = 2.5</code>, <code>targetFriction.optimalRadius = 2.5</code>,
+<code>targetDistanceModifier.optimalDistanceMin = 10</code> / <code>.optimalDistanceMax = 35</code>.
+One Decl for the entire game, referenced as
+<code>declAimAssist = "aimassist/sp/default"</code> in <code>weapon/player/sp/base</code>.</p>
+<h3 id="34-starting-equipment-devinvloadout--safe">3.4 Starting Equipment: <code>devInvLoadout</code> · <strong>safe</strong></h3>
+<p>57 Decls, 40 unique — <strong>one per chapter section</strong>, named <code>devinvloadout/c03p1_devloadout</code> and so on. Example <code>c03p1</code> read literally:</p>
+<pre><code>startingInventory = { num = 16;
+  item[0]  = { item = &quot;weapon/player/sp/smg&quot;; }
+  item[1]  = { item = &quot;ammo/player/sp/smg&quot;;   count = 180; forceCount = true; }
+  item[4]  = { item = &quot;weapon/player/sp/battlerifle&quot;; equip = true; }
+  item[6]  = { item = &quot;weapon/player/sp/grenade_frag&quot;; count = 3; }
+  item[7]  = { item = &quot;weapon/player/sp/lkw&quot;;  timelineFilter = &quot;FERGUS&quot;; }
+  item[9]  = { item = &quot;abilities/groundpound&quot;; }
+  item[13] = { item = &quot;unlocks/upgradekit&quot;; }
+}
+</code></pre>
+<p>Fields: <code>item</code>, <code>count</code>, <code>forceCount</code>, <code>equip</code>, <code>timelineFilter</code> (<code>"FERGUS"</code> / <code>"WYATT"</code> — the two timelines).</p>
+<p><strong>Important:</strong> The name indicates "dev". It is linked via <code>devmapInvLoadout = "devinvloadout/c01p1_devloadout";</code> in the <code>world</code> block of every <code>.entities</code> map — specifically within the Devmap path. Whether it functions during a normal campaign start is <strong>unclear</strong> and untested (the game has not been started). The campaign's player starting equipment is defined under <code>entityDef:player</code> with <code>startingInventory = { num = 1; item[0] = { inventoryDecl = "player/perkitem"; } }</code> — there is exactly one entry, and everything else is added via script.</p>
+<h3 id="35-gore--safe">3.5 Gore · <strong>safe</strong></h3>
+<p>Three levels, all text, all editable with <code>decl.py</code>:</p>
+<ul>
+<li><strong><code>goreBehavior</code></strong> (41 Decls) — the roll table. Paths <code>edit.probability.item[N].woundType</code> and <code>.probability</code>. Actual values: <code>woundType = "GORETYPE_HEAD_SHOT"</code> (10×), <code>"GORETYPE_FULL_BODY_GIBS"</code>, <code>"GORETYPE_LIMBLOSS"</code>, <code>"GORETYPE_SMALL_WOUND GORETYPE_BIG…"</code>, <code>"GORETYPE_SIGNATURE_DEATH2"</code>; <code>probability = 0.5</code> / <code>0.8</code> / <code>0.400000006</code>; <code>falloff = "gore/falloff/grenade"</code>. <code>inherit = "standard/heavy"</code> / <code>"standard/explosive"</code>. <strong>A mod that sets every <code>probability</code> to 1 is a ten-liner.</strong></li>
+<li><strong><code>gorewounds</code></strong> (383 Decls) — what a wound does concretely. <code>edit.woundType = "GORETYPE_DETACHABLE"</code> (189×), <code>edit.woundFlags = "WOUND_FLAGS_ALLOW_WHEN_ALIVE …"</code> (208×) or <code>"WOUND_FLAGS_ON_DEATH"</code> (91×), <code>edit.damageRequirements.damageGroups.item[0]</code>, <code>edit.spawning.spawnEntities.item[0].entityDef</code> (313×) and <code>.fxTagJoint</code> (336×), <code>.linearVelocityBehavior.behaviors.item[0].type = "SPAWNED_VELOCITY_RANDOM"</code>, <code>.randomMaxScale = 1.25</code>, <code>.behaviors.item[2].type = "SPAWNED_VELOCITY_WITH_DAMAGE"</code>, <code>edit.visuals.disableMeshKits.item[0].slot = "MESH_KIT_GEAR"</code>, <code>edit.behavior.disableHitGroups</code>.</li>
+<li><strong><code>goreGraph</code></strong> 21, <code>goreMannequin</code> 10 (<code>edit.model = "models/characters/goremannequin/…"</code>, <code>lootDrop</code> 19 (<code>edit.goreDropId = "deathcard"</code>, <code>edit.dropItemAtTag</code>).</li>
+</ul>
+<p>Attached via <code>damage.damageParms.declGoreBehavior</code> (63 of 154 <code>damage</code> Decls) — so: damage determines Gore, and both are text.</p>
+<h3 id="36-faction--factions-turn-against-each-other--format-safe-effect-untested">3.6 <code>faction</code> — Factions turn against each other · <strong>Format safe, effect untested</strong></h3>
+<p>8 Decls. Schema identical in all eight:</p>
+<pre><code>edit.relationships.relationships.num = 8;
+edit.relationships.relationships.item[0].otherFaction = &quot;faction/regime&quot;;
+edit.relationships.relationships.item[0].attitude     = &quot;ATTITUDE_HATE&quot;;
+edit.relationships.relationships.item[1].otherFaction = &quot;faction/settlers&quot;;
+edit.relationships.relationships.item[1].attitude     = &quot;ATTITUDE_NEUTRAL&quot;;
+…
+edit.factionNameId = &quot;#str_10025&quot;;
+</code></pre>
+<p>Measured attitudes: <code>ATTITUDE_HATE</code> (7 of 8 Decls in <code>item[0]</code>), <code>ATTITUDE_NEUTRAL</code>, <code>ATTITUDE_DESPISE</code>. Factions: <code>faction/player</code>, <code>faction/regime</code>, <code>faction/settlers</code>, <code>faction/bandits</code>, <code>faction/muties</code>, <code>faction/no_team</code>, <code>faction/red_team</code>, <code>faction/yellow_team</code>, <code>faction/green_team</code>. The names <code>settlers</code>/<code>bandits</code>/<code>muties</code> are inherited from RAGE and do not appear in Part 2 content-wise — a hint that the faction code is general, but <strong>no evidence</strong> that these factions actually do something in the game. <code>aiGlobalSettings:default</code> points to the <code>factionGraph</code> type (2 Decls) via <code>factionGraph = "ai/default"</code>. <code>entityDef:player</code> carries <code>faction.myFaction = "faction/player"</code>.</p>
+<h3 id="37-the-tnc-exclusive-level-perks-and-upgrade">3.7 The TNC-exclusive level: <code>perks</code> and <code>upgrade</code></h3>
+<p>Part 2 has an ability system that Part 1 did not have.</p>
+<ul>
+<li><strong><code>upgrade</code></strong> (209 Decls, 200 unique) — the actual modifier.
+  <code>edit.awardCondition = "UC_AUTOMATIC"</code> (163×), <code>edit.reUsable = true</code>
+  (160×), <code>edit.applyTo = "weapon/player/sp/smg"</code> (22×) /
+  <code>"weapon/player/sp/handgun"</code> (21×), <code>edit.skillPointCost</code>,
+  and the modifier lists:
+  <code>edit.modifiersAmmo.item[0].type = "AMT_AMMO_MAX_COUNT"</code> (62×),
+  <code>edit.modifiersWeapon.item[0].type =
+  "WMT_WEAPON_DAMAGE_IRON_SIGHT_DAMAGE_SCA…"</code> (30×),
+  <code>edit.modifiersData.item[0].opType = "MOD_OPERATOR_SET"</code> (60×) with
+  <code>.priority</code>. <code>upgrade:default</code> is four lines long and uncompressed.</li>
+<li><strong><code>perks</code></strong> (211 Decls) — the unlock conditions for them.
+  <code>edit.upgrades.item[0..N]</code> (173×), <code>edit.criteria</code>, <code>edit.reward</code>,
+  <code>edit.rewardScales.num = 5</code>, <code>edit.requiredStatForActivation.statName</code> /
+  <code>.statIncrement</code> (24×), <code>edit.autoActivate = true</code>,
+  <code>edit.descriptionFlags = "PKF_PLAYER_ABILITY"</code>,
+  <code>edit.presentationType = "Percent"</code>. Example:
+  <code>perk/player/sp/kobra_base</code>.</li>
+<li>Additionally: <code>propItem</code> 79 (<code>edit.ammoCount</code> 30×, <code>edit.inventoryCount</code>
+  42×, <code>edit.inventoryDecl</code>, <code>edit.upgradeDecl</code>) — what an ammo-gathering
+  prerequisite yields; <code>abilityInfo</code> 40 (<code>edit.abilityType =
+  "AT_GROUNDPOUND"</code>), <code>abilityInventoryItem</code> 24, <code>inventoryItem</code> 26,
+  <code>unlockable</code> 96, <code>medal</code> 32, <code>metric</code> 46.</li>
+</ul>
+<hr />
+<h2 id="4-the-cost-question">4. The Cost Question</h2>
+<p>For Part 1: "must fit in <code>csize</code>, otherwise Archive Rebuild." For IDCL the same problem applies — but the numbers are different, and there are two escape routes that Part 1 did not have. Everything here is verifiable with <code>python tools/survey_tnc.py --budget</code>.</p>
+<h3 id="41-space-an-entry-takes">4.1 Space an Entry Takes</h3>
+<p>An IDCL payload sits at <code>offset</code>, is <code>csize</code> bytes long, and behind it stands <strong>a gap padded with zeros</strong> until the next payload. Measured, across all entries sorted by offset:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Archive</th>
+<th style="text-align: right;">Entries</th>
+<th style="text-align: right;">Gap Median</th>
+<th style="text-align: right;">Total Gaps</th>
+<th style="text-align: right;">Overlaps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gameresources.resources</code></td>
+<td style="text-align: right;">50 839</td>
+<td style="text-align: right;">48 B</td>
+<td style="text-align: right;">33.0 MiB</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>chunk_12.resources</code></td>
+<td style="text-align: right;">19 969</td>
+<td style="text-align: right;">650 B</td>
+<td style="text-align: right;">25.6 MiB</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>patch_1.resources</code></td>
+<td style="text-align: right;">676</td>
+<td style="text-align: right;">63 B</td>
+<td style="text-align: right;">0.6 MiB</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table></div>
+<p>All offsets are 16-byte aligned, but the gaps are larger than alignment dictates (median 48 instead of max. 15) and are demonstrably null bytes.
+Not a single overlap in 24 archives — no payload is shared by two entries. <strong>This means: whoever includes <code>csize</code> in the table may grow into the gap without shifting anything.</strong></p>
+<blockquote>
+<p><strong>The code does this.</strong> <code>idcl.plan_in_slot()</code> first calls <code>plan_in_place()</code> — what fits in <code>csize</code> continues to be written byte-for-byte as before — and only then releases the gap; <code>write_in_place()</code> then subtracts <code>csize</code> from the entry table. Only upwards: a <em>smaller</em> <code>csize</code> would pull <code>align_up(vprevious_end, k)</code> under the next offset, and that continues via <code>rebuild()</code>. <code>offset</code> always stays put, as does file size. Each individual write operation measures three things instead of relying on the survey: that the gap bytes are truly 0x00, that no second entry begins on the same offset (136 do this, except four all with <code>csize</code> 0), and that the new length fits. The column "fits in <code>csize</code> + gap" is therefore no longer a calculation, but what <code>plan_in_slot()</code> traverses: <code>tools/verify_idcl_gap.py</code> measures it via exactly this code and arrives at the same numbers.
+Reliable this is not — the 10th percentile of the gap lies at 4 to 12 bytes —, but it is the difference between "almost never" and "almost always":</p>
+</blockquote>
+<p>Testedit = every integer in the Decl multiplied by 1000 (so +3 characters per number), then repacked with Kraken again:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th style="text-align: right;"><code>csize</code> Median</th>
+<th style="text-align: right;">Gap Median</th>
+<th style="text-align: right;">Fits in <code>csize</code></th>
+<th style="text-align: right;">Fits in <code>csize</code> + Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>weapon</code></td>
+<td style="text-align: right;">764</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">3/25</td>
+<td style="text-align: right;"><strong>21/25</strong></td>
+</tr>
+<tr>
+<td><code>damage</code></td>
+<td style="text-align: right;">366</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">0/12</td>
+<td style="text-align: right;"><strong>12/12</strong></td>
+</tr>
+<tr>
+<td><code>entityDef</code></td>
+<td style="text-align: right;">491</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">0/25</td>
+<td style="text-align: right;"><strong>23/25</strong></td>
+</tr>
+<tr>
+<td><code>gorewounds</code></td>
+<td style="text-align: right;">793</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">9/25</td>
+<td style="text-align: right;"><strong>21/25</strong></td>
+</tr>
+<tr>
+<td><code>perks</code></td>
+<td style="text-align: right;">502</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">0/18</td>
+<td style="text-align: right;"><strong>16/18</strong></td>
+</tr>
+<tr>
+<td><code>upgrade</code></td>
+<td style="text-align: right;">472</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">5/25</td>
+<td style="text-align: right;"><strong>25/25</strong></td>
+</tr>
+<tr>
+<td><code>fx</code></td>
+<td style="text-align: right;">852</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">4/25</td>
+<td style="text-align: right;"><strong>22/25</strong></td>
+</tr>
+<tr>
+<td><code>particle</code></td>
+<td style="text-align: right;">2 633</td>
+<td style="text-align: right;">205</td>
+<td style="text-align: right;">0/25</td>
+<td style="text-align: right;"><strong>22/25</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Kraken is so dense that there is hardly any reserve left within <code>csize</code> itself. The space comes from the gap.</p>
+<h3 id="42-the-mode-trick">4.2 The Mode Trick</h3>
+<p><code>compression</code> is a table field, not a feature of the Payload. Of the 178,077 entries, 31,125 are <strong>uncompressed</strong> (Mode 0) — including 137 of 154 <code>damage</code>, 1,127 of 1,461 <code>entityDef</code>, 192 of 211 <code>perks</code>, 179 of 189 <code>table</code>, 52 of 57 <code>ammo</code>, all 10,365 <code>sound</code>, and all 8 <code>healthComponent</code>. Anyone editing such an entry and exceeding <code>csize</code> + Gap can switch it to Mode 2 and gain roughly half the space for larger Decls:</p>
+<pre><code>voiceover  stored 366 B  →  Kraken 170 B
+entityDef  stored 250 B  →  Kraken 222 B
+damage     stored 252 B  →  Kraken 224 B
+</code></pre>
+<p>For very small Decls, this backfires: <code>renderParm</code> 51 B stored → 53 B Kraken, <code>table</code> 75 → 77. Below approximately 150 bytes, Kraken costs more than it saves; there, one should stick with Mode 0.</p>
+<h3 id="43-new-compression-is-bit-identical-to-retail">4.3 New Compression is Bit-Identical to Retail</h3>
+<p><strong>This is the most important single finding for the write path.</strong>
+<code>oodle.compress(data)</code> with Kraken at standard level generates <strong>byte-identical</strong> the same bytes that are in the Retail archive: 401/401 in a sample over <code>weapon</code>, <code>damage</code>, <code>entityDef</code>, <code>gorewounds</code>, <code>perks</code>, <code>sound</code>, <code>material</code>, and again 194/194 in the <code>--budget</code> run. A newly built archive can thus be compared byte-for-byte against the original — any deviation is then a real error and not compression noise.</p>
+<h3 id="44-what-a-new-build-would-cost">4.4 What a New Build Would Cost</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>24 <code>.resources</code> combined</td>
+<td style="text-align: right;">3,40 GiB</td>
+</tr>
+<tr>
+<td>largest: <code>gameresources.resources</code></td>
+<td style="text-align: right;">670 MiB, 50,839 entries</td>
+</tr>
+<tr>
+<td><code>.texdb</code> alongside (untouched)</td>
+<td style="text-align: right;">20.06 GiB</td>
+</tr>
+<tr>
+<td>Oodle new compression throughput (measured)</td>
+<td style="text-align: right;">26.9 MiB/s</td>
+</tr>
+<tr>
+<td>⇒ <code>gameresources</code> completely repack</td>
+<td style="text-align: right;">≈ 25 s</td>
+</tr>
+<tr>
+<td>⇒ all 24 archives</td>
+<td style="text-align: right;">≈ 2 min</td>
+</tr>
+</tbody>
+</table></div>
+<p>Computation time is therefore not an obstacle. Disk space is: a backup copy of the <code>.resources</code> costs 3.4 GiB.</p>
+<h3 id="45-the-trap-same-names-in-the-same-archive">4.5 The Trap: Same Names in the Same Archive</h3>
+<p><strong>3,869 <code>(Type, Name)</code> pairs occur multiple times within one and the same archive</strong> — exclusively <code>renderProgResource</code>, with 5 to 6 copies per name (422 affected names in <code>gameresources</code>, 429 in <code>patch_4</code>). <code>version</code> and <code>flags</code> are identical in all copies; the only field that distinguishes them is <code>unknown_0x72</code> (32, 33, 34, 35, 47, 49 — looks like shader stage).</p>
+<p><code>Archive.find(typ, name)</code> in <code>wolfsdk/idcl.py</code> builds its index with <code>setdefault</code> and therefore delivers <strong>only the first</strong> of these copies. Anyone resolving shader resources by name hits one of six. For all Decl types from Section 3, this is inconsequential — there are no duplicate names within the same archive there.</p>
+<h3 id="46-the-cheap-way-a-separate-patch-archive">4.6 The Cheap Way: A Separate Patch Archive</h3>
+<p>Retail itself stores <strong>5,983 <code>(Type, Name)</code> pairs multiple times</strong>, and in <strong>1,701 cases the <code>data_hash</code> values differ</strong> — so they are different contents under the same name, and one of them is the copy in a <code>patch_*.resources</code>. Additionally, there exist <strong>1,013 pairs exclusively in Patch Archives</strong> (287 <code>image</code>, 265 <code>material</code>, 147 <code>voicetrack</code>, 92 <code>missionobj</code>, 36 <code>anim</code>, 33 <code>sound</code>, 32 <code>medal</code>, …).</p>
+<p>Examples:</p>
+<pre><code>entityDef  player_c01_coma       chunk_1 242 B   →  patch_3 291 B
+entityDef  player_young_bj       chunk_1 890 B   →  patch_3 939 B
+skeleton   player_wtno.md6skl    chunk_1 12586 B →  patch_2 12666 B
+</code></pre>
+<p>For a patch to serve any purpose, <strong>the later copy must win</strong>. The string <code>patch</code> appears immediately next to <code>chunk</code>, <code>chunkbase</code>, and <code>.texdb</code> in the Resource-Cvars block (<code>resource_debugLevel</code>, <code>resource_updatePakCacheTable</code>, <code>resource_trackLoadTimes</code>) — consistent with a name-based composition of the archive list. <strong>The exact rule is unclear</strong>: there is no <code>%s.resources</code> format string in the Exe except for <code>gameresources.resources</code> / <code>mp_gameresources.resources</code> / <code>snap_gameresources.resources</code>, and the game was not launched.</p>
+<p>If this is confirmed, a Mod costs its own archive of a few hundred KiB instead of a 670-MiB rebuild. <strong>This is the question that should be answered next.</strong></p>
+<hr />
+<h2 id="5-entities-scripts-and-the-second-compression-layer">5. <code>.entities</code>, Scripts, and the Second Compression Layer</h2>
+<p>Three types appear binary but are not: <code>compfile</code> (129), <code>extkisclule</code> (2 492), and <code>cfile</code> (67). They carry <strong>behind</strong> the archive compression a second layer:</p>
+<pre><code>0x00  i64  usize   negative = payload data is uncompressed, |usize| = length
+0x08  u64  csize   Length of the Kraken frame, always len(payload) - 16
+0x10  …    Kraken frame (starts with 0x8C) or raw text
+</code></pre>
+<p>Based on all 2 688 entries of these types:
+<strong>129/129 <code>compfile</code> and 2 477/2 492 <code>extkisclule</code> succeed</strong>; the remaining 15 <code>extkisclule</code> carry a negative <code>usize</code> (<code>d9ffffff…</code> = −39) and are uncompressed text. <code>cfile</code> does <strong>not</strong> follow the schema — see Section 6. <code>tools/survey_tnc.py --maps</code> performs this layer.</p>
+<h3 id="51-the-maps-29-pieces-437-570-entity-blocks">5.1 The Maps: 29 Pieces, 437 570 Entity Blocks</h3>
+<pre><code>29 .entities maps, 437570 entity blocks, 397.3 MiB text,
+decl.py: 29 ok / 0 errors
+</code></pre>
+<p>The header of each map is <code>Version 5</code> / <code>HierarchyVersion 2</code>, followed by numerous blocks of the form</p>
+<pre><code>entity {
+    entityDef c01p1_vo_kiscule {
+    inherit = &quot;kiscule&quot;;
+    class = &quot;idKisculeEntity&quot;;
+    expandInheritance = false;
+    poolType = &quot;POOLTYPE_NONE&quot;;
+    edit = {
+        spawnPosition = { x = -1.1000000238; y = 2.9000000954; }
+        externalKisculeDecl = &quot;maps/game/wolf/c01/c01p1_snd_vo/kiscules/c01p1_vo_kiscule.decl&quot;;
+    }
+}
+}
+</code></pre>
+<p>The <code>world</code> block of the first map shows what everything depends on: <code>globalAIsettings = "default"</code>, <code>envSettings = "game/wolf/c01/c01p1_default"</code>, <code>playerSwitchDefs</code> (five player variants), <code>devmapInvLoadout = "devinvloadout/c01p1_devloadout"</code>.</p>
+<p>Most frequent <code>inherit</code> values across all 29 maps:
+<code>func/staticinstance</code> 323 106, <code>decal_stamp</code> 22 686, <code>func/dynamic</code> 15 467,
+<code>light/point</code> 6 858, <code>ai/scenepoints/tactical</code> 6 260,
+<code>ai/scenepoints/combat</code> 5 441, <code>func/flare</code> 4 535, <code>prop/breakable</code> 3 304,
+<code>kiscule</code> 2 443, <code>func/emitter</code> 2 194, <code>ai/scenepoints/traversal</code> 2 013,
+<code>nav/region</code> 1 714, <code>soundportal</code> 1 436, <code>ai/scenepoints/roam</code> 1 429,
+<code>light/spot</code> 1 351, <code>prop/moveable</code> 1 326, <code>triggers/trigger</code> 1 181.</p>
+<p>Most frequent <code>class</code>: <code>idStaticInstanceEntity</code> 324 128,
+<code>idDynamicStampEntity</code> 22 686, <code>idDynamicEntity</code> 15 467,
+<code>idScenePoint_Combat</code> 14 922, <code>idLight</code> 8 329, <code>idProp2</code> 7 431,
+<code>idLensFlare</code> 4 535, <code>idBreakable</code> 3 313, <code>idInfo</code> 3 115,
+<code>idKisculeEntity</code> 2 443.</p>
+<p><strong>All 29 maps parse successfully with <code>decl.py</code>.</strong> Thus, enemy, light, and pickup switching is technically achievable. Practically, size is the problem: a map is up to ~2.6 MiB text, and every change incurs double recompression plus archive space overhead.</p>
+<h3 id="52-kiscule-the-script-layer">5.2 Kiscule: The Script Layer</h3>
+<p>2 408 unique <code>extkisclule</code> files (<code>…/kiscules/*.decl</code>), totaling
+<strong>70 274 nodes in 205 node types</strong> — the id-tech-6 counterpart to the <code>.script</code> files from Part 1, but as a node graph instead of text VM. Format:</p>
+<pre><code>edit = { kiscule = { version = 6; nodes = { num = 3;
+  item[0] = { name = &quot;idKisculeNodeGetCustomEvent&quot;; id = 1556281116;
+              nodePos = { x = 220; y = 300; }
+              parameters = { class = &quot;idKiscule…&quot; } } } } }
+</code></pre>
+<p>Most Frequent Nodes: <code>idKisculeNodeEntityReference</code> 13,850, <code>idKisculeNodeGetCustomEvent</code> 8,020, <code>idKisculeNodeDelay</code> 4,103, <code>idKisculeNodeActionTriggerFx</code> 3,532, <code>idKisculeNodeActionSoundVoiceOver2</code> 3,499, <code>idKisculeNodeGate</code> 3,195, <code>idKisculeNodeSendCustomEvent</code> 2,582, <code>idKisculeNodeActionBoolControl</code> 1,979, <code>idKisculeNodeActionShowHide</code> 1,837, <code>idKisculeNodeRandomTime</code> 1,808, <code>idKisculeNodeActionSoundPostEvent</code> 1,493, <code>idKisculeNodePlayerEnt</code> 1,473, <code>idKisculeNodeLight</code> 1,417, <code>idKisculeNodeLog</code> 1,325, <code>idKisculeNodeNamedVariableBool</code> 1,206.</p>
+<p>Changing numeric values in existing nodes (delays, probabilities, Bool toggles) is purely <code>decl.set()</code>. Adding nodes requires understanding the <code>id</code> connections — <strong>unverified</strong>.</p>
+<p>The 29 <code>compfile/proc</code> and 28 <code>compfile/prockd</code> entries also go away, but they contain Geometry (<code>.mapProcKdFile0001 /* generated …</code>), no Decl.</p>
+<hr />
+<h2 id="6-what-is-definitively-not-possible">6. What is definitively not possible</h2>
+<p><strong><code>cfile</code> is encrypted, not just packed.</strong> There are 20 unique files:
+10 <code>.cfg</code> and <strong>all 10 <code>strings/*.lang</code></strong> (the complete localization, 389,360 bytes for English). All lie uncompressed in the archive (Mode 0), but carry their own header followed by noise:</p>
+<pre><code>strings/english.lang   d8441f00 f890ef59 964d5e45 fa3ea479 …
+default_sp.cfg         fd180000 b708d259 b46bddd0 9dd39c64 …
+default_mp.cfg         ffffffff 3450f557 927d60c0 edbf36ab …
+</code></pre>
+<p>The first 4 bytes are a length (<code>0x1f44d8</code> = 2,049,240 for <code>english.lang</code>, significantly exceeding the 389,352 bytes of payload data — i.e., the length <em>after</em> unpacking), followed by the next 4 bytes as a Unix timestamp (<code>0x59ef90f8</code> = October 24, 2017, within the game's build window). <code>ffffffff</code> as a length apparently marks "no decompression".</p>
+<p>Oodle does not apply here: unpacking attempts from offset 4 and 8 for every plausible target size all fail, and <code>oodle.raw_length()</code> finds no valid frame length. Instead, <code>NewColossus_x64vk.exe</code> contains the symbols <code>idSecureBlockCipher::Decrypt</code>, <code>idSecureBlockCipher::DecryptWithOSPadding</code>, <code>idSecureAEADCipher::Decrypt</code>, and the Windows CNG call <code>BCryptDecrypt</code>. <strong>The content is encrypted, the key is unknown → localization is not moddable via this path.</strong></p>
+<blockquote>
+<p>Measured and expanded in <code>docs/cfile.md</code> (Tool <code>tools/cfile.py</code>):
+Handler is <code>idEncryptedFileResource</code>, AES in block mode with padding, a unique salt per file, the key is derived rather than stored. Three attack families are thoroughly refuted there — 33.8 million key windows from readable sections, 2.8 million string constants as KDF secret, 16,368 public derivations. The KDF itself resides in <code>.text</code> and is thus unreachable. <strong>The open path is different:</strong> Part 1 writes the same file as type <code>file</code> in plaintext, and whether a <em>loose</em> <code>base/strings/english.lang</code> beats the archive entry is a runtime question — see <code>resource_loadLooseAssets</code> and Experiment E2 in <code>docs/ladepfade.md</code>.</p>
+</blockquote>
+<p>Incidental finding that partially mitigates this: <code>default.cfg</code>, <code>default_sp.cfg</code>, and <code>build.cfg</code> lie <strong>additionally as loose plaintext files</strong> in <code>base\</code>. CVar changes therefore do not need the archive at all.</p>
+<hr />
+<h2 id="7-where-uncertainty-remains">7. Where uncertainty remains</h2>
+<ul>
+<li><strong>Patch Priority.</strong> 1,701 double-stored pairs with different content prove that something wins—what rule? Unmeasured. This decides whether a Mod costs 300 KiB or 670 MiB. Highest priority.</li>
+<li><strong><code>devInvLoadout</code> at Campaign Start.</strong> It is attached and visible only via <code>devmapInvLoadout</code> in the <code>world</code> block. Whether the normal campaign start reads the same Decl: unclear, untested.</li>
+<li><strong><code>particle</code>.</strong> In Part 1, demonstrably impossible (pre-calculated resource block). In Part 2, all 797 entries are text, parse cleanly, and have ample space with a median gap of 205 bytes. Whether loading also works: <strong>not tested</strong>, the game was not started.</li>
+<li><strong><code>entityDifficultyMappings</code>.</strong> The block in <code>aiGlobalSettings:default</code> is empty in Retail. Whether a filled one is evaluated: unclear.</li>
+<li><strong>Mode 4.</strong> 25 entries, all over 21 MB, all with the same 12-byte prefix. Extraction works, but what the prefix means is open—and thus also whether such an entry can be correctly <em>written</em>.</li>
+<li><strong>Gaps as Budget.</strong> That the gaps are null bytes and no entry overlaps is measured. That the engine has no second meaning for this area (Prefetch window, Streaming alignment) is <strong>not</strong> measured. Whoever writes into the gap should verify it individually.</li>
+<li><strong>Shader Modding is removed.</strong> <code>renderProgResource</code> (4,729 entries, 429 unique) is binary, and a full-text search over all 44,374 text assets for <code>hlsl</code>, <code>SV_POSITION</code>, and <code>float4</code> finds <strong>no single</strong> asset with shader source text—the 14 hits are structure declarations in <code>renderParm</code> (<code>{ struct { float3 pos; uint lightParms; float4 posShadow; … } }</code>). Part 1 had HLSL sources still in <code>renderProg</code>; here they are pre-compiled.</li>
+<li><strong>The Vector Weakness of <code>decl.py</code></strong> (Section 2.3) affects 2,242 Decls. As long as one does not automatically rewrite <code>material</code>, <code>renderParm</code>, <code>table</code>, and <code>env</code>, it is inconsequential—but it exists.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="TNC-Verified-Findings-2026-09-23.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC: Verified Results from 23.09.2026</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

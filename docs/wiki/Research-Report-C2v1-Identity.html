@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>c2v1-Alias: File-Corrupt-Identitaet – Wolfenstein Modloader</title>
+<meta name="description" content="Why a Wolfenstein II custom map alias was rejected as &#x27;File Corrupt&#x27;: concrete mismatches found.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>c2v1-Alias: File-Corrupt-Identitaet</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-C2v1-Identity"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#measured">Measured</a></li><li><a href="#reproduction">Reproduction</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">A read-only comparison of why a custom <span class="t" data-t="alias">alias</span> of the DLC map c2v1 in Wolfenstein II (TNC) was rejected as &#x27;File Corrupt&#x27;. The installed alias used the wrong patch level (4 instead of 3) and was missing the list of referenced <span class="t" data-t="chunk">chunks</span>, and the save still named the original map in all three save files. These are concrete causes to fix, but the corrected candidate is not proven to work in the game.</p><ul><li>Original DLC 2 settings: chunk 22, patchlevel 3, refchunks 9 and 13.</li><li>The alias had patchlevel 4 and no refchunks; the installer was corrected.</li><li>The alias held only 243 entries, compared with 6,985 in the original chunk.</li><li>The main archive header hash matched, so it was not the first mismatch.</li><li>A custom test needs the alias name in all three save files.</li></ul></div><div class="de"><p class="lede">Ein reiner Lese-Vergleich, warum ein eigener <span class="t" data-t="alias">Alias</span> der DLC-Karte c2v1 in Wolfenstein II (TNC) als „File Corrupt“ abgelehnt wurde. Der installierte Alias nutzte den falschen Patchlevel (4 statt 3), ihm fehlte die Liste der verwiesenen <span class="t" data-t="chunk">Chunks</span>, und der Spielstand nannte in allen drei Spielstanddateien noch die Originalkarte. Das sind konkrete Ursachen zum Beheben, doch dass der korrigierte Kandidat im Spiel funktioniert, ist nicht bewiesen.</p><ul><li>Originale DLC-2-Einstellungen: Chunk 22, patchlevel 3, refchunks 9 und 13.</li><li>Der Alias hatte patchlevel 4 und keine refchunks; der Installer wurde korrigiert.</li><li>Der Alias enthielt nur 243 Einträge statt 6.985 wie der Original-Chunk.</li><li>Der Haupt-Header-Hash des Archivs stimmte, war also nicht die erste Abweichung.</li><li>Ein eigener Test braucht den Alias-Namen in allen drei Spielstanddateien.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Read-only comparison of the retail DLC-2 map envelope, the installed alias candidate, and the available save. No Steam file or save was modified.</p>
+<h2 id="measured">Measured</h2>
+<p>Retail <code>dlc_2/base/packagemapspec.json</code> for <code>game/dlc/c02/c2v1</code>:</p>
+<pre><code class="language-json">{&quot;basechunkid&quot;: 6, &quot;chunkid&quot;: 22, &quot;isbasechunk&quot;: false,
+ &quot;layer&quot;: -1, &quot;refchunks&quot;: [9, 13], &quot;patchlevel&quot;: 3}
+</code></pre>
+<p>The installed alias used the same chunk filename/ID and <code>basechunkid</code>/layer, but had <code>patchlevel: 4</code> and omitted <code>refchunks</code>. This constitutes a concrete bundle-mismatch hypothesis for <code>File Corrupt</code>; the installer was corrected to use patchlevel 3 and refs <code>[9, 13]</code>.</p>
+<p>IDCL comparison:</p>
+<ul>
+<li>Retail chunk 22: 6,985 entries, <code>+0x08 = 0xcda7783767c0c98f</code>.</li>
+<li>Alias candidate: 243 entries, same <code>+0x08</code>; <code>+0x20</code> differs as expected after rebuilding the string table.</li>
+</ul>
+<p>Thus <code>+0x08</code>/chunk identity is not the first mismatch. The candidate remains unproven runtime-valid because its reduced entry set and internal asset references differ from the retail bundle.</p>
+<p>Save comparison showed that the available retail save still carries <code>game/dlc/c02/c2v1</code> in <code>checkpoint.dat</code>, <code>checkpoint_mapstart.dat</code>, and <code>game.details</code>. A custom test requires the alias in all three locations; leaving one retail map string is an independent corruption cause.</p>
+<h2 id="reproduction">Reproduction</h2>
+<pre><code class="language-powershell">python tools/check_tnc_map_identity.py `
+  --game D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus `
+  --candidate D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_4
+</code></pre>
+<p>The check is read-only and confirms the mapspec/IDCL/save hypotheses before a new runtime attempt.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Assetviewer.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Asset Tab for Wolfenstein II (assetviewer)</a><a class="next" href="Research-Report-Cfilekey2.html"><small><span class="en">Next</span><span class="de">Weiter</span></small><code>cfile</code> — Key derivation found, corpus decrypted, round-trip byte-exact</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

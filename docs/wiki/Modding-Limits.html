@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limits — what works, what doesn&#x27;t, and why – Wolfenstein Modloader</title>
+<meta name="description" content="What cannot be modded in Wolfenstein: The New Order, why, and which file rules a patcher must obey.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
+<h1>Limits — what works, what doesn&#x27;t, and why</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Modding-Limits"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-the-retail-lock">1. The Retail Lock</a></li><li><a href="#2-why-the-lock-cannot-be-bypassed">2. Why the Lock Cannot Be Bypassed</a></li><li><a href="#3-the-compression-format--the-most-important-detail">3. The Compression Format — the most important detail</a></li><li><a href="#4-the-archive-invariant">4. The Archive Invariant</a></li><li><a href="#5-what-cannot-be-modded">5. What Cannot Be Modded</a></li><li><a href="#6-what-happens-instead-with-decls">6. What Happens Instead with Decls</a></li><li><a href="#7-open-issues">7. Open Issues</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page lists what cannot be changed in Wolfenstein: The New Order (TNO) and why, based on the game&#x27;s own log file. Many cheat <span class="t" data-t="cvar">settings</span> are locked in the retail version, and none of five tested ways around the lock worked. It explains two strict file rules the patcher must follow, and shows that <span class="t" data-t="decl">decl</span> text files are the way to change damage, health and gore instead.</p><ul><li>Cvars like g_infiniteAmmo are locked, while g_permaGodMode and g_damageScale are not.</li><li><span class="t" data-t="compression">Compressed</span> data must end with a sync marker; a normal stream end breaks the whole resource reader.</li><li>Data in an archive must stay in ascending order, so patches write into the existing slot.</li><li>A patch of 373 assets loaded and ran for about 48 minutes with zero errors in the log.</li><li>New 3D models, new weapon textures and movement speed cannot be modded yet.</li></ul></div><div class="de"><p class="lede">Diese Seite listet, was sich in Wolfenstein: The New Order (TNO) nicht ändern lässt und warum, gestützt auf die Logdatei des Spiels. Viele Cheat-<span class="t" data-t="cvar">Einstellungen</span> sind in der Verkaufsversion gesperrt, und keiner von fünf getesteten Umwegen hat funktioniert. Sie erklärt zwei strenge Dateiregeln für den Patcher und zeigt, dass stattdessen <span class="t" data-t="decl">Decl</span>-Textdateien der Weg sind, um Schaden, Leben und Gore zu ändern.</p><ul><li>Cvars wie g_infiniteAmmo sind gesperrt, g_permaGodMode und g_damageScale dagegen nicht.</li><li><span class="t" data-t="compression">Komprimierte</span> Daten müssen mit einer Sync-Markierung enden; ein normales Stream-Ende legt den ganzen Ressourcenleser lahm.</li><li>Daten im Archiv müssen aufsteigend sortiert bleiben, daher schreiben Patches in den bestehenden Platz.</li><li>Ein Patch mit 373 Assets lud und lief rund 48 Minuten ohne einen einzigen Fehler im Log.</li><li>Neue 3D-Modelle, neue Waffentexturen und Laufgeschwindigkeit lassen sich noch nicht modden.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Everything here is <strong>measured</strong>, not guessed. The evidence comes from the game log (<code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein The New Order\base\qconsole.log</code>), which the engine writes on every start. It logs the complete command line, every rejected Cvar, and every error — the most useful tool for modding this game.</p>
+<hr />
+<h2 id="1-the-retail-lock">1. The Retail Lock</h2>
+<p>The engine rejects certain Cvars:</p>
+<pre><code>WARNING: com_allowConsole CANNOT be set in retail!
+</code></pre>
+<p>Measured via a probe run with the full catalog. <strong>Locked</strong> include, among others:</p>
+<pre><code>ai_damageScale        ai_invulnerable       com_allowConsole    com_skipIntroVideo
+devgui                g_AimAssist_Disable_All   g_EnableGore    g_debugGore
+g_freeCamSpeed        g_gameDifficulty      g_goreBloodyMess    g_gravity
+g_infiniteAmmo        g_playerHealthRegenDelay  g_playerHealthRegenSpeed
+g_showThinks          g_useSavegameDifficulty   pm_autoSprint   pm_crouchspeed
+pm_jumpheight         pm_noBob              pm_noclipspeed      pm_runspeed
+pm_sprintMaxTime      pm_sprintspeed        pm_walkspeed
+</code></pre>
+<p><strong>Not locked</strong> and thus fully usable:</p>
+<pre><code>g_permaGodMode   g_permaInfiniteAmmo   g_damageScale   g_fov
+com_showFPS      g_showHud             g_bloodEffects  pm_togglesprint
+r_swapInterval
+</code></pre>
+<p>Notable: <code>g_infiniteAmmo</code> is locked, while <code>g_permaInfiniteAmmo</code> is not.</p>
+<p>The current status can be measured at any time — write the catalog as a Config, start, and search the log for <code>CANNOT be set in retail</code>.</p>
+<blockquote>
+<p><strong>The tool for this does not exist in the repository.</strong> The list above comes from a manually driven probe run; none of the <code>tools/probe_*.py</code> scripts generate it — <code>probe_cvars.py</code>, <code>probe_cheatvars.py</code>, and <code>probe_retail_lock.py</code> all read only the EXE. "Measured" here means measured once, but not reproducible on demand. The reference to <code>tools/probe_retail_cvars.py</code> in <code>wolfsdk/cvars.py:30</code> points to nothing.</p>
+</blockquote>
+<h3 id="two-different-nays--config-lock-and-cheat-reset">Two different Nays — Config Lock and Cheat Reset</h3>
+<p>The warning above is the response to a <strong>Config line</strong>. From the <strong>command line</strong>, the same rejection looks different, and this is readable in the log. The run from 21.09.2026, 18:47 (<code>qconsole.log</code>, 4,858 lines) produced with</p>
+<pre><code>+com_skipIntroVideo 1 +pm_autoSprint 1 +com_allowConsole 1 +g_showHud 1
++g_EnableGore 1 +g_bloodEffects 1 +g_goreBloodyMess 1
+</code></pre>
+<p><strong>not a single</strong> line <code>CANNOT be set in retail</code>, but rather:</p>
+<pre><code>325: Resetting cheat cvar: pm_autoSprint
+326: Resetting cheat cvar: g_goreBloodyMess
+327: Resetting cheat cvar: com_allowConsole
+328: Resetting cheat cvar: com_skipIntroVideo
+</code></pre>
+<p>This is the mechanism from Section 2, not from Section 1: The assignment arrives, but the Cheat Reset wipes it out. Practically, the result is the same — the Cvar stands at its default value again on game start. Formally, it is a different path, and whoever searches the command line for <code>CANNOT be set</code> to check if a Cvar gets through is looking at the wrong line.</p>
+<p>Incidental finding of the same lines: <code>g_EnableGore</code> was also on the command line, stands in the lock list above — and does <strong>not</strong> appear under "Resetting cheat cvar". From the command line it survives the reset, unlike <code>g_goreBloodyMess</code> two lines down. Whether it works with that is not stated by the log. <em>Unverified.</em> (<code>g_showHud</code> and <code>g_bloodEffects</code> were also present and are anyway not locked.)</p>
+<hr />
+<h2 id="2-why-the-lock-cannot-be-bypassed">2. Why the Lock Cannot Be Bypassed</h2>
+<p>Five channels were tested:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Lock</th>
+<th>Cheat Reset</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>binary.cfg</code> / <code>default.cfg</code></td>
+<td>blocked</td>
+<td>—</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>+devgui 1</code> (Cvar argument)</td>
+<td>bypassed</td>
+<td>wiped out</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>+set devgui 1</code></td>
+<td>bypassed</td>
+<td>wiped out</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>+exec file.cfg</code> (runs after reset)</td>
+<td>blocked</td>
+<td>survives</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>+toggle devgui</code></td>
+<td><strong>bypassed</strong></td>
+<td><strong>survives</strong></td>
+<td>Cvar = 1, but no effect</td>
+</tr>
+</tbody>
+</table></div>
+<p>Two mechanisms interact with each other:</p>
+<ol>
+<li><strong>The lock</strong> only allows assignments from the command line. Configuration files are rejected.</li>
+<li><strong>A single cheat reset</strong> at startup wipes all <code>CVAR_CHEAT</code> cvars:
+   <code>326: Resetting cheat cvar: devgui</code>
+   It runs <em>after</em> the command line and <em>before</em> everything else.</li>
+</ol>
+<p>The combination is tight: what comes early enough to bypass the lock gets caught by the reset; what comes late enough to survive the reset no longer counts as a command line input.</p>
+<p><code>+toggle</code> actually breaks this logic — <code>toggle</code> is a command and runs late, but it originates from the command line:</p>
+<pre><code>494: devgui = 1.000000      (no lock warning)
+</code></pre>
+<p><strong>It serves no purpose.</strong> With <code>devgui = 1</code>, nothing happens on F8 and F10. The cvar exists, but the functionality behind it is not hooked in the retail build. The same applies to the console.</p>
+<h3 id="and-an-exe-patch">And an EXE patch?</h3>
+<p>Not in the Steam version. The EntryPoint lies in a section named <code>.bind</code> — the SteamStub wrapper. The real <code>.text</code> is encrypted on disk, evidenced by the fact that <strong>not a single</strong> string has a reference, not even <code>"Command line is: "</code>, which is guaranteed to be used. Removing the wrapper would be copyright removal, not modding.</p>
+<p>The <strong>GOG version is DRM-free</strong>. There, a patch would be normal modding on its own file. Whether it leads to the target is open: The DevGUI strings (<code>"DevGUI Key Legend:"</code>, <code>"&gt;Trying to Init DevGUI when its already Init!"</code>) are embedded in the binary, so the code is presumably present — but behind the cvar sits at least one more hurdle.</p>
+<hr />
+<h2 id="3-the-compression-format--the-most-important-detail">3. The Compression Format — the most important detail</h2>
+<p>Payloads are <strong>raw DEFLATE without a finish</strong>. Of the 15,069 entries in chunk0, 14,035 end on <code>00 00 ff ff</code>, the Z_SYNC_FLUSH signature: The BFINAL bit is not set. The engine knows the <code>usize</code> for every entry and inflates exactly that many bytes — it never expects a stream end.</p>
+<p>If one instead writes a stream closed with <code>Z_FINISH</code> (i.e., <code>zlib.compressobj(...).flush()</code> in Python), the following occurs:</p>
+<pre><code>380: Load 11168 resources using 14023 of 15069 total resource files
+381: WARNING: zlib inflate error
+382: WARNING: couldn't read production file for decl 'generated/decls/renderProg/...'
+... and from here on, every further resource access fails
+</code></pre>
+<p><strong>A single inflate error disables the entire resource reader.</strong> The visible crash occurs afterwards at a completely unrelated location — in this specific case with the Combatknife model, which was never touched.</p>
+<p>The fix is one line:</p>
+<pre><code class="language-python">packed = co.compress(data) + co.flush(zlib.Z_SYNC_FLUSH)   # not co.flush()
+</code></pre>
+<p>Tricky about it: Python's <code>zlib.decompressobj</code> reads <strong>both</strong> formats silently. All byte tests were green, while the output format was wrong. <code>tools/verify_patch.py</code> now explicitly checks that every stream ends on the sync marker.</p>
+<hr />
+<h2 id="4-the-archive-invariant">4. The Archive Invariant</h2>
+<p>Payloads lie in <code>.resources</code> sequentially on <strong>16-byte boundaries</strong>, with strictly <strong>ascending</strong> offsets (verified: 15,069 of 15,069 entries in chunk0). The engine validates this:</p>
+<pre><code>FATAL ERROR: idBackgroundLoader::BeginBackgroundLoads: FileTable is out of order
+</code></pre>
+<p>An earlier version of the patcher appended new data to the file end and redirected the index there. This passed <strong>every</strong> byte test — round-trip byte-identical, revert sha256-identical — and still caused the game to crash at startup.</p>
+<p>Therefore, the Patcher writes today <strong>into the existing Slot</strong>: Offsets never move. The budget is exactly <code>csize</code> — not <code>csize</code> plus alignment padding. Although up to 15 bytes of padding may exist between two payloads, <code>Archive.write_in_place()</code> does not touch them: a shorter stream would shrink <code>csize</code>, and the Loader would then incorrectly address <em>later</em> entries — symptom <code>No address, error: 487</code>. Shorter streams are therefore padded back to <code>csize</code> and the length field remains intact. Whoever calculates the space for an edited Decl computes <code>csize − own Deflate</code> and no additional bytes (example figures in <code>TNO-Modding-Surface.md</code> §4.1). If a replacement does not fit, the affected Archive is completely rewritten — expensive, but orderly.</p>
+<p><strong>Lesson learned:</strong> Byte-exact round-tripping is not the same as a valid Archive. <code>tools/verify_patch.py</code> checks the order since then.</p>
+<p><strong>And in-game?</strong> Measured as of 21.09.2026: An <code>apply</code> with 373 Assets, which <strong>all 14</strong> <code>.resources</code> files rewrote, started 15 seconds later and ran for approximately 48 minutes until Chapter 12. The <code>qconsole.log</code> from this session contains <strong>0</strong> lines of <code>ERROR</code>, <strong>0</strong> <code>zlib inflate error</code>, <strong>0</strong> <code>FileTable is out of order</code>, and <strong>0</strong> <code>No address</code>. Thus, the Order Invariant holds not only in the verification tool but also in the Loader. This answers the question "does the Engine load the patched Archives without complaint?" — though what the changes <em>do</em> remains unverified.</p>
+<hr />
+<h2 id="5-what-cannot-be-modded">5. What Cannot Be Modded</h2>
+<p><strong>New 3D Geometry.</strong> <code>md6Def</code> is text, but <code>multimesh.base</code> points to <code>.md6mesh</code> — binary, not examined. A "new weapon" here means: new Decl, existing Meshes, own values, Tags, and Skins.</p>
+<p><strong>New Surface Textures for Weapons and Characters.</strong> Their pixels lie in the Megatexture (<code>virtualtextures/*.pages</code>, 39 files, 35.6 GB / 33.2 GiB, measured as of 21.09.2026), not as an <code>image</code> Asset — for <code>models/weapons/Handgun/Handgun</code> there is demonstrably no <code>image</code>. Materials with <code>usevirtualmapping 1</code> derive their data from there. Skins therefore function via <strong>bending onto existing materials</strong>, not via new image data.</p>
+<p><strong>HUD and UI Textures</strong> exist instead as <code>image</code> (2,566 pieces). Header Readers, Decoders (BIM → PNG), and Encoders (PNG → BIM) are present — <code>wolfsdk/image.py</code>, exported as <code>wolfsdk image-export</code> and <code>wolfsdk image-import</code>. Two limitations remain:</p>
+<ul>
+<li>The Encoder writes exclusively <strong>Format Code 3 (RGBA8)</strong> and requires the replaced image as a template, because multiple header fields are not decrypted. There is no BC1/BC3 compressor — thus a replacement is usually larger than the original and forces an Archive rebuild.</li>
+<li><strong>Whether a replaced image looks correct in-game is not verified.</strong> It is only documented that the Engine loaded four self-built BIMs (Mod <code>wolfsdk.gore_texturen</code>) without writing an error line — see Section 4. Looking at the screen does not confirm this.</li>
+</ul>
+<p><strong>Movement Speed, Gravity, Jump Height.</strong> As a CVar locked, and no Decl equivalent can be found — a full-text search across all 60,210 text Assets for <code>runSpeed|sprintSpeed|walkSpeed|jumpHeight|gravity</code> yields nothing for the player.</p>
+<hr />
+<h2 id="6-what-happens-instead-with-decls">6. What Happens Instead with Decls</h2>
+<p>The lock applies <strong>only to Cvars</strong>. Everything the Engine reads from Decls remains untouched:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Desired Effect</th>
+<th>CVar</th>
+<th>Decl Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weapon Damage</td>
+<td>—</td>
+<td><code>damage/tungsten/*</code> → <code>minDamage</code>, <code>maxDamage</code></td>
+</tr>
+<tr>
+<td>Fire Rate, Magazine</td>
+<td>—</td>
+<td><code>weapon/*</code> → <code>firingIntervals</code>, <code>clipSize</code></td>
+</tr>
+<tr>
+<td>Gore Level</td>
+<td>locked</td>
+<td><code>damage/*</code> → <code>goreTypes</code>, <code>goreBehavior/*</code></td>
+</tr>
+<tr>
+<td>Enemy Health</td>
+<td>—</td>
+<td><code>entityDef</code> → <code>aiHealth.components[0].max</code></td>
+</tr>
+<tr>
+<td>Enemy Weaponry</td>
+<td>—</td>
+<td><code>entityDef</code> → <code>startingInventory.item[0].inventoryDecl</code></td>
+</tr>
+<tr>
+<td>Appearance, Clothing</td>
+<td>—</td>
+<td><code>entityDef</code> → <code>renderModelInfo.model</code>, <code>damageSwapSkin</code></td>
+</tr>
+<tr>
+<td>Weapon Skin</td>
+<td>—</td>
+<td><code>material/*</code> → <code>diffusemap</code> + <code>virtualmapping</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Details in <a href="Modding-Guide.html">modding.md</a>.</p>
+<hr />
+<h2 id="7-open-issues">7. Open Issues</h2>
+<ul>
+<li><strong>Savegame Compatibility with Player Decl Changes.</strong> A run with modified <code>player/game/wolf/chapter_start_default</code> ended in <code>Failed to load md6 model 'combatknife.md6mesh'</code>. Cause unconfirmed; suspected interaction with an existing save state. Anyone working on the player decl should test with a new game.</li>
+<li><strong>BIM Encoder in Game.</strong> The encoder exists (Section 5), but only for RGBA8, and no one has checked whether a replaced HUD image renders correctly.</li>
+<li><strong><code>.md6mesh</code></strong> is not examined.</li>
+<li><strong>Virtual Texture Pixel.</strong> The <code>.pages</code> container is decrypted and verified (<code>TNO-Virtual-Textures.md</code>), but the pixel data is not — a cropped JPEG-XR stream, <code>TNO-Virtual-Textures.md</code> §8. Swapping pixels therefore still does not work.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="File-Formats.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Format Reference</a><a class="next" href="Engine-Modding-Surface.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Modifiable Engine Interface</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

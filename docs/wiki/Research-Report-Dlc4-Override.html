@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Override-Chunk: Custom edits under the Retail card name `c2v1` – Wolfenstein Modloader</title>
+<meta name="description" content="A Wolfenstein II DLC archive that applies custom edits under the original Gestapo Office map name.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Override-Chunk: Custom edits under the Retail card name <code>c2v1</code></h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Dlc4-Override"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result">Result</a></li><li><a href="#how-built">How built</a></li><li><a href="#tests-this-run-each-can-fail">Tests (this run, each can fail)</a></li><li><a href="#beifiles-for-a-dlc-folder-serving-c2v1">Beifiles for a DLC folder serving c2v1</a></li><li><a href="#install-master">Install (Master)</a></li><li><a href="#open">Open</a></li><li><a href="#reproduction">Reproduction</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report builds a modified archive for Wolfenstein II: The New Colossus that changes the DLC map &#x27;Gestapo Office&#x27; (c2v1) under its original name, so a normal game load should pick it up. Exactly one entry, the map&#x27;s <span class="t" data-t="entity">entity</span> list, is changed, with 49 edits: retyped enemies and pickups, swapped player starts and recolored lights. All offline checks and deliberate error tests pass. The edits have not yet been seen in the game.</p><ul><li>Only one archive entry changes; all hash checks pass (7,127 of 7,127 entries, both header values).</li><li>The 49 edits are 4 enemies, 10 pickups, 33 lights and 2 player starts.</li><li>Edits were re-applied to the original map text, because a simple rename of the older alias version would have broken 20 entities.</li><li>All negative tests (missing edit, leftover alias name, unfinished archive) are caught.</li><li>Open: whether a save file keeps the old enemies and pickups; starting the chapter fresh is the cleaner test.</li></ul></div><div class="de"><p class="lede">Dieser Bericht baut ein geändertes Archiv für Wolfenstein II: The New Colossus, das die DLC-Karte „Gestapo Office“ (c2v1) unter ihrem Originalnamen verändert, sodass ein normales Laden es übernehmen sollte. Genau ein Eintrag, die <span class="t" data-t="entity">Objekt</span>-Liste der Karte, ändert sich, mit 49 Änderungen: umgebaute Gegner und Pickups, vertauschte Spielerstarts und umgefärbte Lichter. Alle Offline-Prüfungen und absichtlichen Fehlertests bestehen. Im Spiel wurden die Änderungen noch nicht gesehen.</p><ul><li>Nur ein Archiveintrag ändert sich; alle Hash-Prüfungen bestehen (7.127 von 7.127 Einträgen, beide Header-Werte).</li><li>Die 49 Änderungen sind 4 Gegner, 10 Pickups, 33 Lichter und 2 Spielerstarts.</li><li>Die Änderungen wurden neu auf den Original-Kartentext angewendet, weil ein einfaches Umbenennen der älteren Alias-Version 20 Objekte zerstört hätte.</li><li>Alle Negativtests (fehlende Änderung, übrig gebliebener Alias-Name, unfertiges Archiv) werden erkannt.</li><li>Offen: ob ein Spielstand die alten Gegner und Pickups behält; ein frischer Kapitelstart ist der sauberere Test.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Task <code>dlc4_override</code>, 2026-09-24 (New build; the output of the aborted run was discarded and not used). Files: <code>tools/build_dlc4_override.py</code>, <code>re_probes/dlc4_override/</code> (<code>chunk_22.resources</code>, <code>manifest.json</code>), this report.</p>
+<h2 id="result">Result</h2>
+<p><code>re_probes/dlc4_override/chunk_22.resources</code> is the installed Custom Bundle (<code>re_probes/entitypipe/base/chunk_22.resources</code>, 7128 entries, sha256 <code>a8da9e4e...</code> = today <code>dlc/dlc_0/base/chunk_22.resources</code>) with <strong>exactly one</strong> modified entry: <code>compfile:maps/game/dlc/c02/c2v1.entities</code> (Index 873) which carries the 49 Manifest edits on the <strong>Retail</strong> text, without any alias names. All Gates green, all negative controls caught.</p>
+<ul>
+<li>sha256 <code>cadfbfce256d1a99ec1b4b151d801457b08cdb02724bc004c157d2eed06ab2f5</code>, 151 702 019 bytes (same size as the source: +248 bytes payload disappear in alignment padding).</li>
+<li>Reproducible: the new build is sha256-identical to the output of the aborted run.</li>
+<li><strong>Install as</strong> <code>dlc/dlc_0/base/chunk_22.resources</code>. Since dlc_0 wins according to runtime test (18:44) for <code>game/dlc/c02/c2v1</code>, a <strong>normal</strong> game load reads this file. Structurally valid; the edits under <code>c2v1</code> are not yet seen in-game.</li>
+</ul>
+<h2 id="how-built">How built</h2>
+<ol>
+<li>Retail text from entry 873 of the source bundle; its raw bytes are byte-identical to <code>dlc/dlc_2/base/chunk_22.resources</code> (verified).</li>
+<li>Edits from <code>re_probes/entitypipe/manifest.json</code> <strong>re-applied</strong> with functions from <code>tools/build_custom_map.py</code> (only imported): <code>retype</code> for 4 enemies + 10 pickups, <code>swap_placement</code> for the 2 player starts, <code>light_color</code> (color from manifest, <code>LIGHT_MIN_INTENSITY</code>) for 33 lights, in the order of <code>author()</code>.</li>
+<li><code>tnccrypt.compfile_wrap</code>, then <code>idcl.Archive.rebuild</code> + <code>idclwrite.finalize</code> (= <code>idclwrite.write</code>, called separately to allow the state before <code>finalize</code> to be probed as a negative control).</li>
+</ol>
+<p>The alias text was <strong>not</strong> used as source: it deviates from Retail in 186 entities only by alias names, 19 of them with lowercase Kiscule-decl paths (<code>c2v1_geo_Office</code> -&gt; <code>c2v1_custom_geo_office</code>), plus codex' cyan light <code>c2v1_geo_lobby_detail_light_point_9_563923954</code> (no manifest edit). A <code>replace("c2v1_custom", "c2v1")</code> on the alias text would cause 20 entities to be incorrect -- the script measures this at every run.</p>
+<h2 id="tests-this-run-each-can-fail">Tests (this run, each can fail)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source Entry = dlc_2-Retail (Rawbytes)</td>
+<td>identical</td>
+</tr>
+<tr>
+<td>Retail Text Round-Trip</td>
+<td>byte-exact</td>
+</tr>
+<tr>
+<td>Change Log of Reapplication == <code>changes</code> in Manifest (Donor, inherit old/new, kept, Intensity, Colors, Spawn before/after)</td>
+<td>identical; 4/10/33/2</td>
+</tr>
+<tr>
+<td><code>c2v1_custom</code> in new text (case-insensitive)</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Entity Diff against Retail-c2v1</td>
+<td>49 changed = 49 claimed, names identical; 0 alias-only entities; no non-entity lines changed; order identical</td>
+</tr>
+<tr>
+<td><code>build_custom_map.check</code> including <code>inherit</code> against 996 entityDefs</td>
+<td>empty</td>
+</tr>
+<tr>
+<td>new quoted names against Retail-c2v1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Cross-check against installed <code>c2v1_custom.entities</code></td>
+<td>every Entity identical except alias names, sole exception is the Cyan Light</td>
+</tr>
+<tr>
+<td><strong>Negative:</strong> Edit omitted (<code>..._pretzel_1_1</code>)</td>
+<td>caught: <code>claimed but unchanged</code></td>
+</tr>
+<tr>
+<td><strong>Negative:</strong> Alias renaming reverted (<code>c2v1_geo_lobby_func_collision_only_2_1509497262</code>, actual line from alias text)</td>
+<td>caught: <code>carries 'c2v1_custom'</code>, <code>alias rename only</code>, <code>unclaimed change</code></td>
+</tr>
+<tr>
+<td><strong>Negative:</strong> Container before <code>finalize</code></td>
+<td><code>probe_idclhash</code> BAD; <code>probe_datahash</code> exactly 1 BAD = our entry</td>
+</tr>
+<tr>
+<td><code>probe_datahash</code> (final)</td>
+<td>7127/7127 (1 entry Mode 4, unchanged)</td>
+</tr>
+<tr>
+<td><code>probe_idclhash</code> (final)</td>
+<td>+0x08 1/1, +0x20 1/1</td>
+</tr>
+<tr>
+<td>Table Diff Source -&gt; Output (Payload + all fields except Offset+0x38)</td>
+<td>only Index 873, there <code>+0x40/+0x48/+0x50</code>; Header/Dependency-/String tables identical except +0x08/+0x20</td>
+</tr>
+<tr>
+<td><code>finalize()</code></td>
+<td>1 data hash new, <code>hash_0x60</code> 0, <code>deps</code> 0</td>
+</tr>
+<tr>
+<td>Payload read back</td>
+<td><code>compfile_unwrap</code> == new text, parses byte-exact</td>
+</tr>
+</tbody>
+</table></div>
+<p>Image entries unchanged, so <code>chunk_22.texdb</code> from dlc_2 (identical to dlc_0 via <code>cmp</code>) fits. The alias entry <code>c2v1_custom.entities</code> (7079) remains in the chunk; <code>map game/dlc/c02/c2v1_custom</code> works as before.</p>
+<h2 id="beifiles-for-a-dlc-folder-serving-c2v1">Beifiles for a DLC folder serving c2v1</h2>
+<p>Paths relative to <code>dlc/dlc_2/</code>; Status read from <code>dlc/dlc_0</code>, nothing written.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Bytes</th>
+<th>in dlc_0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base/sound/soundbanks/pc/sound.pack</code></td>
+<td>26 003 310</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/sound/soundbanks/pc/english(us).pack</code></td>
+<td>27 082 593</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/sound/soundbanks/pc/french(france).pack</code></td>
+<td>25 505 509</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/sound/soundbanks/pc/italian.pack</code></td>
+<td>26 389 212</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/sound/soundbanks/pc/portuguese(brazil).pack</code></td>
+<td>25 664 560</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/sound/soundbanks/pc/russian.pack</code></td>
+<td>27 795 150</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/sound/soundbanks/pc/spanish(mexico).pack</code></td>
+<td>27 877 094</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/sound/soundbanks/pc/spanish(spain).pack</code></td>
+<td>28 487 489</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/sound/soundbanks/pc/prodspec.json</code></td>
+<td>15 078</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/sound/soundbanks/pc/wwise_project.bin</code></td>
+<td>4 470 035</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>virtualtextures/maps/game/dlc/c02/c2v1.pages</code></td>
+<td>166 318 272</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/bink/chronicles/sd/one/c2v1_intro_row.bk2</code></td>
+<td>90 664 632</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>base/maps/game/dlc/c02/c2v1/textures.cache</code></td>
+<td>67 216 392</td>
+<td><strong>no</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Plus <code>base/chunk_22.texdb</code> (existing), <code>base/packagemapspec.json</code>, and <code>dlcinfo.json</code>. <code>textures.cache</code> is located in dlc_2 under the map path and is missing in dlc_0; the test at 18:44 ran without error messages, so whether the file is used remains open -- link for parity. Soundbanks are DLC-wide, <code>MountDlc</code> mounts <code>dlc_N/base</code>. Machine-readable in <code>re_probes/dlc4_override/manifest.json</code> (<code>side_files_from_dlc_2</code>, <code>in_dlc_0</code>).</p>
+<h2 id="install-master">Install (Master)</h2>
+<p>Delete first, then copy -- never write via a hardlink in dlc_2:</p>
+<pre><code>$G=&quot;D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus&quot;
+Remove-Item &quot;$G\dlc\dlc_0\base\chunk_22.resources&quot;
+Copy-Item re_probes\dlc4_override\chunk_22.resources &quot;$G\dlc\dlc_0\base\&quot;
+</code></pre>
+<p>Backtrack: the same two steps with <code>re_probes\entitypipe\base\chunk_22.resources</code>.</p>
+<p><strong>Worked</strong>, if the Gestapo Office Save loads with <code>MountDlc: mounting ../dlc//dlc_0/base</code> and you see the edits: red Lobby / green office, MP instead of Pretzel at (-3, -176), Elite soldiers in the first Lobby wave.</p>
+<h2 id="open">Open</h2>
+<ul>
+<li><strong>Game State.</strong> A save file carries the entity state of your own entities; whether spawned enemies/pickups come from the save or from <code>.entities</code> (in which case Retypes only trigger on new spawns) is unspecified. Lights should be visible immediately; a fresh chapter start is the cleaner test.</li>
+<li>The cyan light from the Alias bundle is intentionally <strong>not</strong> included.</li>
+</ul>
+<h2 id="reproduction">Reproduction</h2>
+<pre><code>python tools/build_dlc4_override.py     # ~2 min, each Gate printed, exit != 0 on FAIL
+</code></pre>
+<p>If a FAIL occurs after writing, the output will be cleared.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Dlc4-Cfile.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small><code>dlc_4</code> Map plus <code>cfile:wolfsdk_test.cfg</code></a><a class="next" href="Research-Report-Entitypipe.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Entity-Pipeline: Custom map on Retail geometry via <code>.entities</code></a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

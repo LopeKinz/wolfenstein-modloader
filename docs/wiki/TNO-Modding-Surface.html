@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modding Surface: Wolfenstein — The New Order – Wolfenstein Modloader</title>
+<meta name="description" content="A map of which game data types in The New Order can still be modded, which probably can, and which cannot.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tno"><span class="en">The New Order</span><span class="de">The New Order</span></a></p>
+<h1>Modding Surface: Wolfenstein — The New Order</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNO-Modding-Surface"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-executive-summary">0. Executive Summary</a></li><li><a href="#1-all-asset-types">1. All Asset Types</a></li><li><a href="#2-the-20-largest-unused-decl-types">2. The 20 Largest Unused Decl Types</a></li><li><a href="#3-the-three-concrete-traces">3. The three concrete traces</a></li><li><a href="#4-weapon-locations-starting-equipment-enemy-placement">4. Weapon Locations, Starting Equipment, Enemy Placement</a></li><li><a href="#5-small-types-with-disproportionate-leverage">5. Small Types with Disproportionate Leverage</a></li><li><a href="#6-what-is-demonstrably-impossible">6. What is demonstrably impossible</a></li><li><a href="#7-where-uncertainty-remains">7. Where Uncertainty Remains</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page surveys all 105 asset types in Wolfenstein: The New Order to find modding options nobody has used yet. Most text-based <span class="t" data-t="decl">definitions</span> (sounds, ammo, AI behaviour, factions, starting weapons) use a known format and can be edited safely. Some bigger ideas, like cheat modes through game-mode files or changing maps and scripts, look promising but were not tested in the game. A few things, such as particle effects and the missing map xa01, are shown to be impossible.</p><ul><li>203,843 index entries, 76,364 unique assets; all 25,559 readable text assets parse without error.</li><li>73 text definition types are still unused, e.g. sound (9,445), ammo (94) and aiBehavior (36).</li><li>Probable but untested: 999 health or unlimited ammo via gamemode files, unlocking bonus modes via enigma, editing enemy and weapon placement in map files.</li><li>Proven impossible: editing particle effects, <span class="t" data-t="vt">virtual texture</span> pixels, the missing map xa01, and adding brand-new assets.</li><li>The game was not started for this survey; nothing here was tested in play.</li></ul></div><div class="de"><p class="lede">Diese Seite geht alle 105 Asset-Typen von Wolfenstein: The New Order durch, um noch ungenutzte Modding-Möglichkeiten zu finden. Die meisten textbasierten <span class="t" data-t="decl">Definitionen</span> (Sounds, Munition, KI-Verhalten, Fraktionen, Startwaffen) haben ein bekanntes Format und lassen sich sicher ändern. Größere Ideen wie Cheat-Modi über Spielmodus-Dateien oder Änderungen an Karten und Skripten wirken vielversprechend, wurden aber nicht im Spiel getestet. Einiges, etwa Partikeleffekte und die fehlende Karte xa01, ist nachweislich unmöglich.</p><ul><li>203.843 Indexeinträge, 76.364 eindeutige Assets; alle 25.559 lesbaren Text-Assets lassen sich fehlerfrei einlesen.</li><li>73 Text-Definitionstypen sind noch ungenutzt, z. B. sound (9.445), ammo (94) und aiBehavior (36).</li><li>Wahrscheinlich, aber ungetestet: 999 Gesundheit oder unendlich Munition über Spielmodus-Dateien, Bonusmodi über enigma freischalten, Gegner- und Waffenplatzierung in Kartendateien ändern.</li><li>Nachweislich unmöglich: Partikeleffekte ändern, <span class="t" data-t="vt">Virtual-Texture</span>-Pixel, die fehlende Karte xa01 und ganz neue Assets hinzufügen.</li><li>Das Spiel wurde für diese Übersicht nicht gestartet; nichts davon ist im Spiel getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>A map of what has not yet been touched in the game. All numbers and field names originate from the <strong>Original Data</strong> located under <code>base_wolfsdk_backup\</code> (the installation is patched—those reading from <code>base\</code> are measuring their own Mods). Reproducible with:</p>
+<pre><code class="language-bash">python tools/survey_modding_surface.py            # full report
+python tools/survey_modding_surface.py --probes   # only the four probes
+python tools/survey_modding_surface.py --type ammo --samples 3
+</code></pre>
+<p>Status: 105 Asset Types, <strong>203,843 Index Entries</strong>, of which <strong>76,364 unique</strong> <code>(Type, Name)</code> pairs (the remainder are duplicate slots of the same asset in different chunks—<code>apply</code> patches all copies).</p>
+<p>The types here split into <strong>84 Text / 21 Binary</strong>—according to the counting rule in <code>tools/survey_modding_surface.py</code>, which checks <strong>one</strong> sample per type (<code>is_text()</code>: over 95% printable characters in the first 4096 bytes) and knows only two classes. <code>Engine-Modding-Surface.md</code> counts the same 105 types as <strong>80 Text / 5 Mixed / 20 Binary</strong>; the four mixed types whose sample was text land here on the Text side. Same measurement, different rules.</p>
+<p><strong>25,887 <em>unique</em> Assets in Text Types</strong> (not Index Entries—the number 60,233 in <code>Home.md</code> and <code>File-Formats.md</code> §4 counts entries including duplicates and thus is not contradictory to this).
+<strong>25,559 of these are valid UTF-8, and 100% of these 25,559 parse <code>wolfsdk/decl.py</code> without error</strong>—each one was sent through <code>Decl()</code>, no single <code>DeclError</code>. The 328 outliers are 327 embedded binary files under <code>file:</code> (PS4 Save Icons, e.g., <code>../submission/orbis/gmc/save_data_icon.png</code>) and a <code>renderProg</code> (<code>brokenwindshieldspecular</code>) with non-UTF-8 bytes in the shader text.</p>
+<hr />
+<h2 id="0-executive-summary">0. Executive Summary</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rating</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Guaranteed</strong></td>
+<td>73 unused Text Decl Types, identical format to already used ones; <code>sound</code> (9,445), <code>ammo</code> (94), <code>aiBehavior</code> (36), <code>inventoryItem</code> (47), <code>footstepEvents</code>, <code>playerUpgradeAmmo</code>, <code>weaponUpgrade</code> …</td>
+</tr>
+<tr>
+<td><strong>Probable</strong></td>
+<td><code>gamemodesp</code> as a Cheat path around the CVar lock; <code>enigma</code> to unlock Bonus Modes; <code>.entities</code> Maps (switch Enemies/Pickups); <code>.script</code> Maps (full Script VM)</td>
+</tr>
+<tr>
+<td><strong>Provenly Impossible</strong></td>
+<td><code>particle</code> (measured), Virtual-Texture Pixel, <code>chapter17</code>/Map <code>xa01</code> (Map missing in Archive), Changes to <code>renderProg</code> without Shader-Recompile proof</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="1-all-asset-types">1. All Asset Types</h2>
+<p>Full list: <code>python tools/survey_modding_surface.py</code> (first section). The brief classification—Count = unique <code>(Type, Name)</code>:</p>
+<p><strong>Binary, uninteresting for Decl-Modding</strong> (21 types, 50,477 unique Assets):
+<code>sample</code> 19,545, <code>cm</code> 8,403, <code>anim</code> 7,490, <code>voicetrack</code> 5,115, <code>model</code> 2,294,
+<code>image</code> 2,272, <code>prtMeshDist</code> 1,484, <code>discreteAnimation</code> 1,204, <code>cg</code> 565,
+<code>cuttableResource</code> 565, <code>baseModel</code> 463, <code>atlas</code> 371, <code>skeleton</code> 368,
+<code>jointconversion</code> 251, <code>aas</code> 37, <code>glassModel</code> 25, <code>foliageModel</code> 10, <code>font</code> 6,
+<code>staticParticleModel</code> 4, <code>video</code> 4, <code>morphVertices</code> 1.</p>
+<p><code>image</code> is used despite being Binary (BIM replacement, <code>wolfsdk/bim.py</code>).</p>
+<p><strong>Text, already used</strong> (10 types):
+<code>material</code> 3,781, <code>entityDef</code> 1,173, <code>damage</code> 153, <code>weapon</code> 86,
+<code>projectileImpactEffect</code> 112, <code>projectile</code> 102, <code>aiBehaviorVo</code> 14,
+<code>goreBehavior</code> 9, <code>articulatedFigure</code> 9, <code>difficultysetting</code> 5.</p>
+<p><strong>Text, provenly impossible</strong>: <code>particle</code> 1,563.</p>
+<p><strong>Text, unused</strong>: 73 types. The following sections go through the top 20 and those with high leverage.</p>
+<hr />
+<h2 id="2-the-20-largest-unused-decl-types">2. The 20 Largest Unused Decl Types</h2>
+<p>Each with real field names from real Assets.</p>
+<h3 id="21-sound--9445-decls--guaranteed">2.1 <code>sound</code> — 9,445 Decls · <strong>guaranteed</strong></h3>
+<p>Example <code>sound:vo/english/commander/commander2_ai_paalarmresponse_indoor_05</code>:</p>
+<pre><code>{
+    inherit = &quot;inheritences/vo/vo_battle_alarmresponses&quot;;
+    edit = { soundFiles = { num = 1; item[0] = &quot;sound/vo/.../..._05.wav&quot;; } }
+}
+</code></pre>
+<p>Real fields over the inventory: <code>soundFiles.item[N]</code> (up to <code>item[11]+</code>), <code>volume.min</code> / <code>volume.max</code> (1,955 / 1,877 occurrences), <code>minDistance</code> (1,000), <code>maxDistance</code> (1,316), <code>offset</code> (652), <code>falloff</code> (346, e.g., <code>"sound/falloffs/impacts"</code>), <code>rmsTable</code> (557), <code>groups</code> (383, e.g., <code>"SSG_IMPACTS"</code>), <code>soundChannel</code> (278, e.g., <code>"SND_CHANNEL_DAMAGE"</code>), <code>soundShaderFlags</code> (1,716, e.g., <code>"SSF_DISTANCE_BASED_STEREO SSF_PASS_HDR"</code>).</p>
+<p>Editable: complete remix. Make enemies louder/quieter (<code>maxDistance</code>), make weapons punchier (<code>volume.max</code>), swap sound sources (<code>soundFiles.item[0]</code> to point to another <code>.wav</code> in the archive). This is pure <code>set</code> on existing paths — no risk.</p>
+<h3 id="22-voiceover--2058-decls--safe">2.2 <code>voiceover</code> — 2,058 Decls · <strong>safe</strong></h3>
+<p>Only one field: <code>tracks.num</code> + <code>tracks.item[N]</code> → <code>voicetrack/...</code> names. Example <code>voiceover:vo/ai/efforts/eff_soldier_meleehit</code>, <code>num = 33</code>. <code>aiBehaviorVo</code> (already used) points to these Decls; this is the level below — which specific tracks an event may draw from. A <code>voiceover</code> with <code>num = 1</code> makes a voice monotone, swapping <code>item[N]</code> places foreign audio recordings on an event.</p>
+<h3 id="23-md6def--1243-decls--safe-but-deep">2.3 <code>md6Def</code> — 1,243 Decls · <strong>safe, but deep</strong></h3>
+<p>The most interesting type after <code>entityDef</code>. This is the animation-event table per model. Measured frequencies: <strong>44,667×</strong> <code>event</code>/<code>frame</code>/<code>row</code>/<code>locked</code>, <strong>26,160×</strong> <code>sound</code>, <strong>18,132×</strong> <code>anim</code>, <strong>8,307×</strong> <code>projectileImpactEffect</code>, <strong>1,049×</strong> <code>voiceover</code>, <strong>767×</strong> <code>particle</code>, <strong>1,609×</strong> <code>tag</code>/<code>trans</code>/<code>rot</code> (Muzzle points etc.), <strong>659×</strong> <code>hitTestGroup</code> (e.g., <code>"neck"</code>).</p>
+<p>Example assets: <code>md6Def:weapons/german_knife.md6</code>, <code>md6Def:items/cigarette.md6</code>.</p>
+<p>Editable: Hang or shift sounds/effects on animation frames (<code>frame = 12; event = "ae_leftFoot"</code>), change hit zone assignments (<code>hitTestGroup</code>), move Muzzle offsets (<code>tag = "muzzle"; trans = (0 0 0)</code>). <strong>Warning:</strong> <code>particle</code> references here are only names — they point to impossible <code>particle</code> Decls, but <em>the reference itself</em> is changeable (to another existing particle).</p>
+<h3 id="24-breakable--1205-decls--safe">2.4 <code>breakable</code> — 1,205 Decls · <strong>safe</strong></h3>
+<p>Rigid field schema, identical in all 1,205 Decls:
+<code>model</code>, <code>linearFriction</code> 0.1, <code>angularFriction</code> 0.1, <code>contactFriction</code> 0.2,
+<code>linearFrictionWater</code> 1.0, <code>angularFrictionWater</code> 1.0, <code>bouncyness</code> 0.35,
+<code>gravity</code> <code>0 0 -750.0</code>, <code>maxSimulationTime</code> 4, <code>clipMask</code>
+<code>solid, ikclip, shotclip</code>, <code>worldCollisionOnly</code> 1.</p>
+<p>27 Decls additionally have an <code>explosion</code> block with <code>radius</code> 5000, <code>impulse</code> 325000, <code>falloff</code> 0.05, <code>angular</code> 1500, <code>duration</code> 0.25.
+12 have <code>particleTrail</code> + <code>trailSpacing</code>.</p>
+<p>Example: <code>breakable:breakable/rifle</code>, <code>breakable:breakable/shotgunshell</code>.</p>
+<p>Editable immediately: Shell casings that bounce (<code>bouncyness</code>), stay longer (<code>maxSimulationTime</code> 4 → 60), fall in slow motion (<code>gravity</code>). Explosive barrels with larger radius. A 10-line generator over all 1,205 Decls is an afternoon's work.</p>
+<h3 id="25-renderparm--810-decls--safe-but-blind">2.5 <code>renderParm</code> — 810 Decls · <strong>safe, but blind</strong></h3>
+<p>Single lines: <code>renderParm:sortlight</code> = <code>{ Vec   400 }</code>,
+<code>renderParm:adaptiveglareblurstep</code> = <code>{ Vec 1 }</code>. Only name + number(s), no semantics in the asset. What a parameter does is stated only in the shader that reads it. <strong>Unclear</strong> which ones visibly affect — here one would have to try individually.</p>
+<h3 id="26-table--638-decls--safe">2.6 <code>table</code> — 638 Decls · <strong>safe</strong></h3>
+<p>Curve data. <code>table:sound/falloffs/impacts</code>:</p>
+<pre><code>{ clamp min 0 max 1 left 0 right 1 {0:1, 0.0576923:1, 0.102885:0.913725,
+  0.552885:0.843137, 0.797115:0.611765, 0.914423:0.423529, 0.969231:0.235294,
+  0.997791:0} }
+</code></pre>
+<p>These tables are referenced by <code>sound</code>, <code>playerProps</code> (<code>worldFadeTable</code>, <code>framescale</code>, <code>lowhealthpulse</code>) and Render code. Whoever wants to rebuild the health pulse effect, sound falloff, or damage feedback curves does it here. <code>table:console_add_small_lights_3</code> = <code>{ snap {0}}</code> shows the minimal form.</p>
+<h3 id="27-env--592-decls--safe">2.7 <code>env</code> — 592 Decls · <strong>safe</strong></h3>
+<p><code>env:maps/game/wolf/c06/c06p2/area4</code>:</p>
+<pre><code>{ inherit { wolf/c6/c6p2_hangar }
+  renderParms { userEnvMap env/game/wolf/c06/c06p2_hangar_bottomroom_px } }
+</code></pre>
+<p>Pro area-specific render parameters set on a map. This allows changing the lighting/atmosphere mood per area without modifying the map itself.</p>
+<h3 id="28-file--447-decls--the-largest-find-see-section-4">2.8 <code>file</code> — 447 Decls · <strong>the largest find, see Section 4</strong></h3>
+<p>120 unique filenames: 25 <code>.entities</code> maps, 37 <code>.script</code> files,
+6 <code>strings/*.lang</code>, <code>debugmenu.txt</code>, <code>.proc</code>/<code>.envareas</code> (binary-adjacent).</p>
+<h3 id="29-fx--443-decls--safe">2.9 <code>fx</code> — 443 Decls · <strong>safe</strong></h3>
+<p><code>fx:fx/maps/c01p2/dynamitedoor</code> contains <code>editEvents.item[N]</code> with
+<code>type = "FX_PARTICLE"</code> / <code>"FX_SOUND"</code> / <code>"FX_SCREEN_SHAKE"</code>, each with
+<code>duration</code>, <code>startCondition</code>/<code>stopCondition</code> (<code>"FX_NONE"</code>), as well as
+<code>particleParms.declPrt</code> and <code>soundParms.sound</code>.</p>
+<p>Editable: Add screenshake on every hit, swap explosion sounds, extend effect durations. <strong>Important:</strong> particles are only <em>referenced</em> here — swapping them for another already existing particle is allowed, but changing the particle itself is not (Section 6).</p>
+<h3 id="210-renderprog--423-decls--likely-unverified">2.10 <code>renderProg</code> — 423 Decls · <strong>likely, unverified</strong></h3>
+<p>Contains <strong>HLSL source text</strong>. <code>renderProg:softparticleblendmodst</code>:</p>
+<pre><code>{ inherit particleBlend
+  state { blend GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA depthmask twosided }
+  hlsl_vp { #define VP_UNITTEXCOORD  #include &quot;softparticle_vp.inc&quot; ... }
+  hlsl_fp { ... color.xyz = lerp( $fogColor.xyz, color.xyz, fogVal ); ... } }
+</code></pre>
+<p>Evidence from <code>WolfNewOrder_x64.exe</code>: the strings
+<code>Failed to compile render prog %s from %s</code>,
+<code>While compiling %s program %s from %s</code>, <code>Compiled '%s': %.1f ms</code> and the
+Cvars <code>r_loadPrecompiledShaders</code> ("If true, cache compiled shaders to
+generated directory.") and <code>r_dumpGeneratedGLSL</code>. The engine can therefore translate at runtime. <strong>Unclear</strong> remains whether the Retail build does this as well or if a precompiled cache takes precedence — <code>base\generated\</code> currently contains only <code>decls/particle/*.bin</code>, <code>md6/</code>, and <code>world/</code>, no shader cache. This speaks in favor of runtime translation, but is not proof. The first test would be a harmless color change in a single <code>hlsl_fp</code>.</p>
+<h3 id="211-job--168-decls--safe">2.11 <code>job</code> — 168 Decls · <strong>safe</strong></h3>
+<p><code>job:chapter_12/obj/find_and_enter_car_number_6</code>:
+<code>jobNameId</code>, <code>jobSummaryId</code>, <code>jobType = "JOBTYPE_REQUIRED"</code>, <code>jobParent</code>,
+<code>jobMaterial</code>. Mission objectives: Text, Symbol, Main/Sub-objective classification, Hierarchy. Cosmetic but cleanly moddable.</p>
+<h3 id="212-animweb--148-decls--safe-unusual-format">2.12 <code>animWeb</code> — 148 Decls · <strong>safe, unusual format</strong></h3>
+<p><code>animWeb:ai/tungsten/robot/composite/c08/p1</code> carries a <code>props</code> block with
+Editor state (<code>gridSize</code>, <code>showGrid</code>) as well as the content fields
+<code>models { "characters/robot/base.md6" }</code> and
+<code>composite { "ai/tungsten/robot/base", }</code>. The large ones (up to 125 kB,
+<code>subWeb:player/fp_hands/assaultrifle1960</code>) contain the actual state machines. This is the animation state machine for weapons and enemies — powerful but difficult to meaningfully change without an editor.</p>
+<h3 id="213-modellod--147-decls--safe-boring">2.13 <code>modelLOD</code> — 147 Decls · <strong>safe, boring</strong></h3>
+<p><code>modelLOD:maps/game/wolf/c02/c02p0/megalod_foliage_bush_bush_02_nolod_2.decl</code>:
+<code>fade = 4</code>, <code>LODs.item[0].distance = 600000</code>, <code>dimShadows = "DIMSHADOW_ON"</code>.
+Practically only vegetation. Visibility/shadows per object.</p>
+<h3 id="214-tutorialevent--127-decls--safe">2.14 <code>tutorialEvent</code> — 127 Decls · <strong>safe</strong></h3>
+<p><code>tutorialEvent:location/c15</code>: <code>inherit = "location/general"</code>, <code>headingText</code>,
+<code>bodyText</code> (both <code>#str_</code> references). Together with <code>strings/english.lang</code>
+(Section 4.3), any tutorial and location overlay can be rewritten.</p>
+<h3 id="215-ammo--94-decls--safe-high-utility">2.15 <code>ammo</code> — 94 Decls · <strong>safe, high utility</strong></h3>
+<p><code>ammo:ammo/rocketlauncher</code> — real fields and values:</p>
+<p>lowAmmoInClip = 2;        lowAmmoInPocket = 3;
+minRandomCount = 1;       maxRandomCount = 2;
+maxCount = 10;            count = 8;
+itemType = "ITEMTYPE_ROCKETS";     ammoType = "AMMOTYPE_ROCKETS";
+projectileDecl = "projectile/rocketlauncher";
+weapon = "weapon/assaultrifle1960";
+extraFireInterval = 666;
+initialBurstModeOverride = "BURSTMODE_SINGLE";
+burstCountsOverride[0] = 1;
+giveable = true;  secondaryAmmo = true;</p>
+<p>Immediately: <strong>Maximum ammo</strong> per type (<code>maxCount</code>), how much can be collected (<code>minRandomCount</code>/<code>maxRandomCount</code>/<code>count</code>), which projectile fires a specific ammo type (<code>projectileDecl</code>), fire mode overrides. This is the lever for "more ammo" <em>without</em> Cheat-Cvars.</p>
+<h3 id="216-secrets--78-decls--safe">2.16 <code>secrets</code> — 78 Decls · <strong>safe</strong></h3>
+<p><code>secrets:secrets/c11p2/wyatt</code>:</p>
+<pre><code>map = &quot;game/wolf/c11/c11p2&quot;;
+layers = { num = 1; item[0] = &quot;layer/tungsten/timeline/wyatt&quot;; }
+secrets = { num = 0; // remember to increase this
+  // item[  0 ] = { id = 1157; type = &quot;SECRETYPE&quot;; entityName = &quot;YOUR_ENTITY&quot;;
+  //                name = &quot;#str_empty&quot;; desc = &quot;#str_empty&quot;; }
+}
+</code></pre>
+<p>The commented-out template in the original shows the schema: <code>id</code> (number), <code>type</code>, <code>entityName</code> (name of an Entity from the <code>.entities</code> file), <code>name</code>, <code>desc</code>. The <code>id</code> values reappear in <code>enigma</code> (Section 3.3).</p>
+<h3 id="217-skins--66-decls--safe">2.17 <code>skins</code> — 66 Decls · <strong>safe</strong></h3>
+<p><code>skins:md6/models/items/paper/paper_01</code>:
+<code>names { "models/items/paper/paper_01" "models/items/paper/paper_01_2" }</code> — Material replacement pairs. Combined with the already used <code>material</code> swap, this allows skinning entire models instead of individual materials.</p>
+<h3 id="218-flare--66-decls--safe">2.18 <code>flare</code> — 66 Decls · <strong>safe</strong></h3>
+<p><code>flare:tl/simple03</code>: <code>subflares.item[0]</code> with <code>width</code>, <code>height</code>, <code>color.w = 0.4</code>, <code>mtr = "textures/w_lensflares/blobexppos2"</code>. Lensflares enlarge, desaturate, or disable.</p>
+<h3 id="219-achievement--50-decls--safe-but-pointless">2.19 <code>achievement</code> — 50 Decls · <strong>safe but pointless</strong></h3>
+<p><code>achievement:achievement_08</code>: <code>achievementName</code>, <code>description</code>, <code>id = "GAME_ACHIEVEMENT_08"</code>, <code>trigger.item[0] = "TAID_RELEASE_FRIEND"</code>. The trigger name is changeable, but Steam achievements are server-side validated — worthless as a modding target, useful as a reference guide.</p>
+<h3 id="220-inventoryitem--47-decls--safe">2.20 <code>inventoryItem</code> — 47 Decls · <strong>safe</strong></h3>
+<p><code>inventoryItem:inventory/items/c11/mysteriousorb</code>:
+<code>internalName</code>, <code>icon</code>, <code>needIcon</code>, <code>haveIcon</code>, <code>usable</code>, <code>giveable</code>, <code>dropable</code>, <code>stackable</code>, <code>price</code>, <code>sellPrice</code>, <code>playerCanSell</code>, <code>playerCanSeeInInventory</code>. Simpler: <code>itemUse = "INVENTORY_USE_NONE"</code> and <code>giveItemsOnReceive</code>. This allows quest items to be collectible or drop-able.</p>
+<hr />
+<h2 id="3-the-three-concrete-traces">3. The three concrete traces</h2>
+<h3 id="31-gamemodesp--the-way-around-the-cvar-ban--likely-untested">3.1 <code>gamemodesp</code> — the way around the Cvar ban · <strong>likely, untested</strong></h3>
+<p>All 5 Decls, measured:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Decl</th>
+<th>startingHealth</th>
+<th>startingArmor</th>
+<th>gameModeFlags</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gamemode/campaign</code></td>
+<td>100</td>
+<td>0</td>
+<td><strong>Field missing</strong></td>
+</tr>
+<tr>
+<td><code>gamemode/999</code></td>
+<td><strong>999</strong></td>
+<td>0</td>
+<td><code>FLAG_AMMOUNLIMITED FLAG_NOOVERCHARGE</code></td>
+</tr>
+<tr>
+<td><code>gamemode/walkinthepark</code></td>
+<td>100</td>
+<td>0</td>
+<td><code>FLAG_HIDEHUD</code></td>
+</tr>
+<tr>
+<td><code>gamemode/hardcore</code></td>
+<td>100</td>
+<td>0</td>
+<td><code>FLAG_HEALTHARMORREMOVED</code></td>
+</tr>
+<tr>
+<td><code>gamemode/ironman</code></td>
+<td>100</td>
+<td>0</td>
+<td><code>FLAG_ONELIFE</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The four bonus modes additionally carry <code>gameModeType</code>, <code>gameDifficulty</code> (<code>DIFFICULTY_NIGHTMARE</code> or <code>DIFFICULTY_HARD</code>), <code>displayName</code>, <code>description</code>, <code>menuHelp</code>, <code>menuUnlockMaterial</code>.</p>
+<p><strong>The complete Flag Enum</strong> — from <code>WolfNewOrder_x64.exe</code>, qualified names <code>idDeclGameModeSP::FLAG_*</code>, contiguous in the string pool at <code>0xdefa..</code> directly after the <code>GAMEMODE_*</code> enum:</p>
+<pre><code>FLAG_NONE  FLAG_AMMOUNLIMITED  FLAG_HIDEHUD  FLAG_ONELIFE
+FLAG_NOOVERCHARGE  FLAG_HEALTHARMORREMOVED
+</code></pre>
+<p>There is nothing more. Five effective flags. The field schema of the Decl type stands as a Reflection table in the binary (<code>0xce6127</code>):</p>
+<pre><code>idStrId displayName · idStrId description · idStrId menuHelp ·
+GameModeSP gameModeType · gameDificulty_t gameDifficulty ·
+int startingHealth · int startingArmor · int enigmaIndex ·
+idDeclGameModeSP::GameModeSpFlags gameModeFlags · idMaterial menuUnlockMaterial
+</code></pre>
+<p>Notable: <strong><code>enigmaIndex</code> exists as a field but is not present in any single released Decl.</strong></p>
+<p>The fact that flags are read at runtime is verifiable: <code>idGameLocal</code> leads, according to the reflection table (<code>0xcaa737</code>), to an array <code>idDeclGameModeSP *[5] gameModesSP</code> as well as the fields <code>currentGameMode</code> and <code>currentGameModeFlags</code>. The five Decl names appear as a static table in the Binary (<code>0xffba67</code>) in Enum order:
+<code>gamemode/campaign</code>, <code>gamemode/999</code>, <code>gamemode/walkinthepark</code>, <code>gamemode/hardcore</code>, <code>gamemode/ironman</code>. Index 0 is the normal campaign. The debug output block at <code>0xf54968</code> prints <code>StartingHealth</code> and <code>AmmoUnlimited</code> alongside <code>GameModeSP</code>/<code>gameDificulty_t</code>.</p>
+<p>What the flags mean is stated by the game itself in
+<code>file:strings/english.lang</code>, <code>#str_menu_gamemode_1_description</code>:</p>
+<blockquote>
+<p>"Play Wolfenstein in 999 mode. \n- 999% more action \n- start with 999 health \n- unlimited ammo \n- ÜBER difficulty"</p>
+</blockquote>
+<p><strong>Two buildable paths:</strong></p>
+<ol>
+<li><code>gamemodesp:gamemode/campaign</code> receives <code>startingHealth = 999</code> and a
+   <code>gameModeFlags = "FLAG_AMMOUNLIMITED"</code>. Since the field is missing from <code>campaign</code>,
+   this can only be done as a <strong>full replacement</strong> (<code>"file"</code>), not as a <code>set</code> — <code>set</code>
+   requires an existing path. The field belongs to the Decl type (four other Decls carry it), so the risk is low.</li>
+<li>Set <code>startingHealth</code> in <code>gamemode/campaign</code> to a high value using <code>set</code> —
+   a single line that should work immediately.</li>
+</ol>
+<p>The Cvar <code>g_infiniteAmmo</code> is listed in <code>wolfsdk/cvars.py::RETAIL_BLOCKED</code>
+(measured: <code>WARNING: g_infiniteAmmo CANNOT be set in retail!</code>). The Decl path completely bypasses this restriction because it does not touch any Cvar.</p>
+<p><strong>Untested.</strong> The game was not started for this investigation.</p>
+<h3 id="32-faction--fomenting-conflict-between-factions--probable">3.2 <code>faction</code> — Fomenting conflict between factions · <strong>probable</strong></h3>
+<p>All 5 Decls, complete:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Decl</th>
+<th>Relationships</th>
+<th>Other</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>faction/auth</code></td>
+<td><code>faction/player</code> → <code>ATTITUDE_HATE</code>, <code>faction/resistance</code> → <code>ATTITUDE_HATE</code></td>
+<td><code>factionNameId = "#str_people_with_radical_political_views"</code></td>
+</tr>
+<tr>
+<td><code>faction/player</code></td>
+<td><code>faction/auth</code> → <code>ATTITUDE_HATE</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>faction/resistance</code></td>
+<td><code>faction/player</code> → <code>ATTITUDE_LIKE</code>, <code>faction/auth</code> → <code>ATTITUDE_HATE</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>faction/neutral</code></td>
+<td>none</td>
+<td></td>
+</tr>
+<tr>
+<td><code>faction/auth/panzerhund</code></td>
+<td>none</td>
+<td><code>parentFaction = "faction/auth"</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Structure: <code>edit.relationships.relationships.num</code> + <code>item[N].otherFaction</code> /
+<code>item[N].attitude</code>. Nesting is truly double (<code>relationships</code> twice) — this is not a typo.</p>
+<p><strong>The complete Attitude Enum</strong> from the Binary:
+<code>ATTITUDE_UNKNOWN</code>, <code>ATTITUDE_IDOLIZE</code>, <code>ATTITUDE_LOVE</code>, <code>ATTITUDE_LIKE</code>,
+<code>ATTITUDE_NEUTRAL</code>, <code>ATTITUDE_DISLIKE</code>, <code>ATTITUDE_DESPISE</code>, <code>ATTITUDE_HATE</code>,
+<code>ATTITUDE_MAX</code>. Eight usable levels; the game uses only three.</p>
+<p><strong>Who belongs to which faction</strong> is stored in <code>entityDef</code> as
+<code>faction.myFaction</code>. Measured across all 1,173 entityDefs — <strong>288 hits</strong>:</p>
+<pre><code>faction/auth              237
+faction/player             31
+faction/resistance         14
+faction/auth/panzerhund     6
+</code></pre>
+<p><strong>Buildable:</strong> The Panzerhund has its own faction with <code>parentFaction</code>, but
+<strong>no relationships of its own</strong>. If one were to assign a <code>relationships</code> block to <code>faction/auth/panzerhund</code> with <code>faction/auth</code> → <code>ATTITUDE_HATE</code>, Panzerhounds would attack the guards. This is the cleanest lever: a faction that already exists, is already tracked separately, and already has six entityDefs.</p>
+<p>Alternatively: assign a new faction to one of the 237 <code>faction/auth</code> enemies.
+<strong>Unclear</strong> whether the engine accepts a faction not present as a name in the Binary — searching for <code>faction/</code> in the Exe yields <strong>zero hits</strong>, so factions are resolved purely via Decl names. This suggests that new faction names will work, though it does not prove it (a new <code>faction</code> asset cannot be created with the current patcher anyway, only existing ones can be replaced).</p>
+<p>Both changes are full replacements, not <code>set</code> — they add fields.</p>
+<h3 id="33-enigma--unlock-bonus-modes--probable">3.3 <code>enigma</code> — Unlock bonus modes · <strong>probable</strong></h3>
+<p>Four Decls, each:</p>
+<pre><code>enigma:tab0 → gameMode = &quot;gamemode/999&quot;
+enigma:tab1 → gameMode = &quot;gamemode/walkinthepark&quot;
+enigma:tab2 → gameMode = &quot;gamemode/hardcore&quot;
+enigma:tab3 → gameMode = &quot;gamemode/ironman&quot;
+</code></pre>
+<p>Each with <code>codes.num = 2</code> and per code <code>requiredSecrets.num = 9</code> plus nine numeric IDs (<code>tab0</code> requires, for example, 120, 121, 122, 140, 141, 142, 160, 202, 320).
+Total: 4 × 2 × 9 = <strong>72 secrets</strong> for all four bonus modes.</p>
+<p>The IDs are the same ones assigned by the <code>secrets</code> Decls (Section 2.16).</p>
+<p><strong>Buildable:</strong> <code>requiredSecrets.num = 0</code> in all four — this would be a pure <code>set</code> on existing paths (8 values). Whether the engine considers "0 required secrets" as "fulfilled" or "never fulfillable" is <strong>unclear</strong>.
+Alternatively: set all 9 IDs per code to an ID obtained early in the game. This is also a pure <code>set</code> and semantically unambiguous.</p>
+<p>This is the more elegant cheat path than 3.1: instead of bending the campaign, you unlock the 999 mode, which the game itself provides.</p>
+<hr />
+<h2 id="4-weapon-locations-starting-equipment-enemy-placement">4. Weapon Locations, Starting Equipment, Enemy Placement</h2>
+<p>The direct answer to the third question — and the largest unexplored area overall.</p>
+<h3 id="41-entities--25-maps-69-952-entity-blocks--presumed">4.1 <code>.entities</code> — 25 Maps, 69 952 Entity Blocks · <strong>presumed</strong></h3>
+<p>As <code>file</code> assets in the archive, plain text in Decl dialect:</p>
+<pre><code>entity {
+    entityDef foliage_bush_bush_02_nolod_1 {
+    inherit = &quot;foliage/bush/bush_02_nolod&quot;;
+    class = &quot;idEntityTree&quot;;
+    expandInheritance = false;
+    edit = {
+        renderModelInfo { model = &quot;...&quot;; megatexturedModel = true; traceGroup = 10; }
+        spawnPosition = { x = -224; y = 968; z = -384; }
+    }
+}
+}
+</code></pre>
+<p>Measured across all 25 maps (<code>inherit</code> targets):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ai/…</code> (Enemy Spawns)</td>
+<td><strong>1 167</strong></td>
+</tr>
+<tr>
+<td><code>prop/weapon/…</code></td>
+<td><strong>467</strong></td>
+</tr>
+<tr>
+<td><code>prop/health/…</code></td>
+<td>569</td>
+</tr>
+<tr>
+<td><code>prop/ammo/…</code></td>
+<td>333</td>
+</tr>
+<tr>
+<td><code>prop/secret/…</code></td>
+<td>284</td>
+</tr>
+<tr>
+<td><code>player/start</code></td>
+<td>235</td>
+</tr>
+<tr>
+<td><code>prop/armor/…</code></td>
+<td>176</td>
+</tr>
+<tr>
+<td><code>triggers/trigger</code></td>
+<td>1 529</td>
+</tr>
+<tr>
+<td><code>target/…</code> total</td>
+<td>21 269</td>
+</tr>
+<tr>
+<td><code>func/…</code> total</td>
+<td>18 566</td>
+</tr>
+</tbody>
+</table></div>
+<p>Concrete examples: <code>prop/weapon/assaultrifle1960</code> 62×,
+<code>prop/weapon/knife</code> 55×, <code>prop/weapon/shotgun</code> 43×,
+<code>prop/health/medpacks/small</code> 193×, <code>prop/ammo/heavy/small</code> 89×,
+<code>prop/secret/enigmacode</code> 65×, <code>prop/secret/gold</code> 50×.
+Enemy examples: <code>ai/tungsten/c13/part_01/rifle/spacemarine</code> 71×,
+<code>ai/tungsten/c06/part_01/rifle/blackguard_elite</code> 51×,
+<code>ai/tungsten/kamphund/kamphund46</code> 20×.</p>
+<p><strong>With this, everything can be changed</strong>: place a weapon earlier (change the <code>inherit</code> of a <code>prop/weapon</code> entry), swap an enemy (change the <code>inherit</code> of an <code>ai/…</code> entry), shift position (<code>spawnPosition</code>), remove an enemy, double ammo.</p>
+<p><strong>The limitation, measured</strong>: In-Place patching practically always fails.
+<code>maps/game/wolf/c01/c01p1.entities</code> is 2 356 914 B uncompressed at <code>csize = 159 750</code>; our own Deflate of the same original yields 159 322 B — <strong>428 Byte headroom</strong>. For <code>c02p0.entities</code> and <code>c02p0.script</code>: <strong>0 Bytes</strong>. Any real change thus forces a complete archive rebuild (<code>Installation.apply</code> can do this, <code>rebuilds</code> path in <code>wolfsdk/patch.py</code>), meaning: rewrite the entire chunk file.
+<code>c01p1.entities</code> resides in <code>chunk1</code> (73 MB), <code>c01p2.entities</code> in <code>chunk2</code> (368 MB). Feasible, but slow — and <code>revert</code> must then replay the full copy.</p>
+<h3 id="42-script--the-script-vm--presumed-unverified">4.2 <code>.script</code> — the Script VM · <strong>presumed, unverified</strong></h3>
+<p>37 script files as <code>file</code> assets (32 map scripts + 5 global), also plain text.
+<code>file:maps/game/wolf/c02/c02p0.script</code> (415 B):</p>
+<pre><code class="language-c">void main() { }
+
+void call_freelook( entity activatedEntity, entity activator )
+{
+    $thirdPersonHands_0.setViewAnglesFromCamera();
+    $thirdPersonHands_0.attachLimitViewCamera( &quot;camera&quot;, 5, 1, 10.0f, 0.0f );
+}
+</code></pre>
+<p><code>file:script/script_events.script</code> (246 921 B) declares <strong>913 <code>scriptEvent</code> signatures</strong>. Among them:</p>
+<p>giveInventoryItem removeInventoryItem removeAllInventoryItems
+itemInInventory numOfItemTypeInInventory
+setHealth getHealth increaseHealth decreaseHealth resetHealth
+spawn getLastSpawned teleport respawn respawnWithFade
+kill killAI killByType radiusDamage damage setTakesDamage
+equipBestWeapon dropWeapons enableWeapon disableWeapon inhibitWeapon
+spawnLootBox startDreamMode endDreamMode</p>
+<p>The Engine translates at runtime: <code>idCompiler</code>, <code>Compile failed in file %s.</code>, <code>---------- Compile stats ----------</code>, <code>Exceeded maximum allowed number of functions (%d)</code>, the Opcode set (<code>OP_PUSH_ENT</code>, <code>OP_GOTO</code>, …), and the Cvar <code>script_scriptEventsPath</code> ("If set, tells engine to load script_events.script from specified location"). There is no bytecode cache in the archive — only the <code>.script</code> source texts.</p>
+<p><strong>This is by far the most powerful unused lever:</strong> a single line <code>$player.giveInventoryItem("weapon/laserkraftwerk");</code> in <code>main()</code> of a map would be a Loadout Cheat without any Cvar. <strong>Unverified</strong> — neither built nor started.</p>
+<p>Practical note: the five global scripts (<code>script/script_main.script</code>, <code>script_util.script</code>, <code>script_defs.script</code>, <code>script_events.script</code>, <code>debug_drawtext.script</code>) lie <strong>in all 13 Chunks</strong> — a patch to them would rewrite all 13 archives (~2.7 GB). The map scripts lie each in exactly one Chunk. So always change the map script, never the globals.</p>
+<h3 id="43-stringslang--all-texts--safe">4.3 <code>strings/*.lang</code> — all texts · <strong>safe</strong></h3>
+<p><code>file:strings/english.lang</code> (868 273 B), UTF-8 with BOM, CRLF:</p>
+<pre><code>{
+    &quot;#str_achievement_00_name&quot;  &quot;Wolfenstein master&quot;
+    &quot;#str_menu_gamemode_1_title&quot;    &quot;999&quot;
+}
+</code></pre>
+<p>Every <code>#str_</code> reference from every Decl lands here. Complete renaming of weapons, missions, subtitles, and menus. Six languages available (English, French, Italian, Polish, Russian, Spanish).</p>
+<p><strong>Another reservation than 4.1, not the same.</strong> <code>.lang</code> lies in all 6 entries <strong>raw</strong> in the archive (<code>csize == usize</code>), although Deflate would compress it to 28% — measured in <code>UI-Assets.md</code> §3. Thus the Deflate headroom calculation from 4.1 does not apply, but rather the raw write path in <code>resources.plan_in_place()</code>: It places the bytes unchanged at the offset, demanding for this <strong>exactly the same length</strong>. Practically this means byte-length-true replacement — "CONTINUE" can become "WEITER  ", not "WEITERSPIELEN". No rebuild needed. Whoever instead runs a rebuild converts the entry from raw to Deflate, and whether the Engine tolerates it is not measured.</p>
+<h3 id="44-starting-equipment-entitydefplayergamewolf--safe">4.4 Starting equipment: <code>entityDef:player/game/wolf/…</code> · <strong>safe</strong></h3>
+<p><strong>31 <code>player*</code>-entityDefs</strong> carry <code>startingInventory</code> — one per chapter section plus <code>player</code>, <code>chapter_common_default</code>, and <code>chapter_start_default</code> as base. Measured <code>num</code> distribution:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>num</th>
+<th>Number of Decls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>1</td>
+<td>17</td>
+</tr>
+<tr>
+<td>2</td>
+<td>5</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2</td>
+</tr>
+</tbody>
+</table></div>
+<p>Minimal form, <code>entityDef:player/game/wolf/c01/c01p1</code>:</p>
+<pre><code>startingInventory = { num = 1; item[0] = {
+    startSlot = &quot;EQUIPPED&quot;; inventoryDecl = &quot;weapon/knife46cutonly&quot;; } }
+</code></pre>
+<p><strong>Full form, <code>entityDef:player/game/wolf/c16/c16p0</code> — delivered, not constructed:</strong></p>
+<pre><code>startingInventory = { num = 6;
+  item[0] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/knife&quot;; }
+  item[1] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/laserkraftwerk&quot;; }
+  item[2] = { startSlot = &quot;EQUIPPED&quot;; inventoryDecl = &quot;weapon/assaultrifle1960&quot;; }
+  item[3] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/shotgun&quot;; }
+  item[4] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/ar60marksman&quot;; }
+  item[5] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/handgun&quot;; } }
+</code></pre>
+<p><code>entityDef:player/game/wolf/c11/c11p1</code> (<code>num = 5</code>) additionally shows that <strong>non-weapons</strong> can also be placed there:
+<code>item[3].inventoryDecl = "weaponupgrades/shotgun_shrapnel"</code>.</p>
+<p>This definitively answers the question regarding starting equipment: <code>startSlot</code> knows at least <code>"EQUIPPED"</code> and <code>"BACKPACK"</code>, while <code>inventoryDecl</code> accepts any <code>weapon/</code> or <code>weaponupgrades/</code> name, with multiple entries being populated.</p>
+<p>Additional measured starting weapons: <code>c01p2</code>/<code>c01p3</code> → <code>weapon/knife46</code>, <code>c02p0</code>/<code>c02p1</code> → <code>weapon/kitchenknife</code>, <code>c03p1</code>/<code>c03p2</code> → <code>weapon/knife</code>, <code>c03p3</code> → <code>weapon/specialweapon/teatray</code>.</p>
+<p>The existing mod <code>wolfsdk.widerstand</code> already utilizes this field — but only on the <strong>AI</strong> side (<code>entityDef:ai/tungsten/c06/part_01/rifle/airforce</code> → <code>edit.startingInventory.item[0].inventoryDecl</code> = <code>weapon/ai/shotgun</code>).</p>
+<p><strong>The player side remains unused.</strong> Two approaches:</p>
+<ul>
+<li><strong>Surgical (<code>set</code>)</strong> on a chapter that already has enough slots:
+  Change <code>edit.startingInventory.item[4].inventoryDecl</code> from <code>c11p1</code> or <code>c16p0</code> to another weapon. Immediately executable, single line.</li>
+<li><strong>Full replacement</strong> for the early chapters: copy the <code>startingInventory</code> block from <code>c16p0</code> to <code>c01p1</code> = play with a laser power plant from minute one. Player Decls are ~28 kB, so rather than manual work, a generated full replacement (<code>build_*.py</code>) is more appropriate.</li>
+</ul>
+<p>Also on the player Decl and unused: <code>playerHealth.components.components[1].cur</code> (used by example mod <code>example.dev_loadloadout</code>), <code>maxTimeUnderwater.value</code> = 50000, <code>sprintAirReductionScale</code> = 1, <code>suffocationDamage</code> = <code>"damage/base/suffocation"</code>.</p>
+<h3 id="45-playerupgradeammo--12-decls--safe">4.5 <code>playerUpgradeAmmo</code> — 12 Decls · <strong>safe</strong></h3>
+<p><code>playerUpgradeAmmo:upgrade1</code>:</p>
+<pre><code>{ inherit = &quot;upgrade0&quot;; edit = { slots = {
+    slots[ 1 ] = { type = &quot;AMMOTYPE_LIGHT&quot;; amount = 10; }
+    slots[ 2 ] = { type = &quot;AMMOTYPE_HEAVY&quot;; amount = 20; } } } }
+</code></pre>
+<p>Perk tiers for ammo capacity. Increasing <code>amount</code> means carrying more ammo, without cheating.</p>
+<h3 id="46-weaponupgrade--lasercutterupgrade--17-decls--safe">4.6 <code>weaponUpgrade</code> / <code>laserCutterUpgrade</code> — 17 Decls · <strong>safe</strong></h3>
+<p><code>weaponUpgrade:weaponupgrades/shotgun_shrapnel</code>:
+<code>internalName</code>, <code>entityDef = "prop/inventory/upgrades/shotgun_shrapnel"</code>,
+<code>weaponToUpgrade = "weapon/shotgun"</code>, <code>lockUpgrade = "UPGRADES_SHRAPNEL"</code>,
+<code>giveable</code>, <code>dropable</code>, <code>removeOnUse</code>, <code>usable</code>, <code>singular</code>,
+<code>useOnReceive</code>, <code>upgradeWeaponMode</code>.</p>
+<p>Reloading <code>weaponToUpgrade</code> means: applying an upgrade to a different weapon. <code>playerProps:player/default</code> lists all 17 Upgrade Decls under <code>upgradeData</code> — there the mapping resides.</p>
+<hr />
+<h2 id="5-small-types-with-disproportionate-leverage">5. Small Types with Disproportionate Leverage</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Count</th>
+<th>Description</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>footstepEvents</code></td>
+<td>1</td>
+<td><code>sneakEventDecl = NULL</code> with comment "We set all but landEventDecl to NULL as we don't want the AI to hear anything but landings". Set to <code>"base/footsteps/walk"</code> → Enemies hear the player sneaking.</td>
+<td><strong>safe</strong>, single line, immediately noticeable</td>
+</tr>
+<tr>
+<td><code>aiBehavior</code></td>
+<td>36</td>
+<td><code>dodging.gunfireDodgeCoverChance</code>, <code>painDiveCoverChance</code>, <code>gunfireFlinchChance</code>, <code>usesSearch</code>, <code>usesAvoid</code>, <code>hasCrouches</code>, <code>closeMeleeDist</code>, <code>minChargeDistance</code>, <code>aimOffset</code>, <code>rolePreferenceOrder</code>, <code>forwardCoverCaps.rifleCoverCaps.crouchCaps.{fireOver,blindfireLeft,peekOver,hide}</code></td>
+<td><strong>safe</strong>, the actual AI lever</td>
+</tr>
+<tr>
+<td><code>aiEvent</code></td>
+<td>39</td>
+<td><code>aiEvent:base/misc/body</code>: <code>eventClass = "AIEVENT_BODY"</code>, <code>priority = "AIPRIORITY_VERY_LOW"</code>, <code>radius = 256</code>, <code>duration = -1</code>, <code>attached</code>, <code>instigatorStimulus</code></td>
+<td><strong>safe</strong> — Perception radii for corpses, gunfire, alarms</td>
+</tr>
+<tr>
+<td><code>aiTurnParms</code></td>
+<td>6</td>
+<td><code>maxAngle = 1.3</code></td>
+<td><strong>safe</strong>, trivial</td>
+</tr>
+<tr>
+<td><code>trackingParms</code></td>
+<td>6</td>
+<td><code>kickScale</code>, <code>rate.value = 50.0</code>, <code>acceleration</code>, <code>deceleration</code>, <code>springMaxLength = 128.0</code></td>
+<td><strong>safe</strong> — Tower/drone target tracking</td>
+</tr>
+<tr>
+<td><code>twitchPain</code></td>
+<td>4</td>
+<td><code>damageDirectionGroups.item[N].damageDir = "DAMAGEDIR_FRONT"</code> + <code>jointGroups.item[N].aliasName</code></td>
+<td><strong>safe</strong>, supplements gore work</td>
+</tr>
+<tr>
+<td><code>globalflag</code></td>
+<td>1</td>
+<td>17 named progress flags with <code>saveID</code>, e.g., <code>flag_c04_lasercutter_upgrade</code>, <code>flag_c04_secret_locker</code></td>
+<td><strong>safe to read</strong>, effect of change <strong>unclear</strong></td>
+</tr>
+<tr>
+<td><code>health</code> / <code>playerArmor</code></td>
+<td>18 / 11</td>
+<td><code>itemType = "ITEMTYPE_HEALTH"</code>, <code>armorAmount = 5</code></td>
+<td><strong>safe</strong></td>
+</tr>
+<tr>
+<td><code>gore</code></td>
+<td>12</td>
+<td>only <code>inherit</code> chains (<code>soldier_generic_heavy</code> ← <code>soldier_generic</code>), empty <code>edit</code></td>
+<td><strong>safe, but empty</strong> — content sits in <code>goreBehavior</code> (used)</td>
+</tr>
+<tr>
+<td><code>specialEvent</code></td>
+<td>1</td>
+<td><code>specialEventType = "SPECIAL_EVENT_VAPORIZE"</code></td>
+<td><strong>safe</strong>, a value</td>
+</tr>
+<tr>
+<td><code>lootPool</code></td>
+<td>1</td>
+<td><code>{ }</code> — completely empty</td>
+<td>nothing to retrieve</td>
+</tr>
+<tr>
+<td><code>destructiblePiece</code></td>
+<td>22</td>
+<td><code>default</code> = <code>{ }</code>, many empty</td>
+<td>likely nothing to retrieve</td>
+</tr>
+<tr>
+<td><code>credits</code></td>
+<td>1</td>
+<td><code>creditList.item[N].{entryType,localizedStr,entry0}</code></td>
+<td><strong>safe</strong>, cosmetic</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="6-what-is-demonstrably-impossible">6. What is demonstrably impossible</h2>
+<ol>
+<li>
+<p><strong><code>particle</code> (1,563 Decls).</strong> Known and measured: the engine streams particles as named resource blocks with pre-calculated size; every change is rejected (<code>idFile_RingBuffer file '&lt;name&gt;.bin' skipping &lt;n&gt; bytes</code>), measured at 35 skips against 0 in the original. Confirmed by the filesystem side: <code>base\generated\decls\particle\*.bin</code> contains the written streams (e.g., <code>wolf/blood/takedownblood01.bin</code>). Identical <code>usize</code> is insufficient; <code>csize</code> must also match. Replacing remains the <strong>reference</strong> to a particle (in <code>fx</code>, <code>md6Def</code>, <code>breakable</code>, <code>entityDef</code>) — not the particle itself.</p>
+</li>
+<li>
+<p><strong>Virtual-Texture-Pixel.</strong> Materials with <code>usevirtualmapping 1</code> retrieve their image data from <code>virtualtextures/*.pages</code>, not from the archive. The material Decl is changeable, but the pixels behind it are not.</p>
+</li>
+<li>
+<p><strong><code>chapter17</code> / Map <code>xa01</code>.</strong> <code>chapter:chapter17</code> is <code>CHAPTERTYPE_SIDEMISSION</code> with <code>map = "game/wolf/xa01/xa01"</code>. Searched across all 25,559 text assets: <code>xa01</code> appears in exactly three locations — <code>chapter:chapter17</code>, <code>mapInfo:game/wolf/xa01/xa01</code> (Content: <code>{ edit = { } }</code>), and the six <code>.lang</code> files. <strong>There is no <code>maps/game/wolf/xa01/xa01.entities</code>.</strong> The map is not in the game. No Decl intervention retrieves it back.</p>
+</li>
+<li>
+<p><strong>Creating new assets.</strong> <code>Installation.apply</code> replaces existing entries; there is no path that inserts a new <code>(type, name)</code> entry into the index. Everything following applies only to existing assets. A new enemy type, a new weapon, a new faction: not without patcher extension.</p>
+</li>
+<li>
+<p><strong>In-Place-Patch of large text assets.</strong> Measured (Section 4.1): the Deflate playroom is 0–428 bytes. <code>.entities</code>, <code>.script</code>, and <code>.lang</code> always enforce a chunk rebuild.</p>
+</li>
+</ol>
+<hr />
+<h2 id="7-where-uncertainty-remains">7. Where Uncertainty Remains</h2>
+<p>Explicitly marked as <strong>unclear</strong> and not glossed over:</p>
+<ul>
+<li>Whether the Retail <code>renderProg</code> HLSL is translated at runtime (2.10).</li>
+<li>Whether <code>requiredSecrets.num = 0</code> counts as "fulfilled" (3.3).</li>
+<li>Whether a faction name works that the Binary does not know (3.2).</li>
+<li>Whether <code>script_scriptEventsPath</code> can be set in Retail — the CVar is not listed in the measured <code>RETAIL_BLOCKED</code> list, but this list was derived from a limited sample.</li>
+<li>Which of the 810 <code>renderParm</code> values appear visible (2.5).</li>
+</ul>
+<p>None of these were tested during an actual game session. For this survey, the game was not launched and no mod was applied.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="TNO-Maps.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>The 25 Cards from Wolfenstein: The New Order</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

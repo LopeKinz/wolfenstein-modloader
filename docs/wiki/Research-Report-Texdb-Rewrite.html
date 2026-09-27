@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC texdb / custom-map alias: findings – Wolfenstein Modloader</title>
+<meta name="description" content="Early finding on TNC texture databases for a renamed custom map: reusable only with unchanged names.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>TNC texdb / custom-map alias: findings</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Texdb-Rewrite"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result">Result</a></li><li><a href="#alias-consequence">Alias Consequence</a></li><li><a href="#practical-blocker">Practical Blocker</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This short early report looks at the <span class="t" data-t="texdb">texture database</span> of a DLC 3 map in Wolfenstein II: The New Colossus. The file is a flat list of keys and offsets with no asset names, about 1 GB with 8,586 entries. It can be reused byte for byte only if the custom map keeps the same image names and texture keys. At the time it was not proven that the old keys still work once resources are renamed.</p><ul><li>chunk_24.texdb is 1,011,361,794 bytes with 8,586 entries; header, table and data are contiguous.</li><li>Spot checks unpack correctly as Oodle Kraken streams.</li><li>An empty 32-byte texture database is only good for a mount test, not for a map with real textures.</li><li>Recommended next test: build a bundle with unchanged resource names plus the complete original texture database.</li></ul></div><div class="de"><p class="lede">Dieser kurze frühe Bericht untersucht die <span class="t" data-t="texdb">Texturdatenbank</span> einer DLC-3-Karte in Wolfenstein II: The New Colossus. Die Datei ist eine flache Liste aus Schlüsseln und Offsets ohne Asset-Namen, etwa 1 GB groß mit 8.586 Einträgen. Sie lässt sich nur dann byte-genau wiederverwenden, wenn die eigene Karte dieselben Bildnamen und Texturschlüssel behält. Damals war nicht bewiesen, dass die alten Schlüssel nach einer Umbenennung der Ressourcen noch passen.</p><ul><li>chunk_24.texdb ist 1.011.361.794 Byte groß und hat 8.586 Einträge; Header, Tabelle und Daten liegen lückenlos hintereinander.</li><li>Stichproben lassen sich korrekt als Oodle-Kraken-Streams entpacken.</li><li>Eine leere 32-Byte-Texturdatenbank taugt nur für einen Mount-Test, nicht für eine Karte mit echten Texturen.</li><li>Empfohlener nächster Test: ein Bundle mit unveränderten Ressourcennamen plus der vollständigen Original-Texturdatenbank.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Status: 2026-09-22. Retail files were read only.</p>
+<h2 id="result">Result</h2>
+<p><code>chunk_24.texdb</code> is a standalone flat Key/Offset database without asset names. The Retail DLC-3 dataset is 1,011,361,794 bytes in size and contains 8,586 entries; the header, table, and payload data are contiguous. A spot-check test with Oodle confirms the entries and the <code>8c06</code> Kraken stream.</p>
+<p>An empty <code>chunk_26.texdb</code> (32 bytes, zero entries) is therefore only suitable for a Decl-/Mount-probe chunk. For a map with DLC-3 textures, at least the complete TexDB content of <code>chunk_24.texdb</code> must be provided. There are no names there that could be replaced from <code>c3v1</code> to <code>c3v1_custom</code>.</p>
+<h2 id="alias-consequence">Alias Consequence</h2>
+<p>The TexDB can be byte-for-byte reused, <strong>if</strong> the generated <code>chunk_26.resources</code> use the same texture keys and the same image names as DLC 3. This saves no files: it remains an approximately 1-GB bundle. Once the resource names are rewritten to <code>c3v1_custom</code>, it is not proven that the old 64-bit texture keys still fit. A key rebuild is not secure without a demonstrated hash function.</p>
+<p><code>tools/probe_texdb.py</code> can check headers, contiguous offsets, single streams, and tile chains, but cannot reconstruct asset names from the TexDB.</p>
+<h2 id="practical-blocker">Practical Blocker</h2>
+<p>The current alias prototype intentionally has an empty TexDB. Directly copying the Retail TexDB is technically possible but is approximately 1 GB in size and does not yet prove that a newly named Resource Index correctly references its keys. The reliable next test is therefore an isolated bundle build with <strong>unchanged</strong> resource names plus complete <code>chunk_24.texdb</code>; a true new map name remains open until the Asset-/texture key mapping is proven.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Small-Custom-Map.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC Small Custom Map Prototype</a><a class="next" href="Research-Report-Texdbkey.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>The TexDB Key — Solved (from the code, not a hash sweep)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

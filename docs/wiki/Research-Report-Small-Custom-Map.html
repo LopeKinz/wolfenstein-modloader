@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Small Custom Map Prototype – Wolfenstein Modloader</title>
+<meta name="description" content="First prototype of a custom TNC map as a renamed copy of a DLC 3 map: built on purpose as not runnable.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>TNC Small Custom Map Prototype</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Small-Custom-Map"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result">Result</a></li><li><a href="#negative-checks--blockers">Negative Checks / Blockers</a></li><li><a href="#idcl-analysis-and-candidate-rebuild">IDCL Analysis and Candidate Rebuild</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This early report for Wolfenstein II: The New Colossus creates a custom map project, c3v1_custom, as an alias of a DLC 3 map with its own DLC ID and chunk ID. It lists the 360 assets of the original map and builds a 33.3 MB candidate <span class="t" data-t="archive">archive</span> that the project&#x27;s own parser reads back. The prototype is deliberately not runnable, because several pieces were still unsolved at the time.</p><ul><li>The inventory has 360 name-based assets, 220 of them map-critical (models, collision, scripts, images and more).</li><li>The candidate archive keeps the original compression, offsets and hashes and only renames the string table.</li><li>The header value +0x08 was copied from the original because its calculation was still unknown; +0x20 is computed correctly.</li><li>Internal references in entities, collision, navmesh, visibility and shadows were not rewritten, and the texture database is empty.</li><li>Conclusion: a new map spec or entity file alone does not create a new map.</li></ul></div><div class="de"><p class="lede">Dieser frühe Bericht zu Wolfenstein II: The New Colossus legt ein eigenes Kartenprojekt c3v1_custom als Alias einer DLC-3-Karte mit eigener DLC-ID und Chunk-ID an. Er listet die 360 Assets der Originalkarte auf und baut ein 33,3 MB großes Kandidaten-<span class="t" data-t="archive">Archiv</span>, das der projekteigene Parser wieder einliest. Der Prototyp ist absichtlich nicht lauffähig, weil damals noch mehrere Teile ungelöst waren.</p><ul><li>Das Inventar umfasst 360 namensbasierte Assets, davon 220 kartenkritisch (Modelle, Kollision, Skripte, Bilder und mehr).</li><li>Das Kandidatenarchiv behält Originalkompression, Offsets und Hashes und benennt nur die String-Tabelle um.</li><li>Der Header-Wert +0x08 wurde vom Original übernommen, weil seine Berechnung noch unbekannt war; +0x20 wird korrekt berechnet.</li><li>Interne Verweise in Entities, Kollision, Navmesh, Sichtbarkeit und Schatten wurden nicht umgeschrieben, und die Texturdatenbank ist leer.</li><li>Fazit: Eine neue Map-Spec oder Entity-Datei allein erzeugt noch keine neue Karte.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Status: 2026-09-22. The builder reads exclusively the installed DLC-3 index and writes only to <code>re_probes/tnc_custom_map_c3v1_custom</code>. The running Steam installation was not modified.</p>
+<h2 id="result">Result</h2>
+<p>An alias project <code>game/dlc/c03/c3v1_custom</code> with its own <code>dlcid: 4</code> and <code>chunkid: 26</code> in <code>base/packagemapspec.json</code> was generated. The inventory from the real <code>chunk_24.resources</code> comprises 360 name-based assets, of which 220 are map-critical assets:</p>
+<pre><code class="language-text">cm 90, compfile 3, extkisclule 90, file 4, hknavmesh 1,
+image 85, json 1, material 3, model 30, modelAsset 25,
+modelstream 25, pvs 1, staticShadowGeom 1, staticStreamTree 1
+</code></pre>
+<p>The full mapping <code>c3v1 -&gt; c3v1_custom</code> is located in <code>asset_inventory.json</code>. The builder is reproducible: <code>tools/build_tnc_custom_map_prototype.py</code>.</p>
+<h2 id="negative-checks--blockers">Negative Checks / Blockers</h2>
+<p>The prototype is intentionally <strong>not runnable</strong>. <code>chunk_26.resources</code> and <code>chunk_26.texdb</code> are missing on purpose; furthermore, internal references in Entities, Proc/Prockd, World-Tome, Collision, Navmesh, PVS, and Shadow were not rewritten. There is also no new Save-/Menu-registration. A start would therefore not constitute a valid Custom Map test.</p>
+<p><code>bundle_status.json</code> documents these checks. This specifically refutes the claim that a new Mapspec or a <code>.entities</code> file alone generates a new Map. The next real technical step is an isolated Chunk-/Texdb-rebuild with consistent Asset-Index and rewritten Cross-References; until then, the alias remains an Inventory-/Format prototype.</p>
+<h2 id="idcl-analysis-and-candidate-rebuild">IDCL Analysis and Candidate Rebuild</h2>
+<p>The builder additionally generates <code>base/chunk_26.resources.candidate</code> (33.3 MB) as an isolated IDCL-v12 candidate. It contains all 360 selected <code>c3v1</code> entries, preserves the original compressions (98× stored, 261× Kraken, 1× Kraken-Blocks), Offsets, Resource-Hashes, and Version fields, and writes only the string table to <code>c3v1_custom</code>. Its own parser reads the candidate with 360 entries again; there are no Dependencies in this DLC part.</p>
+<p>This is a structural rebuild, not a claimed runtime success. The candidate header adopts <code>+0x08</code> from Retail because its calculation is still unknown; <code>+0x20</code> is correctly calculated as a FarmHash via the metadata. Furthermore, binary/internal path and asset references in Proc, World Tome, Collision, Navmesh, PVS, Shadow, and Entities remain unchanged. The 32-Byte Texdb file and Loader-/Save-registration are also not yet validated. Therefore, the candidate is neither mounted nor copied into the Steam installation.</p>
+<p>The implementation lies in <code>tools/build_tnc_custom_map_prototype.py</code>. It has a hard output limit outside the game path and generates no file in the TNC directory. A successful parser roundtrip is thus documented; a runnable <code>c3v1_custom</code> remains open until the solution of <code>+0x08</code>, Texdb, and the Cross-References.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Saveverify.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small><code>.verify</code> in Wolfenstein II — Generation, Verification, and Its Role During Loading</a><a class="next" href="Research-Report-Texdb-Rewrite.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC texdb / custom-map alias: findings</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

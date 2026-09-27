@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Save-/Menu Load Path (Static Research) – Wolfenstein Modloader</title>
+<meta name="description" content="The reliable way to make Wolfenstein II load a test map: through the Load Game menu, not start options.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>TNC Save-/Menu Load Path (Static Research)</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Save-Load-Route"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result">Result</a></li><li><a href="#runtime-evidence">Runtime Evidence</a></li><li><a href="#countercheck--false-hypothesis">Countercheck / False Hypothesis</a></li><li><a href="#open-boundary">Open Boundary</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report finds a reliable way to get Wolfenstein II (TNC) to load a specific map for testing. Start options like +map, +loadGame or +exec with a config file do not work before the main menu. Using the menu does: Load Game, then a specific <span class="t" data-t="savegame">save</span> slot, after which the game log shows the map loading.</p><ul><li>Working path: main menu, Load Game, slot SLOT2, save GAME-AUTOSAVE0.</li><li>The log then shows LaunchLoadScreen and LoadMap for map c02p0.</li><li>Running a load command from a config file at startup is refuted: the log ends without a map load.</li><li>The logs do not record which menu button was clicked, so the explicit Load Game route is preferred.</li></ul></div><div class="de"><p class="lede">Der Bericht findet einen verlässlichen Weg, Wolfenstein II (TNC) zum Testen eine bestimmte Karte laden zu lassen. Startoptionen wie +map, +loadGame oder +exec mit einer Konfigurationsdatei wirken vor dem Hauptmenü nicht. Über das Menü klappt es: „Spiel laden“, dann ein bestimmter <span class="t" data-t="savegame">Spielstand</span>-Slot, danach zeigt das Log des Spiels das Laden der Karte.</p><ul><li>Funktionierender Weg: Hauptmenü, Spiel laden, Slot SLOT2, Spielstand GAME-AUTOSAVE0.</li><li>Das Log zeigt dann LaunchLoadScreen und LoadMap für die Karte c02p0.</li><li>Ein Ladebefehl aus einer Konfigurationsdatei beim Start ist widerlegt: Das Log endet ohne Kartenladen.</li><li>Die Logs halten nicht fest, welcher Menüknopf gedrückt wurde, daher ist der ausdrückliche Weg über „Spiel laden“ vorzuziehen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><h2 id="result">Result</h2>
+<p>The viable Retail load path is the standard menu sequence: initialize the game to the main menu, then select <strong>Continue/Resume</strong> (the latest <code>TRANSITION</code> state) or <strong>Load Game</strong>, and subsequently choose slot <code>SLOT2</code> with <code>GAME-AUTOSAVE0</code>. A new <code>idLoadScreen::LaunchLoadScreen("game/wolf/c02/c02p0")</code> and <code>LoadMap(game/wolf/c02/c02p0)</code> block must then appear in the log. For the DLC Canary, only <code>100000</code> versus <code>900000</code> within this block needs to be compared.</p>
+<p>The exact savegame path is occupied by the existing file:</p>
+<pre><code>savegame.user/‹steam-id›/SLOT2/GAME-AUTOSAVE0
+</code></pre>
+<p><code>re_probes/tnc_dlc_test/runtime_primary_c02/load_save.cfg</code> and <code>load_save.after.cfg</code> contain exactly the engine syntax <code>loadGame savegame.user/‹steam-id›/SLOT2/GAME-AUTOSAVE0</code> (without the leading drive letter or <code>base/</code> part). This syntax is thus occupied as a Console/Config command, but not as a pre-menu start option.</p>
+<h2 id="runtime-evidence">Runtime Evidence</h2>
+<ul>
+<li>In <code>qconsole.after.log</code> (among others from line 5618 onwards), following each fresh start without <code>+map</code>, <code>+exec</code>, or <code>+loadGame</code>:
+  <code>Initing Savegame List</code>, <code>Latest savegame found</code>, <code>Folder: TRANSITION</code>, <code>Map: game/wolf/c02/c02p0</code>.</li>
+<li>Immediately following this is <code>idLoadScreen::LaunchLoadScreen( "game/wolf/c02/c02p0" )</code> followed by <code>----------- LoadMap(game/wolf/c02/c02p0) ------------</code> (lines 5700/5742 and repeatedly 6239/6281, 6745/6788, 7235/7278, 9053/9095).</li>
+<li>In these start blocks, <code>------ Command Line ------</code> displays only the base options (Log/Developer-Debug and optionally DLC search path); thus, the successful map switch occurs after Menu/Savegame interaction and not from a start <code>+map</code> option.</li>
+<li>The static RTTI/Class Export confirms the intended menu path: <code>idMenuScreen_Shell_LoadGame</code>, <code>idMainMenu::idSWFScriptFunction_LoadGame</code>, and <code>idMainMenu::idSWFScriptFunction_loadGameFromCheckpoint</code> appear in <code>docs/ghidra/klassen_tnc.csv</code> (the TNC-Class CSV lines for Menu Screen and Script Functions serve as direct evidence).</li>
+</ul>
+<h2 id="countercheck--false-hypothesis">Countercheck / False Hypothesis</h2>
+<p>The obvious hypothesis "<code>+exec load_save.cfg</code> loads the state directly at Retail start" is refuted. While <code>qconsole.loadsave.log</code> records the start line:</p>
+<pre><code>NewColossus_x64vk.exe +logFile 1 +logFilePersistent 1 +exec load_save.cfg
+</code></pre>
+<p>and the Config content is syntactically correct, the log section ends after initialization/Boot Video without an <code>Latest savegame found</code>, <code>idLoadScreen::LaunchLoadScreen</code>, or <code>LoadMap(game/wolf/c02/c02p0)</code> block. The same negative result applies to the previously tested direct <code>+map</code>, <code>+exec</code>, and <code>+loadGame</code> starts (also in <code>RESULT.md</code>: "not executed before the menu"). Therefore, these commands must be executed after Engine/Menu initialization via the Savegame UI or the running console.</p>
+<h2 id="open-boundary">Open Boundary</h2>
+<p>The existing logs do not record UI keypresses; they prove the Menu/Savegame result path, but not whether <strong>Continue</strong> or the <strong>Load Game</strong> list was clicked in a specific run. For a reproducible Canary run, the explicit UI selection <code>Load Game -&gt; SLOT2 -&gt; GAME-AUTOSAVE0</code> is therefore preferred; it avoids any ambiguity regarding the latest <code>TRANSITION</code> state.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Save-Integrity-V3.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Offline Save Repair v3</a><a class="next" href="Research-Report-Savestructure.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Why the edited save state was rejected — Structure of <code>checkpoint.dat</code></a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D Map View: Server, CLI, and Loader Button – Wolfenstein Modloader</title>
+<meta name="description" content="Report on the local web server and loader button that show every Wolfenstein II map in 3D.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>3D Map View: Server, CLI, and Loader Button</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Mapview"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#results">Results</a></li><li><a href="#structure">Structure</a></li><li><a href="#numbers-per-map-verifier-run-warm-cache">Numbers per Map (Verifier Run, warm cache)</a></li><li><a href="#counter-tests---gegenproben">Counter-tests (--gegenproben)</a></li><li><a href="#limits">Limits</a></li><li><a href="#recheck">Recheck</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report describes a new feature of the mod loader: a small local web server that shows maps of Wolfenstein II: The New Colossus in 3D in a full-screen browser window, with geometry, textures and <span class="t" data-t="collision">collision</span>. It is started from a new button in the loader or from the command line. Automatic tests passed 97 of 97 checks on three maps, and 8 deliberately built-in bugs were each caught. The server only accepts connections from the same computer; the game itself was only read, never started.</p><ul><li>97 of 97 checks passed on three maps, including the large submarine map (5,533 polygons, 1,328 textures).</li><li>8 of 8 deliberately inserted bugs were detected by the matching test.</li><li>The server listens only on 127.0.0.1; 36 of 36 path-escape attempts returned &#x27;not found&#x27;.</li><li>Clicking the button blocks the loader for only about 0.001 seconds.</li><li>That Edge really opens a full-screen app window was not machine-tested.</li></ul></div><div class="de"><p class="lede">Dieser Bericht beschreibt eine neue Funktion des Mod-Loaders: einen kleinen lokalen Webserver, der Karten von Wolfenstein II: The New Colossus in 3D in einem Vollbild-Browserfenster zeigt, mit Geometrie, Texturen und <span class="t" data-t="collision">Kollision</span>. Gestartet wird er über einen neuen Button im Loader oder über die Kommandozeile. Automatische Tests bestanden 97 von 97 Prüfungen auf drei Karten, und 8 absichtlich eingebaute Fehler wurden jeweils erkannt. Der Server nimmt nur Verbindungen vom eigenen Rechner an; das Spiel wurde nur gelesen, nie gestartet.</p><ul><li>97 von 97 Prüfungen bestanden auf drei Karten, darunter die große U-Boot-Karte (5.533 Polygone, 1.328 Texturen).</li><li>8 von 8 absichtlich eingebauten Fehlern wurden vom passenden Test erkannt.</li><li>Der Server lauscht nur auf 127.0.0.1; 36 von 36 Ausbruchsversuche über Pfade ergaben &#x27;nicht gefunden&#x27;.</li><li>Der Klick auf den Button blockiert den Loader nur etwa 0,001 Sekunden.</li><li>Dass Edge wirklich ein Vollbild-App-Fenster öffnet, wurde nicht automatisch getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>serve</code> in workflow <code>loader-mapview</code>, 2026-09-24 (second run at 3 PM: all remeasured, control samples moved to Verifier, approval check renewed).
+Files: <code>wolfsdk/mapserver.py</code> (new), <code>wolfsdk/cli.py</code> (+25 lines, command <code>maps</code>), <code>wolfsdk/gui.py</code> (+26/−2, button in Assets tab), <code>tools/verify_mapview.py</code> (new, with <code>--control-samples</code>). The frontend (<code>wolfsdk/mapview/</code>) originates from the parallel worker; this server serves it exclusively.</p>
+<h2 id="results">Results</h2>
+<ul>
+<li><strong><code>python tools/verify_mapview.py</code> → 97/97 checks OK, rc=0, 36 s</strong> (with warm map cache). Checked c2v1, c12p1 (campaign), and the U-Boot.</li>
+<li><strong><code>python tools/verify_mapview.py --control-samples</code> → 9/9, rc=0, 76 s.</strong> The control run without mutation remains green (0 red). Each of the 8 built-in bugs colors exactly the check it is supposed to catch red (table below). Control samples run in separate processes each and are repeatable at any time.</li>
+<li><strong>The Part-1 GUI is unchanged.</strong> <code>tools/verify_gui.py</code> ran twice: once on a copy of the state before the change (gui.py and cli.py from HEAD, everything else as now, in a temp folder) and once on the current state. Both outputs are byte-identical (<code>diff</code> empty), 31 checks OK each, "All good." and rc=0.</li>
+<li>Only <code>127.0.0.1</code> listens (netstat per PID: 1/1 Socket). LAN addresses refuse connection (4/4), <code>::1</code> as well.</li>
+<li>Path breakout: 36/36 attack paths yield 404, the secret next to the folder never emerges. Against the real Viewer folder, 6/6 hold.</li>
+<li>The click in the Loader costs the Tk-Thread 0.001 s (Socket bind). The first import of <code>mapserver</code> with backends costs an additional 0.03 s (3/3 measurements).</li>
+</ul>
+<h2 id="structure">Structure</h2>
+<pre><code>Loader (tkinter) --Click--&gt; mapserver.start(tnc_root) -&gt; http://127.0.0.1:&lt;free&gt;/
+                              mapserver.open_app(url)    -&gt; msedge --app=&lt;url&gt; --start-fullscreen
+                                                            --user-data-dir=%LOCALAPPDATA%\wolfsdk\edge-profile
+python -m wolfsdk maps [id] [--no-browser]               -&gt; same, blocks until Ctrl+C
+</code></pre>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Source</th>
+<th>Delivery</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /</code>, <code>/&lt;file&gt;</code></td>
+<td><code>wolfsdk/mapview/</code></td>
+<td>File, Content-Type from fixed table (not <code>mimetypes</code>: Windows Registry makes <code>.js</code> sometimes <code>text/plain</code>)</td>
+</tr>
+<tr>
+<td><code>GET /api/maps</code></td>
+<td><code>mapcatalog.maps</code></td>
+<td>JSON <code>[{id,title,group,entities_bytes}]</code>. Maps without <code>.entities</code> are missing (today: c5v1, the Exec carrier from dlc_5). Cached until a Spec or Archive changes (stats via <code>base/*.resources</code>, <code>dlc/dlc_*/base/*</code>, Spec); second fetch takes 0.00 s</td>
+</tr>
+<tr>
+<td><code>GET /api/map/&lt;id&gt;/scene.json</code></td>
+<td><code>mapgeo.scene</code></td>
+<td>Cache file, streamed. Also opens the map mount for <code>/api/tex</code></td>
+</tr>
+<tr>
+<td><code>GET /api/map/&lt;id&gt;/geometry.bin</code></td>
+<td><code>mapgeo.scene</code></td>
+<td>Cache file, streamed in 1-MB blocks</td>
+</tr>
+<tr>
+<td><code>GET /api/map/&lt;id&gt;/collision.json</code></td>
+<td><code>mapcoll.collision</code></td>
+<td>Cache file, streamed</td>
+</tr>
+<tr>
+<td><code>GET /api/tex/&lt;id&gt;[?max=N]</code></td>
+<td><code>maptex.texture_block</code></td>
+<td>WTX1 + one Mip, <code>Cache-Control: max-age=86400</code> (IDs are content-addressed)</td>
+</tr>
+<tr>
+<td><code>GET /api/tex/&lt;id&gt;.png[?max=N]</code></td>
+<td><code>maptex.texture_png</code></td>
+<td>PNG <strong>same</strong> Mip: Server gives both calls same <code>max</code> (maptex has 512 or 1024 as default)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>A missing <code>max</code> defaults to 1024. <code>max</code> is clamped to the range 16..4096 and rounded down to the nearest power of two so that no single value generates its own cache file in maptex. <code>max=abc</code> yields 400.</li>
+<li>Error codes: <code>KeyError</code> (unknown map or texture) and <code>TncImageError</code> (no Mip) return 404. Everything else returns 500 with the German message as <code>text/plain</code>, e.g., <code>MapGeoError: game/dlc/c05/c5v1: keine .entities im Container</code>. A request never crashes the server.</li>
+<li>The server speaks HTTP/1.1 with Keep-alive; every response includes a Content-Length. Ranges are not supported; responses are always 200 with full content. Only GET and HEAD are allowed; POST returns 501.</li>
+<li><strong>A texture ID does not carry a map.</strong> <code>/api/tex</code> therefore queries the last opened mounts (at most 3, newest first). A mount is opened by a <code>scene.json</code> request. Displaced mounts are not explicitly closed: running requests still hold them, and CPython closes them with the last reference. Verified: after three additional maps, the displaced mount and its archive file are released (weakref), even though maptex had already created state for it.</li>
+<li><strong>The race condition in mapcatalog's index is bypassed, not fixed.</strong> The server builds a mount's index using <code>find("", "")</code> in the opening thread before another thread sees the mount. <code>Mount._idx</code> does not build the index in a thread-safe manner (see mapcatalog finding). With 8 threads, all 464/187/1328 textures were retrieved without false positives.</li>
+<li>Security:<ul>
+<li>Binding is restricted to <code>127.0.0.1</code>, port 0 (the system selects a free one). Windows sockets receive <code>SO_EXCLUSIVEADDRUSE</code> and <code>allow_reuse_address = False</code>, preventing anyone from binding the same port again.</li>
+<li>The Host header must be <code>127.0.0.1:&lt;port&gt;</code> or <code>localhost:&lt;port&gt;</code>; otherwise, a 403 is returned (protection against DNS rebinding).</li>
+<li>Static paths: <code>:</code>, <code>\</code>, NUL, and empty strings, as well as <code>.</code> or <code>..</code> segments, are rejected. The resolved path must then lie under <code>mapview/</code> and be a file.</li>
+<li><code>self.path</code> is split manually, not via <code>urlsplit</code>: this prevents interpreting a leading <code>//</code> as a hostname.</li>
+</ul>
+</li>
+<li>Lifespan: one server per process (<code>start()</code> returns the same URL on subsequent calls). It runs as a daemon thread, with <code>atexit(stop)</code>. Requests are handled by daemon threads so that an ongoing 100-MB download does not block the loader termination. <code>log_message</code> is silent because stderr is <code>None</code> under pythonw.</li>
+<li><code>HTTPServer.server_bind</code> is bypassed. It calls <code>socket.getfqdn</code>, performing a reverse DNS lookup that can take seconds on Windows machines.</li>
+<li>Browser launch:<ul>
+<li>Edge launches from <code>%ProgramFiles(x86)%</code>, <code>%ProgramFiles%</code>, and <code>%LOCALAPPDATA%</code>, followed by Chrome at the same locations (with its own <code>chrome-profile</code>), finally falling back to <code>webbrowser.open</code>. If Popen fails with OSError, <code>webbrowser</code> is still attempted.</li>
+<li>By using its own profile, a standalone full-screen app window opens instead of a tab in the user's browser.</li>
+</ul>
+</li>
+<li>GUI:<ul>
+<li>The Assets tab receives a header stating "Wolfenstein II: every map with geometry, textures, and collision" and an accent button on the right labeled "<strong>Maps in 3D (Full Screen)</strong>". The asset browser sits unchanged below it (screenshot verified).</li>
+<li>The button launches the TNC installation even if Part 1 is currently selected. If it is missing, a message appears and no server starts.</li>
+<li>The click binds only the socket (measured at 0.001 s); handling and browser launch occur in background threads; the status line displays the URL.</li>
+</ul>
+</li>
+<li>CLI:<ul>
+<li><code>python -m wolfsdk maps</code> opens the map selection.</li>
+<li><code>maps &lt;id&gt;</code> opens <code>/?map=&lt;id&gt;</code>, the URL parameter of the frontend.</li>
+<li><code>--no-browser</code> outputs only the address.</li>
+<li>An unknown ID terminates with "Unknown map: …" and rc=1.</li>
+</ul>
+</li>
+</ul>
+<h2 id="numbers-per-map-verifier-run-warm-cache">Numbers per Map (Verifier Run, warm cache)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Map</th>
+<th>scene.json</th>
+<th>geometry.bin</th>
+<th>collision.json</th>
+<th>Polygons</th>
+<th>Instances</th>
+<th>Textures WTX1</th>
+<th>Sample = maptex</th>
+<th>PNG = same Mip</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>game/dlc/c02/c2v1</td>
+<td>2.4 MB, 0.3 s*</td>
+<td>16.0 MB, 0.1 s</td>
+<td>5.3 MB</td>
+<td>907/907</td>
+<td>7741/7741</td>
+<td>464/464 in 0.5 s</td>
+<td>20/20</td>
+<td>2/2 (16², 1024²)</td>
+</tr>
+<tr>
+<td>game/wolf/c12/c12p1</td>
+<td>0.5 MB, 0.2 s*</td>
+<td>7.8 MB</td>
+<td>1.1 MB</td>
+<td>294/294</td>
+<td>1384/1384</td>
+<td>187/187 in 0.4 s</td>
+<td>20/20</td>
+<td>2/2</td>
+</tr>
+<tr>
+<td>game/wolf/submarine/submarine</td>
+<td>13.6 MB, 0.4 s*</td>
+<td>87.9 MB, 0.3 s</td>
+<td>37.1 MB</td>
+<td>5533/5533</td>
+<td>46736/46736</td>
+<td>1328/1328 in 1.5 s</td>
+<td>20/20</td>
+<td>2/2</td>
+</tr>
+</tbody>
+</table></div>
+<p>* Includes opening the Mount.</p>
+<p>Additionally, for each of the three maps:</p>
+<ul>
+<li>The delivered bytes are identical to the cache files (comparison and sha1), and the Content-Length matches.</li>
+<li>Each polygon resides in <code>geometry.bin</code> (UV data directly follows position data; indices directly follow UV data). The file is contiguous and ends exactly at the last section. Every index is smaller than vcount.</li>
+<li>Each collision hull points to an entity in <code>scene.json</code> (7760/7760, 1549/1549, 46041/46041).</li>
+<li>Each Albedo is located in <code>textures[]</code> (473/473, 190/190, 1345/1345).</li>
+<li><code>?max=256</code> yields a maximum of 256 px (5/5).</li>
+</ul>
+<h2 id="counter-tests---gegenproben">Counter-tests (<code>--gegenproben</code>)</h2>
+<p>Each line represents its own process: <code>verify_mapview.py --mutation &lt;name&gt;</code> builds the error via Monkeypatch only in this specific process and checks only the responsible sections. The file <code>mapserver.py</code> remains untouched.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mutation</th>
+<th>Built-in Error</th>
+<th>Expected (Red)</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>none</td>
+<td>Control, all sections of mutations</td>
+<td>nothing</td>
+<td>0 red, rc 0</td>
+</tr>
+<tr>
+<td>path</td>
+<td>static paths without bounding</td>
+<td>"Escape attempts → 404"</td>
+<td>red, plus 4 more</td>
+</tr>
+<tr>
+<td>host</td>
+<td>every Host-Header allowed</td>
+<td>"foreign Host-Header → 403"</td>
+<td>red</td>
+</tr>
+<tr>
+<td>list</td>
+<td>/api/maps unfiltered (c5v1 and <code>entities</code> key present)</td>
+<td>"every entry exactly …"</td>
+<td>red, plus count</td>
+</tr>
+<tr>
+<td>png</td>
+<td>PNG with maptex-standard-max instead of equal max</td>
+<td>"PNG: same Mip …"</td>
+<td>red</td>
+</tr>
+<tr>
+<td>short</td>
+<td>File 1 byte shorter than Content-Length</td>
+<td>"check_map without exception" (IncompleteRead)</td>
+<td>red</td>
+</tr>
+<tr>
+<td>fullscreen</td>
+<td>Edge without <code>--start-fullscreen</code></td>
+<td>"Edge found: …"</td>
+<td>red</td>
+</tr>
+<tr>
+<td>blocked</td>
+<td>Button waits 1 s in Tk-Thread</td>
+<td>"Click does not block Tk"</td>
+<td>red</td>
+</tr>
+<tr>
+<td>open</td>
+<td>no Mount is ever evicted (<code>MOUNTS = 99</code>)</td>
+<td>"evicted Mount is freed"</td>
+<td>red</td>
+</tr>
+</tbody>
+</table></div>
+<p>Additional fixed counter-tests:</p>
+<ul>
+<li>The netstat output must recognize <code>0.0.0.0</code> and <code>::</code>.</li>
+<li>Connection must succeed via <code>127.0.0.1</code>.</li>
+<li>The same secret file is delivered as soon as it exists in the directory.</li>
+<li>Without TNC installation, a message appears and no server starts.</li>
+</ul>
+<p>Binding to <code>0.0.0.0</code> is not run as a mutation: This would briefly expose the server to the LAN and could trigger a firewall dialog. This direction is covered by the netstat counter-test and the LAN-refusal test.</p>
+<h2 id="limits">Limits</h2>
+<ul>
+<li><strong>c2v1 is today the user's copy.</strong> The installation has <code>dlc/dlc_0</code>, whose spec also refers to <code>game/dlc/c02/c2v1</code>. mapcatalog sorts dlc_0 before dlc_2, so <code>/api/maps</code> returns c2v1 in the "Own" group (2 × Own, 25 Campaign, 12 DLC, 1 Other). This is a priority question from mapcatalog; the server only forwards the catalog. The verified c2v1 numbers (464 textures, 907 surfaces) are those of the dlc_0 version.</li>
+<li><code>/api/tex</code> knows only textures of the last up to 3 maps opened via <code>scene.json</code>. After a server restart, there are 404s until the frontend reloads <code>scene.json</code>. It does so on map switch and on reload anyway.</li>
+<li>Mounts are cached by map ID. If Steam updates the game while the server is running, open mounts remain old. The scene and collision rebuild the map itself (keys via size+mtime); for textures only a loader restart helps.</li>
+<li>On Windows, <code>os.replace</code> fails in a mapgeo/mapcoll rebuild as long as the server is streaming the same file. A new build only occurs after a game update or with a damaged cache. The request then gets 500; the next fetch succeeds.</li>
+<li>There are neither ETag nor Range. <code>scene.json</code>, <code>geometry.bin</code>, and <code>collision.json</code> are fully transferred on every load. Locally this costs 0.1–0.4 s for 88 MB.</li>
+<li>Opening a mount is globally serialized (<code>ponytail:</code> comment, 1–2 s per map). Texture requests from other already-open maps do not wait for it.</li>
+<li>Errors from mapcoll on broken user <code>.entities</code> (AttributeError instead of CmError, see mapcoll finding) come as 500 with a message and do not bring the server down.</li>
+<li>Inherited weaknesses of the backends that the server only forwards:<ul>
+<li>Running Loaders and <code>python -m wolfsdk maps</code> simultaneously building the same map can cause mapgeo to stumble over fixed <code>.tmp</code> names (mapgeo finding). The request gets 500; the next fetch hits the cache.</li>
+<li>mapcoll holds its lock even on cache lookups. While another map builds, <code>collision.json</code> of a finished map waits up to about 13 s.</li>
+<li>A broken user archive in <code>dlc_*</code> causes <code>mapcatalog.maps()</code> to fail; then <code>/api/maps</code> returns 500 and the selection remains empty.</li>
+</ul>
+</li>
+<li>Browser startup is stubbed in the Verifier; no window opens. That Edge really shows a fullscreen app window with these arguments is documented Chromium behavior and was not machine-tested. The screenshot check of the frontend runs on the frontend-worker and the Verifiers (headless Edge).</li>
+<li>The Verifier reads cache files under <code>%LOCALAPPDATA%\wolfsdk\mapcache</code>. If they are missing, the first fetch builds them (U-Boot about 6 s geometry and 14 s collision).</li>
+<li>The game directory was only read and the game was never started. Not touched: browser.py, tncview.py, tncimage.py, mapcatalog, mapgeo, maptex, mapcoll, and <code>wolfsdk/mapview/</code>.</li>
+</ul>
+<h2 id="recheck">Recheck</h2>
+<pre><code>python tools/verify_mapview.py            # 97 checks, rc 0
+python tools/verify_mapview.py --gegenproben   # Control + 8 mutations, rc 0
+python tools/verify_gui.py                # rc 0, output as before the change
+python -m wolfsdk maps --no-browser       # Address, then e.g. /api/maps in browser
+python -m wolfsdk maps game/wolf/c12/c12p1
+</code></pre></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Mapmanifest.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Map-Manifest: What a map must know about an asset</a><a class="next" href="Research-Report-Matpipe.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>matpipe: material → image → texdb, end-to-end</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

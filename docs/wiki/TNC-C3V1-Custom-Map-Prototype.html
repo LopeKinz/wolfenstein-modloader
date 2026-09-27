@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC c3v1_custom – Alias Prototype – Wolfenstein Modloader</title>
+<meta name="description" content="An unfinished prototype for a custom Wolfenstein II map alias, built from DLC-3 data and not yet runnable.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#maps"><span class="en">Custom maps and missions</span><span class="de">Eigene Karten und Missionen</span></a></p>
+<h1>TNC c3v1_custom – Alias Prototype</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNC-C3V1-Custom-Map-Prototype"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#conscious-limitation">Conscious Limitation</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page describes a prototype for a new map name (&#x27;c3v1_custom&#x27;) in Wolfenstein II: The New Colossus, built from an original DLC archive without changing the game installation. It lists 243 assets, 210 of which are needed for the map. The page states plainly that this is not yet a working custom map: the main archive and texture database files are missing, and internal references still point to the old names. Starting the game with it would therefore not be a valid test.</p><ul><li>New map alias: game/dlc/c03/c3v1_custom.</li><li>Inventory: 243 name-based assets, 210 of them map-critical.</li><li>chunk_26.resources and chunk_26.texdb are intentionally missing.</li><li>Internal references (geometry, collision, navigation, shadows, <span class="t" data-t="entity">entities</span>) are not yet renamed.</li><li>Only a complete, renamed set may be tested, and only in an isolated search path.</li></ul></div><div class="de"><p class="lede">Diese Seite beschreibt einen Prototyp für einen neuen Kartennamen (&#x27;c3v1_custom&#x27;) in Wolfenstein II: The New Colossus, gebaut aus einem Original-DLC-Archiv, ohne die Spielinstallation zu verändern. Er umfasst 243 Assets, von denen 210 für die Karte nötig sind. Die Seite sagt klar, dass das noch keine funktionierende eigene Karte ist: Das Hauptarchiv und die Texturdatenbank fehlen, und interne Verweise zeigen noch auf die alten Namen. Ein Spielstart damit wäre daher kein gültiger Test.</p><ul><li>Neuer Karten-Alias: game/dlc/c03/c3v1_custom.</li><li>Bestand: 243 namensbasierte Assets, davon 210 kartenkritisch.</li><li>chunk_26.resources und chunk_26.texdb fehlen absichtlich.</li><li>Interne Verweise (Geometrie, Kollision, Navigation, Schatten, <span class="t" data-t="entity">Entities</span>) sind noch nicht umbenannt.</li><li>Getestet werden darf nur ein vollständiger, umbenannter Satz, und nur in einem isolierten Suchpfad.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Generated from the authentic DLC-3 archive without modifying the Steam installation.</p>
+<ul>
+<li>Alias: <code>game/dlc/c03/c3v1_custom</code></li>
+<li>Mapspec: <code>base/packagemapspec.json</code> (Chunk 26)</li>
+<li>Inventory: <code>243</code> name-based assets, of which <code>210</code> are map-critical assets</li>
+<li>Source: <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_2\base\chunk_22.resources</code> (read-only)</li>
+</ul>
+<h2 id="conscious-limitation">Conscious Limitation</h2>
+<p>This is not yet a runnable Custom Map bundle. <code>chunk_26.resources</code> and <code>chunk_26.texdb</code> are intentionally missing. Furthermore, internal references (Proc, World-Tome, Collision, Navmesh, PVS, Shadow, and Entities) have not been byte-for-byte rewritten to <code>c3v1_custom</code>. Therefore, a start test would not constitute a valid map test.</p>
+<p><code>bundle_status.json</code> contains the negative controls. Only a complete, renamed Chunk/Texdb set may be copied into an isolated search path.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNC-Custom-Map-Status.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC Custom-Map Prototype: Current Status</a><a class="next" href="TNC-DLC-C02-Runtime-Test.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Primary DLC Test c02p0</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

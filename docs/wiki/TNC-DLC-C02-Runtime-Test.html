@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Primary DLC Test c02p0 – Wolfenstein Modloader</title>
+<meta name="description" content="In-game test of a self-made DLC that registers the Wolfenstein II map c02p0 as its main source.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#maps"><span class="en">Custom maps and missions</span><span class="de">Eigene Karten und Missionen</span></a></p>
+<h1>Primary DLC Test c02p0</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNC-DLC-C02-Runtime-Test"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This short page reports a runtime test in Wolfenstein II: The New Colossus with a self-made <span class="t" data-t="dlc">DLC</span> (dlc_4) that claims the map c02p0 as its own. The game found the DLC and accepted its map entry. An archive with a wrong check value at <span class="t" data-t="header">header</span> position +0x08 was clearly rejected as &#x27;corrupt header&#x27;, which is a <span class="t" data-t="hash">hash</span> check, not proof against DLC priority. Whether the DLC data actually wins over the original is still undecided, because the game ignored the start commands for loading a map.</p><ul><li>The game reported &#x27;found dlc id 4&#x27; and &#x27;SearchDLC: found 4 dlcs&#x27;.</li><li>The DLC map entry for c02p0 (chunk 26) was accepted without syntax errors.</li><li>A wrong +0x08 header value leads to &#x27;container chunk_26.resources has corrupt header&#x27;.</li><li>The original packagemapspec.json stayed bit-identical.</li><li>Next step: load via the menu or a save game, since +map, +exec and +loadGame were ignored at startup.</li></ul></div><div class="de"><p class="lede">Diese kurze Seite berichtet über einen Test in Wolfenstein II: The New Colossus mit einem selbst gebauten <span class="t" data-t="dlc">DLC</span> (dlc_4), das die Karte c02p0 für sich beansprucht. Das Spiel fand das DLC und akzeptierte seinen Karteneintrag. Ein Archiv mit falschem Prüfwert an <span class="t" data-t="header">Header</span>-Position +0x08 wurde klar als &#x27;corrupt header&#x27; abgelehnt; das ist eine <span class="t" data-t="hash">Hash</span>-Prüfung und kein Beweis gegen einen DLC-Vorrang. Ob die DLC-Daten wirklich gegen das Original gewinnen, ist noch offen, weil das Spiel die Startbefehle zum Laden einer Karte ignorierte.</p><ul><li>Das Spiel meldete &#x27;found dlc id 4&#x27; und &#x27;SearchDLC: found 4 dlcs&#x27;.</li><li>Der DLC-Karteneintrag für c02p0 (Chunk 26) wurde ohne Syntaxfehler akzeptiert.</li><li>Ein falscher Header-Wert bei +0x08 führt zu &#x27;container chunk_26.resources has corrupt header&#x27;.</li><li>Die originale packagemapspec.json blieb bitgleich.</li><li>Nächster Schritt: über das Menü oder einen Spielstand laden, da +map, +exec und +loadGame beim Start ignoriert wurden.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>The test provided <code>dlc_4</code> with a valid spec for <code>game/wolf/c02/c02p0</code>, <code>chunkid: 26</code>, <code>basechunkid: 6</code>, <code>layer: -1</code>, and <code>refchunks: [1]</code>.</p>
+<p>Verified:</p>
+<ul>
+<li>The Retail Loader reported <code>found dlc id 4</code> and <code>SearchDLC: found 4 dlcs</code>.</li>
+<li>The primary DLC path is syntactically accepted; it is not the same as the pure <code>refchunk</code> path tested previously.</li>
+<li>A container with a false header field <code>+0x08</code> is explicitly rejected with <code>container chunk_26.resources has corrupt header</code>. This is a reproducible hash gate, not evidence against DLC priority.</li>
+<li><code>base/packagemapspec.json</code> remained bit-identical (SHA256 <code>8E17EBD80C23F64FAE59C9188714C03DF69A0232284CFE7B6933ACC024570307</code>).</li>
+</ul>
+<p>Undecided: The direct Retail start ignores <code>+map</code>, <code>+exec</code>, and <code>+loadGame</code> before the menu; therefore, no new <code>LoadMap</code> section was generated in this run. The next true priority test must serve the Menu/Savegame load path and then compare only <code>100000</code> against <code>900000</code> in the log.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNC-C3V1-Custom-Map-Prototype.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC c3v1_custom – Alias Prototype</a><a class="next" href="Kitmap-Kit-Survey.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Kit-Survey c2v1: Components for a New Map</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

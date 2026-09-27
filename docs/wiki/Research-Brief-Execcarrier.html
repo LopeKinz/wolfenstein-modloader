@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Execcarrier – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: build the smallest Wolfenstein II DLC that carries one config file so a console command can be tested.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Execcarrier</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Execcarrier"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This is the assignment for a research task on Wolfenstein II: The New Colossus, not a result. It asks a worker to build a minimal <span class="t" data-t="dlc">DLC</span> package holding one encrypted config file, so the &#x27;resourceExec&#x27; console command can be tested in the game within about a minute. It lists what is already solved, strict rules (exact file name, no padding, no installing or launching the game) and the checks the result must pass. The outcome is described on the matching research report page.</p><ul><li>Goal: a separate DLC that contains exactly one encrypted cfile named &#x27;wolfsdk_test.cfg&#x27;.</li><li>The file name is part of the <span class="t" data-t="encryption">encryption</span> key, so any other name or case breaks it.</li><li>The package must pass the content hash and header hash checkers, and the file must decrypt back out of the built archive.</li><li>The installer must install and uninstall with one command each and never overwrite an existing folder.</li><li>The worker must not install anything into the game or start it; mounting may not be claimed without a game test.</li></ul></div><div class="de"><p class="lede">Dies ist der Auftrag für eine Forschungsaufgabe zu Wolfenstein II: The New Colossus, kein Ergebnis. Er verlangt ein minimales <span class="t" data-t="dlc">DLC</span>-Paket mit einer verschlüsselten Config-Datei, damit sich der Konsolenbefehl „resourceExec“ im Spiel in etwa einer Minute testen lässt. Er nennt, was schon gelöst ist, strenge Regeln (exakter Dateiname, kein Auffüllen, nichts installieren oder das Spiel starten) und die Prüfungen, die das Ergebnis bestehen muss. Das Ergebnis steht auf der zugehörigen Berichtsseite.</p><ul><li>Ziel: ein eigenes DLC, das genau eine verschlüsselte cfile namens „wolfsdk_test.cfg“ enthält.</li><li>Der Dateiname ist Teil des <span class="t" data-t="encryption">Verschlüsselungs</span>-Schlüssels, jeder andere Name oder andere Groß-/Kleinschreibung macht sie ungültig.</li><li>Das Paket muss die Prüfer für Inhalts- und Header-Hash bestehen, und die Datei muss sich aus dem gebauten Archiv wieder entschlüsseln lassen.</li><li>Das Installationsskript muss mit je einem Befehl installieren und deinstallieren und darf nie einen vorhandenen Ordner überschreiben.</li><li>Der Bearbeiter darf nichts ins Spiel installieren und es nicht starten; ein erfolgreiches Einbinden darf ohne Spieltest nicht behauptet werden.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-execcarrier-a1; task execcarrier; implement.
+Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Parallel: w-savestructure-a1.</p>
+<h1 id="objective">Objective</h1>
+<p>Assemble the smallest mountable DLC that carries one <code>cfile</code> resource, so the
+<code>resourceExec</code> route can finally be tested in the running game - and make that
+test cost the user about 60 seconds of clicking, because their time at the PC
+comes in five-minute windows.</p>
+<p>Everything needed is solved and independently re-verified by the master today:</p>
+<ul>
+<li><code>wolfsdk/idclwrite.py</code> - container writer. Round-trips BYTE-IDENTICAL on three
+  retail archives (401 KB / 27.8 MB / 97.4 MB), 6/6 negative controls.
+  Recomputes entry <code>+0x50</code>, <code>+0x60</code>, header <code>+0x20</code> then <code>+0x08</code>, in that order.</li>
+<li><code>tools/probe_cfilekey.py</code> - cfile encryptor. 67/67 byte-identical round-trip,
+  7/7 negative controls. <code>encrypt(plain, name, salt12, iv16, declen)</code>.</li>
+<li><code>re_probes/cfilekey/wolfsdk_test.cfg.cfile</code> - 96 bytes, plaintext
+  <code>map game/dlc/c02/c2v1_custom\n</code>, resource name <code>wolfsdk_test.cfg</code>,
+  <code>declen=0xFFFFFFFF</code>.</li>
+</ul>
+<p>Measured at runtime today, this is what the carrier has to satisfy:
+<code>resourceExec wolfsdk_test.cfg</code> resolved its argument as <code>cfile:wolfsdk_test.cfg</code>
+and refused only because it would have had to <em>generate</em> it in a production
+build. Present it as a real <code>cfile</code> resource in a mounted container and that
+objection disappears.</p>
+<h1 id="hard-requirements-from-the-two-reports---do-not-rediscover-these">Hard requirements from the two reports - do not rediscover these</h1>
+<ul>
+<li>Entry type <code>cfile</code>, <code>compression == 0</code> (the payload is already encrypted).</li>
+<li><strong>The resource name is an input to the encryption key.</strong> The entry must be
+  named exactly <code>wolfsdk_test.cfg</code>. A different name, different case, or a
+  <code>base/</code> prefix each fail the HMAC tag - the cfile worker checked all three.
+  If you need another name, re-encrypt with <code>probe_cfilekey.encrypt</code>.</li>
+<li>The reader takes the ciphertext length as <code>Length() - 32 - Tell()</code>, so any
+  trailing padding inside the resource payload breaks the tag.</li>
+<li>A new <code>chunk_N.resources</code> gets <code>chunk_N.texdb</code> mounted automatically from the
+  container name (<code>re_probes/agent_reports/texdbkey.md</code>), and <code>MountDatabase</code>
+  checks only the magic. A minimal/empty texdb should therefore be enough for a
+  container that holds no images - verify that claim against the texdb header
+  format rather than assuming it.</li>
+</ul>
+<h1 id="sources">Sources</h1>
+<ul>
+<li>re_probes/agent_reports/{idclwriter,cfilekey2,texdbkey,cmdtable}.md</li>
+<li>The live retail DLCs as the structural model, READ ONLY:
+  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus/dlc/dlc_1..3
+  (<code>dlcinfo.json</code>, <code>base/packagemapspec.json</code>, <code>base/chunk_NN.resources</code>)</li>
+<li><code>dlc/dlc_4</code> is already installed and has mounted successfully before; it
+  carries the <code>game/dlc/c02/c2v1_custom</code> alias the script will call. Your
+  carrier should be a SEPARATE dlc so the two concerns stay separable - read
+  dlc_4, do not modify it.</li>
+<li>tools/dlcinfo.py, tools/dlcmod.py (read-only) for the dlcinfo/mapspec format.</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/build_exec_carrier.py (new - builds and verifies the carrier),
+tools/install_exec_carrier.py (new - installs AND uninstalls, see below),
+re_probes/execcarrier/ (new dir, the built carrier), and
+re_probes/agent_reports/execcarrier.md.</p>
+<p><code>wolfsdk/idclwrite.py</code>, <code>tools/probe_cfilekey.py</code>, <code>tools/probe_datahash.py</code>,
+<code>tools/probe_idclhash.py</code> are READ-ONLY for you: import them, do not edit.</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p><strong>Do not install anything into the game folder yourself, and do not launch the
+game.</strong> The installer script you write must not run as a side effect of
+building - installing is the user's call, in their window, with their hands.
+No writes to "C:/Users/‹user›/Saved Games". Do not modify dlc_4, re_probes/map_alias_v3/,
+re_probes/idclwriter/, re_probes/custom_save_candidates/, re_probes/cfilekey/,
+docs/*, config.json, or another worker's tools. No pip install.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib only. Reproducible from the command line.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ol>
+<li>A built carrier under <code>re_probes/execcarrier/</code> with the full DLC directory
+   shape, containing <code>cfile:wolfsdk_test.cfg</code> byte-identical to
+   <code>re_probes/cfilekey/wolfsdk_test.cfg.cfile</code>.</li>
+<li>It passes, run by you and quoted in the report:<ul>
+<li><code>python tools/probe_datahash.py &lt;carrier chunk&gt;</code>  -&gt; n/n</li>
+<li><code>python tools/probe_idclhash.py &lt;carrier chunk&gt;</code>  -&gt; +0x08 and +0x20 OK</li>
+<li><code>python tools/probe_cfilekey.py</code> decrypting the entry straight back OUT of
+ the built container and getting <code>map game/dlc/c02/c2v1_custom\n</code>. That is
+ the end-to-end check that matters: it proves the archive round-trip did not
+ disturb the payload the encryption depends on.</li>
+</ul>
+</li>
+<li><code>tools/install_exec_carrier.py</code> installs with one command and <strong>uninstalls
+   with one command</strong>, refuses to overwrite an existing dlc directory, prints
+   exactly what it will touch before touching it, and is a no-op on failure.
+   The uninstall path must be tested by you against a temporary copy - never
+   against the real game folder.</li>
+<li>A chunk id and dlc id that provably collide with nothing: enumerate the ids
+   the installed DLCs already use and say which you picked and why.</li>
+</ol>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Every important assurance needs a check that fails if it is false. In
+particular, do not assert that the container mounts - nothing offline can show
+that. Say "structurally valid by these checks, mount unconfirmed".
+If a minimal texdb turns out NOT to be sufficient, that is a finding, not a
+setback - report it with the header evidence.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If the mapspec/dlcinfo format needs a map entry and a pure resource-carrier DLC
+is not expressible, say so and propose the smallest alternative (e.g. adding the
+cfile entry to a copy of an existing carrier). Do not ship a bundle you cannot
+justify.</p>
+<h1 id="deliverable---and-the-part-that-matters-most">Deliverable - and the part that matters most</h1>
+<p>End the report with a <strong>five-line runbook</strong> the user can follow without reading
+anything else: the install command, what to click, the one console line to type,
+what a success looks like, and the uninstall command. Their window is five
+minutes; every sentence they have to read in it is a sentence too many.</p>
+<p>Checkpoint at milestones. Publish a bus fact when the carrier verifies.
+Concise German report in re_probes/agent_reports/execcarrier.md. Finish the task.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Entitypipe.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Entitypipe</a><a class="next" href="Research-Brief-Hash08.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Investigation Task: IDCL Header Hash at +0x08</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

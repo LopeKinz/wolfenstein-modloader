@@ -1,0 +1,1172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Four Channel Layers of a Virtual-Texture Page — Block 0 and Block 1 – Wolfenstein Modloader</title>
+<meta name="description" content="Decoding the four image layers inside a TNO megatexture page: progress on two layers, but still no full picture.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tno"><span class="en">The New Order</span><span class="de">The New Order</span></a></p>
+<h1>The Four Channel Layers of a Virtual-Texture Page — Block 0 and Block 1</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Virtual-Texture-Planes"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-the-result-in-one-paragraph">1. The Result in One Paragraph</a></li><li><a href="#2-what-is-actually-in-the-blocks-confirmed">2. What is actually in the blocks (confirmed)</a></li><li><a href="#3-block-1--64-macroblocks-2-channels-confirmed--form-subject-to-caveat">3. Block 1 = 64 macroblocks, 2 channels (confirmed) — form subject to caveat</a></li><li><a href="#4-block-0-is-not-solved">4. Block 0 is not solved</a></li><li><a href="#5-why-the-macroblock-counter-is-not-the-suspect">5. Why the macroblock counter is not the suspect</a></li><li><a href="#6-hypotheses-that-died-of-numbers">6. Hypotheses that died of numbers</a></li><li><a href="#7-what-this-means-combined">7. What This Means Combined</a></li><li><a href="#8-what-remains-open-and-the-next-meaningful-step">8. What Remains Open, and the Next Meaningful Step</a></li><li><a href="#9-pixels-for-block-1--and-what-the-seam-says">9. Pixels for Block 1 — and What the Seam Says</a></li><li><a href="#10-block-0-the-21-bits-and-why-they-dont-come-from-our-decoder">10. Block 0: The 21 Bits, and Why They Don&#x27;t Come From Our Decoder</a></li><li><a href="#11-block-1-channel-1-what-died-this-time">11. Block 1, Channel 1: what died this time</a></li><li><a href="#where-the-knowledge-ends">Where the knowledge ends</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">In Wolfenstein: The New Order, most surfaces come from one giant <span class="t" data-t="vt">virtual texture</span> split into small pages. Each page stores four layers in a modified JPEG XR format. Two simple layers were already readable; this page cracks the two multi-channel layers far enough that part of them decode, but the colour layer still cannot be turned into pixels. Until that works, nobody can export or replace a full page, so megatexture skins stay out of reach for modding.</p><ul><li>Layer 1 (2 channels, 64 macroblocks) decodes exactly on 765 of 4,256 test pages (18%); 1,225 of 7,269 pages become clean pixels.</li><li>In layer 1, channel 0 lines up with neighbouring pages, but channel 1 is a smooth image in the wrong place. The cause is still open.</li><li>Layer 0 (colour) is solved at the bit level: 823 of 4,256 pages decode after finding that MachineGames&#x27; encoder differs from the standard in the first macroblock by 21 bits.</li><li>Standard decoders (Windows, jxrlib) break on layer 0, so there are still no colour pixels and no full-page export.</li><li>The team&#x27;s own decoder matches Windows&#x27; JPEG XR encoder on 324 of 324 test streams, and 15 hypotheses were ruled out by measurement.</li></ul></div><div class="de"><p class="lede">In Wolfenstein: The New Order kommen die meisten Oberflächen aus einer riesigen <span class="t" data-t="vt">virtuellen Textur</span>, die in kleine Seiten aufgeteilt ist. Jede Seite speichert vier Ebenen in einem abgewandelten JPEG-XR-Format. Zwei einfache Ebenen waren schon lesbar; diese Seite knackt die zwei mehrkanaligen Ebenen so weit, dass ein Teil davon dekodiert, doch die Farbebene lässt sich noch nicht in Pixel umwandeln. Solange das nicht klappt, kann niemand eine ganze Seite exportieren oder ersetzen, und Megatextur-Skins bleiben fürs Modding außer Reichweite.</p><ul><li>Ebene 1 (2 Kanäle, 64 Makroblöcke) dekodiert exakt auf 765 von 4.256 Testseiten (18 %); 1.225 von 7.269 Seiten werden zu sauberen Pixeln.</li><li>In Ebene 1 passt Kanal 0 an die Nachbarseiten, Kanal 1 ist dagegen ein glattes Bild an der falschen Stelle. Die Ursache ist noch offen.</li><li>Ebene 0 (Farbe) ist auf Bit-Ebene gelöst: 823 von 4.256 Seiten dekodieren, nachdem klar wurde, dass der Encoder von MachineGames im ersten Makroblock um 21 Bit vom Standard abweicht.</li><li>Standard-Decoder (Windows, jxrlib) scheitern an Ebene 0, daher gibt es noch keine Farbpixel und keinen Export ganzer Seiten.</li><li>Der eigene Decoder stimmt auf 324 von 324 Teststreams mit dem JPEG-XR-Encoder von Windows überein; 15 Hypothesen wurden durch Messungen widerlegt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Background: <code>docs/virtualtextures.md</code> cracked the container; <code>tools/vtdecode.py</code> decoded the <strong>single-channel</strong> layers — Block 2 as 8×8 macroblocks (128×128 px) across 599/599 pages of <code>c12p1</code>, and Block 3 as 2×2 macroblocks (32×32 px) across 299/299. <strong>Block 0</strong> (<code>INTERNAL_CLR_FMT = YUV_444</code>, 3 channels) and <strong>Block 1</strong> (<code>NCOMPONENT</code>, 2 channels) remained undecoded, with the note: "no macroblock raster retrieves either on any side."</p>
+<p>This document corrects that note partially and leaves the other half standing.</p>
+<p>Tool: <code>tools/vtplanes.py</code> (read-only, standard library only; for cross-checks it invokes the Windows-native JPEG-XR codec via <code>powershell</code>).</p>
+<pre><code>python tools/vtplanes.py census   c12p1.pages
+python tools/vtplanes.py fit      c12p1.pages --max 1200
+python tools/vtplanes.py reinterp c12p1.pages
+python tools/vtplanes.py refgen   --out REFDIR      # Windows writes reference streams
+python tools/vtplanes.py refcheck REFDIR            # including negative control
+python tools/vtplanes.py seam     c01p4.pages --out SEAMDIR
+python tools/vtplanes.py selftest             # each assertion as Pass/Fail count
+python tools/vtplanes.py selftest --sabotage  # must yield FAIL (return value 1)
+</code></pre>
+<p><strong>Addendum, §9:</strong> Block 1 now yields <strong>pixels</strong>, and the seam is measured for Channel 0. The tool for this is <code>tools/vtpixel.py</code>. What §8 suggested as "the next sensible step" — building jxrlib itself — was unnecessary: a <strong>pre-translated</strong> <code>JxrDecApp.exe</code> already exists on this machine.</p>
+<p><strong>Addendum, §10 and §11:</strong> <strong>Block 0 now yields</strong> — 823 of 4256 layers instead of 1, bit-exact, over the same corpus. The cause was a single bit state in the Chroma CBP prediction, and it has an inconvenient flip side: the corrected rule breaks 92 of the 108 <code>YUV_444</code> reference streams that Windows wrote. The two encoders are incompatible with macroblock 0 — and thus jxrlib is for Block 0 <strong>not an oracle</strong> (§10.6). Block 1, Channel 1 remains open; §11 states what else died in the process.</p>
+<hr />
+<h2 id="1-the-result-in-one-paragraph">1. The Result in One Paragraph</h2>
+<p><strong>Block 1 carries 64 macroblocks — the area of exactly one 128×128 page — as <code>NCOMPONENT</code> with 2 channels, precisely what its own layer header states.</strong> Over six <code>.pages</code> files, <strong>765 of 4256</strong> Block-1 layers on Mip 0 pass completely through all 64 macroblocks and terminate in the <strong>own last byte</strong>, bit-exact. Every other macroblock <strong>count</strong> and every other color format read remains buried in noise. Which pages emerge is not random: they are the sparsely populated ones. As soon as a page truly carries content, the decoder eventually goes off track.</p>
+<p><strong>The <em>form</em> 8×8 is thus not filled, only the area</strong> — see §3.2. This is where one most easily deceives oneself, which is why it appears early in this document and not in fine print. It is also not filled with pixels in hand, and §9.5 states with numbers why not.</p>
+<p><strong>Block 1 now yields pixels, and Channel 0 seams seamlessly to its neighbor pages (§9).</strong> Channel 1 does not, although it produces an equally smooth image. Thus the remaining open part is confined to the second channel.</p>
+<p><strong>Block 0 is not solved.</strong> Over the same 4256 pages it yields <strong>1×</strong> — that is exactly the noise limit. No raster, no color format, no bit depth, no tiling, and no alpha read changes anything.</p>
+<blockquote>
+<p><strong>Status after §10:</strong> This paragraph is obsolete, in a way that does not refute it: no <em>read</em> of the stream changes anything because the error was not a read but a state within the decoder. With the corrected Chroma CBP prediction, Block 0 yields <strong>823× of 4256</strong> (19.3%, §10.3), in the same order of magnitude as Block 1 and for the same reason. It remains open on <strong>pixels</strong>, and §10.6 states with numbers why this time it is not at the head.</p>
+</blockquote>
+<p><strong>The macroblock counter in <code>vtdecode.py</code> is not the suspect.</strong> It has been verified across <strong>324 of 324</strong> streams written by Windows' own JPEG-XR encoder — including <code>YUV_444</code> with 3 channels and <code>CMYK</code> with 4 channels, precisely the N-channel code path used by <code>NCOMPONENT</code>. All 324 match exactly.</p>
+<hr />
+<h2 id="2-what-is-actually-in-the-blocks-confirmed">2. What is actually in the blocks (confirmed)</h2>
+<p><code>vtplanes.py census c12p1.pages --max 400</code>, 399 pages, all four blocks:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Block</th>
+<th>INTERNAL_CLR_FMT</th>
+<th>Channels</th>
+<th>BANDS_PRESENT</th>
+<th>SCALED</th>
+<th>QP-Mode</th>
+<th>QP</th>
+<th>Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>YUV_444</code></td>
+<td>3</td>
+<td><code>SB_NO_FLEXBITS</code></td>
+<td>1</td>
+<td>1 (Luma/Chroma separate)</td>
+<td>30, 48</td>
+<td>10 B</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>NCOMPONENT</code></td>
+<td>2</td>
+<td><code>SB_NO_FLEXBITS</code></td>
+<td>1</td>
+<td>1</td>
+<td>13, 13</td>
+<td>10 B</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>NCOMPONENT</code></td>
+<td>1</td>
+<td><code>SB_NO_FLEXBITS</code></td>
+<td>1</td>
+<td>0 (uniform)</td>
+<td>25</td>
+<td>6 B</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>NCOMPONENT</code></td>
+<td>1</td>
+<td><code>SB_NO_FLEXBITS</code></td>
+<td>1</td>
+<td>0</td>
+<td>40</td>
+<td>6 B</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Exactly one header variant per block across all 399 pages.</strong> The <code>IMAGE_PLANE_HEADER</code> resides within the block; only the preceding 16 bytes must be invented (<code>WMPHOTO\0</code> + <code>IMAGE_HEADER</code>).</p>
+<p>This table is not an area of interpretation, but a calculation: the bit sequence of the plane header is unambiguous, and it ends <strong>in all four cases byte-for-byte immediately before <code>ff 00 00 01 00</code></strong> (VLW_ESC-Escape, Start code, Tile type 0). These 40 bits are the test. If the header is read differently — different bit depth, different chroma centering, per-tile instead of uniform quantization — the end shifts and the test fails.</p>
+<hr />
+<h2 id="3-block-1--64-macroblocks-2-channels-confirmed--form-subject-to-caveat">3. Block 1 = 64 macroblocks, 2 channels (confirmed) — form subject to caveat</h2>
+<p><code>vtplanes.py fit</code>/<code>selftest</code>, Mip 0, first 1200 datasets per file:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Block-1 planes</th>
+<th>exactly on 8×8 MB</th>
+<th>Block 0 exactly on 8×8 MB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>c12p1.pages</code></td>
+<td>713</td>
+<td>143 (20.1 %)</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>c03p1.pages</code></td>
+<td>746</td>
+<td>131 (17.6 %)</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>c16p0.pages</code></td>
+<td>594</td>
+<td>68 (11.4 %)</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>c02p0.pages</code></td>
+<td>663</td>
+<td>258 (38.9 %)</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>c01p4.pages</code></td>
+<td>807</td>
+<td>34 (4.2 %)</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>c03p3.pages</code></td>
+<td>733</td>
+<td>131 (17.9 %)</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>Sum</strong></td>
+<td><strong>4256</strong></td>
+<td><strong>765 (18.0 %)</strong></td>
+<td><strong>1 (0.02 %)</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>"Exactly" here means strictly: the run is conducted <strong>strictly</strong> (reading past the block end throws an error, rather than padding with zeros), it must successfully traverse all 64 macroblocks, and it must stop at the last byte of the block — remainder slip 0 to 7 bits. With a typical payload of 1000 to 30000 bits, the random hit rate per raster attempt is under 1 %.</p>
+<h3 id="31-cross-check-competing-macroblock-counts">3.1 Cross-check: competing macroblock counts</h3>
+<p><code>selftest</code> runs alongside 8×8 plus twelve additional grids (4×4, 16×16, 8×4, 4×8, 6×6, 9×9, 8×7, 7×8, 2×2, 10×10, 7×9, 9×7) over a uniformly distributed sample of the same pages. The result is unambiguous:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Sample</th>
+<th>8×8 there (≈)</th>
+<th>best true rival grid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>c12p1.pages</code></td>
+<td>179</td>
+<td>36</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>c03p1.pages</code></td>
+<td>187</td>
+<td>33</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>c16p0.pages</code></td>
+<td>198</td>
+<td>23</td>
+<td><strong>1</strong></td>
+</tr>
+<tr>
+<td><code>c02p0.pages</code></td>
+<td>166</td>
+<td>65</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>c01p4.pages</code></td>
+<td>162</td>
+<td>7</td>
+<td><strong>1</strong></td>
+</tr>
+<tr>
+<td><code>c03p3.pages</code></td>
+<td>184</td>
+<td>33</td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Across all six files combined: 8×8 lands roughly 200 times, each individual other grid at most once.</p>
+<p>The only grids that even participate are <strong>7×9 and 9×7 — both 63 macroblocks</strong>, meaning the same stream one macroblock short of the end. That they are not a second, competing image format is measured: of 22 such landings in <code>c12p1</code>, <strong>20 are on pages that also land on 8×8</strong>, in <code>c03p1</code> 50 of 50, in <code>c02p0</code> 120 of 120. At these raster widths, the context reset (<code>(mbx &amp; 0xf) == 0</code> and at line end) differs, and a sparsely populated final macroblock costs so little that the shortened run also lands on the last byte.</p>
+<p>That this test can fail is demonstrable:
+<code>vtplanes.py selftest --sabotage</code> claims Block 1 is 4×4 macroblocks, and outputs <code>FAIL</code> with return value 1 ("lands 0 times on 4x4 against 25 for the best true rival").</p>
+<h3 id="32-where-the-cross-check-fails-the-form">3.2 Where the cross-check fails: the form</h3>
+<p>The raster format is determined solely by the context resets into the bit count (<code>(mbx &amp; 0xf) == 0</code> and at line ends). For a sparsely populated plane, this amounts to almost nothing — and sparsely populated are precisely the planes that appear at all. Therefore, one must measure whether 8×8 wins among the rasters with the <strong>same</strong> macroblock count. All six following rasters have 64 macroblocks; 525 Mip-0 pages from <code>c12p1</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Raster</th>
+<th>Block 1 (<code>NCOMPONENT</code> 2 ch)</th>
+<th>Block 2 (1 ch, filled as 8×8 at pixels by <code>vtdecode</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>8×8 = 128×128 px</strong></td>
+<td><strong>136/525</strong></td>
+<td><strong>525/525</strong></td>
+</tr>
+<tr>
+<td>4×16 = 64×256 px</td>
+<td>119/525</td>
+<td>162/525</td>
+</tr>
+<tr>
+<td>2×32 = 32×512 px</td>
+<td>115/525</td>
+<td>95/525</td>
+</tr>
+<tr>
+<td>16×4 = 256×64 px</td>
+<td>91/525</td>
+<td>148/525</td>
+</tr>
+<tr>
+<td>32×2 = 512×32 px</td>
+<td>91/525</td>
+<td>139/525</td>
+</tr>
+<tr>
+<td>64×1 = 1024×16 px</td>
+<td>91/525</td>
+<td>135/525</td>
+</tr>
+<tr>
+<td>1×64 = 16×1024 px</td>
+<td>115/525</td>
+<td>94/525</td>
+</tr>
+</tbody>
+</table></div>
+<p>The right column is the scale: for a plane that is <strong>fully</strong> decoded, this test separates clearly — 100 % against 18–31 %. For Block 1, 8×8 comes first, but only with 26 % against 17–23 %. <strong>This is not proof of form.</strong></p>
+<p>And even the right column does not hold everywhere: on <code>c02p0.pages</code>, Block 2 lands 506/506 on 8×8, but also 81 out of 127 sample pages on another form. For a file with flatter Specular planes, this test therefore barely separates for the <strong>proven</strong> plane either. The raster form is fundamentally weakly determined by this method; only the macroblock count is not. <code>selftest</code> therefore says nothing about the form, it prints the numbers and makes no claim.</p>
+<p>What Block 1 has thus established: <strong>64 macroblocks, 2 channels, <code>NCOMPONENT</code>.</strong> That these 64 macroblocks are arranged as 8×8 rests on two indications outside this measurement — Block 2 of the same page is 8×8, and the engine constant <code>PAGE_WIDTH = 128</code> leaves nothing else open. This is plausible, but it is analogy, not measurement. As soon as the dense pages decode, the same test also separates sharply here; until then the reservation stands.</p>
+<blockquote>
+<p><strong>Status after §9 (Pixels):</strong> The reservation <strong>remains</strong>, but it is now justified instead of merely granted. On pixels, the form test does indeed separate sharply — for Block 2 the ratio of Seam/Control is <strong>0.05</strong> on 8×8 and at <strong>0.98 to 1.18</strong> on every other 64-macroblock form, on the same pages (§9.4). For Block 1 it is nevertheless not applicable: <strong>every</strong> Block-1 plane that decodes cleanly at all is nearly flat (median spread ≤ 0.5; of 1225 clean planes, 28 have a spread ≥ 4 and <strong>none</strong> ≥ 16), and a flat page fits any neighbor in any arrangement. The form is thus <strong>not measured</strong> — not because the test would be weak, but because there is no content-bearing page for Block 1 on which it could grip.</p>
+</blockquote>
+<h3 id="33-cross-check-other-color-format-read-methods">3.3 Cross-check: other color format read methods</h3>
+<p>The macroblock count is one thing, the channel count is the other. <code>reinterp</code> runs nine color format read methods × each raster up to 12×12 over 60 Mip-0 pages from <code>c12p1</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Read method</th>
+<th>Total landings</th>
+<th>Most frequent raster</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NCOMPONENT</code> 2 ch — <strong>what the header says</strong></td>
+<td><strong>26</strong></td>
+<td><strong>8×8: 16</strong></td>
+</tr>
+<tr>
+<td><code>Y_ONLY</code> 1 ch</td>
+<td>3</td>
+<td>1×6: 1</td>
+</tr>
+<tr>
+<td><code>NCOMPONENT</code> 1 ch</td>
+<td>3</td>
+<td>1×6: 1</td>
+</tr>
+<tr>
+<td><code>YUV_422</code> 3 ch</td>
+<td>2</td>
+<td>2×2: 1</td>
+</tr>
+<tr>
+<td><code>YUV_444</code> 3 ch</td>
+<td>1</td>
+<td>2×1: 1</td>
+</tr>
+<tr>
+<td><code>NCOMPONENT</code> 3 ch / 4 ch, <code>CMYK</code> 4 ch, <code>YUV_420</code> 3 ch</td>
+<td>0</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p>Everything except the header read method generates single hits on randomly scattered rasters — this is the noise limit. Only <code>NCOMPONENT</code> 2 ch concentrates on a raster at all. The channel count of 2 is thus independently confirmed by the header.</p>
+<h3 id="why-only-18--and-not-100-">Why only 18 % and not 100 %</h3>
+<p>The separation is clean and it is <strong>Density</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Landing pages</th>
+<th>Failing pages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block size median (<code>c12p1</code>, Mip 0)</td>
+<td>153 B</td>
+<td>271 B</td>
+</tr>
+</tbody>
+</table></div>
+<p>and over the Mip stages of the same file (400 datasets):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mip</th>
+<th>Exactly on 8×8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>67/189 = 35.4 %</td>
+</tr>
+<tr>
+<td>1</td>
+<td>4/132 = 3.0 %</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2/50 = 4.0 %</td>
+</tr>
+<tr>
+<td>≥ 3</td>
+<td>0/29 = 0 %</td>
+</tr>
+</tbody>
+</table></div>
+<p>Larger Mips pack more image content into the same page, making them denser. A branch count exceeding 150 pages shows the same pattern from within: on landing pages, the highpass path is almost never entered (6,3 coded HP blocks per page out of 2048 possible, with 121,6 out of 128 CBP fields being zero), whereas on failing pages it occurs constantly (76,8 HP blocks).</p>
+<p>A single run identifies the location. Landing page (95,96) versus failing page (94,96), both Block 1, both Mip 0, adjacent:</p>
+<pre><code>landend  MB 0 154 bit DC=[0,0]   MB 5  41 bit DC=[1,1]    MB 20  64 bit DC=[-1,-1] ... End, Gap 7
+scheitert MB 0 154 bit DC=[0,0]  MB 11 55 bit DC=[0,0]    MB 12  54 bit DC=[-5,1]
+                                                          MB 14  65 bit DC=[0,19]
+                                                          MB 20  24 bit DC=[0,24]
+                                                          MB 23 156 bit DC=[-26,1]   MB 25 runs past block end
+</code></pre>
+<p>Up to MB 11, both pages are unremarkable (DC residuals within ±3, both channels equal — for a normal map this is plausible, X and Y are the same in flat areas). Starting at MB 12, values on the failing page explode. This is a desync, not a cut stream: a cut stream provides correct values up to the cut point.</p>
+<hr />
+<h2 id="4-block-0-is-not-solved">4. Block 0 is not solved</h2>
+<blockquote>
+<p><strong>Status after §10:</strong> All measurements in this section are correct and remain valid; they measure the <strong>old</strong> Chroma CBP rule. The finding "the run reads approximately 16 to 21 bits too many in MB 0" was the lead — it is exactly 21 bits, and §10.1 shows which block that is. The seam test at the end of this section (ratio 0.92) does not measure the reconstructed header, but a decoder that loses the stream itself (§10.6).</p>
+</blockquote>
+<p>The same measurements, the same result in every direction: nothing.</p>
+<ul>
+<li><strong>Raster:</strong> One exact landing on 4256 pages at 8×8. In a full raster sweep (every raster up to 12×12, 120 pages), only 4 pages land at all, on four <strong>different</strong> rasters (2×9, 3×6, 6×3, 9×2) — noise.</li>
+<li><strong>Color format:</strong> <code>reinterp</code> across nine reading modes yields 0 to 5 landings per mode, none with a dominant raster. The header reading mode <code>YUV_444</code> 3 ch also fails.</li>
+<li><strong>The first macroblock is still plausible.</strong> Across three pages, MB 0 yields <code>DC = [-227, 0, 0]</code> or <code>[-226, 0, 0]</code> — a full Luma DC (MB 0 has no neighbors, so the residual is the entire value) and two Chroma zeros, constituting a neutrally colored macroblock. The single-channel Block 2 of the same page provides for comparison <code>DC = [-272]</code>. <strong>From MB 1 onwards, Block 0 is already incorrect</strong> (<code>DC = [256, 128, 16]</code>, <code>[2517, 1676, 0]</code>, <code>[897, 980, 0]</code>).</li>
+<li><strong>How far off?</strong> A resync search (run MB 0 normally, then restart and evaluate at bit position <em>End + δ</em>, checking if the next 6 macroblocks yield plausible DC values) results over 25 pages in 23 cases of a <strong>negative</strong> δ, concentrated between −16 and −21: <strong>the run reads approximately 16 to 21 bits too many in MB 0.</strong> However, δ is not constant, and none of the hypotheses derived from it holds (§6).</li>
+<li><strong>The seam says the same.</strong> <code>vtplanes.py seam c01p4.pages</code>, Block 0 reconstructed as a 128×128 RGB stream, decoded by WIC, 200 horizontally adjacent page pairs:</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Plane</th>
+<th>Pairs</th>
+<th>Pixel Spread</th>
+<th>Seam MAD</th>
+<th>Control (uninvolved columns)</th>
+<th>Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block 2 (Positive control, proven decoded)</td>
+<td>76</td>
+<td>52.7</td>
+<td><strong>3.02</strong></td>
+<td>24.99</td>
+<td>0.12</td>
+</tr>
+<tr>
+<td>Block 0</td>
+<td>200</td>
+<td>100.6</td>
+<td><strong>97.68</strong></td>
+<td>105.89</td>
+<td>0.92</td>
+</tr>
+</tbody>
+</table></div>
+<p>Block 2 fits cleanly together, Block 0 does not at all. The pixel spread of 100.6 for Block 0 alone constitutes the verdict: these are saturated primary colors, no image. (The spread threshold is necessary because a flat page joins seamlessly with any other flat page, thereby proving nothing.)</p>
+<hr />
+<h2 id="5-why-the-macroblock-counter-is-not-the-suspect">5. Why the macroblock counter is not the suspect</h2>
+<p>This is the most critical cross-check of the entire document, because without it, any statement about Block 0 and 1 would merely mean "our decoder cannot do it."</p>
+<p><code>vtplanes.py refgen</code> generates six 128×128 images, whose statistics frame a genuine texture page — flat with a detailed spot, normal-map-like smoothness, thin dots on a flat background, hard edges, fine grain, pure noise — and causes Windows' native <code>WmpBitmapEncoder</code> to write streams from them: three pixel formats (<code>Gray8</code> → <code>Y_ONLY</code> 1 channel, <code>Bgr24</code> with <code>SubsamplingLevel=3</code> → <code>YUV_444</code> 3 channels, <code>Cmyk32</code> → <code>CMYK</code> 4 channels), six quality levels (10…97), three overlap levels, and <code>ImageDataDiscardLevel=1</code> for <code>SB_NO_FLEXBITS</code> as in the retail stream. This produces 324 streams.</p>
+<pre><code>324 exact, 0 not exact   by (cf, channels): {(4, 4): 108, (0, 1): 108, (3, 3): 108}
+negative control (grid one column too wide): 0/40 come out -- must be ~0
+</code></pre>
+<p>The <code>CMYK</code> case with 4 channels is the decisive one: in jxrlib, <code>CMYK</code> follows <strong>exactly the same</strong> N-channel path as <code>NCOMPONENT</code> — <code>DecodeCBP</code> with <code>iChannel = cNumChannels</code> instead of 1, the per-channel-bit CBP in the lowpass, the chroma context tables from level 1, and <code>UpdateModelMB</code> with <code>aWeight1[band][nch-1]</code>. If the counter is bit-exact on 108 dense 4-channel streams, it will not suddenly be wrong on 2-channel <code>NCOMPONENT</code>.</p>
+<p>The negative control serves as a safeguard against the idea that "comes out exactly" is a valueless criterion: the same streams with a raster specification one macroblock column too wide come out <strong>0 of 40</strong> times.</p>
+<p>Additionally, the counter was checked line by line against the reference implementation (jxrlib, <code>image/decode/segdec.c</code>, <code>image/decode/strPredQuantDec.c</code>, <code>image/sys/image.c</code>, <code>image/sys/adapthuff.c</code>, <code>image/sys/strcodec.c</code>): <code>DecodeMacroblockDC</code>, <code>DecodeMacroblockLowpass</code>, <code>DecodeCoeffs</code>, <code>DecodeCBP</code>, <code>predCBPCDec</code>, <code>DecodeBlock</code>, <code>DecodeBlockHighpass</code>, <code>DecodeSignificantRun</code>, <code>DecodeSignificantAbsLevel</code>, <code>DecodeFirstIndex</code>/<code>DecodeIndex</code>, <code>getHuff</code>, <code>AdaptDiscriminant</code>, <code>UpdateModelMB</code>, <code>ResetCodingContext</code>, and the reset logic in <code>getTilePos</code>. All seven Huffman lookup tables and all five delta tables were compared machine-to-machine — line by line identical. <code>readIS_L1</code>/<code>readIS_L2</code> are buffer loading routines and consume no codestream bits.</p>
+<hr />
+<h2 id="6-hypotheses-that-died-of-numbers">6. Hypotheses that died of numbers</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Hypothesis</th>
+<th>Measurement</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Alpha Plane</strong> — <code>ALPHA_IMAGE_PLANE_FLAG</code> appends a second <code>IMAGE_PLANE_HEADER</code></td>
+<td>The plane header for blocks 0 and 1 is <strong>exactly 10 bytes</strong> long and ends with byte padding immediately before <code>ff 00 00 01 00</code>. A second single-channel header would add 6 more bytes.</td>
+<td>Dead, arithmetically. No space.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Tiling</strong> — <code>TILING_FLAG</code> tiles the image into tiles, each with its own packet</td>
+<td>For every tile grid 1×1…8×8, 80 pages per block: does tile 0 end byte-wise on a <code>00 00 01 00</code>? (40-bit probe)</td>
+<td><strong>0 hits</strong> across 80 pages for both Block 0 and Block 1.</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Embedded second substream</strong> — two truncated streams back-to-back</td>
+<td>Search for a second <code>ff 00 00 01 00</code> in the payload, 300 pages</td>
+<td><strong>0/300</strong> across all four blocks.</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Bit depth</strong> ≠ BD8 (BD16, BD16S, BD32F …)</td>
+<td><code>BD16</code>/<code>BD16S</code>/<code>BD32S</code> add 8 bits of <code>SHIFT_BITS</code> to the plane header; <code>BD32F</code> adds 16 bits. This shifts the header end and thus the 40-bit probe.</td>
+<td>Dead: the probe only works for BD8 (or equivalently BD5/BD10/BD565). Bit depth does not change entropy bit count anyway.</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Incorrect color format</strong> — the header lies</td>
+<td>9 reading modes × every grid up to 12×12, 60 pages</td>
+<td>Only Block 1's header reading mode stands out (26 landings, 16 on 8×8). Block 0: no reading mode exceeds noise.</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Chroma-DC without FLC bits</strong> (derived from the −16…−21-bit finding)</td>
+<td>Landing rate across 100 pages</td>
+<td>Block 1: 29 → <strong>0</strong>. Worse than baseline.</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Chroma-DC without sign bit</strong></td>
+<td>Same</td>
+<td>Block 1: 29 → <strong>5</strong>. Worse.</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Chroma-Lowpass without FLC loop</strong></td>
+<td>Same</td>
+<td>Block 1: 29 → <strong>0</strong>.</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Chroma model starts with 0 FLC bits</strong> (DC and/or LP)</td>
+<td>Same</td>
+<td>Block 1: 29 → <strong>0</strong>.</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Windowing / uneven edges</strong></td>
+<td><code>WINDOWING_FLAG</code> adds only border info; coding in JPEG XR always uses whole macroblocks, so it does not change the macroblock count given a specific <code>WIDTH_MINUS1</code>.</td>
+<td>No explanatory value.</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Truncated stream</strong> (encoder cuts off at a size budget)</td>
+<td>Single-run trace</td>
+<td>Dead: a cut provided correct values up to the interface. Instead, we observe a desync with exploding DC values in the middle of the block.</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>One tile header we do not read</strong> (explains the 21 bits before MB 0 in Block 0)</td>
+<td>Shift by δ ∈ [−32,32] after DC or after Lowpass of MB 0; entire plane must land</td>
+<td><strong>0 out of 150</strong> planes for every δ. DC and Lowpass of MB 0 end correctly; the overflow is hidden in Highpass (§10.1).</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>The Chroma counter <code>cbp_count0[1]</code> starts differently</strong> (alternative explanation for the same 21 bits)</td>
+<td>Start value +4 / 0 / +8, both corpora</td>
+<td>+4 and +8: Block 0 lands (262 and 261 out of 1318), but WIC streams drop to <strong>143/324</strong> — significantly worse than the state rule (232/324). Start value 0: Block 0 stays at 2/1318. Dead.</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>A rule fitting both encoders</strong></td>
+<td>End per channel / once jointly / only after the last; additionally restricted to macroblock 0</td>
+<td>All variants: Retail lands, WIC breaks (232 / 232 / 228 out of 324). There is none. The encoders contradict each other (§10.5).</td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>jxrlib can decode Block 0 after all, it was the reconstructed header</strong></td>
+<td>Four output reading modes (RGB, NCOMPONENT, YUV444 × two container pixel formats), tile scattering every 16×12 tile</td>
+<td>Dead: jxrlib refuses nothing and delivers noise starting from the second tile in all four reading modes — same desync, same macroblock (§10.6).</td>
+</tr>
+</tbody>
+</table></div>
+<p>Already handled by the predecessor and not repeated here: Frequency Mode, adjacent planes, nested planes, the Trim-Flexbits offset.</p>
+<h3 id="and-a-correction">And a Correction</h3>
+<p>The predecessor writes to <code>tools/vtdecode.py</code> and the Blackboard fact <code>vtorder.result</code>: "No macroblock grid up to 34×64 makes either come out, on any page." This is incorrect for Block 1 — 765 of 4256 pages land exactly on an 8×8 grid, while every other macroblock count remains in the noise. <code>tools/vtplanes.py</code> belongs to me; <code>tools/vtdecode.py</code> does not; whoever cleans up there should correct the module docstring and append <code>1: (8, 8)</code> to <code>BLOCK_GRID</code> — with the caveat from §3.2 that this only measures the 64 macroblocks, not their arrangement.</p>
+<hr />
+<h2 id="7-what-this-means-combined">7. What This Means Combined</h2>
+<p>All three of the following statements are individually measured, and they fit together in only one way:</p>
+<ol>
+<li>The decoder is correct (324/324 on foreign streams, negative control 0/40).</li>
+<li>Block 1 is <code>NCOMPONENT</code> 2-ch with 64 macroblocks (765 bit-exact landings, every other macroblock count in the noise; the 8×8 shape only by analogy, §3.2).</li>
+<li>Nevertheless, 82% of Block-1 pages and 100% of Block-0 pages fail, and the more content a page carries, the more certain this becomes.</li>
+</ol>
+<p>From this follows: <strong>for Block 1, inverse reconstruction is complete except for the grid shape, and the remainder is no longer a header problem.</strong> The stream deviates as soon as multiple channels simultaneously carry coefficients. This is not proof that MachineGames changed the entropy coder — it is the state in which the measurements end.</p>
+<p>The difference from single-channel planes is stark: Block 2 and 3 share the <strong>same</strong> code path up to the multi-channel branches, and they come out correctly 100% of the time. This confines the search space to what happens exclusively with multiple channels and exclusively when coefficients exist: the Chroma context tables (<code>ah[8..10]</code> in Lowpass, <code>ah[16..18]</code> and <code>ah[19..20]</code> in Highpass), the <code>iDiffCBP</code> loop across multiple planes in <code>DecodeCBP</code>, and the second model half (<code>m_iFlcBits[1]</code>, <code>aWeight1[band][nch-1]</code>).</p>
+<hr />
+<h2 id="8-what-remains-open-and-the-next-meaningful-step">8. What Remains Open, and the Next Meaningful Step</h2>
+<p><strong>Open:</strong></p>
+<ul>
+<li>Why dense Block-1 pages start to fail from the first content-bearing macroblock. The desync point is measurable (page (94,96): MB 12), but the cause is not.</li>
+<li>~~Block 0 completely — already MB 1 is wrong, and the run reads roughly 16–21 bits too much in MB 0 with fluctuating magnitude.~~ <strong>Resolved on bits, see §10:</strong> it is a constant 21 bits; it is a Highpass block of the third channel that Chroma CBP prediction wrongly demands, and upon correction Block 0 lands 823× out of 4256. The impression of fluctuation arose because the old search measured δ only at four plausible macroblocks instead of the landing of the entire plane — exactly the hardening this section itself proposed.</li>
+<li><strong>Block 0 remains open on pixels</strong>, and specifically at a new location: jxrlib does not read the stream itself (§10.6), so the oracle is missing.</li>
+<li>~~The seam for Block 1 is <strong>not measured</strong> and also not measurable with WIC: Windows has no output pixel format for a two-channel image and outright rejects <code>NCOMPONENT</code> with 2 channels.~~ <strong>Resolved, see §9.4:</strong> measured with jxrlib. Channel 0 hits (distance 120 on 33% of pairs vs 11% random), Channel 1 does not. The gap is half closed and the other half turned into a sharp question.</li>
+</ul>
+<p><strong>The two most promising next steps, in this order:</strong></p>
+<ol>
+<li>~~<strong>Build jxrlib from source and insert Block 1.</strong>~~ <strong>Completed without building:</strong> A fully translated <code>JxrDecApp.exe</code> is already present on this machine (§9.1). The reference decoder reports the same result as WIC (324/324, §9.2) and the same as the Python counter regarding good and bad pages (§9.3). <strong>The next step is now Channel 1</strong>: §9.4 demonstrates that the first channel aligns spatially while the second does not, despite the bitstream landing correctly. Therefore, a bug must be found that <strong>does not change the bit count</strong> but only affects the second channel.</li>
+<li><strong>Disassemble <code>PageCompression.cpp</code>.</strong> The EXE references this file in Assert strings. The goal is to locate the encoder side for multi-layer planes — there it specifies what differs between Block 0 and Block 1. The search space has been reduced by §7: only cases where ≥ 2 channels and existing coefficients apply.</li>
+</ol>
+<h3 id="an-initial-attempt-that-is-not-yet-a-result">An Initial Attempt That Is Not Yet a Result</h3>
+<p>The Resync search from §4 was applied to Block 1: on a failing page, the first macroblock with an implausible DC is sought (threshold |DC| &gt; 16, learned from landing pages where ±3 is typical), then attempts are made at the preceding macroblock boundary δ ∈ [−48, +48] to check if the next four macroblocks become plausible again.</p>
+<pre><code>80 pages, of which 35 had a found first Desync point
+24 of these can be repaired by shifting at most 12 bits
+delta (sorted by |delta|): -1: 7   +1: 6   -2: 4   -4: 2   -3: 1   +2: 1 ...
+</code></pre>
+<p>Thus, the deviation is <strong>small — on the order of a single bit.</strong> However: the sign is not uniform, and the plausibility criterion ("four macroblocks with small DC values") is weak enough that a one-bit shift can also satisfy it by chance. <strong>This is a lead, not a finding.</strong> Anyone pursuing this further should harden the criterion: instead of demanding "four plausible macroblocks," require that the repaired stream <strong>lands exactly at the end of the block</strong>. Then a hit cannot be dismissed as random.</p>
+<hr />
+<h2 id="9-pixels-for-block-1--and-what-the-seam-says">9. Pixels for Block 1 — and What the Seam Says</h2>
+<p>Tool: <code>tools/vtpixel.py</code>. All measurements in this section use it.</p>
+<pre><code>python tools/vtpixel.py calib REFDIR        # jxrlib vs WIC, byte for byte
+python tools/vtpixel.py census              # how many planes become pixels
+python tools/vtpixel.py seam                # the seam, Block 2 as positive control
+python tools/vtpixel.py shape               # the six 64-MB shapes on pixels
+python tools/vtpixel.py rival               # shape test without bitstream as judge
+python tools/vtpixel.py png c12p1.pages 95 96 0 --out DIR
+python tools/vtpixel.py selftest
+python tools/vtpixel.py selftest --sabotage # must FAIL (return value 1)
+</code></pre>
+<h3 id="91-the-detour-was-unnecessary-jxrlib-is-already-fully-translated-here">9.1 The Detour Was Unnecessary: jxrlib Is Already Fully Translated Here</h3>
+<p>§8 recommended building jxrlib in C because WIC lacks an output format for a two-channel image. A C compiler is not installed on this machine — but a <strong>fully translated <code>JxrDecApp.exe</code> from jxrlib 1.1</strong> is already available, under
+<code>~/.cache/codex-runtimes/*/dependencies/native/jxrlib/jxrlib/bin/</code>.
+It accepts <code>NCOMPONENT</code> with 2 channels without issue. Therefore, neither a compiler nor a custom inverse calculation (inverse quantization, inverse PCT, Overlap Filter) needed to be written: <strong>the reference decoder was there all along.</strong> <code>vtpixel.py</code> searches for it itself and clearly reports if it is missing.</p>
+<p>The input is the same as for <code>vtdecode jxr</code>: the plane header in the block remains untouched; only the 16 bytes before it are reconstructed (<code>OUTPUT_CLR_FMT = NCOMPONENT</code>, container pixel format <code>24bpp3Channels</code>). jxrlib then returns Channel 0 and 1 side-by-side; Channel 2 is null.</p>
+<h3 id="92-calibration-jxrlib-is-wic">9.2 Calibration: jxrlib <strong>Is</strong> WIC</h3>
+<p>Before any Block-1 pixel has meaning, the foreign decoder must deliver the same result as the one this document relies on for the rest.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the 324 reference streams from <code>vtplanes.py refgen</code>, WIC against jxrlib</td>
+<td><strong>324 / 324 byte-identical</strong> (<code>gray</code> 108/108, <code>rgb</code> 108/108, <code>cmyk</code> 108/108)</td>
+</tr>
+<tr>
+<td>genuine single-channel Retail planes (Block 2 and 3, <code>c12p1</code>): jxrlib against the unchanged <code>NCOMPONENT</code> header versus WIC on the <code>Y_ONLY</code> rewrite</td>
+<td><strong>60 / 60 byte-identical</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The second line is the more important one: it checks exactly the path that Block 1 takes — reconstructed <code>IMAGE_HEADER</code>, <code>OVERLAP = 1</code>, untouched plane headers — and it incidentally confirms that <code>NCOMPONENT</code> with 1 channel and <code>Y_ONLY</code> truly follow the same decoding path.</p>
+<p><em>A trap that initially reported 62 of 108 RGB streams as "different":</em>
+<code>JxrDecApp</code> writes its TIFF in RGB order, while WIC returns BGR.
+This is a byte order within the output wrapper, not a decoder difference — after swapping, they are 108/108. <code>vtpixel.py calib</code> handles this itself.</p>
+<h3 id="93-block-1-becomes-pixels--and-bits-and-pixels-agree">9.3 Block 1 becomes Pixels — and Bits and Pixels agree</h3>
+<p><code>vtpixel.py census</code>, all six files, Mip 0, 7269 Block-1 planes. Two independent verdicts per plane: <strong>does the bitstream</strong> land in the last byte, and <strong>does a clean image without noise macroblocks</strong> emerge (worst 16×16 tile under variance 25).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Planes</th>
+<th>jxrlib rejects</th>
+<th>Bitstream <strong>and</strong> Image</th>
+<th>only Bitstream</th>
+<th>only Image</th>
+<th>none</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>c12p1.pages</code></td>
+<td>1217</td>
+<td>0</td>
+<td>236</td>
+<td>1</td>
+<td>62</td>
+<td>918</td>
+</tr>
+<tr>
+<td><code>c03p1.pages</code></td>
+<td>1290</td>
+<td>0</td>
+<td>197</td>
+<td>0</td>
+<td>42</td>
+<td>1051</td>
+</tr>
+<tr>
+<td><code>c16p0.pages</code></td>
+<td>1129</td>
+<td>0</td>
+<td>212</td>
+<td>1</td>
+<td>39</td>
+<td>877</td>
+</tr>
+<tr>
+<td><code>c02p0.pages</code></td>
+<td>1100</td>
+<td>0</td>
+<td>377</td>
+<td>1</td>
+<td>40</td>
+<td>682</td>
+</tr>
+<tr>
+<td><code>c01p4.pages</code></td>
+<td>1231</td>
+<td>0</td>
+<td>36</td>
+<td>1</td>
+<td>14</td>
+<td>1180</td>
+</tr>
+<tr>
+<td><code>c03p3.pages</code></td>
+<td>1302</td>
+<td>0</td>
+<td>167</td>
+<td>1</td>
+<td>51</td>
+<td>1083</td>
+</tr>
+<tr>
+<td><strong>Sum</strong></td>
+<td><strong>7269</strong></td>
+<td><strong>0</strong></td>
+<td><strong>1225 (16.9 %)</strong></td>
+<td><strong>5</strong></td>
+<td><strong>248</strong></td>
+<td><strong>5791</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>jxrlib rejects <strong>no</strong> plane — but "decoded" does not mean "correct".
+The two off-diagonals represent the honest error margin of the two methods:
+<strong>3.5%</strong> of planes are judged differently. Only 5 planes land in the bitstream and still look noisy; 248 look clean without landing (these are the very flat ones where a desync near the end does not ruin the image).</p>
+<p><em>With this, the suspicion against the Python counter is finally settled.</em> On dense pages, <em>jxrlib itself</em> introduces noise, and on the same pages: planes that the bitstream accepts come out smooth 120/120, while planes it rejects come out noisy 112/120. The desync location is also spatially visible — on page (94,96) of <code>c12p1</code>, tiles 0 to 16 are smooth and from tile 17 onward saturated; the Python run holds that same page as implausible starting MB 14.</p>
+<h3 id="94-the-seam-channel-0-hits-channel-1-does-not">9.4 The Seam: Channel 0 hits, Channel 1 does not</h3>
+<p>The test: two adjacent pages share exactly eight columns (or rows) at a page distance of 120. The MAD is measured over these shared lines for each distance from 116 to 124, plus a control from two lines unrelated to each other. Since almost all Block-1 pages are flat and there <em>all</em> numbers become small there, it additionally counts <strong>at which distance</strong> the seam is smallest for each pair: this is 1 out of 9 = 11% by chance.</p>
+<p><code>vtpixel.py seam</code>, all six files, 11459 adjacent Mip-0 pairs:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Plane</th>
+<th>Pairs</th>
+<th>Seam@120</th>
+<th>Control</th>
+<th>Ratio</th>
+<th>Distance 120 best</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block 2, Channel 0 (Positive control)</td>
+<td>6010</td>
+<td><strong>0.381</strong></td>
+<td>7.444</td>
+<td><strong>0.05</strong></td>
+<td><strong>2674/3641 = 73 %</strong></td>
+<td>hits</td>
+</tr>
+<tr>
+<td>Block 1, <strong>Channel 0</strong></td>
+<td>213</td>
+<td><strong>0.036</strong></td>
+<td>0.157</td>
+<td><strong>0.23</strong></td>
+<td><strong>40/120 = 33 %</strong></td>
+<td><strong>hits</strong></td>
+</tr>
+<tr>
+<td>Block 1, Channel 1</td>
+<td>155</td>
+<td>0.560</td>
+<td>0.596</td>
+<td>0.94</td>
+<td>13/126 = 10 %</td>
+<td>no</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Correction to the seam test from §4:</em> <code>vtplanes.py seam</code> compares columns 120…123 on the left side with columns 4…7 on the right. However, at a side distance of 120, column 120+k on the left should correspond to column k on the right — the old test was shifted by four texels. It still worked (3.02 against 24.99) because adjacent columns of a texture resemble each other; when properly aligned, the same measurement becomes significantly sharper (0.38 against 7.44) and reaches a minimum that lies exactly at 120. <code>vtplanes.py</code> was <strong>not</strong> changed for this; <code>vtpixel.py</code> computes it itself.</p>
+<p>The distance profile for Block 1 Channel 0 is a clean V around 120:
+<code>116:0.068 117:0.065 118:0.063 119:0.054</code> <strong><code>120:0.036</code></strong> <code>121:0.054 122:0.065
+123:0.074 124:0.073</code>. For Channel 1, it is flat.</p>
+<p>33% against 11% on 120 pairs is not random (z ≈ 7.8). <strong>This is the pixel evidence missing from this document</strong> — for the first channel. It holds equally at <code>OVERLAP</code> 0, 1, and 2 (Channel 0: 64%, 33%, 52% — Channel 1: 27%, 10%, 17%), so it is not a matter of the overlap filter.</p>
+<p><strong>And Channel 1 is not merely noise.</strong> Measured as roughness (mean second difference along rows, divided by standard deviation): Block 2, proven correct, lies at 0.10; a desynchronized Block 1 plane at 0.30; Block 1 Channel 0 at 0.08 and <strong>Channel 1 at 0.04</strong> — on the same planes, Channel 1 even carries the most content (median spread 3.30 against 0.55). It is a smooth, content-bearing image that is <strong>in the wrong place</strong>.</p>
+<p>This narrows §7 considerably: not "somewhere among several channels", but <strong>exclusively in the second channel</strong>, and within part of the calculation that does not change the bit count — otherwise the bitstream would not land. Candidates in this order: the second model half (<code>m_iFlcBits[1]</code>, <code>aWeight1[band][nch-1]</code>), the chroma context tables from plane 1, and the assignment of coefficients of the second channel within the macroblock.</p>
+<h3 id="95-the-form-decided-for-block-2-still-undecided-for-block-1">9.5 The Form: decided for Block 2, still undecided for Block 1</h3>
+<p><code>vtpixel.py shape</code> decodes <strong>the same sides</strong> under each 64-macroblock form and maps the macroblock <em>n</em> back to its position in the 128×128 side. A wrong form shifts every macroblock, causing the seam to break:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Form</th>
+<th>px</th>
+<th>Pairs</th>
+<th>Seam@120</th>
+<th>Control</th>
+<th>Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>8×8</strong></td>
+<td>128×128</td>
+<td>112</td>
+<td><strong>1.62</strong></td>
+<td>40.38</td>
+<td><strong>0.04</strong></td>
+</tr>
+<tr>
+<td>4×16</td>
+<td>64×256</td>
+<td>174</td>
+<td>60.85</td>
+<td>59.54</td>
+<td>1.02</td>
+</tr>
+<tr>
+<td>16×4</td>
+<td>256×64</td>
+<td>174</td>
+<td>51.73</td>
+<td>50.08</td>
+<td>1.03</td>
+</tr>
+<tr>
+<td>2×32</td>
+<td>32×512</td>
+<td>195</td>
+<td>69.50</td>
+<td>70.46</td>
+<td>0.99</td>
+</tr>
+<tr>
+<td>32×2</td>
+<td>512×32</td>
+<td>174</td>
+<td>56.05</td>
+<td>57.13</td>
+<td>0.98</td>
+</tr>
+<tr>
+<td>1×64</td>
+<td>16×1024</td>
+<td>201</td>
+<td>72.96</td>
+<td>67.83</td>
+<td>1.08</td>
+</tr>
+<tr>
+<td>64×1</td>
+<td>1024×16</td>
+<td>182</td>
+<td>63.68</td>
+<td>53.81</td>
+<td>1.18</td>
+</tr>
+</tbody>
+</table></div>
+<p>Thus, the form test is <strong>very sharp</strong> on pixels — 0.04 against 0.98 to 1.18. The weakness from §3.2 lay in the method (bit length), not the test.</p>
+<p>It still does not apply to Block 1, and <code>vtpixel.py rival</code> shows why. There, only sides that the bitstream accepts on <strong>both</strong> forms are counted — for them, the length argument is a tie, and only the image can decide. There are 80 such sides each, with their spread lying at <strong>0.01 to 0.5</strong>, on 8×8 as on any rival, for Block 1 <strong>and</strong> for Block 2. Flat sides distinguish no forms. Therefore, the reservation from §3.2 remains; it is now quantified rather than merely conceded.</p>
+<h3 id="96-what-the-selftest-guarantees--and-what-it-does-not">9.6 What the selftest guarantees — and what it does not</h3>
+<p><code>vtpixel.py selftest</code> asserts three things and computes each against a control: Block 2 fails at distance 120 and only there (positive control), Block 1 Channel 0 likewise (distance 120 clearly above the random quote of 11%, seam below half the control), and bitstream and image agree plane by plane. It makes no conscious guarantee regarding <strong>Channel 1</strong> or the <strong>Form</strong>; it prints the numbers and asserts nothing.</p>
+<p><code>vtpixel.py selftest --sabotage</code> claims the layers are 4×16 macroblocks and immediately returns <code>FAIL</code> with exit code 1: the positive control fails (seam 0.690 against control 0.880 instead of less than half) and Block 1 Channel 0 reverts to the random rate (14% of 85 pairs).</p>
+<hr />
+<h2 id="10-block-0-the-21-bits-and-why-they-dont-come-from-our-decoder">10. Block 0: The 21 Bits, and Why They Don't Come From Our Decoder</h2>
+<p>Tool: <code>tools/vtpixel.py block0</code>. Everything in this section is measured with it, purely on bits — it does not need jxrlib.</p>
+<pre><code>python tools/vtpixel.py block0                       # the number, both rules
+python tools/vtpixel.py block0 --rivals 400          # the controls for that
+python tools/vtpixel.py block0 --refs REFDIR         # the cross-check against WIC
+python tools/vtpixel.py selftest                     # now contains Block 0
+</code></pre>
+<h3 id="101-the-error-sits-in-macroblock-0-and-in-no-other-one">10.1 The Error Sits in Macroblock 0, and in No Other One</h3>
+<p>§8 proposed hardening the resync search: "demand that the repaired stream lands exactly at the end of the block". Precisely this, applied to Block 0:</p>
+<pre><code>150 Mip-0 layers, none land unchanged.
+A single shift by delta bits, inserted
+   after the DC of MB 0:       0 layers repaired, no delta in [-32,32]
+   after the Lowpass of MB 0: 0 layers repaired, no delta
+   after the Highpass of MB 0: 34 layers repaired -- delta -21: 33x, -28: 1x
+</code></pre>
+<p>This says three things at once, and each individually:</p>
+<ol>
+<li>A <strong>single</strong> shift is sufficient for the <strong>entire 64 macroblocks</strong>. The error happens exactly once, in Macroblock 0, and never again thereafter.</li>
+<li>DC and Lowpass of MB 0 end at the <strong>correct</strong> place — otherwise a shift there would have repaired something. The overflow is in the Highpass.</li>
+<li>The magnitude is <strong>constant 21 bits</strong>, across pages with entirely different content.</li>
+</ol>
+<p>The rest is reading off. For the repaired layers, the CBP of MB 0 and the bit cost of each Highpass block look like this on all checked pages:</p>
+<pre><code>diff CBP  [0x1, 0x1, 0x1]      predicted   [0x0, 0x0, 0x1]
+ch0: 0 coded blocks     ch1: 0 blocks     ch2: 1 block, 21 bits
+</code></pre>
+<p><strong>The 21 bits are exactly one Highpass block of the third channel</strong>, which the CBP prediction demands and which the encoder never wrote.</p>
+<h3 id="102-the-cause-the-two-chroma-channels-share-a-state">10.2 The Cause: The Two Chroma Channels Share a State</h3>
+<p><code>pred_cbp_dec</code> gives Channel 1 and Channel 2 <strong>the same</strong> prediction state location (<code>cbp_state[1]</code>) and <strong>closes it after each of the two</strong>. In Macroblock 0, it starts at 0; Channel 1 is predicted with this (<code>cbp ^= 1</code>, cascade → 0 blocks), its closure sets <code>cbp_count0[1] = -4 + 0 - 3 = -7 &lt; 0</code> and thus puts the state on 1 — and then Channel 2 is read <strong>raw</strong>: <code>0x1</code> remains <code>0x1</code>, one block. If both chroma channels are predicted from the state as it stood before the closure of Channel 1, then Channel 2 becomes <code>0x1 ^ 1 = 0</code> → cascade → 0 blocks, and the 21 bits are gone.</p>
+<p>Macroblock 0 is the only macroblock that has <strong>no neighbor to the left or above</strong>, thus the only one with the start value <code>cbp ^= 1</code>. This explains exactly why the error happens once and then no longer.</p>
+<h3 id="103-the-number-over-the-same-corpus">10.3 The Number, Over the Same Corpus</h3>
+<p>Strict run, 8×8 macroblocks, must stop in its own last byte — same measurement and same corpus as in §3 and §9.3.</p>
+<p>First corpus, the first 1200 datasets per file (the table from §3):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Block-0 Layers</th>
+<th><code>vtdecode</code> Rule</th>
+<th>Retail Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>c12p1.pages</code></td>
+<td>713</td>
+<td>0</td>
+<td><strong>101</strong></td>
+</tr>
+<tr>
+<td><code>c03p1.pages</code></td>
+<td>746</td>
+<td>0</td>
+<td><strong>138</strong></td>
+</tr>
+<tr>
+<td><code>c16p0.pages</code></td>
+<td>594</td>
+<td>0</td>
+<td><strong>80</strong></td>
+</tr>
+<tr>
+<td><code>c02p0.pages</code></td>
+<td>663</td>
+<td>0</td>
+<td><strong>180</strong></td>
+</tr>
+<tr>
+<td><code>c01p4.pages</code></td>
+<td>807</td>
+<td>1</td>
+<td><strong>174</strong></td>
+</tr>
+<tr>
+<td><code>c03p3.pages</code></td>
+<td>733</td>
+<td>0</td>
+<td><strong>150</strong></td>
+</tr>
+<tr>
+<td><strong>Sum</strong></td>
+<td><strong>4256</strong></td>
+<td><strong>1 (0.02 %)</strong></td>
+<td><strong>823 (19.3 %)</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Second corpus, all Mip-0 layers (the population from §9.3, 7269 layers): <strong>2 (0.03 %) → 1493 (20.5 %)</strong>.</p>
+<p>Block 1, 2, and 3 do not change here (765/4256 unchanged, 4233→4235/4256, 4256/4256): they are <code>NCOMPONENT</code> and do not take the chroma branch.</p>
+<p>This places Block 0 in the same order of magnitude as Block 1 (18.0%) — and for the same reason: they are both sparsely populated pages. The value from §4, "1× on 4256 pages, exactly the noise limit," remains correct; it was the measurement of the old rule.</p>
+<h3 id="104-the-checks-the-rule-did-not-cheaply-grant-the-criterion">10.4 The Checks: the Rule Did Not Cheaply Grant the Criterion</h3>
+<p>A rule that lets <em>everything</em> land would have destroyed the criterion instead of solving the level. Thus, the same question as in §3.1 and §3.3, under the new rule, with 400 Mip-0 levels from <code>c12p1</code> and <code>c03p1</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Reading</th>
+<th>Landings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>YUV_444</code> 3 ch on 8×8 — the Claim</strong></td>
+<td><strong>83</strong></td>
+</tr>
+<tr>
+<td>4×4, 16×16, 8×4, 4×8, 9×9, 2×2, 10×10</td>
+<td>0</td>
+</tr>
+<tr>
+<td>6×6, 7×8</td>
+<td>each 1</td>
+</tr>
+<tr>
+<td>7×9, 9×7 (63 Macroblocks, the known near-miss from §3.1)</td>
+<td>17, 20</td>
+</tr>
+<tr>
+<td><code>Y_ONLY</code> 1 ch, <code>NCOMPONENT</code> 1/2/3 ch, <code>CMYK</code> 4 ch, <code>YUV_420</code>/<code>YUV_422</code> 3 ch</td>
+<td><strong>each 0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>And a second test independent of bitstream: the <strong>DC Residue</strong>. The stream encodes for each macroblock only the difference to its neighbors, so it remains small as long as the stream has the residue, and explodes once it loses it (§4 showed this with <code>[2517, 1676, 0]</code>, <code>[7424, 3328, 3332]</code>). Over all 7269 Mip-0 levels, 95th percentile of |DC Residue| across macroblocks 1…63:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Levels</th>
+<th>Median</th>
+<th>Worst Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Levels that land</td>
+<td>1493</td>
+<td><strong>1.0</strong></td>
+<td>3332</td>
+</tr>
+<tr>
+<td>Levels that do not land</td>
+<td>5776</td>
+<td><strong>16.0</strong></td>
+<td>332367</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is for Block 0 what §9.3 was for Block 1: two verdicts per level with no reason to agree unless they measure the same thing.</p>
+<h3 id="105-the-counter-test-and-what-it-reverses">10.5 The Counter-Test, and What It Reverses</h3>
+<p>The most important measurement of this section is the one that speaks <em>against</em> the new rule. The same rule applied to the 324 reference streams from <code>vtplanes.py refgen</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Reference Streams Exact</th>
+<th>Of Which <code>YUV_444</code> 3 ch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vtdecode</code> Rule (State between U and V closed)</td>
+<td><strong>324 / 324</strong></td>
+<td>108/108</td>
+</tr>
+<tr>
+<td>Retail Rule (both Chroma channels from same state)</td>
+<td><strong>232 / 324</strong></td>
+<td><strong>16/108</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>Gray8</code> (108/108) and <code>Cmyk32</code> (108/108) remain unaffected — they do not go through the Chroma branch. It is exclusively the three-channel <code>YUV_444</code> streams, and it is <strong>irrelevant</strong> how one varies the closure (per channel, once jointly, only after the last: 232 / 232 / 228) or whether one restricts the rule to Macroblock 0 — then both corpora yield exactly the same numbers. That too is a measurement: <strong>the deviation exists only in Macroblock 0.</strong></p>
+<p><strong>This means: the two encoders are not compatible at this point.</strong> The macroblock counter of <code>vtdecode.py</code> is <em>not</em> wrong — it writes exactly what Windows' own encoder writes; §5 remains fully valid. The encoder of MachineGames does something different at Macroblock 0, and only there. The search space from §7 ("what happens exclusively with multiple channels and exclusively with existing coefficients") was correctly bounded — the answer was not a decoder error but an encoder deviation. Which of the two readings T.832 covers is thus not decided and also irrelevant for this purpose: what matters is which one the game wrote.</p>
+<p>Therefore, the corrected rule stands in <code>vtpixel.py</code> and <strong>not</strong> in <code>vtdecode.py</code>: it is applied only around a Retail-Block-0 run via a <code>with mg_chroma():</code> block and then removed. <code>vtdecode.py</code> and <code>vtplanes.py</code> retain the WIC rule, and <code>vtplanes.py refcheck</code> remains 324/324.</p>
+<h3 id="106-the-cost-jxrlib-is-not-an-oracle-for-block-0">10.6 The Cost: jxrlib Is <strong>Not</strong> an Oracle for Block 0</h3>
+<p>This is the unpleasant consequence, and it is measured. <code>JxrDecApp</code> accepts Block 0 without objection — but it uses the same rule as <code>vtdecode.py</code> and loses the stream at exactly the same place. Tile-wise scattering of Channel 0, <code>c12p1</code>, Mip 0, the first 16 of the 64 tiles:</p>
+<p>Block 0, Page (118,96): 23 46 17 0 0 0 0 0 84 0 0 0 0 0 0 0<br />
+Block 2, same page: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0<br />
+Block 0, Page (95,96): 67 0 0 0 0 0 0 54 0 0 0 0 111 0 0<br />
+Block 2, same page: 0 17 7 13 13 10 11 0 0 13 4 8 17 10 12 0  </p>
+<p>From the second tile onward, Block 0 is saturated while Block 2 is not. This is the same desync counted by the Python run, and it is the reason why §4 measured Block 0 as having "saturated primary colors, no image" and a seam ratio of 0.92: <strong>not</strong> because the reconstructed <code>IMAGE_HEADER</code> was incorrect, but because WIC and jxrlib cannot read the stream itself.</p>
+<p><strong>Consequently, the seam test for Block 0 is not measurable with the available means</strong> — and this is not an excuse, but rather the same statement from the other side: a decoder that reads Block 0 incorrectly cannot also show a seam. §9.1 explained why the detour via its own backward calculation (inverse quantization, inverse PCT, Overlap-Filter) is unnecessary; this holds true for Block 1, but not for Block 0. For Block 0, it is the only path to pixels.</p>
+<p>The status is therefore, without embellishment: <strong>Block 0 is solved on bits but open on pixels.</strong> The two sentences do not contradict each other; they name two different processing steps. What the backward calculation already provides as preparation: the bit stream matches, and <code>vtpixel.py dc_walk</code> outputs the DC residuals already as numbers. What is missing are the coefficient values themselves (the Lowpass branch today only remembers <em>that</em> a coefficient exists, not what value it has), the dequantization with the QPs from §2, and the two stages of inverse PCT.</p>
+<h3 id="107-the-shape-of-block-0-is-just-as-unproven-as-that-of-block-1">10.7 The shape of Block 0 is just as unproven as that of Block 1</h3>
+<p>The same reservation as in §3.2, and it has been measured: under the Retail rule, Block 0 lands on <strong>4×16</strong> macroblocks (that is, 64 pieces in a different arrangement) on <strong>26 of 200</strong> planes = 13%, compared to 21% on 8×8. This is the same weak separation as for Block 1 (26% against 17–23%) and for the same reason: the raster form only enters the bit count via context resets, and the planes that actually emerge are the sparsely populated ones.</p>
+<p><strong>Thus, for Block 0 only the macroblock<em>count</em> of 64 is proven</strong>, not the arrangement — any raster with a <em>different</em> number remains at 0 to 1 (§10.4). For Block 0 there is, unlike for Block 1, a prospect of deciding this: its planes are not flat (spread 39 to 100 instead of 0.5), so the shape test from §9.5 would apply — as soon as there are pixels.</p>
+<h3 id="108-what-selftest-now-additionally-guarantees">10.8 What <code>selftest</code> now additionally guarantees</h3>
+<p><code>vtpixel.py selftest</code> checks Block 0 primarily and without jxrlib, and it secures <strong>only the Chroma rule and the macroblock count</strong>, not the shape:</p>
+<ul>
+<li>under the Retail rule, at least 10% of Mip-0 planes must land (measured 63 of 300 = 21%) — if <code>mg_chroma</code> were ineffective, this would be 0 and the test would fail,</li>
+<li>under the <code>vtdecode</code> rule at most 1% (measured 0),</li>
+<li>the best competing <em>raster with a different macroblock count</em> at most one quarter of that (measured 1),</li>
+<li>the DC residual of the landing planes less than one quarter of that of the failing ones (measured 1 against 16).</li>
+</ul>
+<p><code>selftest --sabotage</code> claims 4×16 macroblocks and returns <code>FAIL</code> with return value 1 — <strong>but not because of Block 0</strong>: its group holds 4×16 (26 of 200), exactly as §10.7 states. It breaks the positive control for Block 2 (seam 0.314 against control 0.006, ratio 55) and the seam test for Block 1 Channel 0. This is explicitly noted here because a self-test that does not bite on a claim looks like one that does.</p>
+<hr />
+<h2 id="11-block-1-channel-1-what-died-this-time">11. Block 1, Channel 1: what died this time</h2>
+<p>Channel 1 remains <strong>not</strong> solved. Three measurements have been added; they narrow the question instead of answering it.</p>
+<h3 id="111-a-new-independent-test-the-macroblock-edge">11.1 A new, independent test: the macroblock edge</h3>
+<p>The seam requires two neighboring sides and sufficient contrast; both are scarce in Block 1. However, there is a test that works with <strong>only one</strong> side: the Overlap-Filter is precisely what smooths the jump across a macroblock boundary. Therefore: mean |Δ| over the 16-px grid lines, divided by the mean |Δ| elsewhere. Block 2 is the calibration — it is proven on pixels:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>OVERLAP 0</th>
+<th>OVERLAP 1</th>
+<th>OVERLAP 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block 2 ch0 (Positive control, 30 levels)</td>
+<td>2,937</td>
+<td><strong>0,837</strong></td>
+<td>1,213</td>
+</tr>
+<tr>
+<td>Block 1 ch0 (7 levels)</td>
+<td>5,118</td>
+<td>1,905</td>
+<td><strong>1,386</strong></td>
+</tr>
+<tr>
+<td>Block 1 ch1 (7 levels)</td>
+<td>6,019</td>
+<td>2,038</td>
+<td><strong>1,629</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The test separates sharply and confirms for Block 2 <code>OVERLAP = 1</code> — it is therefore not blind. For Block 1 it states two things: the value lies at both channels <strong>significantly above</strong> that of Block 2, and the minimum lies at OVERLAP 2 instead of 1. Both are findings with n = 7; they are the hint where one should continue with more levels. Whoever picks this up must first check whether not simply the lower variance of Block 1 (Median 1.1 to 3.2 against 6.7) drives the ratio upward.</p>
+<h3 id="112-is-channel-1-only-offset-not-answered--and-why-not">11.2 Is Channel 1 only <em>offset</em>? Not answered — and why not</h3>
+<p>If Channel 1 were only misregistered — by one macroblock, by half a side, by whatever —, a search over <strong>all</strong> offsets would find it. Two searches, both with Channel 0 as an embedded control; <strong>both fail on the control, not on Channel 1.</strong> The offset hypothesis is therefore neither proven nor refuted; it is untested — and that is the more useful information than one based on a failed measurement:</p>
+<ul>
+<li><strong>2D offset search</strong> between neighboring sides, dx ∈ [40,128], dy ∈ [−16,16], on the sides assumed by the bitstream: over four <code>.pages</code> files remain <strong>7 measurable pairs</strong>, and their best offsets scatter (+112/−22, +32/+1, +42/−24, +32/0, +32/−1, +116/+1, +104/+24). The sample is too small for a statement — it is noted here so the next person does not run the same dead end again: <strong>among the landing sides there are hardly any neighboring pairs with contrast in both channels.</strong></li>
+<li>Extending the search to all image-clean sides (the 248 levels from §9.3) brings 1731 neighboring pairs, but the method itself no longer holds — §11.3.</li>
+</ul>
+<h3 id="113-grid-spacing-over-the-entire-range--a-test-that-does-not-stand-its-own-control">11.3 Grid spacing over the entire range — a test that does not stand its own control</h3>
+<p><code>re_probes/vtrest/probe12.py</code> iterates through every side spacing from 8 to 126 for neighboring, image-clean Mip-0 pairs, instead of only 116…124, and counts the best per pair. Channel 0 must find 120; otherwise the test is worthless. Over all six files, 1731 neighboring image-clean pairs:</p>
+<pre><code>60 spacing candidates, random quote 1.7 %
+ch0: 34 measurable pairs, spacing 120 wins  4/34 = 12 %
+     most frequent:  8:11x   120:4x   32:3x   16:3x   100:2x
+ch1: 70 measurable pairs, spacing 120 wins  7/70 = 10 %
+     most frequent:  8:19x   126:10x  120:7x   124:5x   16:3x
+</code></pre>
+<p><strong>The control fails</strong>, and it is explainable: at spacing 8 two sides overlap on 120 lines, and with two nearly flat sides with similar mean, a MAD over 120 lines is smaller than one over 8 — not because it fits, but because much area averages out. The wide spacing sweep thus systematically favors large overlaps and is not a usable test for flat levels. The narrow test from §9.4, which only compares 116…124, does not have this problem because there all candidates have nearly the same area; it finds cleanly for Channel 0 a 120 (48% of 69 pairs against 11% random, status <code>vtpixel.py selftest</code>).</p>
+<p><strong>Thus §11.2/§11.3 is not a finding on Channel 1, but a dead method.</strong> Whoever wants to revive it must normalize the MAD against a null hypothesis with the same overlap area — for example against the same spacing with an <em>uninvolved</em> neighboring side. It is noted here so the next person does not build it again from scratch.</p>
+<p>Incidentally, this reveals a number that §9.5 only addressed qualitatively: out of <strong>1731</strong> adjacent, clean Mip-0 pairs, only <strong>34</strong> in Channel 0 and <strong>70</strong> in Channel 1 possess sufficient contrast (scatter ≥ 2) to be measurable at all. These amounts represent 2 to 4 %. The seam test for Block 1 is not weak because the test itself is weak, but because there is almost nothing left to measure.</p>
+<h3 id="114-what-remains-open-regarding-this">11.4 What remains open regarding this</h3>
+<p>The finding from §9.4 stands unchanged and has become sharper with more pairs. <code>vtpixel.py selftest</code> was run on three files, involving 5423 adjacent Mip-0 pairs:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Measurable Pairs</th>
+<th>Seam@120</th>
+<th>Control</th>
+<th>Ratio</th>
+<th>Best at 120</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block 2 ch0 (Positive control)</td>
+<td>2894</td>
+<td>0,258</td>
+<td>4,745</td>
+<td><strong>0,05</strong></td>
+<td><strong>969/1353 = 72 %</strong></td>
+</tr>
+<tr>
+<td>Block 1 <strong>ch0</strong></td>
+<td>135</td>
+<td>0,045</td>
+<td>0,161</td>
+<td><strong>0,28</strong></td>
+<td><strong>33/69 = 48 %</strong></td>
+</tr>
+<tr>
+<td>Block 1 ch1</td>
+<td>70</td>
+<td>0,158</td>
+<td>0,278</td>
+<td>0,57</td>
+<td>3/50 = <strong>6 %</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Channel 1 thus lies <strong>below</strong> the random quota of 11 %, and its distance profile is flat (116…124: 0,164 → 0,157, minimum at 122). The only new thing is what the error is <strong>not</strong>:</p>
+<ul>
+<li>not a matter of the Overlap filter alone — it changes both channels equally, and Block 2 as calibration selects OVERLAP 1 unambiguously from the same test (§11.1),</li>
+<li>and not the same as Block 0: the Chroma-CBP finding from §10 concerns <code>YUV_444</code> and leaves Block 1 exactly unchanged (765/4256 before and after).</li>
+</ul>
+<p>And <strong>open, but now cleanly open</strong>: whether Channel 1 is merely shifted. §§11.2 and §11.3 did not clarify this because the shift search lacks its own control. Whoever wants to clarify it must first perform a shift test that works on flat planes — §11.3 states where the naive approach fails.</p>
+<p>The next sensible step remains that from §8: disassemble <code>PageCompression.cpp</code>. §10 has shown that MachineGames changed the encoder at least in one place — thus "the stream deviates" is no longer an excuse, but a proven property of this encoder, and disassembly is the only source stating where these places are.</p>
+<hr />
+<h2 id="where-the-knowledge-ends">Where the knowledge ends</h2>
+<p><strong>Secured, recalculated at four locations:</strong></p>
+<ul>
+<li>The headers of all four blocks, exactly one variant per block over 399 pages, secured by the 40-bit probe on <code>ff 00 00 01 00</code>.</li>
+<li>Block 1 = <code>NCOMPONENT</code> 2 channels across <strong>64 macroblocks</strong>: 765/4256 bit-exact runs over six <code>.pages</code> files, every other macroblock count and every other color format reading in noise. The arrangement as 8×8 (= 128×128 px) is <strong>not</strong> measured but deduced from Block 2 and <code>PAGE_WIDTH</code> (§3.2).</li>
+<li>The macroblock counter is correct: 324/324, negative check 0/40. And it is not only internally correct: on the same retail pages, <strong>jxrlib judges exactly the same</strong> (§9.3), layer by layer, with a 3.5% deviation.</li>
+<li>Block 2 abuts its neighbors seamlessly (MAD 3.02 against control 24.99; with corrected column alignment 0.38 against 7.44, §9.4); Block 0 does not (97.68 against 105.89).</li>
+<li><strong>Block 1 yields pixels</strong> (§9.3): 1225 of 7269 Mip-0 layers emerge cleanly both in the bitstream and in the image, while jxrlib rejects none.</li>
+<li><strong>Block 1, Channel 0 abuts its neighbors</strong> (§9.4): Distance 120 is best at 33% against 11% by chance, seam/control 0.23. This is the independent pixel evidence missing from this document.</li>
+<li><strong>Block 0 yields bits</strong> (§10): 823 of 4256 layers run all 64 macroblocks and stop at their own last byte against 1 prior, and across the full Mip-0 population 1493 of 7269. The cause is named and recalculated (§10.1/§10.2), the checks stand (every competing raster except the 63-macroblock near-misses at 0 to 1, every other color format reading at 0), and the DC residues of the arriving layers are at 1 against 16 for the failing ones. As with Block 1, it is established that the <strong>macroblock count</strong> is 64, not the arrangement as 8×8 (§10.7).</li>
+<li><strong>The MachineGames encoder is not WIC-compatible</strong> (§10.5) — proven, not conjectured: the rule that Block 0 breaks violates 92 of the 108 <code>YUV_444</code> reference streams, and no variant reconciles both.</li>
+<li>Fifteen hypotheses are refuted by numbers (§6).</li>
+</ul>
+<p><strong>Not solved:</strong></p>
+<ul>
+<li>Block 0 <strong>on pixels</strong>. Solved on bits (§10), but without an oracle: WIC and jxrlib share the rule at which the stream fails, and output noise starting from the second tile (§10.6). The path there is now a backward calculation — coefficient values, dequantization, two stages of inverse PCT, overlap filter — no longer a search.</li>
+<li>Block 1 for the 83% dense pages. Newly bounded: <strong>Channel 1 is spatially incorrect, although the bitstream lands and the image is smooth</strong> (§9.4). The error does not change the bit count and affects only the second channel.</li>
+<li>The raster form of Block 0 (§10.7): 4×16 lands at 13% against 21% for 8×8, the same weak separation as with Block 1. Unlike with Block 1, it is here decisive once there are pixels — Block-0 layers are not flat.</li>
+<li>The raster form of Block 1 — and specifically from a now quantified basis: every Block-1 layer that decodes cleanly is flat (§3.2 box, §9.5). On pixels the form test is sharp (Block 2: 0.04 against 0.98–1.18), there is for Block 1 only no side on which it can grab.</li>
+<li>Thus still <strong>no pixel export of a complete page</strong> — the Diffuse layer is missing, and it is the one on which modding would aim. New, however, is what it lies in: not anymore that no one knows how the stream is read, but only that no one calculates it back.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNO-Virtual-Textures.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Virtual Textures — the <code>.pages</code> Format of Wolfenstein: The New Order</a><a class="next" href="UI-Assets.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>User Interface — What Can and Cannot Be Changed</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission: Retail Command Execution – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: explain why launch commands like +map were ignored in TNC, and find a reliable way to run commands.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Mission: Retail Command Execution</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Command-Queue"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is a short task description, not a result. When Wolfenstein II: The New Colossus was started with +map, +exec or +loadGame, nothing visible happened. The task is to explain this by reading the game&#x27;s <span class="t" data-t="binary">program file</span> and configs, and to find a command queue or config file that runs after the engine has started.</p><ul><li>Question: why did +map, +exec and +loadGame have no visible effect on a direct retail launch?</li><li>Goal: find a command queue or config file that reliably runs after engine start.</li><li>Text strings in the game file must be kept apart from commands that are actually registered.</li><li>No program patches, no starting processes and no changes to Steam files are allowed.</li></ul></div><div class="de"><p class="lede">Diese Seite ist eine kurze Aufgabenstellung, kein Ergebnis. Als Wolfenstein II: The New Colossus mit +map, +exec oder +loadGame gestartet wurde, passierte nichts Sichtbares. Die Aufgabe ist, das durch Lesen der <span class="t" data-t="binary">Programmdatei</span> und der Konfigurationen zu erklären und eine Befehlswarteschlange oder Konfigurationsdatei zu finden, die nach dem Start der Engine läuft.</p><ul><li>Frage: Warum hatten +map, +exec und +loadGame beim direkten Start der Originalversion keine sichtbare Wirkung?</li><li>Ziel: eine Befehlswarteschlange oder Konfigurationsdatei finden, die zuverlässig nach dem Engine-Start läuft.</li><li>Texte im Spielprogramm müssen von tatsächlich registrierten Befehlen unterschieden werden.</li><li>Keine Programm-Patches, kein Starten von Prozessen und keine Änderungen an Steam-Dateien erlaubt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p><strong>Objective:</strong> Explain statically why <code>+map</code>, <code>+exec</code>, and <code>+loadGame</code> did not appear to execute visibly during a direct TNC retail launch, and identify a reliable command queue or config file that executes after engine initialization.</p>
+<p><strong>Sources:</strong> TNC-EXE located at <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus</code>, <code>base/build.cfg</code>, user configs/logs, local probe scripts, and documentation. No EXE patches, no process spawning, no Steam file modifications.</p>
+<p>Search for exact string neighborhoods and known config ordering (<code>exec</code>, <code>startup</code>, <code>autoexec</code>, <code>default.cfg</code>, <code>Wolfenstein II The New ColossusConfig.cfg</code>, <code>+set</code>, <code>com_*</code>). Separate existing strings from actual registered retail commands.</p>
+<p><strong>Acceptance:</strong> Reproducible static explanation or a precise single next test with negative control. Report exclusively to <code>re_probes/agent_reports/command_queue.md</code>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Cmfmt.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Cmfmt</a><a class="next" href="Research-Brief-Cvartable.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Cvartable</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

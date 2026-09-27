@@ -8,212 +8,11 @@
 <meta property="og:title" content="Wolfenstein Modloader">
 <meta property="og:description" content="Community research for modding Wolfenstein: The New Order and Wolfenstein II: The New Colossus, with a research roadmap.">
 <meta name="theme-color" content="#2d3134">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%232d3134'/%3E%3Cpath d='M8 14h10l6 26 8-26 8 26 6-26h10L44 52h-9l-3-12-3 12h-9z' fill='%23e6dfcf'/%3E%3Crect x='0' y='56' width='64' height='8' fill='%238c1c1c'/%3E%3C/svg%3E">
+<link rel="icon" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<style>
-:root {
-  --concrete: #2d3134;
-  --bunker: #1b1e21;
-  --plaster: #e6dfcf;
-  --plaster-dim: #b3ad9f;
-  --oxblood: #8c1c1c;
-  --flare: #d5614f;      /* oxblood lifted for text on concrete */
-  --brass: #b98b3e;
-  --verdigris: #5e8b7e;
-  --rule: rgba(230, 223, 207, .16);
-  --display: "Big Shoulders Stencil Display", "Arial Narrow", "Roboto Condensed", sans-serif;
-  --body: "Spectral", Georgia, "Times New Roman", serif;
-  --rail: 15rem;
-  --measure: 40rem;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background-color: var(--concrete);
-  /* poured-concrete grain */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  color: var(--plaster);
-  font: 400 1.125rem/1.65 var(--body);
-  overflow-x: hidden;
-}
-a { color: inherit; text-decoration-color: var(--flare); text-underline-offset: .18em; }
-a:hover { color: #fff; }
-:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
-.wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; }
-[data-lang="de"] .en, [data-lang="en"] .de { display: none; }
-.skip { position: absolute; left: -999px; top: 0; background: var(--plaster); color: var(--bunker); padding: .5rem 1rem; z-index: 100; }
-.skip:focus { left: 1rem; }
-
-/* ---------- masthead ---------- */
-.mast { background: var(--bunker); border-bottom: 6px solid var(--oxblood); position: sticky; top: 0; z-index: 30; }
-.mast .wrap { display: flex; align-items: center; gap: 1.5rem; min-height: 3.5rem; }
-.mark { white-space: nowrap; font-family: var(--display); font-weight: 800; font-size: clamp(1.15rem, 4.5vw, 1.5rem); text-decoration: none; letter-spacing: .02em; }
-.mast nav { display: flex; gap: 1.4rem; margin-left: auto; font-size: 1rem; }
-.mast nav a { text-decoration: none; color: var(--plaster-dim); }
-.mast nav a:hover { color: var(--plaster); text-decoration: underline; text-decoration-color: var(--flare); }
-.lang { display: flex; border: 1px solid var(--rule); }
-.lang button { background: none; border: 0; color: var(--plaster-dim); font: 600 .9rem var(--body); padding: .3rem .6rem; cursor: pointer; }
-.lang button[aria-pressed="true"] { background: var(--plaster); color: var(--bunker); }
-
-/* ---------- hero: the decoding title ---------- */
-.hero { padding: 5.5rem 0 4.5rem; border-bottom: 1px solid var(--rule); }
-.hero h1 {
-  font-family: var(--display); font-weight: 900; margin: 0;
-  font-size: clamp(3.4rem, 12.5vw, 10.5rem); line-height: .82; letter-spacing: -.01em;
-  text-transform: none; color: var(--plaster);
-}
-.hero h1 .line { display: block; white-space: nowrap; overflow: hidden; }
-.hero h1 .line + .line { color: var(--oxblood); -webkit-text-stroke: 2px var(--plaster); paint-order: stroke fill; }
-.hero h1 .c { display: inline-block; min-width: .2em; }
-.hero h1 .c.scr { color: var(--brass); -webkit-text-stroke: 0; }
-.hero .intro { max-width: var(--measure); margin: 2.2rem 0 0; font-size: 1.3rem; line-height: 1.55; }
-.hero .actions { display: flex; flex-wrap: wrap; gap: .9rem; margin-top: 2rem; }
-.btn {
-  display: inline-block; font: 600 1.05rem var(--body); text-decoration: none; padding: .7rem 1.3rem;
-  border: 2px solid var(--plaster);
-}
-.btn.solid { background: var(--plaster); color: var(--bunker); }
-.btn.solid:hover { background: #fff; color: var(--bunker); }
-.btn:not(.solid):hover { background: rgba(230,223,207,.1); }
-.hero .tally { margin-top: 2.2rem; color: var(--plaster-dim); font-size: 1rem; max-width: var(--measure); }
-.hero .tally b { font-weight: 600; }
-.tally .s-done { color: var(--verdigris); } .tally .s-wip { color: var(--brass); } .tally .s-open { color: var(--flare); }
-
-/* ---------- file sections: margin rail + content ---------- */
-.file { padding: 4.5rem 0; border-bottom: 1px solid var(--rule); }
-.file > .wrap { display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); gap: 2.5rem; }
-.rail h2 {
-  font-family: var(--display); font-weight: 800; font-size: clamp(2.1rem, 4vw, 3rem); line-height: .95;
-  margin: 0; position: sticky; top: 5rem;
-}
-.rail p { color: var(--plaster-dim); font-size: 1rem; margin: .8rem 0 0; position: sticky; top: 9rem; }
-.body > p { max-width: var(--measure); margin: 0 0 1.1rem; }
-.body > p.big { font-size: 1.3rem; line-height: 1.5; }
-
-/* ---------- glossary hints ---------- */
-.t {
-  font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help;
-  text-decoration: underline dotted var(--brass); text-decoration-thickness: 2px; text-underline-offset: .2em;
-}
-.t:hover, .t[aria-expanded="true"] { color: #fff; text-decoration-style: solid; }
-#tip {
-  position: fixed; z-index: 60; max-width: min(22rem, calc(100vw - 2rem));
-  background: var(--plaster); color: var(--bunker); padding: .75rem .95rem .8rem;
-  border-left: 6px solid var(--brass); box-shadow: 0 10px 28px rgba(0,0,0,.45);
-  font-size: 1rem; line-height: 1.45; pointer-events: none; opacity: 0; transform: translateY(4px);
-  transition: opacity .12s, transform .12s;
-}
-#tip.on { opacity: 1; transform: none; }
-#tip strong { display: block; font-family: var(--display); font-weight: 800; font-size: 1.35rem; line-height: 1; margin-bottom: .3rem; }
-.hint { font-size: 1rem; color: var(--plaster-dim); border-left: 3px solid var(--brass); padding-left: .8rem; max-width: var(--measure); }
-
-/* ---------- roadmap register ---------- */
-.filter { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--rule); margin-bottom: 2rem; }
-.filter button {
-  background: none; border: 0; color: var(--plaster-dim); font: 600 1rem var(--body);
-  padding: .5rem 1rem; cursor: pointer;
-}
-.filter button + button { border-left: 1px solid var(--rule); }
-.filter button[aria-pressed="true"] { background: var(--plaster); color: var(--bunker); }
-.group { margin-bottom: 2.6rem; }
-.group > h3 {
-  font-family: var(--display); font-weight: 800; font-size: 1.9rem; margin: 0 0 .2rem; line-height: 1;
-  display: flex; align-items: baseline; gap: .6rem;
-}
-.group > h3 .n { font-family: var(--body); font-weight: 400; font-size: 1.05rem; color: var(--plaster-dim); }
-.group.done > h3 { color: var(--verdigris); }
-.group.wip > h3 { color: var(--brass); }
-.group.open > h3 { color: var(--flare); }
-.group > p { margin: 0 0 1rem; color: var(--plaster-dim); font-size: 1rem; }
-.entries { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--plaster); }
-.entry { border-bottom: 1px solid var(--rule); padding: 1.1rem 0 1.15rem; display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1.2rem; }
-.stamp {
-  align-self: start; justify-self: start; font-family: var(--display); font-weight: 900; font-size: 1.05rem;
-  letter-spacing: .04em; padding: .1rem .5rem; border: 2px solid; transform: rotate(-4deg); margin-top: .25rem;
-}
-.done .stamp { color: var(--verdigris); } .wip .stamp { color: var(--brass); } .open .stamp { color: var(--flare); }
-.entry h4 { margin: 0; font-size: 1.2rem; font-weight: 600; line-height: 1.35; }
-.entry .games { font-size: .95rem; color: var(--plaster-dim); font-style: italic; }
-.entry .plain { margin: .35rem 0 0; max-width: var(--measure); }
-.entry details { margin-top: .5rem; max-width: var(--measure); }
-.entry summary { cursor: pointer; color: var(--plaster-dim); font-size: .98rem; width: fit-content; }
-.entry summary:hover { color: var(--plaster); }
-.entry details[open] summary { color: var(--plaster); }
-.entry details p { margin: .45rem 0 0; font-size: 1rem; color: var(--plaster-dim); }
-.entry details p a { color: var(--plaster); }
-
-/* ---------- studio: a typed dossier page ---------- */
-.dossier {
-  background: var(--plaster); color: var(--bunker); padding: 2.2rem 2.4rem 2.3rem; position: relative;
-  box-shadow: 0 18px 40px rgba(0,0,0,.4); max-width: 46rem;
-}
-.dossier .soon {
-  position: absolute; top: 1.4rem; right: 1.4rem; font-family: var(--display); font-weight: 900; font-size: 1.5rem;
-  color: var(--oxblood); border: 3px solid var(--oxblood); padding: .05rem .6rem; transform: rotate(6deg);
-}
-.dossier h3 { font-family: var(--display); font-weight: 900; font-size: clamp(2.2rem, 5vw, 3.2rem); line-height: .95; margin: 0 0 1rem; max-width: 12ch; }
-.dossier p { margin: 0 0 1rem; }
-.dossier ul { margin: 1.2rem 0 1.2rem; padding: 0; list-style: none; }
-.dossier li { padding: .55rem 0 .55rem 1.3rem; border-top: 1px solid rgba(27,30,33,.18); position: relative; }
-.dossier li::before { content: ""; position: absolute; left: 0; top: 1.05rem; width: .55rem; height: .55rem; background: var(--oxblood); }
-.dossier li b { font-weight: 600; }
-.dossier .note { font-style: italic; color: #55504a; margin: 0; }
-.dossier .t { text-decoration-color: var(--oxblood); }
-.dossier .t:hover { color: var(--oxblood); }
-
-/* ---------- games ---------- */
-.games { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 2rem; }
-.game h3 { font-family: var(--display); font-weight: 800; font-size: 2rem; line-height: 1; margin: 0; }
-.game .eng { color: var(--brass); margin: .3rem 0 .6rem; font-style: italic; }
-.game p { margin: 0; }
-
-/* ---------- evidence ---------- */
-.levels { display: grid; gap: 1.2rem; max-width: 44rem; }
-.level { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 1rem; align-items: baseline; }
-.level b { font-family: var(--display); font-weight: 900; font-size: 1.6rem; line-height: 1; }
-.level.m b { color: var(--verdigris); } .level.i b { color: var(--brass); } .level.h b { color: var(--flare); }
-.level p { margin: 0; }
-
-/* ---------- glossary ---------- */
-.gloss { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: .2rem 2.4rem; margin: 0; }
-.gloss div { padding: .75rem 0; border-top: 1px solid var(--rule); scroll-margin-top: 5rem; }
-.gloss dt { font-family: var(--display); font-weight: 800; font-size: 1.45rem; line-height: 1.05; }
-.gloss dd { margin: .2rem 0 0; color: var(--plaster-dim); font-size: 1.02rem; }
-.gloss div:target dt { color: var(--brass); }
-
-/* ---------- start here ---------- */
-.reads { list-style: none; padding: 0; margin: 0; max-width: 46rem; }
-.reads li { border-top: 1px solid var(--rule); }
-.reads a { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 1rem; padding: .85rem 0; text-decoration: none; }
-.reads a b { font-weight: 600; text-decoration: underline; text-decoration-color: var(--flare); text-underline-offset: .18em; }
-.reads a span { color: var(--plaster-dim); }
-.reads a:hover span { color: var(--plaster); }
-
-footer { background: var(--bunker); padding: 2.5rem 0 3rem; color: var(--plaster-dim); font-size: 1rem; }
-footer p { max-width: 46rem; margin: 0 0 .8rem; }
-
-@media (max-width: 860px) {
-  .file > .wrap { grid-template-columns: 1fr; gap: 1.2rem; }
-  .rail h2, .rail p { position: static; }
-  .mast nav { display: none; }
-  .lang { margin-left: auto; }
-}
-@media (max-width: 560px) {
-  .hero { padding: 3.5rem 0 3rem; }
-  .entry { grid-template-columns: 1fr; gap: .4rem; }
-  .level { grid-template-columns: 1fr; gap: .2rem; }
-  .reads a { grid-template-columns: 1fr; gap: .1rem; }
-  .dossier { padding: 1.6rem 1.3rem; }
-  .dossier .soon { position: static; display: inline-block; margin-bottom: 1rem; }
-}
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  #tip { transition: none; }
-}
-</style>
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-lang="en">
 <a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
@@ -224,8 +23,8 @@ footer p { max-width: 46rem; margin: 0 0 .8rem; }
     <nav aria-label="Sections">
       <a href="#roadmap">Roadmap</a>
       <a href="#studio">Studio</a>
-      <a href="#glossary"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
-      <a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">Wiki</a>
+      <a href="wiki/index.html">Wiki</a>
+      <a href="wiki/glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
       <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
     </nav>
     <div class="lang" role="group" aria-label="Language">
@@ -245,7 +44,7 @@ footer p { max-width: 46rem; margin: 0 0 .8rem; }
       </p>
       <div class="actions">
         <a class="btn solid" href="#roadmap"><span class="en">See the research roadmap</span><span class="de">Forschungs-Roadmap ansehen</span></a>
-        <a class="btn" href="https://github.com/LopeKinz/wolfenstein-modloader/wiki"><span class="en">Read the wiki</span><span class="de">Wiki lesen</span></a>
+        <a class="btn" href="wiki/index.html"><span class="en">Read the wiki, explained</span><span class="de">Das Wiki lesen, erklärt</span></a>
       </div>
       <p class="tally" id="tally"></p>
     </div>
@@ -359,14 +158,26 @@ footer p { max-width: 46rem; margin: 0 0 .8rem; }
         <h2 id="h-glossary"><span class="en">Words explained</span><span class="de">Begriffe erklärt</span></h2>
         <p><span class="en">The technical words on this page, in plain language.</span><span class="de">Die Fachwörter dieser Seite in einfacher Sprache.</span></p>
       </div>
-      <div class="body"><dl class="gloss" id="gloss"></dl></div>
+      <div class="body">
+        <dl class="gloss" id="gloss"></dl>
+        <p style="margin-top:1.4rem"><a href="wiki/glossary.html"><span class="en">All words explained</span><span class="de">Alle Begriffe erklärt</span></a></p>
+      </div>
     </div>
   </section>
 
   <section class="file" id="start" aria-labelledby="h-start">
     <div class="wrap">
-      <div class="rail"><h2 id="h-start"><span class="en">Where to start reading</span><span class="de">Wo du anfängst</span></h2></div>
-      <div class="body"><ul class="reads" id="reads"></ul></div>
+      <div class="rail">
+        <h2 id="h-start"><span class="en">The whole wiki, explained</span><span class="de">Das ganze Wiki, erklärt</span></h2>
+        <p><span class="en">All 100 pages, on this site.</span><span class="de">Alle 100 Seiten, hier auf der Website.</span></p>
+      </div>
+      <div class="body">
+        <p class="en">Every page of the research wiki is here too. Each one starts with a short summary in plain words, then shows the full technical text with hints for the difficult words.</p>
+        <p class="de">Jede Seite des Forschungs-Wikis gibt es auch hier. Jede beginnt mit einer kurzen Zusammenfassung in einfachen Worten und zeigt danach den vollständigen technischen Text mit Hinweisen zu schweren Begriffen.</p>
+        <p style="margin:1.4rem 0 2rem"><a class="btn solid" href="wiki/index.html"><span class="en">Browse all 100 pages</span><span class="de">Alle 100 Seiten ansehen</span></a></p>
+        <h3 class="subhead"><span class="en">Good first reads</span><span class="de">Gut zum Einstieg</span></h3>
+        <ul class="reads" id="reads"></ul>
+      </div>
     </div>
   </section>
 </main>
@@ -383,32 +194,9 @@ footer p { max-width: 46rem; margin: 0 0 .8rem; }
 
 <div id="tip" role="tooltip"></div>
 
+<script src="assets/site.js"></script>
 <script>
-const WIKI = "https://github.com/LopeKinz/wolfenstein-modloader/wiki/";
-
-/* Glossary: [en name, en text, de name, de text] */
-const TERMS = {
-  modding: ["Modding", "Changing a game with your own content or values.", "Modding", "Ein Spiel mit eigenen Inhalten oder Werten verändern."],
-  re: ["Reverse engineering", "Finding out how a program works by examining it from the outside, without its source code.", "Reverse Engineering", "Herausfinden, wie ein Programm funktioniert, indem man es von außen untersucht – ohne Quellcode."],
-  engine: ["Engine (id Tech)", "The technical foundation a game is built on. The New Order uses id Tech 5, The New Colossus id Tech 6.", "Engine (id Tech)", "Das technische Fundament eines Spiels. The New Order nutzt id Tech 5, The New Colossus id Tech 6."],
-  retail: ["Retail", "The normal version of the game as sold, not a developer build.", "Retail", "Die normale, verkaufte Version des Spiels, kein Entwickler-Build."],
-  archive: ["Archive", "A large file that bundles thousands of game files, a bit like a zip file.", "Archiv", "Eine große Datei, die tausende Spieldateien bündelt, ähnlich wie eine Zip-Datei."],
-  slot: ["Slot", "The exact space a file takes up inside an archive. A changed file has to fit into it.", "Slot", "Der genaue Platz, den eine Datei im Archiv belegt. Eine geänderte Datei muss hineinpassen."],
-  decl: ["Decl", "Short for declaration: a text file that describes one thing in the game, such as a weapon or an enemy.", "Decl", "Kurz für Deklaration: eine Textdatei, die ein Ding im Spiel beschreibt, etwa eine Waffe oder einen Gegner."],
-  checksum: ["Checksum", "A short number calculated from a file. If the file changes, the number changes too.", "Prüfsumme", "Eine kurze Zahl, aus einer Datei berechnet. Ändert sich die Datei, ändert sich auch die Zahl."],
-  hash: ["Hash (fingerprint)", "A fingerprint of data. The game uses it to notice when a file was changed.", "Hash (Fingerabdruck)", "Ein Fingerabdruck von Daten. Das Spiel merkt daran, ob eine Datei verändert wurde."],
-  encryption: ["Encryption", "Scrambling data so that only someone with the key can read it.", "Verschlüsselung", "Daten so verwürfeln, dass nur jemand mit dem Schlüssel sie lesen kann."],
-  key: ["Key", "The secret value that locks and unlocks encrypted data.", "Schlüssel", "Der geheime Wert, der verschlüsselte Daten ver- und entschlüsselt."],
-  idcl: ["IDCL container", "The archive format of Wolfenstein II. Each archive carries fingerprints of its own contents.", "IDCL-Container", "Das Archivformat von Wolfenstein II. Jedes Archiv trägt Fingerabdrücke seines eigenen Inhalts."],
-  bim: ["BIM image", "The game's own picture format, used for menus and the HUD.", "BIM-Bild", "Das eigene Bildformat des Spiels, genutzt für Menüs und das HUD."],
-  vt: ["Virtual textures", "One gigantic image that holds the surfaces of the whole game world. Also called megatexture.", "Virtuelle Texturen", "Ein riesiges Bild, das die Oberflächen der ganzen Spielwelt enthält. Auch Megatexture genannt."],
-  mesh: ["Mesh", "The 3D shape of an object, built from many small triangles.", "Mesh", "Die 3D-Form eines Objekts, aufgebaut aus vielen kleinen Dreiecken."],
-  cvar: ["CVar", "A console variable: a named setting such as field of view or HUD on/off.", "CVar", "Eine Konsolenvariable: eine benannte Einstellung wie Sichtfeld oder HUD an/aus."],
-  console: ["Developer console", "A text input inside the game for commands and settings, normally meant for developers.", "Entwicklerkonsole", "Eine Texteingabe im Spiel für Befehle und Einstellungen, eigentlich für Entwickler gedacht."],
-  alias: ["Map alias", "A copy of an existing map under a new name, so it can be changed without touching the original.", "Karten-Alias", "Eine Kopie einer bestehenden Karte unter neuem Namen, damit man sie ändern kann, ohne das Original anzufassen."],
-  verify: [".verify file", "An extra file the game writes next to a save game to check it later.", ".verify-Datei", "Eine Zusatzdatei, die das Spiel neben einen Spielstand schreibt, um ihn später zu prüfen."],
-  kiscule: ["Kiscule", "The game's scripting system for missions and scripted events.", "Kiscule", "Das Skriptsystem des Spiels für Missionen und gescriptete Ereignisse."],
-};
+const WIKI = "wiki/";
 
 /* Roadmap: [status, games, wiki page, [en title, de title], [en plain, de plain], [en detail, de detail]]
    In text, {key|label} becomes a glossary hint. */
@@ -490,9 +278,6 @@ const READS = [
   ["Known-Contradictions", "Known contradictions", "Where sources disagree, and how it was settled.", "Wo Quellen sich widersprechen und wie es geklärt wurde."],
 ];
 
-const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
-const hints = s => esc(s).replace(/\{(\w+)\|([^}]+)\}/g, (_, k, label) => `<span class="t" data-t="${k}">${label}</span>`);
-const both = (en, de, fn = esc) => `<span class="en">${fn(en)}</span><span class="de">${fn(de)}</span>`;
 
 /* ---------- roadmap ---------- */
 function renderRoadmap(filter) {
@@ -518,7 +303,7 @@ function renderRoadmap(filter) {
         `<div><h4>${both(title[0], title[1])}</h4><span class="games">${gameNames}</span>` +
         `<p class="plain">${both(plain[0], plain[1])}</p>` +
         `<details><summary>${both("Technical details", "Technische Details")}</summary>` +
-        `<p>${both(detail[0], detail[1], hints)} <a href="${WIKI + page}">${both("Read the report", "Bericht lesen")}</a></p></details></div>`;
+        `<p>${both(detail[0], detail[1], hints)} <a href="${WIKI + page}.html">${both("Read the report", "Bericht lesen")}</a></p></details></div>`;
       ul.appendChild(li);
     }
     sec.appendChild(ul);
@@ -533,73 +318,16 @@ document.getElementById("tally").innerHTML =
 document.querySelectorAll(".filter button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".filter button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
   renderRoadmap(b.dataset.game);
+  Site.wire();
 }));
 
 /* ---------- glossary list and reading list ---------- */
-document.getElementById("gloss").innerHTML = Object.entries(TERMS)
+document.getElementById("gloss").innerHTML = Object.entries(TERMS).filter(([, t]) => t[5])
   .map(([k, t]) => `<div id="g-${k}"><dt>${both(t[0], t[2])}</dt><dd>${both(t[1], t[3])}</dd></div>`).join("");
 document.getElementById("reads").innerHTML = READS
-  .map(([page, title, en, de]) => `<li><a href="${WIKI + page}"><b>${esc(title)}</b>${both(en, de)}</a></li>`).join("");
+  .map(([page, title, en, de]) => `<li><a href="${WIKI + page}.html"><b>${esc(title)}</b>${both(en, de)}</a></li>`).join("");
 
-/* ---------- hint tooltips ---------- */
-const tip = document.getElementById("tip");
-let current = null, shownAt = 0;
-function lang() { return document.body.dataset.lang === "de" ? 1 : 0; }
-function show(el) {
-  const t = TERMS[el.dataset.t];
-  if (!t) return;
-  if (current && current !== el) current.setAttribute("aria-expanded", "false");
-  if (current !== el || !tip.classList.contains("on")) shownAt = performance.now();
-  current = el;
-  el.setAttribute("aria-expanded", "true");
-  tip.innerHTML = `<strong>${esc(t[lang() * 2])}</strong>${esc(t[lang() * 2 + 1])}`;
-  tip.classList.add("on");
-  const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
-  let x = Math.min(Math.max(12, r.left), innerWidth - w - 12);
-  let y = r.bottom + 10;
-  if (y + h > innerHeight - 8) y = r.top - h - 10;
-  tip.style.left = x + "px";
-  tip.style.top = y + "px";
-}
-function hide() {
-  if (current) current.setAttribute("aria-expanded", "false");
-  current = null;
-  tip.classList.remove("on");
-}
-function wire(root) {
-  root.querySelectorAll(".t:not([tabindex])").forEach(el => {
-    el.tabIndex = 0;
-    el.setAttribute("role", "button");
-    el.setAttribute("aria-expanded", "false");
-    el.setAttribute("aria-describedby", "tip");
-  });
-}
-document.addEventListener("mouseover", e => { const t = e.target.closest(".t"); if (t) show(t); });
-document.addEventListener("mouseout", e => { const t = e.target.closest(".t"); if (t && !t.contains(e.relatedTarget) && document.activeElement !== t) hide(); });
-document.addEventListener("focusin", e => { const t = e.target.closest(".t"); t ? show(t) : hide(); });
-document.addEventListener("click", e => {
-  const t = e.target.closest(".t");
-  // a tap fires hover/focus first; only a later second tap closes the hint
-  if (t) { e.preventDefault(); current === t && tip.classList.contains("on") && performance.now() - shownAt > 400 ? hide() : show(t); }
-  else hide();
-});
-document.addEventListener("keydown", e => { if (e.key === "Escape") hide(); });
-addEventListener("scroll", hide, { passive: true });
-new MutationObserver(() => wire(document)).observe(document.getElementById("register"), { childList: true });
-wire(document);
-
-/* ---------- language ---------- */
-function setLang(l) {
-  document.body.dataset.lang = l;
-  document.documentElement.lang = l;
-  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.set === l)));
-  hide();
-  try { localStorage.setItem("lang", l); } catch (e) {}
-}
-document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.set)));
-let initial = "en";
-try { initial = localStorage.getItem("lang") || ((navigator.language || "").toLowerCase().startsWith("de") ? "de" : "en"); } catch (e) {}
-setLang(initial);
+Site.wire();
 
 /* ---------- the one orchestrated moment: the title decodes ---------- */
 (function decode() {

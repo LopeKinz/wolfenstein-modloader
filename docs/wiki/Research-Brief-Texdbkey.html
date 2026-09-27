@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Texdbkey – Wolfenstein Modloader</title>
+<meta name="description" content="Task brief: find the lookup key Wolfenstein II uses to find textures in its texture databases.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Texdbkey</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Texdbkey"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is a task description for Wolfenstein II: The New Colossus. Its texture databases (.texdb) store textures under numeric keys with no names, so a new or renamed texture cannot be added without knowing how the key is formed. An earlier rule was refuted because it matched only about 5 % of entries. The worker was asked to find the real rule in the game code, prove it on a large sample across at least three databases, or, if no rule exists, say whether a custom texture can reuse an existing key.</p><ul><li>This was called the last unsolved format blocker for custom textures.</li><li>A .texdb has no asset names; chunk_24.texdb is about 1 GB with 8,586 entries.</li><li>The old rule &#x27;key = hash_0x60 &lt;&lt; 4 | level&#x27; matched only about 5 %, so it is refuted.</li><li>A 1:1 mapping does exist (106 keys for 107 streamed images in chunk_8), so some rule must exist.</li><li>Proof must be counted as n/n; 5 % is coincidence, 100 % is a rule.</li></ul></div><div class="de"><p class="lede">Diese Seite ist eine Aufgabenbeschreibung für Wolfenstein II: The New Colossus. Die Texturdatenbanken (.texdb) speichern Texturen unter Zahlenschlüsseln ohne Namen, daher kann man keine neue oder umbenannte Textur einfügen, ohne zu wissen, wie der Schlüssel entsteht. Eine frühere Regel wurde widerlegt, weil sie nur etwa 5 % der Einträge traf. Der Worker sollte die echte Regel im Spielcode finden und an einer großen Stichprobe aus mindestens drei Datenbanken beweisen, oder, falls es keine Regel gibt, klären, ob eine eigene Textur einen vorhandenen Schlüssel mitbenutzen kann.</p><ul><li>Das galt als letzte ungelöste Formathürde für eigene Texturen.</li><li>Eine .texdb enthält keine Asset-Namen; chunk_24.texdb hat rund 1 GB und 8.586 Einträge.</li><li>Die alte Regel &#x27;Schlüssel = hash_0x60 &lt;&lt; 4 | Level&#x27; traf nur etwa 5 % und ist widerlegt.</li><li>Eine 1:1-Zuordnung existiert (106 Schlüssel für 107 gestreamte Bilder in chunk_8), also muss es eine Regel geben.</li><li>Belege müssen als n/n gezählt werden; 5 % ist Zufall, 100 % eine Regel.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-texdbkey-a1; task texdbkey; research (read-only RE).
+Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Parallel: w-cvartable-a1 reads the same image read-only. Astra workers on another
+host are idle pending a runtime test. Stay in your lane.</p>
+<h1 id="objective">Objective</h1>
+<p>Find the TexDB lookup key. This is now the LAST unsolved format blocker for
+custom textures in Wolfenstein II - everything around it fell today.</p>
+<p>Answer with code evidence:</p>
+<ol>
+<li>How does the engine turn an <code>image</code> resource into a TexDB lookup? Which
+   function, which key, which input?</li>
+<li>Can a renamed or newly added image be given a key that resolves? If yes, the
+   derivation. If no, exactly what stops it.</li>
+</ol>
+<h1 id="what-is-already-measured---build-on-it-do-not-redo-it">What is already measured - build on it, do not redo it</h1>
+<ul>
+<li><code>re_probes/agent_reports/texdb_rewrite.md</code>: the .texdb is a flat key/offset
+  database with NO asset names in it. Header, table and payload are gapless.
+  chunk_24.texdb is ~1 GB, 8586 entries. Names cannot be rewritten there.</li>
+<li><strong>REFUTED today, do not build on it</strong>: the rule "texdb key = hash_0x60 &lt;&lt; 4 |
+  level" from an earlier worker. w-datahash-a1 measured it over ALL 24
+  base/*.texdb (24713 distinct <code>key&gt;&gt;4</code>): chunk_8 4/138, gameresources
+  650/12194, chunk_1 38/732, chunk_16 20/357 - about 5 %, not 100 %. Control:
+  <code>+0x50</code> matches in 0 cases. Evidence in re_probes/datahash/hash60_survey.txt.</li>
+<li>The 1:1 mapping does exist (chunk_8.texdb: 106 ids for 107 <code>$streamed</code>
+  images), so there IS a rule - the old one just is not it.</li>
+<li><code>entry+0x60</code> for <code>image</code> entries is a value assigned by the build tool. No
+  reader recomputes it (all 13 read sites compare against another stored field,
+  see re_probes/agent_reports/datahash.md). It may still be an INPUT to the key.</li>
+<li>The level/mip part of the old rule may well be right; it is the other half
+  that fails. Test the halves separately.</li>
+</ul>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li>re_probes/runtime_87400/module.bin - read-only capture of the RUNNING,
+  SteamStub-unpacked NewColossus_x64vk.exe. Virtual RVA layout: file offset ==
+  RVA. Sections and image base in manifest.json. .pdata gives function bounds.</li>
+<li><strong>Follow the method that worked five times today</strong>: go through the code, not
+  through hash sweeps over data. Read re_probes/agent_reports/idclhash.md and
+  datahash.md first - they hand you the container parser
+  (<code>idResourceStorage::OpenContainer</code> 0xACB780-0xACC441), the payload reader
+  (<code>ReadResourceData</code> 0xACD7C0-0xACDCFD), FarmHash64 at 0x1363B80 and
+  MurmurHash64B at 0x12BB970. The texture path very likely branches off near
+  ReadResourceData or the streaming path at 0xACD8DB.</li>
+<li>Error/usage strings in .rdata mentioning texdb / texture / streamed, and their
+  xrefs, are a second way in.</li>
+<li>tools/probe_texdb.py (read-only) can already parse header, offsets and
+  streams. tools/probe_datahash.py has a working <code>murmur64b</code> and the hash60
+  survey code. Reuse rather than rewrite.</li>
+<li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps python ...</li>
+<li>Corpus, READ ONLY:
+  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/probe_texdbkey.py (new), re_probes/texdbkey/ (new dir),
+re_probes/agent_reports/texdbkey.md (new).</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No game launch, no process attach, no writes under the Steam install or
+"C:/Users/‹user›/Saved Games". Do not touch other workers' files:
+tools/probe_idclhash.py, tools/probe_datahash.py, tools/probe_cmdtable.py,
+tools/probe_saveverify.py, tools/probe_cvartable.py, tools/probe_texdb.py,
+tools/tnc_<em>.py, tools/vtpixel.py, re_probes/{idclhash,datahash,cmdtable,saveverify,cvartable,vtrest,map_alias_v3}/,
+docs/</em>, wolfsdk/*, config.json. No pip install.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib plus vendored capstone. Reproducible from the command line,
+no running game required.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li>Positive control at today's bar: reproduce the stored key for a large sample
+  of real image entries across at least three different .texdb, and state the
+  count as n/n. 5 % is a coincidence, 100 % is a rule.</li>
+<li>Negative controls: the derivation must fail on a wrong mip level, a wrong
+  input field, and a deliberately altered name or hash.</li>
+<li>If the key turns out to be assigned by the build tool with no derivable rule,
+  say so - and then answer the practical question instead: can a custom entry
+  simply REUSE an existing retail key, and what breaks if two entries share one?
+  That answer is worth as much as the derivation.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Every important assurance needs a check designed to fail if it is false. A rule
+that matches 5 % is not a rule; the refuted hypothesis above is exactly what
+that looks like, so calibrate against it. Keep "key found in the table" and
+"key computed from the resource" strictly apart.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>A clean negative with the exact obstacle is a good result. Report failed
+hypotheses with their hit rates, the way hash60_survey.txt does.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones. Publish a bus fact when the verdict is known -
+textures are the last format blocker, so both masters want this. Concise German
+report in re_probes/agent_reports/texdbkey.md. Finish the bus task when done.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Saveverify.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Research brief: Saveverify</a><a class="next" href="Research-Brief-Vtrest.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Vtrest</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

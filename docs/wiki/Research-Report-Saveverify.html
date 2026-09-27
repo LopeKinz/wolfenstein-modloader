@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>`.verify` in Wolfenstein II — Generation, Verification, and Its Role During Loading – Wolfenstein Modloader</title>
+<meta name="description" content="What the .verify files next to The New Colossus save games really are, and whether they cause &#x27;File Corrupt&#x27;.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1><code>.verify</code> in Wolfenstein II — Generation, Verification, and Its Role During Loading</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Saveverify"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-route-into-the-module">1. Route into the Module</a></li><li><a href="#2-algorithm-from-0x8afe80-and-0x8b1ef0">2. Algorithm (from 0x8afe80 and 0x8b1ef0)</a></li><li><a href="#3-does-the-load-path-behave-similarly--no-main-finding">3. Does the load path behave similarly? — No (Main Finding)</a></li><li><a href="#4-where-file-corrupt-really-comes-from">4. Where &quot;File Corrupt&quot; really comes from</a></li><li><a href="#5-reproduction-failed-and-why">5. Reproduction: failed, and why</a></li><li><a href="#6-tools-and-counterexamples">6. Tools and Counterexamples</a></li><li><a href="#7-implications-for-astra-save-v3">7. Implications for astra-save-v3</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report reads the decoded game code of Wolfenstein II: The New Colossus to see how the 40-byte .verify files are made and checked. Each one is an 8-byte random value plus a 32-byte HMAC-SHA256 signature, not encrypted data as an earlier report assumed. A wrong .verify does not stop a save from loading; it only switches the game into Developer Mode. The real &#x27;File Corrupt&#x27; error comes from broken save structure or a wrong 4-byte <span class="t" data-t="header">header</span>. Rebuilding a .verify offline is not possible yet, because one part of the key is a value that exists only while the game runs.</p><ul><li>.verify = 8-byte random nonce + 32-byte HMAC-SHA256 over the whole save file.</li><li>A mismatch only sets a flag that leads to &#x27;Loading Dev Mode or corrupted save game.&#x27;; loading continues.</li><li>&#x27;File Corrupt&#x27; (SAVEGAME_E_CORRUPTED) is set later, by a short read or a wrong MD5-based header.</li><li>No AES code is inside the game; all crypto comes from the Windows bcrypt library.</li><li>0 of 37 .verify files could be recomputed; one key part is an unknown <span class="t" data-t="runtime">runtime</span> value of the user.</li></ul></div><div class="de"><p class="lede">Dieser Bericht liest den entschlüsselten Programmcode von Wolfenstein II: The New Colossus, um zu sehen, wie die 40-Byte-.verify-Dateien erzeugt und geprüft werden. Jede besteht aus 8 Byte Zufallswert und einer 32-Byte-HMAC-SHA256-Signatur, nicht aus verschlüsselten Daten, wie ein früherer Bericht annahm. Eine falsche .verify verhindert das Laden nicht; sie schaltet das Spiel nur in den Entwicklermodus. Der echte Fehler &#x27;File Corrupt&#x27; kommt von einer kaputten Spielstand-Struktur oder einem falschen 4-Byte-<span class="t" data-t="header">Header</span>. Eine .verify offline nachzubauen geht noch nicht, weil ein Teil des Schlüssels ein Wert ist, der nur im laufenden Spiel existiert.</p><ul><li>.verify = 8 Byte Zufalls-Nonce + 32 Byte HMAC-SHA256 über die ganze Spielstanddatei.</li><li>Eine Abweichung setzt nur ein Flag, das zu &#x27;Loading Dev Mode or corrupted save game.&#x27; führt; das Laden geht weiter.</li><li>&#x27;File Corrupt&#x27; (SAVEGAME_E_CORRUPTED) wird später gesetzt, bei zu kurzem Lesen oder falschem MD5-basierten Header.</li><li>Im Spiel steckt kein AES-Code; die gesamte Kryptografie kommt aus der Windows-Bibliothek bcrypt.</li><li>0 von 37 .verify-Dateien ließen sich nachrechnen; ein Schlüsselteil ist ein unbekannter <span class="t" data-t="runtime">Laufzeitwert</span> des Benutzers.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Source: <code>re_probes/runtime_87400/module.bin</code> (running, SteamStub-extracted <code>NewColossus_x64vk.exe</code>, "virtual RVA" layout, DateIOffset == RVA).
+All addresses are RVAs in this image. Function boundaries from <code>.pdata</code>.
+Tool: <code>tools/probe_saveverify.py</code>. Corpus: <code>re_probes/save_backups</code> (37 file/<code>.verify</code> pairs), read-only.</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<ol>
+<li><strong><code>.verify</code> is NOT the cause of "File Corrupt".</strong> The loading path reads the pair file and verifies it, but a mismatch <strong>does not break the load</strong> and sets <strong>no error code</strong>. It only sets a flag that triggers the message "Loading Dev Mode or corrupted save game." at the end.</li>
+<li><strong>"File Corrupt" is <code>SAVEGAME_E_CORRUPTED</code> (Bit 2, Value 4)</strong> and is set at two locations, both of which are <strong>after</strong> the <code>.verify</code> check and both are <strong>structural</strong>: failed Payload-Read and <strong>failed 4-Byte MD5 Fold Header</strong>. This is the trail from astra-save-v3, not this one.</li>
+<li><strong>No AES in the image.</strong> Neither AES-NI (<code>AESENC</code>/<code>AESKEYGENASSIST</code>: 0 hits) nor S-Box/T-tables exist. The crypto comes entirely from <code>bcrypt.dll</code>. <code>.verify</code> is <strong>not a ciphertext</strong>, but an 8-byte Nonce + 32-byte <strong>HMAC-SHA256</strong>. The statement "40 Bytes = Nonce + AES-Ciphertext" from the previous report is false.</li>
+<li>The derivation is fully read from the disassembly, <strong>but not reproducible</strong>: one of the four key components is a runtime value of the local user object. Offline forgery is currently impossible with this. Details and all exclusions see Section 5.</li>
+</ol>
+<hr />
+<h2 id="1-route-into-the-module">1. Route into the Module</h2>
+<p><code>.rdata</code> strings and their RIP-relative Xrefs in <code>.text</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>String</th>
+<th>RVA</th>
+<th>Xrefs (Function)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%s.verify</code></td>
+<td>0x26878c0</td>
+<td>0x8afe80, 0x8b09c0, 0x8b1ef0, 0x8b60f0</td>
+</tr>
+<tr>
+<td><code>%s.temp.verify</code></td>
+<td>0x2687c20</td>
+<td>0x8b1ef0</td>
+</tr>
+<tr>
+<td><code>*.verify</code></td>
+<td>0x26877b8</td>
+<td>0x8b09c0</td>
+</tr>
+<tr>
+<td><code>.verify</code></td>
+<td>0x2687ba0</td>
+<td>0x8b57f0, 0x8b60f0</td>
+</tr>
+<tr>
+<td><code>CYBERDEMON</code></td>
+<td>0x26878d0</td>
+<td>0x8afe80, 0x8b06d0, 0x8b09c0, 0x8b1ef0, 0x8b3f40</td>
+</tr>
+</tbody>
+</table></div>
+<p>Function roles:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>RVA</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0x8afe80</strong></td>
+<td><strong>Verifier</strong> (<code>VerifyFile</code>): reads <code>&lt;file&gt;.verify</code>, computes HMAC over the data file, compares</td>
+</tr>
+<tr>
+<td><strong>0x8b1ef0</strong></td>
+<td><strong>Writer</strong>: generates Nonce, writes <code>%s.temp.verify</code>, renames</td>
+</tr>
+<tr>
+<td><strong>0x8b3f40</strong></td>
+<td><strong>Loader path</strong> of a slot (<code>Trying to load slot file %s …</code>), calls 0x8afe80</td>
+</tr>
+<tr>
+<td>0x8b4da0</td>
+<td><code>idSaveGameThread::Enumerate</code> (Menu list, reads <code>game.details</code>)</td>
+</tr>
+<tr>
+<td>0x8b09c0</td>
+<td>Migration of old save games</td>
+</tr>
+<tr>
+<td>0x8b60f0</td>
+<td>Delete (deletes file + <code>.verify</code>)</td>
+</tr>
+<tr>
+<td>0x8b3ed0</td>
+<td>Outputs "Loading Dev Mode or corrupted save game."</td>
+</tr>
+</tbody>
+</table></div>
+<p>The AESENC/AESKEYGENASSIST scan over <code>.text</code> was empty — the trail leads instead via the bcrypt imports: <code>BCryptOpenAlgorithmProvider</code> (IAT 0x1e63c30), <code>BCryptCreateHash</code> (0x1e63c10), <code>BCryptHashData</code> (0x1e63be0), <code>BCryptFinishHash</code> (0x1e63bd8), <code>BCryptGenRandom</code> (0x1e63be8), plus <code>BCryptEncrypt</code>/<code>BCryptDecrypt</code> for the <code>*.bin</code>.</p>
+<hr />
+<h2 id="2-algorithm-from-0x8afe80-and-0x8b1ef0">2. Algorithm (from 0x8afe80 and 0x8b1ef0)</h2>
+<pre><code>verify = nonce(8) || HMAC_SHA256(key, &lt;entire data file&gt;)
+
+key    = SHA256( nonce(8)
+               || &lt;idStr idLocalUser+0xb0&gt;     Runtime value, see 5.
+               || &quot;CYBERDEMON\0&quot;               11 Bytes, including NUL
+               || basename(datafile) )          without NUL
+</code></pre>
+<h3 id="evidence-in-code">Evidence in Code</h3>
+<p><code>idSecureHMAC::Initialize</code> (0x12250a0) takes a function index &lt; 7 and looks up the algorithm name in the table <code>.rdata:0x25c8918</code>: <code>{ -, MD5, SHA1, -, SHA256, SHA384, SHA512 }</code>. Call at 0x8afe80:</p>
+<pre><code>008affe4  mov  edx, 4                      ; -&gt; &quot;SHA256&quot;
+008affe9  lea  rcx, [rbp + 0xa8]
+008afff0  call 0x12250a0                   ; idSecureHMAC::Initialize
+...
+01225100  mov  r9d, 8                      ; BCRYPT_ALG_HANDLE_HMAC_FLAG
+01225108  call [BCryptOpenAlgorithmProvider]
+012251a9  mov  eax, [rsp+0x68]             ; HashDigestLength -&gt; obj+0x28 = 32
+</code></pre>
+<p>The 4-element vector for the key is constructed immediately prior; each element is <code>{ void* ptr; int64 len; bool owned }</code>:</p>
+<pre><code>008b00a9  lea  rax, [rbp+0x120]            ; Array
+008b00b0  mov  [rbp+0xd8], rax
+008b00b7  mov  qword [rbp+0xe0], 4         ; 4 elements
+008b00c9  lea  rax, [rbp+0x141e0]          ; [0] Nonce buffer
+008b00d4  mov  qword [rbp+8], 8            ;     Length 8
+008b00eb  lea  rdx, [r14+0xb0]             ; [1] idStr of the local user
+008b00f6  call 0x1211440                   ;     Copy -&gt; [rbp+0x78]
+008b00fc  mov  rax, [rbp+0x80]             ;     .data (idStr+0x08)
+008b0107  movsxd rax, dword [rbp+0x88]     ;     .len (idStr+0x10)
+008b0121  lea  rax, [&quot;CYBERDEMON&quot;]         ; [2]
+008b012c  mov  qword [rbp+0x38], 0xb       ;     Length 11 -&gt; NUL counts with
+008b0143  mov  rax, [rbp+0x148]            ; [3] Base name of the data file
+008b014e  movsxd rax, dword [rbp+0x150]
+</code></pre>
+<p>The base name is derived from the idFile filename via <code>idStr::StripPath</code> (0x1210060, cuts at <code>/</code> or `), constructed in 0x8afec2–0x8aff04. The same string also determines the sole exception:</p>
+<pre><code>008aff58  lea  rdx, [&quot;profile.bin&quot;]        ; Case-insensitive comparison;
+008affa4  je   0x8b0676                    ; on equality: return true,
+                                           ; profile.bin is never checked
+</code></pre>
+<p>This aligns with the file inventory: <code>profile.bin</code> and <code>migrated.bin</code> have no backup file, while <code>profile2.bin</code> and <code>progression*.bin</code> do.</p>
+<p><code>0x12c69d0</code> (<code>idSecureHash</code>) chains the four buffers in index order 0,1,2,3 via <code>BCryptHashData</code> and provides the SHA-256 digest with <code>BCryptFinishHash</code>. Its 32 bytes are passed as <code>pbSecret</code> into <code>BCryptCreateHash</code>:</p>
+<pre><code>008b01c3  mov  r9d, [rbp+0x68]             ; 32
+008b01c7  mov  r8,  r14                    ; Pointer to the digest
+008b01d8  call 0x1224a10                   ; -&gt; BCryptCreateHash(..., secret, 32)
+</code></pre>
+<p>The message is the <strong>complete data file</strong>, including the 4-byte header:</p>
+<pre><code>008b033e  call [rsi_vtbl+0x78]             ; Seek(0, FS_SEEK_SET)
+008b0350  mov  r8d, 0x10000                ; Loop: Read(64 KiB)
+008b0363  call [rsi_vtbl+0x28]
+008b0376  call [BCryptHashData]
+008b03ad  call [rsi_vtbl+0x78]             ; Restore old position
+</code></pre>
+<p>The comparison at the end is a byte-by-byte full comparison of the 32 bytes from the backup file against the calculated tag (0x8b04b0–0x8b04c3).</p>
+<p>The writer (0x8b1ef0) constructs the same 4-element vector (0x8b2826–0x8b2fe3, with <code>CYBERDEMON</code> length 0xb at 0x8b29d0) and reads the nonce at 0x8b36cb from <code>BCryptGenRandom</code>, writes it at 0x8b3736, and chains the tag at 0x8b388a. For the user string, it reads the idStr fields directly: <code>movsxd rdi, dword [r12+0xc0]</code> (length, 0x8b28aa) and <code>mov rcx, [r12+0xb8]</code> (data, 0x8b2979) — so idStr at +0xb0, <code>.data</code> at +0xb8, <code>.len</code> at +0xc0.</p>
+<p>Side note: <strong>the same key derivation</strong> also encrypts the <code>*.bin</code> files (0x8b4490: SHA256 over the same 4-element vector, then 0x12c7040 with <code>BCryptDecrypt</code>). The <code>*.bin</code> files are thus actually encrypted — just via bcrypt, not with code in the image.</p>
+<hr />
+<h2 id="3-does-the-load-path-behave-similarly--no-main-finding">3. Does the load path behave similarly? — No (Main Finding)</h2>
+<p>Load path <code>0x8b3f40</code>, per file of the processor set:</p>
+<pre><code>008b428f  call [FileSystem+0x108]          ; OpenFileRead(fullpath)
+008b4295  mov  rbx, rax
+008b42a2  jne  0x8b432e                    ; opened?
+  ; --- NOT opened ---
+008b42da  mov  dword [r15+0x270], 0x100    ; SAVEGAME_E_FILE_NOT_FOUND
+
+008b432e  mov  rdx, r14                    ; local user
+008b4331  mov  rcx, rbx                    ; the data file
+008b4334  call 0x8afe80                    ; ==&gt; .verify check
+008b4339  test al, al
+008b433b  jne  0x8b4383                    ; ok -&gt; continue
+  ; --- MISMATCH ---
+008b433d  mov  byte [rdi+0x188], 1         ; Flag on the processor
+008b4344  cmp  byte [rdi+0x189], al
+008b434a  jne  0x8b4383
+008b434c  cmp  dword [rip+…], 0            ; .data:0x2f41810 (CVar)
+008b4353  je   0x8b437c
+008b4378  test al, 4
+008b437a  jne  0x8b4383
+008b437c  mov  byte [rbp+0x41c8], 1        ; local &quot;corrupted&quot; flag
+008b4383  ; ... and here it continues normally with the read
+</code></pre>
+<p>The Mismatch branch does <strong>not</strong> set <code>[r15+0x270]</code>, does not modify <code>r12d</code> (the return value), and jumps to the same continuation point as the success case. The only result is at the end of the loop:</p>
+<pre><code>008b4925  test sil, sil
+008b4928  je   0x8b496b                    ; no flag -&gt; nothing happens
+008b492a  lea  rdx, [0x8b3ed0]             ; -&gt; &quot;Loading Dev Mode or corrupted
+008b4938  call 0x31c6d0                    ;     save game.&quot;
+</code></pre>
+<p>This matches the CVar <code>devMode_skipCorruptedSaves</code> ("Skip entering developer mode when loading corrupted saves", registered at 0x1130f0).</p>
+<p><strong>A false <code>.verify</code> therefore leads into the Dev-Mode branch, not a rejection.</strong></p>
+<hr />
+<h2 id="4-where-file-corrupt-really-comes-from">4. Where "File Corrupt" really comes from</h2>
+<p>The error values in <code>[processorSet+0x270]</code> are bitflags; the name table is located at <code>.data:0x2f5b890</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>SAVEGAME_E_CANCELLED</td>
+</tr>
+<tr>
+<td>2</td>
+<td>SAVEGAME_E_INSUFFICIENT_ROOM</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td><strong>SAVEGAME_E_CORRUPTED</strong></td>
+</tr>
+<tr>
+<td>0x10</td>
+<td>SAVEGAME_E_UNKNOWN</td>
+</tr>
+<tr>
+<td>0x80</td>
+<td>SAVEGAME_E_FOLDER_NOT_FOUND</td>
+</tr>
+<tr>
+<td>0x100</td>
+<td>SAVEGAME_E_FILE_NOT_FOUND</td>
+</tr>
+<tr>
+<td>0x400</td>
+<td>SAVEGAME_E_INVALID_USER</td>
+</tr>
+</tbody>
+</table></div>
+<p>In the load path, value 4 is set at exactly three locations — all <strong>after</strong> the <code>.verify</code> check and all structurally:</p>
+<p><strong>a) Payload-Read too short</strong> (unencrypted <code>.dat</code>/<code>game.details</code>):</p>
+<pre><code>008b4704  call [rbx_vtbl+0x60]             ; Length()
+008b4718  test byte [rdi+0x180], 6         ; Header flags set?
+008b4721  cmp  rsi, 4                      ; and at least 4 bytes?
+008b4738  call [rbx_vtbl+0x28]             ; Read 4-byte header
+008b473c… bytewise rotation 0&lt;-&gt;3, 1&lt;-&gt;2 ; Big-Endian -&gt; Host
+008b4770  sub  rsi, 4                      ; Remove padding length
+008b4793  call [rbx_vtbl+0x28]             ; Read payload
+008b4796  cmp  rax, rsi
+008b47a0  je   0x8b47d5
+008b47c4  mov  dword [r15+0x270], 4        ; SAVEGAME_E_CORRUPTED
+</code></pre>
+<p><strong>b) 4-Byte header incorrect</strong> — this is the most likely trigger:</p>
+<pre><code>008b47d5  test byte [rdi+0x180], 6
+008b4802  call 0x12bb890                   ; MD5_BlockChecksum(payload, length)
+008b4807  cmp  eax, dword [rbp+0x41d0]     ; against the rotated header
+008b480d  je   0x8b4841                    ; match -&gt; ok
+008b4831  mov  dword [r15+0x270], 4        ; SAVEGAME_E_CORRUPTED
+</code></pre>
+<p><code>0x12bb890</code> is the MD5 folding; the MD5 constants lie directly next to it (0x12baf42 = <code>0xd76aa478</code>, 0x12bb8a4 = <code>0x67452301</code>). This is exactly what <code>tools/savehash.py</code> replicates.</p>
+<p><strong>c) Decryption failed</strong> (only <code>*.bin</code>):</p>
+<pre><code>008b4501  call 0x12c7040                   ; Decrypt
+008b4506  lea  ecx, [rax-3]
+008b450d  cmp  ecx, 1
+008b4510  jbe  0x8b4604                    ; Status 3 or 4
+008b462d  mov  dword [r15+0x270], 4
+</code></pre>
+<p>For the candidate <code>FC2-WOLF0-c2v1_custom_v2</code> (only <code>.dat</code>/<code>game.details</code> modified), only (a) and (b) are possible — both within the status range of astra-save-v3. The <code>.verify</code> branch cannot generate "File Corrupt" at all.</p>
+<hr />
+<h2 id="5-reproduction-failed-and-why">5. Reproduction: failed, and why</h2>
+<p>The condition "recalculate an existing <code>.verify</code> byte exactly" is <strong>not met</strong>. Reason: the second key component is the <code>idStr</code> at <code>idLocalUser+0xb0</code> — a <strong>runtime value</strong> of the user object.</p>
+<p>What holds true: <code>idLocalUser</code> (base class of <code>idLocalUserWin</code>, constructor 0xb53c80, object size 0x278) has exactly two <code>idStr</code> members at +0x60 and +0xb0, both with 32-byte inline buffers. Throughout the entire image, there is no discoverable write access to +0xb0 outside of constructor and destructor and no vtable getter that returns it — the value is apparently set via an inline-expanded <code>idStr</code> assignment that could not be located despite pattern matching. It does not appear statically in the image; <code>.data</code> was only 2.2 MB out of 36 MB captured in the capture, and the object lies on the heap anyway.</p>
+<p>Checked and <strong>excluded</strong> candidates (each with and without trailing NUL, against 4 files from <code>SLOT0_before_c2custom</code>):</p>
+<ul>
+<li>empty string</li>
+<li><code>‹steam-id›</code> (SteamID64, = folder name), <code>‹account-id›</code> (AccountID),
+  <code>‹steam-id›</code>, <code>‹account-id›</code></li>
+<li><code>SchwitzerOhneTalent</code> (Steam Persona Name from <code>loginusers.vdf</code> and
+  <code>userdata/‹account-id›/config/localconfig.vdf</code>), <code>xymrscroubzxyx</code> (AccountName)</li>
+<li><code>‹user›</code>, <code>‹user›</code>, <code>CYBERDEMON</code>, <code>SLOT0</code>, <code>FC2-WOLF0</code>,
+  <code>savegame.user/‹steam-id›</code>, full relative path</li>
+<li><strong>Brute-force all strings of length 0–3</strong> from the printable ASCII range (839,515 candidates)</li>
+</ul>
+<p>Additionally vary, without hits: all 24 permutations of the four key components; <code>CYBERDEMON</code> with length 10 instead of 11; filename with/without NUL, without extension, case-insensitive, as full path; message = entire file vs. file minus first 4 bytes; Key = Digest vs. Hex-string vs. 16-byte vs. raw concatenation; <code>SHA256(key||msg)</code> instead of HMAC.</p>
+<p>A derivation that correctly uses the Nonce but depends on the user string is therefore <strong>not offline falsifiable</strong>. To close it, one needs the runtime value (debugger/memory dump at <code>idLocalUser+0xb8</code>) — this was explicitly excluded here (no process attach, no game start).</p>
+<p>Practically, however, this is <strong>irrelevant</strong>: after Section 3, a false <code>.verify</code> blocks loading anyway.</p>
+<hr />
+<h2 id="6-tools-and-counterexamples">6. Tools and Counterexamples</h2>
+<p><code>tools/probe_saveverify.py</code> (Python 3.11, stdlib only, read-only):</p>
+<pre><code>python tools/probe_saveverify.py struktur                 # 37 pairs, all 8+32
+python tools/probe_saveverify.py pruefen --benutzer &quot;&quot;    # 0 of 37 -&gt; Exit 1
+python tools/probe_saveverify.py suchen --liste worte.txt # Try wordlist
+python tools/probe_saveverify.py --selbsttest             # Positive + 5 negative controls
+</code></pre>
+<p>The negative controls in the self-test verify that the routine actually discriminates: flipped data bit, changed length, different user, different filename, different Nonce — each of these cases must yield a different tag. <code>pruefen</code> honestly reports 0 of 37 and exits with code 1; a routine that outputs 40 bytes regardless of input would fail here.</p>
+<p>Rejected hypotheses, explicitly:</p>
+<ul>
+<li>"<code>.verify</code> is an AES ciphertext" — false, it is an HMAC tag.</li>
+<li>"AES is in the image" — false, AES comes from <code>bcrypt.dll</code>.</li>
+<li>"<code>.verify</code> blocks loading" — false (Section 3). The claim in
+  <code>docs/spielstaende.md</code>, that <code>.verify</code> is "tamper-proof, blocks loading but not [the game]", turns out to be true in result, but was statically guessed; it is now proven by the code.</li>
+<li>"The user string is empty / the SteamID / the PersonaName" — all three measured and refuted (Section 5).</li>
+</ul>
+<hr />
+<h2 id="7-implications-for-astra-save-v3">7. Implications for astra-save-v3</h2>
+<p>The two files can remain unchanged. "File Corrupt" occurs at exactly two places: <code>Read(rumpf) != length-4</code> and
+<code>MD5_BlockChecksum(rumpf) != be32(kopf)</code> — both only active when
+<code>[prozessor+0x180] &amp; 6</code> is set, and both <strong>after</strong> the <code>.verify</code> check.
+For <code>*.bin</code> files, the Decrypt status is added; these files should generally leave a candidate build unchanged, since their key is the same unreconstructable user string.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Savestructure.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Why the edited save state was rejected — Structure of <code>checkpoint.dat</code></a><a class="next" href="Research-Report-Small-Custom-Map.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC Small Custom Map Prototype</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

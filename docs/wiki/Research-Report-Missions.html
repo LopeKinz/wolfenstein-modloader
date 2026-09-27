@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission Builder Kit: Custom Missions for the Gestapo Office Map (c2v1) – Wolfenstein Modloader</title>
+<meta name="description" content="A tool that builds custom missions for Wolfenstein II&#x27;s Gestapo Office map from a short JSON description.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Mission Builder Kit: Custom Missions for the Gestapo Office Map (c2v1)</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Missions"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-the-description-json">1. The Description (JSON)</a></li><li><a href="#2-how-it-is-built-each-component-with-retail-proof">2. How it is built, each component with Retail proof</a></li><li><a href="#3-the-demo-re_probesmissionsdemodemojson">3. The Demo (re_probes/missions/demo/demo.json)</a></li><li><a href="#4-probes-37-ok-re_probesmissionsdemorunlog">4. Probes (37 OK, re_probes/missions/demo/run.log)</a></li><li><a href="#5-honest-compromises">5. Honest Compromises</a></li><li><a href="#6-runbook-5-lines-powershell">6. Runbook (5 lines, PowerShell)</a></li><li><a href="#7-risks-and-open-runtime">7. Risks and Open (Runtime)</a></li><li><a href="#8-files">8. Files</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report presents a mission builder for Wolfenstein II: The New Colossus. You describe objectives, triggers, enemy waves and the mission end in a small JSON file, and the tool writes the changed map entities, script nodes and a finished archive file. The demo has three objectives on the Gestapo Office DLC map: enter the offices, kill two waves of enemies, then escape. All 37 offline checks pass, but the demo has not been confirmed in the running game.</p><ul><li>Objective texts must reuse existing retail objectives; a custom title like &#x27;Eliminate the officers&#x27; is rejected on purpose.</li><li>The retail mission chain is switched off by removing 10 connections; the rest of the original script stays unchanged.</li><li>Every one of the 28 connection patterns used also appears in retail scripts.</li><li>Only two existing archive entries change and no new entries are added; 6 enemies and 2 spawners are newly added to the map, which has no in-game proof yet.</li><li>An offline simulation ran the demo mission from start to end, but it models the wiring, not the real game engine.</li></ul></div><div class="de"><p class="lede">Dieser Bericht stellt einen Missions-Baukasten für Wolfenstein II: The New Colossus vor. Du beschreibst Ziele, Trigger, Gegnerwellen und das Missionsende in einer kleinen JSON-Datei, und das Werkzeug schreibt die geänderten Kartenobjekte, Skriptknoten und eine fertige Archivdatei. Die Demo hat drei Ziele auf der DLC-Karte Gestapo-Büro: in die Büros gelangen, zwei Gegnerwellen besiegen, dann fliehen. Alle 37 Offline-Prüfungen bestehen, im laufenden Spiel ist die Demo aber nicht bestätigt.</p><ul><li>Zieltexte müssen vorhandene Ziele aus dem Spiel wiederverwenden; ein eigener Titel wie „Eliminiere die Offiziere“ wird absichtlich abgelehnt.</li><li>Die Original-Missionskette wird abgeschaltet, indem 10 Verbindungen entfernt werden; der Rest des Originalskripts bleibt unverändert.</li><li>Alle 28 verwendeten Verbindungsmuster kommen auch in Skripten des Spiels vor.</li><li>Nur zwei vorhandene Archiveinträge ändern sich, neue Einträge gibt es nicht; 6 Gegner und 2 Spawner kommen neu in die Karte, wofür es noch keinen Beweis im Spiel gibt.</li><li>Eine Offline-Simulation hat die Demo-Mission vom Start bis zum Ende durchlaufen, sie bildet aber nur die Verkabelung nach, nicht die echte Engine.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Status 2026-09-25. Tool <code>tools/build_mission.py</code>, demo in <code>re_probes/missions/demo/</code>.
+The game was not started; only read from <code>D:/SteamLibrary</code>.</p>
+<pre><code>python tools/build_mission.py re_probes/missions/demo/demo.json    # ~1:45 min, 37 probes, exit 1 on FAIL
+</code></pre>
+<h2 id="summary">Summary</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What is built?</td>
+<td>A tool that translates a small JSON mission description into three things: Entity Edits, Kiscule nodes, and the finished container. The description includes objectives, triggers/locations, waves with Retail AI and spawn points, and the mission end.</td>
+</tr>
+<tr>
+<td>Demo</td>
+<td>Three objectives in sequence: <strong>Enter the offices</strong> (ventilation shaft) → <strong>Kill all enemies</strong> (2 waves of 3 enemies each) → <strong>Escape</strong> (use exit) → Episode end. The file is <code>re_probes/missions/demo/chunk_22.resources</code>, sha256 <code>5b660436cf9eb446b4acd7569c9a8e7a6b5b6d9a532394a20bffb1506d6cb398</code>, 151 714 307 bytes.</td>
+</tr>
+<tr>
+<td>Probes</td>
+<td>37 OK, 0 FAIL (<code>run.log</code>). This includes probe_datahash 7127/7127 (1 entry skipped, as in the source), probe_idclhash +0x08 1/1 and +0x20 1/1, build_custom_map.check with 0 findings, Validator clean, every edge is a Retail edge pattern, 7 negative controls of the description, and 3 additional counter-tests.</td>
+</tr>
+<tr>
+<td>Custom objective texts?</td>
+<td><strong>No, honestly downgraded.</strong> Objectives are existing Retail <code>missionobj</code> with matching English titles (Track text: The language table loads before the DLC mount). A custom title like "Eliminate the officers" is <strong>rejected</strong>, this is a negative control.</td>
+</tr>
+<tr>
+<td>In-game?</td>
+<td><strong>Structurally valid, runtime unconfirmed.</strong> The steps for the test are in the Runbook (Section 6).</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="1-the-description-json">1. The Description (JSON)</h2>
+<pre><code>name          [a-z0-9_]+  -&gt; new Entities mission_&lt;name&gt;_…, Events wm_&lt;name&gt;_…
+mission       mission-Decl (Retail, Start-Mount)           e.g. cobalt/c2v1/mission_c2v1_main
+player_start  optional: spawn point, on which ALL idPlayerStart are set
+spawn_points  {id: {&quot;like&quot;: &lt;Entity of the map&gt;} | {&quot;pos&quot;: [x, y, z]}}
+places        {id: {&quot;entity&quot;: &lt;Entity of the map&gt;, &quot;at&quot;: &lt;spawn point, optional = move&gt;}}
+waves         {id: [{&quot;ai&quot;: &lt;entityDef&gt;, &quot;at&quot;: &lt;spawn point&gt;}, …]}
+groups        optional {Wave: Encounter-Group}           (aiEditable.groupName of the clones)
+start         first objective
+objectives    [{id, decl, title, complete: {enter: Location} | {use: Location} | {waves: [..], pause_ms},
+                marker: Location (optional), then: &lt;Objective&gt; | &quot;mission_end&quot;}]
+</code></pre>
+<p><strong>Rejected by</strong> (<code>check_spec</code>, every rule has a message):</p>
+<ul>
+<li>unknown spawn points, locations, waves, and encounter groups</li>
+<li>an AI definition that is not in the mount or for which there is no hidden, spawnable donor in the map</li>
+<li>a <code>missionobj</code> missing from the start mount or whose English title does not match the specified <code>title</code></li>
+<li>a chain with a cycle, unknown target, or objectives outside the chain</li>
+<li>a location not in the story layer <code>layer/dlc/c2v1</code> or starting inactive (<code>isActivatable = false</code>)</li>
+<li>moving an entity that uses another story script</li>
+<li>a hidden use location without <code>marker</code>, because otherwise no one would show it</li>
+</ul>
+<h2 id="2-how-it-is-built-each-component-with-retail-proof">2. How it is built, each component with Retail proof</h2>
+<p><strong>Objectives.</strong> The tool uses existing <code>missionobj</code> decls (Track text). The title is checked against <code>english.lang</code> during build.</p>
+<p><strong>Script.</strong> Our nodes are <strong>appended</strong> to the Retail mission script <code>sacramento_gameplay_kiscule_c2v1.decl</code>. Its binding is confirmed in-game: the screenshot shows "Enter the offices". The custom Retail mission chain is paused. To do this, all <strong>10 impulse edges</strong> (20 edge ends) leading into the 8 Retail <code>ActionMission</code> nodes are removed at both ends.</p>
+<p>Everything else in the script remains unchanged, including:</p>
+<ul>
+<li>Sound dampener intro (<code>CustomPlayerMode</code>)</li>
+<li>Tutorials and location titles</li>
+<li>Autosaves</li>
+<li>Hint markers</li>
+</ul>
+<p>Verified that all 122 Retail nodes are identical to these edges except for the edges themselves, and no new edge is added. No other story script contains <code>ActionMission</code>.</p>
+<p><strong>Chain.</strong> It is structured like c2v1 (anatomy E01–E03):</p>
+<ul>
+<li><strong>Start:</strong> <code>BeginGame</code> → 500 ms → <code>MissionStart</code> (all objectives, idle) → 4100 ms → <code>start_&lt;Objective&gt;</code> → <code>ObjectiveStart</code> (HUD)</li>
+<li><strong>Transition:</strong> <code>end_&lt;Objective&gt;</code> → <code>ObjectiveComplete</code> → <code>start_&lt;next&gt;</code></li>
+<li><strong>End:</strong> <code>ObjectiveComplete</code> + <code>MissionComplete</code> → <code>end_level</code> → 10 ms → <code>ActionChronicle.End(completed)</code> → <code>ActionNextMap(MODE_AUTO)</code></li>
+<li><strong>Enter/Use:</strong> <code>TriggerNotification</code>/<code>UseNotification</code> (maxNotificationCount −1) → <code>Gate</code> (isOpen false, autoCloseCount 1, opened by objective start). The objective counts only while active.</li>
+<li><strong>Waves:</strong> <code>ActionTrigger</code> on a new <code>idTarget_AISpawn</code> → <code>AiKilledNotification</code> → <code>Counter(N)</code> → <code>Delay</code> → next wave or <code>end_&lt;Objective&gt;</code></li>
+<li><strong>Markers:</strong> <code>ActionWorldMarker(showHideEntity)</code>, Show at objective start, Hide at completion</li>
+</ul>
+<p><strong>Evidence.</strong> All 28 edge patterns and parameter values are present in Retail:</p>
+<ul>
+<li><code>TriggerNotification</code> with maxNotificationCount −1: 55 cases</li>
+<li><code>UseNotification</code> with −1: 358 cases</li>
+<li><code>Gate</code> with false/1: 83 cases</li>
+<li><code>Received → ActionTrigger.Activate</code>: 57 cases</li>
+</ul>
+<p>The nodes are copies of Retail node templates and are created via <code>probe_kiscule_write.Script</code> (Track kiscule, only imported).</p>
+<p><strong>Enemies.</strong> For each enemy, the body of a <strong>hidden, spawnable Retail enemy from the same entityDef in this map</strong> is copied according to the same principle as <code>build_custom_map.retype</code>. Name and position come from the spawn point; the <code>targets</code> (scene points of the donor) are removed; 17 of the 44 Retail AIs in c2v1 also did not have them. The Encounter group is selectable.</p>
+<p>Per wave, a new <code>idTarget_AISpawn</code> is created, copied from <code>…spawn_firstarea</code>. No new asset or Decl names are added; this has been verified.</p>
+<p><strong>Containers.</strong> Only two existing entries change: <code>.entities</code> (873) and the mission script (934). Both undergo <code>rebuild</code> and <code>finalize</code>. No new archive entries exist, and <code>.mapresources</code> remains unchanged.</p>
+<h2 id="3-the-demo-re_probesmissionsdemodemojson">3. The Demo (<code>re_probes/missions/demo/demo.json</code>)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Objective</th>
+<th>missionobj (Title)</th>
+<th>Completion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>enter</td>
+<td><code>cobalt/c2v1/mission_c2v1_main_obj_01_find</code> ("Enter the offices")</td>
+<td>Trigger <code>sacramento_gameplay_triggers_obj_1_complete</code> (Lobby shaft, Retail plaza)</td>
+</tr>
+<tr>
+<td>survive</td>
+<td><code>cobalt/c1v1/mission_c1v1_main_obj_06_kill</code> ("Kill all enemies")</td>
+<td>Wave 1: 3 × soldier_light at tactical_30/29/28 (y −168.9, Lobby north end). After the last kill + 3 s follows Wave 2: 2 × soldier_heavy at roam_24/25 and 1 × elite_heavy at tactical_27. All in group FirstArea.</td>
+</tr>
+<tr>
+<td>exit</td>
+<td><code>cobalt/c2v1/mission_c2v1_main_obj_04_kill_all</code> ("Escape")</td>
+<td>Use on <code>sacramento_gameplay_prop_use_animated_exit_level</code> with Marker. The exit is <strong>shifted</strong> from Hans' office (33,1 / −12,3 / 10,6) to the Retail hint marker "hint_lobby_exit" (0.97 / −166.05 / 1.5). It is an invisible 0.2-m CLIPMODEL_BOX Use point without baked geometry. → <code>mission_end</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Player start.</strong> Both <code>idPlayerStart</code> are located on the Retail story start in the lobby (−18.34 / −205.94 / −4.5). Consequently, the swap of Custom bundles for this demo has been reverted: Regardless of which start the engine takes, the player begins at the start of the chain. The rest of the custom map remains intact: 4 remodeled enemies, 10 pickups, 33 lights.</p>
+<p><strong>Offline replay.</strong> On the finished script ran an impulse loop (<code>Sim</code>: Delay immediate, Counter, Gate, Custom Events, Notifications). The result is exactly <code>MissionStart(3)</code> → Start/Complete per objective → <code>MissionComplete</code> → <code>ActionChronicle.End</code> → <code>ActionNextMap</code>.</p>
+<p>Before each step, the loop fired all interfering events, and the mission never moved:</p>
+<ul>
+<li>every trigger, every use, and every kill that any node listens to</li>
+<li>every event sent by another story script</li>
+</ul>
+<p>Two control tests show that these checks can be triggered:</p>
+<ul>
+<li>If an enemy from the last wave remains alive, "Kill all enemies" stays open.</li>
+<li>With gates that are open from the start, noise drives the mission.</li>
+</ul>
+<h2 id="4-probes-37-ok-re_probesmissionsdemorunlog">4. Probes (37 OK, <code>re_probes/missions/demo/run.log</code>)</h2>
+<ul>
+<li><strong>Mount:</strong><ul>
+<li>All 3 AI-Defs exist under 996 entityDefs and have a provider in the map.</li>
+<li>All 3 target Decls deliver their title from <code>english.lang</code>.</li>
+<li>The only changed <code>#str_</code> (<code>#str_useable_fc_c2v3_escape</code>) is present.</li>
+</ul>
+</li>
+<li><strong>Description Negative Controls (7):</strong> Each is rejected:<ul>
+<li>Wave with a missing spawn point.</li>
+<li>Target chain with a cycle (<code>enter -&gt; survive -&gt; exit -&gt; enter</code>).</li>
+<li>Unknown AI-Def.</li>
+<li>Custom target text.</li>
+<li>Moving a trigger used by an external entity.</li>
+<li>Location only in the Challenge layer.</li>
+<li>Hidden use location without a marker.</li>
+</ul>
+</li>
+<li><strong>Entities:</strong><ul>
+<li>Round-Trip bit-exact.</li>
+<li><code>build_custom_map.check</code> with 0 findings, no dangling reference.</li>
+<li>Only the 3 claimed entities are changed; 8 new ones stand at the end, none is removed.</li>
+<li>No new asset names.</li>
+</ul>
+</li>
+<li><strong>Kiscule:</strong><ul>
+<li>48 nodes and 47 edges, each being a Retail pattern.</li>
+<li>Validator clean, specifically alone, merged and read back from the container.</li>
+<li>Text and compfile run bit-exact back.</li>
+<li>The Retail part is identical except for the 20 edge ends.</li>
+<li>Counter-probe: A dangling edge is rejected.</li>
+<li>The event prefix is free.</li>
+</ul>
+</li>
+<li><strong>Post-run:</strong> 5 Probes (Section 3).</li>
+<li><strong>Container:</strong><ul>
+<li>Before <code>finalize</code>, exactly 2 data hashes are wrong, and <code>probe_idclhash</code> rejects.</li>
+<li>After <code>finalize</code>, <code>probe_idclhash</code> and <code>probe_datahash</code> are green.</li>
+<li>Only entries 873 and 934 differ from the source.</li>
+<li>Reading back yields the same bytes.</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-honest-compromises">5. Honest Compromises</h2>
+<ul>
+<li><strong>No new target texts.</strong> The texts come from Retail ("Kill all enemies" instead of "Survive two waves"). There is no Retail title with "survive" or "wave" (Track text).</li>
+<li><strong>Retail mission content is dropped in c2v1.</strong> Retail targets 2–4 ("Locate Hans' office", "Kill Ubercommander Hans") no longer start. The Retail battles (firstarea, etc.) continue as before. Therefore, the 5 Lobby enemies of the Retail wave are added at startup. They do not count for "Kill all enemies".</li>
+<li><strong>The mission ends at the Lobby.</strong> The rest of the map remains unplayed because the exit has been moved for a short test. In <code>demo.json</code>, you can remove <code>"at": "exit_spot"</code>, then the exit lies back in Hans' office.</li>
+<li><strong>The offline run is a model.</strong> Times are not modeled (Delay immediate), <code>classFilter</code> and engine orderings as well. The run proves the wiring, not the engine behavior.</li>
+</ul>
+<h2 id="6-runbook-5-lines-powershell">6. Runbook (5 lines, PowerShell)</h2>
+<ol>
+<li><strong>Install:</strong> <code>$d="D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_0\base\chunk_22.resources"; Remove-Item $d; Copy-Item "C:\Users\‹user›\Documents\wolfenstein modloader\re_probes\missions\demo\chunk_22.resources" $d</code></li>
+<li><strong>Start:</strong> Launch the game normally and restart the episode "Gestapo Office" (Agent Silent Death) <strong>fresh</strong>. Do not continue an old c2v1 save state, otherwise its mission progress will apply.</li>
+<li><strong>What you see:</strong><ol>
+<li>You start in the red lobby.</li>
+<li>After approximately 5 seconds, "Enter the offices" appears.</li>
+<li>Squeeze through the ventilation shaft at the grate. The objective is complete, and "Kill all enemies" appears.</li>
+<li>At the north end of the lobby, 3 soldiers spawn. 3 seconds after the last one, 2 heavies and 1 elite spawn.</li>
+<li>Afterwards, "Escape" appears with a target marker in the lobby corridor leading toward the offices.</li>
+<li>There, use (hold for 1 second). The episode ends.</li>
+</ol>
+</li>
+<li><strong>How to recognize it:</strong> Objective 2 is named "Kill all enemies" (Retail: "Locate Hans' office"), and the exit is located in the lobby instead of Hans' office.<ul>
+<li>If "Enter the offices" is missing, the script does not load.</li>
+<li>If no wave appears, the new enemy entities are not present.</li>
+<li>If Objective 2 remains open, a wave enemy is still alive or stuck.</li>
+<li>If markers and use are missing, the shifted exit does not trigger.</li>
+</ul>
+</li>
+<li><strong>Undo:</strong> <code>Remove-Item "D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_0\base\chunk_22.resources"; Copy-Item "C:\Users\‹user›\Documents\wolfenstein modloader\re_probes\dlc4_override\chunk_22.resources" "D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_0\base\chunk_22.resources"</code>. This is the file installed today, sha256 <code>cadfbfce…</code>.</li>
+</ol>
+<h2 id="7-risks-and-open-runtime">7. Risks and Open (Runtime)</h2>
+<ul>
+<li><strong>New Entities.</strong> 6 KIs and 2 spawners are <strong>added</strong> to <code>.entities</code>. There is no runtime evidence in this project for this. Previous played edits only modified existing entities. The copies carry Retail bodies from the same map.</li>
+<li><strong>Retail portions without runtime evidence:</strong><ul>
+<li>Objective completion, wave counting via <code>AiKilledNotification</code>, <code>ActionChronicle</code>/<code>ActionNextMap(MODE_AUTO)</code>: They follow Retail patterns, but only the start of "Enter the offices" (anatomy) is proven at runtime.</li>
+<li>An objective of a foreign mission (c1v1) under <code>mission_c2v1_main</code>: The principle is evidenced by E13 (parentMission c2v2), but this specific objective is untested.</li>
+</ul>
+</li>
+<li><strong>Positions.</strong> The spawn points are Retail KI scene points on the lobby floor (z = 0), and the exit is a Retail hint marker. Whether navigation triggers there is not measurable offline.<ul>
+<li>If a wave enemy never dies, e.g., because it is unreachable or does not spawn, Objective 2 remains open.</li>
+</ul>
+</li>
+<li><strong>Autosaves.</strong> Retail autosaves continue mid-mission. After reloading, the Kiscule state must come from the save state as in Retail.</li>
+<li><strong>Git.</strong> <code>re_probes/missions/</code> is git-ignored via <code>re_probes/*</code>, including <code>demo.json</code>. Only <code>tools/build_mission.py</code> and this report are tracked.</li>
+</ul>
+<h2 id="8-files">8. Files</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tools/build_mission.py</code></td>
+<td>Tool: Description check, Entity edits, Kiscule nodes, Merge, Replay, Container</td>
+</tr>
+<tr>
+<td><code>re_probes/missions/demo/demo.json</code></td>
+<td>Description of the demo</td>
+</tr>
+<tr>
+<td><code>re_probes/missions/demo/chunk_22.resources</code></td>
+<td>Finished file for <code>dlc/dlc_0/base/</code></td>
+</tr>
+<tr>
+<td><code>re_probes/missions/demo/mission_script.decl</code></td>
+<td>Merged mission script (plaintext)</td>
+</tr>
+<tr>
+<td><code>re_probes/missions/demo/mission_nodes.graph.txt</code></td>
+<td>Our 48 nodes, readable</td>
+</tr>
+<tr>
+<td><code>re_probes/missions/demo/manifest.json</code>, <code>run.log</code></td>
+<td>Hashes, edits, flow, negative controls, test run</td>
+</tr>
+</tbody>
+</table></div></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Meshfmt.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Mesh Format (model / modelAsset / modelstream): Resolved, Box is writable</a><a class="next" href="Research-Report-Save-Integrity-V3.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Offline Save Repair v3</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

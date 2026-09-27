@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC: Custom Map Registration and Load Path (Read-Only Finding) – Wolfenstein Modloader</title>
+<meta name="description" content="What a new Wolfenstein II map needs and how the game might load it; the DLC folder route is untested.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>TNC: Custom Map Registration and Load Path (Read-Only Finding)</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Tnc-Custom-Maps"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#executive-summary">Executive Summary</a></li><li><a href="#documented-data-structure">Documented Data Structure</a></li><li><a href="#what-has-been-disproved-or-is-open">What Has Been Disproved or Is Open</a></li><li><a href="#minimal-discriminating-test-not-yet-executed">Minimal, Discriminating Test (Not Yet Executed)</a></li><li><a href="#recommendation-for-the-loader">Recommendation for the Loader</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report asks what a new map for Wolfenstein II (TNC) needs and how the game could load it. A map is much more than its <span class="t" data-t="entity">entity</span> file: one original map uses at least 235 assets, including collision, navigation and visibility data. The most promising route is the game&#x27;s own <span class="t" data-t="dlc">DLC</span> folder format, but it has not been proven in the game for a new map. The page describes a single test to try next.</p><ul><li>Map c02p0 has, among others, 178 collision entries, 34 lighting images and 2 navigation meshes.</li><li>Starting the game with +map, +exec or +loadGame does not load a map before the menu.</li><li>The refchunks setting only loads extra data; it does not prove an override wins.</li><li>No mod folder option was found in the TNC program.</li><li>Suggested loader stages: map content (stable), map override (experimental), new map (not yet).</li></ul></div><div class="de"><p class="lede">Der Bericht fragt, was eine neue Karte für Wolfenstein II (TNC) braucht und wie das Spiel sie laden könnte. Eine Karte ist viel mehr als ihre <span class="t" data-t="entity">Entity</span>-Datei: Eine Originalkarte nutzt mindestens 235 Assets, darunter Kollisions-, Navigations- und Sichtbarkeitsdaten. Der vielversprechendste Weg ist das spieleigene <span class="t" data-t="dlc">DLC</span>-Ordnerformat, doch für eine neue Karte ist er im Spiel nicht bewiesen. Die Seite beschreibt einen einzelnen Test als nächsten Schritt.</p><ul><li>Karte c02p0 hat unter anderem 178 Kollisionseinträge, 34 Beleuchtungsbilder und 2 Navigationsnetze.</li><li>Ein Spielstart mit +map, +exec oder +loadGame lädt vor dem Menü keine Karte.</li><li>Die Einstellung refchunks lädt nur zusätzliche Daten; sie beweist nicht, dass ein Ersatz gewinnt.</li><li>Im TNC-Programm wurde keine Mod-Ordner-Option gefunden.</li><li>Vorgeschlagene Loader-Stufen: Karteninhalt (stabil), Karten-Ersatz (experimentell), neue Karte (noch nicht).</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Date: 2026-09-22. This investigation has neither modified the live installation nor altered game saves.</p>
+<h2 id="executive-summary">Executive Summary</h2>
+<p>A new TNC map is not merely a <code>.entities</code> file from a data perspective. For <code>game/wolf/c02/c02p0</code>, there are at least 235 named assets in Retail: <code>compfile</code> (Entities/Proc/Prockd), <code>file</code> (World-Tome/Ambient), <code>hknavmesh</code>, <code>cm</code> Collision/Trigger, models, PVS, Shadow Geometry, Lightprobe images, Material Decls, and <code>devmapinfo.json</code>. The current <code>tnc_custom_map_probe</code> therefore correctly tests only the Entity portion; it cannot generate new geometry, collision, or navigation.</p>
+<p>The most plausible unchanged extension path is TNC's own <code>dlc/dlc_&lt;n&gt;/</code> format: <code>dlcinfo.json</code>, <code>base/packagemapspec.json</code>, and a Chunk pair. This is documented by DLCs 1–3, but has not yet been positively proven in-game for a new Map-ID. A separate same-named DLC entry with a Canary is the next good single test; <code>refchunks</code> alone is not an override.</p>
+<h2 id="documented-data-structure">Documented Data Structure</h2>
+<p><code>base/packagemapspec.json</code> describes Name, primary <code>chunkid</code>, <code>basechunkid</code>, <code>layer</code>, and optionally <code>refchunks</code>. Retail-Base includes <code>game/wolf/c02/c02p0 -&gt; chunkid 1</code>; DLC Specs utilize <code>layer: -1</code> and their own chunks (DLC 1: 20, DLC 2: 22, DLC 3: 24). The existing DLCs are:</p>
+<pre><code class="language-text">dlc/dlc_1/dlcinfo.json                    { &quot;dlcid&quot;: 1 }
+dlc/dlc_1/base/packagemapspec.json        maps + chunk_20
+dlc/dlc_2/...                              maps + chunk_22
+dlc/dlc_3/...                              maps + chunk_24
+</code></pre>
+<p>A Map prefix is not self-sustaining. Counts from Retail Archives for <code>c02p0</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th style="text-align: right;">Count</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compfile</code></td>
+<td style="text-align: right;">3</td>
+<td><code>c02p0.entities</code>, <code>_combo/c02p0.proc</code>, <code>c02p0.prockd</code></td>
+</tr>
+<tr>
+<td><code>file</code></td>
+<td style="text-align: right;">3</td>
+<td><code>_world.tome</code>, Tome-Metadata, <code>c02p0.ambientsh</code></td>
+</tr>
+<tr>
+<td><code>hknavmesh</code></td>
+<td style="text-align: right;">2</td>
+<td><code>c02p0.hknavmesh</code>, Combat-Nav-Section</td>
+</tr>
+<tr>
+<td><code>cm</code></td>
+<td style="text-align: right;">178</td>
+<td>World-Shape, Trigger and Combat-Volumes</td>
+</tr>
+<tr>
+<td><code>model</code></td>
+<td style="text-align: right;">9</td>
+<td><code>_combo/_world.bmodel</code>, Sky, dynamic models</td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td style="text-align: right;">34</td>
+<td>Lightprobes</td>
+</tr>
+<tr>
+<td>others</td>
+<td style="text-align: right;">6</td>
+<td><code>json</code>, <code>material</code>, <code>pvs</code>, <code>staticShadowGeom</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>This count comes from the TNC Archive Index; it is intentionally a negative control against the overly strong assumption "Entities = Map".</p>
+<h2 id="what-has-been-disproved-or-is-open">What Has Been Disproved or Is Open</h2>
+<ul>
+<li><code>+map</code>, <code>+exec</code>, and <code>+loadGame</code> are not executed as visible Map/Save load processes during direct Retail startup before the Menu. The reliable path is <code>Load Game -&gt; SLOT2 -&gt; GAME-AUTOSAVE0</code>; only then do <code>LaunchLoadScreen</code> and <code>LoadMap</code> appear in the Log.</li>
+<li><code>refchunks</code> loads additional dependencies. A <code>refchunks: [26]</code> entry does not prove that Chunk 26 wins on a name conflict.</li>
+<li><code>layer</code> and <code>basechunkid</code> are not proven priority rules.</li>
+<li>A simple new <code>packagemapspec</code> without a complete Chunk/Index/Texdb set is not a positive Map result. An incorrect Container Header is rejected beforehand with <code>corrupt header</code>.</li>
+<li>There is no documented <code>fs_mod</code>/<code>fs_game</code>/<code>modDir</code> path in TNC-EXE and no proven free Loose-Asset Maploader. <code>resource_dlcDbgSearchPath</code> is, however, the documented candidate for relocating the DLC search path.</li>
+</ul>
+<h2 id="minimal-discriminating-test-not-yet-executed">Minimal, Discriminating Test (Not Yet Executed)</h2>
+<ol>
+<li>Use an external search path, e.g., <code>C:\\wolfdlc_probe</code>, to keep the Steam installation untouched.</li>
+<li>Create only <code>dlc_4/dlcinfo.json</code> with <code>{ "dlcid": 4 }</code> and a minimal <code>base/packagemapspec.json</code> inspired by DLC 3. First use an <strong>existing</strong> map name (e.g., c02p0) to verify registration and Canary selection separately from "new Map-ID".</li>
+<li>Provide a valid Chunk 26 with identical header/index/texdb structure and exactly one clearly identifiable asset Canary. Do not use a <code>refchunks</code> test as a substitute.</li>
+<li>Start with <code>+logFile 1 +logFilePersistent 1</code> and the DLC search path. First check: <code>SearchDLC: found 4 dlcs</code>, no <code>Could not load mapspec</code>-/<code>corrupt header</code> message.</li>
+<li>
+<p>Load the c02p0 game state via the normal UI. Evaluate:</p>
+<ul>
+<li>Canary visible: same-named DLC primary chunk was selected.</li>
+<li>Map loads, Canary missing: Mount was successful, Base won, or the tested asset is not in the actually loaded layer.</li>
+<li>Mapspec-/Header errors: Integrity-/registration issue, no priority judgment.</li>
+</ul>
+</li>
+</ol>
+<p>For a <strong>truly new</strong> Map-ID, it must additionally be checked whether the engine offers it in the menu/saves at all or only reacts to an explicit internal map command. Only if the existing-name test is positive does it make sense to use a new name with complete <code>_world</code>, <code>.proc/.prockd</code>, Collision-, Navmesh-, PVS-, Shadow-, and Entity assets.</p>
+<h2 id="recommendation-for-the-loader">Recommendation for the Loader</h2>
+<p>The mod definition should distinguish three stages:</p>
+<ol>
+<li><code>map-content</code>: replaces existing Entities/Decls; currently stable.</li>
+<li><code>map-override</code>: same-named map via a separately mounted DLC chunk; still experimental and only enabled with Canary logic.</li>
+<li><code>new-map</code>: new Map-ID with complete asset bundle; do not claim or automatically activate yet.</li>
+</ol>
+<p>This keeps the loader startable even without Mapspec/Chunk header and clearly reports "Entity Probe successful" instead of falsely "Custom Map supported".</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Texdbkey.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>The TexDB Key — Solved (from the code, not a hash sweep)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loading Paths: Loose Files Instead of Archive Rewriting? – Wolfenstein Modloader</title>
+<meta name="description" content="Can both games load loose modded files from disk instead of rewritten archives? Candidates and planned tests.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#systems"><span class="en">Game systems</span><span class="de">Spielsysteme</span></a></p>
+<h1>Loading Paths: Loose Files Instead of Archive Rewriting?</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Asset-Loading-Paths"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#proof-levels">Proof Levels</a></li><li><a href="#short-answer">Short Answer</a></li><li><a href="#part-1--wolfenstein-the-new-order">Part 1 — Wolfenstein: The New Order</a></li><li><a href="#part-2--wolfenstein-ii-the-new-colossus">Part 2 — Wolfenstein II: The New Colossus</a></li><li><a href="#packagemapspecjson--fully-evaluated">packagemapspec.json — fully evaluated</a></li><li><a href="#the-dlc-folder--the-only-manufacturer-provided-expansion-path">The dlc folder — the only manufacturer-provided expansion path</a></li><li><a href="#negative-findings">Negative findings</a></li><li><a href="#experiments">Experiments</a></li><li><a href="#order-of-operations-if-time-is-tight">Order of operations if time is tight</a></li><li><a href="#reproduce-evidence">Reproduce evidence</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page looks for ways to make Wolfenstein: The New Order (TNO) and Wolfenstein II: The New Colossus (TNC) load single modded files from disk, so mods would not need to rewrite the game&#x27;s <span class="t" data-t="archive">archives</span>. The evidence comes from text inside the game programs, config files and game logs, because the program code itself is encrypted. TNO has a promising extra search folder setting and a DLC folder scan; TNC has a setting for loose assets and a well-documented DLC folder format. None of this has been tested in the game yet; the page lists eight experiments to decide it.</p><ul><li>TNO has a <span class="t" data-t="cvar">setting</span> called fs_overlaypath, described as an extra game folder that takes priority over the normal one. Not yet tested.</li><li>TNC has resource_loadLooseAssets, described as checking for loose files before reading from an archive. Whether it works in the retail game is open.</li><li>The TNC setting image_useLooseStreaming has nothing to do with loose files on disk; it only switches between two texture streaming methods.</li><li>Neither game has a classic mod folder setting like fs_game or fs_mod.</li><li>TNC&#x27;s DLC folders (dlc_1 to dlc_3) show a clear format with no visible ownership check, so a self-made dlc_4 is the most plausible way to add content. TNO&#x27;s DLC scan includes a &#x27;User does not own this DLC&#x27; check.</li></ul></div><div class="de"><p class="lede">Diese Seite sucht Wege, wie Wolfenstein: The New Order (TNO) und Wolfenstein II: The New Colossus (TNC) einzelne veränderte Dateien direkt von der Festplatte laden, damit Mods die <span class="t" data-t="archive">Archive</span> des Spiels nicht umschreiben müssen. Die Belege stammen aus Texten in den Spielprogrammen, aus Config-Dateien und Spiel-Logs, weil der eigentliche Programmcode verschlüsselt ist. TNO hat eine vielversprechende Einstellung für einen zusätzlichen Suchordner und durchsucht einen DLC-Ordner; TNC hat eine Einstellung für lose Assets und ein gut dokumentiertes DLC-Ordnerformat. Nichts davon ist bisher im Spiel getestet; die Seite beschreibt acht Experimente, die das klären sollen.</p><ul><li>TNO hat eine <span class="t" data-t="cvar">Einstellung</span> namens fs_overlaypath, beschrieben als zusätzlicher Spielordner mit Vorrang vor dem normalen. Noch nicht getestet.</li><li>TNC hat resource_loadLooseAssets, beschrieben als Prüfung auf lose Dateien vor dem Lesen aus einem Archiv. Ob das im Verkaufsspiel funktioniert, ist offen.</li><li>Die TNC-Einstellung image_useLooseStreaming hat nichts mit losen Dateien zu tun; sie wechselt nur zwischen zwei Arten des Textur-Streamings.</li><li>Keines der beiden Spiele hat eine klassische Mod-Ordner-Einstellung wie fs_game oder fs_mod.</li><li>Die DLC-Ordner von TNC (dlc_1 bis dlc_3) zeigen ein klares Format ohne sichtbare Besitzprüfung, daher ist ein selbst gebautes dlc_4 der plausibelste Weg für neue Inhalte. Die DLC-Suche von TNO enthält dagegen eine Prüfung „User does not own this DLC“.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Investigated for <strong>Part 1</strong> (<code>WolfNewOrder_x64.exe</code>, id Tech 5) and <strong>Part 2</strong> (<code>NewColossus_x64vk.exe</code>, id Tech 6). Evidence tool: <code>tools/probe_loadpaths.py</code> (read-only, does not start the game).</p>
+<p>The <code>.text</code> sections of both EXEs are SteamStub-encrypted (Section <code>.bind</code>), so there is no disassembler proof. Read data includes <code>.rdata</code>/<code>.data</code>, the plaintext <code>.cfg</code> files of the games, <code>packagemapspec.json</code>, the <code>dlc</code> folders, and the actual runtime logs from <code>Saved Games</code>.</p>
+<hr />
+<h2 id="proof-levels">Proof Levels</h2>
+<p>Every statement below carries one of these three stamps. They are not interchangeable.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Stamp</th>
+<th>Means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>STRING</strong></td>
+<td>The text is in the binary. Nothing more. A dead code path looks just as good.</td>
+</tr>
+<tr>
+<td><strong>CVAR</strong></td>
+<td>Looks like a registered Cvar, description assigned via literal neighborhood (same uncertainty as in <code>docs/cvars-tnc.md</code>). Whether it is describable at runtime is <strong>not</strong> stated by this.</td>
+</tr>
+<tr>
+<td><strong>LAUFZEIT</strong></td>
+<td>Proven in the actual log or on the disk. The only hard proof.</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="short-answer">Short Answer</h2>
+<p><strong>Part 1: very likely yes, via <code>fs_overlaypath</code>.</strong> The engine has a documented second read path with precedence over <code>fs_basepath</code>; it shows its search paths in the log, and it writes loose files to <code>base/generated/</code> as proven. What is missing is proof that an asset placed there displaces an archived one. This is a ten-minute experiment (Section "Experiments", E1–E3).</p>
+<p><strong>Part 2: there is a matching Cvar, but no runtime proof.</strong> <code>resource_loadLooseAssets</code> literally means "check for loose assets when satisfying file io from a resource file". Whether it works in a Retail build is open (E5).</p>
+<p><strong>The hint from the task does not apply.</strong> <code>+image_useLooseStreaming 1</code> in <code>base/build.cfg</code> of Part 2 has nothing to do with loose files on the disk. The description in the binary reads:</p>
+<blockquote>
+<p><code>image_useLooseStreaming</code> — <code>0 = Use virtual texture atlas streaming, 1 = Use loose texture streaming</code></p>
+</blockquote>
+<p>"Loose" here means <em>individual textures instead of Atlas</em> — so <code>.texdb</code> streaming instead of <code>virtualtextures/*.pages</code> atlases. Both are archives. This also fits the installation: Part 2 has a <code>chunk_N.texdb</code> for every <code>chunk_N.resources</code>, and <code>virtualtextures/</code> contains only map pages. Neighbors in the literal pool are exclusively renderer Cvars (<code>is_poolSize</code>, <code>is_maxTextureSize</code>, <code>is_enableStreaming</code>). No file system reference.
+<strong>Dead end — but one that had to be checked once.</strong></p>
+<hr />
+<h2 id="part-1--wolfenstein-the-new-order">Part 1 — Wolfenstein: The New Order</h2>
+<h3 id="the-file-system-has-an-override-path">The File System Has an Override Path</h3>
+<p><strong>CVAR</strong> — from <code>.rdata</code> at <code>0x141057b38</code>–<code>0x141057cb0</code>, descriptions lie in the same pool block:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Description in Binary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fs_basepath</code></td>
+<td><code>(Read Only) Location for game files</code></td>
+</tr>
+<tr>
+<td><strong><code>fs_overlaypath</code></strong></td>
+<td><strong><code>(Read Only) Extra location for game files (with precedence over fs_basepath)</code></strong></td>
+</tr>
+<tr>
+<td><code>fs_savepath</code></td>
+<td><code>(Read/Write) Location for development storage files, overwrites the default savegame path as well for the PC</code></td>
+</tr>
+<tr>
+<td><code>fs_cachepath</code></td>
+<td><code>(Read/Write) Location for temporary files</code></td>
+</tr>
+<tr>
+<td><code>fs_installpath</code></td>
+<td><code>(Read/Write) Location for installed files</code></td>
+</tr>
+<tr>
+<td><code>fs_generatedPath</code></td>
+<td><code>Location of generated data</code>, default <code>generated</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>STRING</strong> — the corresponding Enum exists as an RTTI name: <code>FSPATH_OVERLAY</code>, <code>FSPATH_BASE_AND_OVERLAY</code> (<code>0x140d7e938</code>, mirrored at <code>0x140dd2fc8</code>). An overlay path is therefore not just a Cvar, but its own level in the path resolution — there is a mode that searches both Base and Overlay.</p>
+<p><strong>LAUFZEIT</strong> — the engine prints its search paths on startup. From <code>Saved Games/.../Wolfenstein The New Order/base/ErrorLog_*.txt</code>:</p>
+<pre><code>------ Initializing File System ------
+Current search path:
+C:/Users/‹user›/Saved Games/MachineGames/Wolfenstein The New Order/base/
+D:/SteamLibrary/steamapps/common/Wolfenstein.The.New.Order/base/
+file system initialized.
+</code></pre>
+<p>Two entries because <code>fs_overlaypath</code> is empty. A <code>base/</code> prefix is appended to each path (in the Binary, during FS initialization, there are five consecutive <code>base</code> literals at addresses <code>0x141058b40</code>–<code>0x141058b68</code> — one per path level). A configured overlay path should appear here as a third line, <strong>above</strong> the Steam path. This is E1 and costs nothing.</p>
+<h3 id="the-engine-writes-loose-files-to-the-game-directory">The Engine writes loose files to the game directory</h3>
+<p><strong>RUNTIME</strong> — this is the strongest single finding for Part 1.</p>
+<p><code>D:\...\Wolfenstein.The.New.Order\base\generated\</code> contains 76 loose files. Timestamps: 2026-09-20 13:24 to 2026-09-21 19:35. The EXE and all <code>.resources</code> are from 2026-09-19 10:53 (Installation). The files were therefore <strong>written at runtime by the game</strong>, not delivered. The time 13:24 matches <code>ErrorLog_09-20-2026__01-24-10pm.txt</code> to the minute.</p>
+<p>Content:</p>
+<pre><code>base/generated/decls/particle/&lt;name&gt;.bin          74 files, Magic b'\x06TRP'
+base/generated/md6/models/weapons/.../..bmd6skl    2 files
+base/generated/world/c12/&lt;name&gt;.bcm                1 file, Magic b'BCM9'
+</code></pre>
+<p>The path appears as a format string in the Binary: <strong>STRING</strong> <code>generated/decls/particle/%s.bin</code> at <code>0x140e9e078</code>.</p>
+<p>These are cooked runtime forms. The source Decl lies in the archive under <code>generated/decls/particle/wolf/blood/bloodsplat01.decl</code> (verified in <code>chunk2.index</code>) — with <code>.decl</code>, while the loose file has <code>.bin</code>. <strong>It is therefore not an override of the same name, but a neighboring cache.</strong> That the Engine also <em>reads</em> it on the next start is the obvious explanation for why it creates it at all — but it is an explanation, not evidence. E2 decides this.</p>
+<p>Additionally <strong>RUNTIME</strong>: <code>Couldn't create FileCacheHeader.bin</code> in the Log — another failed loose <em>write</em> attempt.</p>
+<h3 id="an-override-path-that-explicitly-targets-the-archive">An override path that explicitly targets the archive</h3>
+<p><strong>CVAR</strong> — <code>0x140ec1320</code> / <code>0x140ec1370</code>:</p>
+<blockquote>
+<p><code>r_renderProgProdOverridePath</code> — <code>load renderprogs from this path instead of from resource file in production</code></p>
+</blockquote>
+<p>Literally, an Engine cannot say: <em>read this from disk instead of the archive, even in Retail</em>. The adjacent filename: <strong>STRING</strong> <code>generated/renderprogs/%s_%s.bin</code> (<code>0x140ec13c0</code>).</p>
+<p>This is proof for <strong>one</strong> asset class (Shaders), not all. But it shows that the Retail build did not generally compile this mechanism out. Part 2 has no equivalent.</p>
+<h3 id="the-engine-searches-for-decls-under-a-loose-path">The Engine searches for Decls under a loose path</h3>
+<p><strong>RUNTIME</strong> — hundreds of lines of this form in every Log:</p>
+<pre><code>WARNING: couldn't read production file for decl 'generated/decls/renderProg/laserbeam.decl' while loading renderProg laserbeam
+WARNING: couldn't read production file for decl 'generated/decls/achievement/achievement_01.decl' while loading achievement achievement_01
+WARNING: couldn't read production file for decl 'generated/decls/material/lights/solidwhite.decl' while loading material lights/solidWhite
+</code></pre>
+<p>Format string: <strong>STRING</strong> <code>generated/decls/%s/%s.decl</code> (<code>0x140e51dc8</code>).</p>
+<p><strong>Caution, here lies the trap.</strong> The same name is also the key <em>within</em> the archives — <code>generated/decls/achievement/achievement_01.decl</code> appears exactly like that in <code>chunk0.index</code>. The warning could therefore equally mean "not found in archive". The string does not prove that a filesystem access took place. E2 clarifies this with <code>fs_reportReads 1</code>: if the path appears there in the access log, it was the filesystem; if it does not appear, it was the Resource container.</p>
+<h3 id="additional-load-chains-part-1">Additional load chains (Part 1)</h3>
+<ul>
+<li><strong>RUNTIME</strong> <code>WARNING: File 'maps/game/wolf/c05_07_09/c05_07_09.map' wasn't preloaded, trying to slow load it from disc</code> — there is a fallback path for single-file I/O if an asset is not in the preload block. "from disc" is ambiguous (archive on disk vs. loose file).</li>
+<li><strong>RUNTIME</strong> <code>base/master.index</code> — <code>\x03SER</code>, Big-Endian counter <code>14</code>, followed by 28 length-prefixed names (<code>chunk0.index</code>, <code>chunk0.resources</code>, …). This is the mount list of archives. One additional line in it = one additional archive. Small, text-based, easy to extend — and the only found method to shove Part 1 as an <em>additional</em> archive without rewriting an existing one (E4).</li>
+<li><strong>RUNTIME</strong> <code>couldn't exec D:\...\Wolfenstein.The.New.Order/binary.cfg</code> and <code>couldn't exec package.cfg</code>. Both are searched for. <code>binary.cfg</code> is located in the <strong>game folder</strong>, not in <code>base/</code>. According to <code>Home.md</code>, the engine resets values set there afterwards — measured, not guessed. Useless for Cvars; untested as a carrier for <em>commands</em> (<code>exec</code>, <code>path</code>).</li>
+<li><strong>RUNTIME</strong> <code>idLib::SetProduction( PROD_PRODUCTION )</code> — the Retail build runs in production mode. In id-tech engines, this mode typically disables exactly the disk fallbacks that are relevant here. This is the main risk for E2/E3.</li>
+</ul>
+<hr />
+<h2 id="part-2--wolfenstein-ii-the-new-colossus">Part 2 — Wolfenstein II: The New Colossus</h2>
+<h3 id="the-cvar-at-issue">The Cvar at Issue</h3>
+<p><strong>CVAR</strong> — <code>0x1426cf2d0</code>, description in the same block at <code>0x1426cef70</code>:</p>
+<blockquote>
+<p><code>resource_loadLooseAssets</code> — <code>check for loose assets when satisfying file io from a resource file</code></p>
+</blockquote>
+<p>This is literally the sought mechanism: before serving a file access that would be handled by a resource container, check for a loose file.</p>
+<p>What is uncertain about this: the Name↔Description mapping runs via pool adjacency, not via the call site (which lies in the encrypted <code>.text</code>). However, the description is the only one in the entire binary that links "loose assets" with file I/O, and <code>resource_loadLooseAssets</code> is the only candidate. I consider the assignment to be secure — the <em>effect</em> is not.</p>
+<p><strong>This Cvar does not exist in Part 1</strong> (checked, <code>--self-test</code> fails if it appears there).</p>
+<h3 id="the-path-stages-are-cut-differently-than-in-part-1">The Path Stages Are Cut Differently Than in Part 1</h3>
+<p><strong>STRING</strong> — <code>fsPath_t</code> / <code>fsPathSearch_t</code> at <code>0x14278e130</code>:</p>
+<pre><code>FSPATH_BASE   FSPATH_SAVE   FSPATH_SOURCE   FSPATH_GENERATED   FSPATH_CACHE   FSPATH_INSTALL
+FSPATH_SEARCH_DEFAULT  _BASE  _SAVE  _SOURCE  _GENERATED  _CACHE  _INSTALL
+</code></pre>
+<p><strong>No <code>FSPATH_OVERLAY</code>, no <code>fs_overlaypath</code>.</strong> Part 2 does not have the Overlay mechanism of Part 1. Instead (<strong>CVAR</strong>, <code>0x14297d300</code>–<code>0x14297d960</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Description in Binary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fs_basepath</code></td>
+<td><code>(Read Only) Location for game files</code></td>
+</tr>
+<tr>
+<td><code>fs_sourcepath</code></td>
+<td><code>(Read Only) Location for source files</code></td>
+</tr>
+<tr>
+<td><strong><code>fs_pathDeclOverride</code></strong></td>
+<td><strong><code>(Read Only) Secondary Location for decl game files</code></strong></td>
+</tr>
+<tr>
+<td><code>fs_generatedPath</code></td>
+<td><code>Location of generated data</code></td>
+</tr>
+<tr>
+<td><code>fs_copyfiles</code></td>
+<td><code>If set will copy all files opened for read to this path, i.e. 'fs_copyfiles x:/work/d00m/' may be set on the command line or post engine load</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>fs_pathDeclOverride</code> is what remains of <code>fs_overlaypath</code> — narrowed to Decls. Assignment to description: the word "decl" appears in both; no other candidate exists in the block.</p>
+<p><code>fs_copyfiles</code> is valuable for the investigation itself: it logs <em>every</em> read file into a target directory. This allows seeing without guessing what the engine actually retrieves from the filesystem (E6).</p>
+<p><strong>STRING</strong> — <code>'/source'</code> at <code>0x14297e0a8</code>, directly during FS Init: <code>/source</code> is likely appended to <code>fs_sourcepath</code>, just as <code>base</code> was in Part 1.</p>
+<h3 id="what-part-2-executes-on-its-own">What Part 2 Executes on Its Own</h3>
+<p><strong>STRING</strong>, all within the Init block <code>0x1426c2400</code>–<code>0x1426c2610</code> or <code>0x1426e3f80</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>How</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>build.cfg</code></td>
+<td><code>Executing build.cfg...</code></td>
+<td><code>base/</code> (in plain text there)</td>
+</tr>
+<tr>
+<td><code>default.cfg</code></td>
+<td><code>resourceExec default.cfg -s</code></td>
+<td><strong>from the Resource-File</strong>, not from disk</td>
+</tr>
+<tr>
+<td><code>default_sp.cfg</code> / <code>default_mp.cfg</code></td>
+<td><code>resourceExec default_sp.cfg -s</code></td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>initial_video_%s.cfg</code></td>
+<td><code>exec initial_video_%s.cfg -s</code></td>
+<td>Disk (<code>base/initial_video_high.cfg</code>, etc.)</td>
+</tr>
+<tr>
+<td><code>binary.cfg</code></td>
+<td><code>exec "%s/binary.cfg" -s</code></td>
+<td>Game folder, as in Part 1</td>
+</tr>
+<tr>
+<td><code>package.cfg</code></td>
+<td><code>resourceExec package.cfg -s</code></td>
+<td>Resource-File</td>
+</tr>
+<tr>
+<td><code>xb_*.cfg</code></td>
+<td></td>
+<td>Disk</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Important:</strong> <code>resourceExec</code> is a separate command —
+<strong>STRING</strong> <code>Execute a configuration file stored in the resource file</code> (<code>0x1426c2540</code>) and
+<code>USAGE: resourceExec &lt;filename&gt; -s [define]: execute a script file</code>. There are thus two sources for Cfgs, and the Engine chooses one per file. The fact that <code>base/default.cfg</code> and <code>base/default_sp.cfg</code> still exist as loose files nearby is a hint — but not proof that the loose ones win.
+The Binary knows both ways (<code>Failed to read default.cfg</code>, <code>Could not find default.cfg. Check paths.</code>).</p>
+<p>All loose Cfgs have been read completely. They reveal nothing about load paths: <code>build.cfg</code> sets four Cvars, <code>default.cfg</code> binds keys, <code>default_sp.cfg</code> is a list of <code>reset</code> commands, and <code>initial_video_*.cfg</code> are Renderer Presets ("auto-generated file, do not modify"). <strong>No hint at Mod-, Overlay-, or Search paths.</strong></p>
+<h3 id="no-log-without-doing-something">No Log Without Doing Something</h3>
+<p>Part 2 does not write standard <code>qconsole.log</code>. <strong>CVAR</strong>,
+<code>0x1426c5548</code>–<code>0x1426c5778</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Description / Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>logFile</code></td>
+<td>Switch</td>
+</tr>
+<tr>
+<td><code>logFileName</code></td>
+<td><code>name of log file, if empty, qconsole.log will be used</code></td>
+</tr>
+<tr>
+<td><code>logFilePersistent</code></td>
+<td><code>If the qconsole log should persist between launches</code></td>
+</tr>
+<tr>
+<td><code>logFilePathType</code></td>
+<td><code>0 = FSPATH_SAVE, 1 = FSPATH_BASE</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Without these, every experiment in Part 2 is blind. <code>+logFile 1 +logFilePersistent 1</code> is the first step of every measurement (E5).</p>
+<p>The search path output also exists here: <strong>STRING</strong>
+<code>------ Initializing File System ------</code>, <code>Current search path:</code>,
+<code>lists search paths</code> (command <code>path</code>), <code>dirtree</code>, <code>dir</code>, <code>copy</code>.</p>
+<hr />
+<h2 id="packagemapspecjson--fully-evaluated"><code>packagemapspec.json</code> — fully evaluated</h2>
+<p>Only Part 2. Plain-text JSON, read by the Engine: <strong>STRING</strong>
+<code>packagemapspec.json</code> (<code>0x1426d0250</code>), right next to it the key names
+<code>basechunkid</code> (<code>…0240</code>), <code>chunkid</code> (<code>…0238</code>), <code>refchunks</code> (<code>…0228</code>),
+<code>patchinfo</code> (<code>…0268</code>). This is the parser block.</p>
+<h3 id="whats-inside-it">What's inside it</h3>
+<p><code>base/packagemapspec.json</code>, 31 entries:</p>
+<pre><code class="language-json">{ &quot;basechunkid&quot;: 6, &quot;chunkid&quot;: 9, &quot;isbasechunk&quot;: false, &quot;layer&quot;: 1,
+  &quot;name&quot;: &quot;game/wolf/c05/c05p1&quot; }
+</code></pre>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning (inferred from data + filenames)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>Map name as loaded by the game (<code>maps/&lt;name&gt;.entities</code>, etc.)</td>
+</tr>
+<tr>
+<td><code>chunkid</code></td>
+<td>in which <code>chunk_&lt;id&gt;.resources</code> / <code>.texdb</code> the map lies</td>
+</tr>
+<tr>
+<td><code>basechunkid</code></td>
+<td>which <code>chunkbase_&lt;id&gt;</code> belongs to as a common foundation</td>
+</tr>
+<tr>
+<td><code>isbasechunk</code></td>
+<td>only <code>common</code> and <code>init</code> (both <code>chunkid 0</code>)</td>
+</tr>
+<tr>
+<td><code>layer</code></td>
+<td>0 or 1; for DLC <code>-1</code></td>
+</tr>
+<tr>
+<td><code>refchunks</code></td>
+<td>only in DLC Specs: list of chunks loaded from</td>
+</tr>
+<tr>
+<td><code>patchinfo.patchlevel</code></td>
+<td>4 in <code>base/</code>, 2/3 in the DLCs</td>
+</tr>
+</tbody>
+</table></div>
+<p>The assignment is verifiable: <code>chunkid</code> 1,3,4,5,7–16 and <code>basechunkid</code> 6 match exactly with existing files <code>chunk_1.resources</code> …
+<code>chunk_16.resources</code> and <code>chunkbase_6.resources</code>. <code>patchlevel 4</code> matches <code>patch_1..patch_4</code> and <code>patch_1_chunkbase_6..patch_4_chunkbase_6</code>. The format string <code>%s_%d_%s_%d</code> at <code>0x1426cf720</code> builds exactly
+<code>patch_&lt;n&gt;_chunkbase_&lt;m&gt;</code>.</p>
+<h3 id="could-entries-be-added-there">Could entries be added there?</h3>
+<p><strong>Hypothesis, not proven.</strong> A new entry with its own <code>chunkid</code> plus matching <code>chunk_&lt;id&gt;.resources</code>/<code>.texdb</code> in <code>base/</code> is the most plausible reading of the file. But:</p>
+<ul>
+<li><code>patchinfo.patchlevel</code> controls how many <code>patch_N</code> layers are searched. An incorrect number can cause a startup failure.</li>
+<li>The file is managed by Steam; each game update overwrites it.</li>
+<li><strong>STRING</strong> <code>Only ID_DEV_TOOLS builds (win64-dev, vulkan-dev) can run without a package</code> (<code>0x1426cf7b0</code>) — the Retail build requires a valid package set.</li>
+</ul>
+<p>The cleanest way to add an entry without touching <code>base/</code> is via the DLC folder: it has its own <code>packagemapspec.json</code>.</p>
+<hr />
+<h2 id="the-dlc-folder--the-only-manufacturer-provided-expansion-path">The <code>dlc</code> folder — the only manufacturer-provided expansion path</h2>
+<p>Both games have this, but with <strong>different formats</strong>. This is the most interesting finding besides <code>fs_overlaypath</code>.</p>
+<h3 id="part-1-dlcinfotxt">Part 1: <code>dlc/&lt;name&gt;/info.txt</code></h3>
+<p><strong>RUNTIME</strong> from the log:</p>
+<pre><code>EnumerateDownloadableContent: D:\SteamLibrary\steamapps\common\Wolfenstein.The.New.Order\dlc
+OpenDLCFileHandles: 0 packages mounted.
+</code></pre>
+<p>The folder does not exist in this installation — the engine still scans it and reports 0. <strong>STRING</strong> chain at <code>0x140f1d1e0</code> (order = logic):</p>
+<pre><code>'\dlc'
+'EnumerateDownloadableContent: %s'
+'Found DLC: %s...'
+'%s/%s/info.txt'
+'Error, found %s directory without info.txt!'
+'Could not read info.txt (%s)'
+'appID'
+'dlcID'
+'...successfully mounted '%s.  ID: %d'
+'Found invalid dlcID in info (%d)'
+'User does not own this DLC.'
+'...FAILED to parse dlcInfoVars in info.txt (%s).'
+</code></pre>
+<p>and at <code>0x140e6f5f0</code> the mount output:</p>
+<pre><code>'OpenDLCFileHandles: %d packages mounted.'
+'* Content Package #%d:'
+'  - id: %d'
+'  - path: %s'
+'  - already loaded - skipping...'
+'base'
+</code></pre>
+<p>Thus, the expected format is known:</p>
+<pre><code>&lt;GameFolder&gt;/dlc/&lt;any name&gt;/info.txt      Keys: appID, dlcID
+&lt;GameFolder&gt;/dlc/&lt;any name&gt;/base/         The archives
+</code></pre>
+<p><code>info.txt</code> is a <code>dlcInfoVars</code> file, so ID-tech key/value-text (presumably <code>appID "201810"</code> / <code>dlcID "1"</code>, the value assignment format is unoccupied). <strong>The hurdle is <code>User does not own this DLC.</code></strong> — there is an authorization check against the <code>appID</code> via Steam. Whether a possessed <code>appID</code> (the main game's, 201810) passes the check is exactly the open question. E7.</p>
+<h3 id="part-2-dlcdlc_dlcinfojson">Part 2: <code>dlc/dlc_&lt;n&gt;/dlcinfo.json</code></h3>
+<p>Here the folder exists and is filled. <strong>RUNTIME</strong>, structure of the three packages (all identical in layout):</p>
+<pre><code>dlc/dlc_1/dlcinfo.json                      {&quot;dlcid&quot;: 1}
+dlc/dlc_1/base/packagemapspec.json          custom map list, layer -1, refchunks
+dlc/dlc_1/base/chunk_20.resources
+dlc/dlc_1/base/chunk_20.texdb
+dlc/dlc_1/base/maps/game/…
+dlc/dlc_1/base/sound/soundbanks/…
+dlc/dlc_1/base/bink/chronicles/…           .bk2-Videos, loose
+dlc/dlc_1/virtualtextures/maps/game/…
+</code></pre>
+<p><code>dlc_1</code> → chunk 20, <code>dlc_2</code> → 22, <code>dlc_3</code> → 24.</p>
+<p><strong>STRING</strong> chain at <code>0x1426cf6e0</code>:</p>
+<pre><code>'%s/dlcinfo.json'
+'dlc'
+'%s/base'
+'SearchDLC: Could not load mapspec for dlc id %d from %s'
+'SearchDLC: could not read existing dlc info file: %s'
+'dlcid'
+'SearchDLC: found %d dlcs'
+'resource_dlcDbgSearchPath'   Description: 'Search path for dlcs'
+</code></pre>
+<p>This format is <strong>significantly better documented than Part 1 and contains no visible ownership check</strong>: no <code>User does not own this DLC</code>, no <code>appID</code> in the chain. A <code>dlc/dlc_4/</code> with <code>{"dlcid": 4}</code>, its own <code>packagemapspec.json</code>, and <code>chunk_26.resources</code> is thus the most plausible way to inject additional content into Part 2 without touching a single delivered file. <strong>Hypothesis</strong> — E8.</p>
+<p><code>resource_dlcDbgSearchPath</code> presumably allows moving the search location. If this is correct, one does not even need write permissions in the Steam folder for the attempt. That would be the most elegant test of all.</p>
+<hr />
+<h2 id="negative-findings">Negative findings</h2>
+<p>Full results. All checked via <code>tools/probe_loadpaths.py</code>, category "Negative finding".</p>
+<ul>
+<li><strong>No <code>fs_game</code>, no <code>fs_mod</code>, no <code>fs_addon</code>, no <code>modDir</code></strong> — in either of the two EXEs. The Quake/Doom 3 mod folder has disappeared from this engine line. Anyone looking for "like Doom 3" is searching in vain.</li>
+<li><strong>No <code>FSPATH_OVERLAY</code> in Part 2.</strong> The overlay path from Part 1 does not exist there.</li>
+<li><strong>No <code>resource_loadLooseAssets</code> in Part 1.</strong></li>
+<li><strong>No <code>r_renderProgProdOverridePath</code> in Part 2.</strong></li>
+<li><strong><code>image_useLooseStreaming</code> is not a file path switch</strong> (see above).</li>
+<li>Both builds report <code>idLib::SetProduction( PROD_PRODUCTION )</code>. Anything the engine does differently "in production" it does here differently.</li>
+</ul>
+<hr />
+<h2 id="experiments">Experiments</h2>
+<p>Each tests <strong>exactly one</strong> hypothesis. Not performed — you start the game yourself. Sorted by effort, E1 first.</p>
+<p>Always start via the Steam URL, not via the EXE (see <code>Home.md</code>: directly started ends Part 1 immediately):</p>
+<pre><code>steam://rungameid/201810//&lt;arguments&gt;
+</code></pre>
+<p>No experiment requires a change to delivered files, except E4, E7, and E8 — where that is explicitly stated.</p>
+<hr />
+<h3 id="e1--is-fs_overlaypath-accepted-at-all-part-1-2-minutes-low-risk">E1 — Is <code>fs_overlaypath</code> accepted at all? (Part 1, 2 minutes, low risk)</h3>
+<p><strong>Hypothesis:</strong> <code>fs_overlaypath</code> is settable and lands as the third line above the Steam path in the search path list.</p>
+<ol>
+<li>Create folder: <code>C:\wolfmods\base\</code> (empty).</li>
+<li>Start with <code>+fs_overlaypath "C:\wolfmods"</code>.</li>
+<li>End game.</li>
+<li>Open <code>Saved Games\MachineGames\Wolfenstein The New Order\base\ErrorLog_*.txt</code>, inspect block <code>Current search path:</code>.</li>
+</ol>
+<p><strong>Proof provided if</strong> it reads:</p>
+<pre><code>Current search path:
+C:/Users/.../Saved Games/.../base/
+C:/wolfmods/base/
+D:/SteamLibrary/.../Wolfenstein.The.New.Order/base/
+</code></pre>
+<p><strong>Refuted if</strong> the list remains unchanged two lines — then the Cvar <code>CVAR_ROM</code> is evaluated before the command line. Next attempt: same line in <code>binary.cfg</code> inside the game folder (which is searched and executed according to log; that it <em>resets Cvar values</em> must not apply for FS-init because it runs before).</p>
+<p>Without E1, E2 is pointless.</p>
+<hr />
+<h3 id="e2--does-a-loose-file-beat-the-archive-part-1-15-minutes-low-risk">E2 — Does a loose file beat the archive? (Part 1, 15 minutes, low risk)</h3>
+<p>This is <strong>the</strong> experiment. Everything else is preparation.</p>
+<p><strong>Hypothesis:</strong> A file under <code>&lt;fs_overlaypath&gt;/base/&lt;ArchivePath&gt;</code> is read instead of the archive entry.</p>
+<p>Choose an asset whose effect you see immediately and which depends on only one place. Suggestion: a weapon damage decl.</p>
+<ol>
+<li><code>python -m wolfsdk cat damage:damage/tungsten/mg60 &gt; mg60.decl</code> and set the damage value to something absurd (e.g., 500).</li>
+<li>Determine the <strong>exact</strong> archive path of the asset — do not guess:
+   <code>python -c "d=open(r'D:\SteamLibrary\steamapps\common\Wolfenstein.The.New.Order\base\chunk0.index','rb').read(); i=d.find(b'damage/tungsten/mg60'); print(d[i-60:i+160])"</code>
+   (For other chunks the same with <code>chunk1.index</code> … <code>chunk13.index</code>.)
+   The path looks like <code>generated/decls/damage/tungsten/mg60.decl</code>.</li>
+<li>Place the file exactly under this path:
+   <code>C:\wolfmods\base\generated\decls\damage\tungsten\mg60.decl</code></li>
+<li>Start with <code>+fs_overlaypath "C:\wolfmods" +fs_reportReads 1 +fs_debug 1 +g_showHud 1</code>. (<code>fs_reportReads</code> = <code>Report every filesystem reads</code> — <strong>CVAR</strong>, present in both games, <code>0x1410505c0</code> or <code>0x14297d440</code>.)</li>
+<li>Fire an MG60 in the game.</li>
+</ol>
+<p><strong>Proof provided if</strong> the damage changes. Then modding for Part 1 is immediately a copy operation and <code>wolfsdk apply</code> may leave the archive alone.</p>
+<p><strong>Important interim finding, even if nothing happens:</strong> <code>fs_reportReads 1</code> logs every file access. If the log shows an attempt on <code>C:/wolfmods/base/generated/decls/damage/...</code>, then the engine <em>asks</em> for the loose file and rejects it only (Format? Stale-Check?) — that is a completely different starting point than no request at all.</p>
+<p><strong>Invalidated if</strong> <code>fs_reportReads</code> shows no access to the Overlay path.
+In that case, the Resource layer serves the Decl directly from the container, and the filesystem is never queried — entirely expected in <code>PROD_PRODUCTION</code>.</p>
+<p><strong>Variant 2b, if 2a fails:</strong> place the same file into <code>D:\...\base\generated\decls\damage\tungsten\mg60.decl</code>, i.e., into the folder where the Engine has demonstrably written itself. Then a game file is touched — but only a newly created one, not an archive; deleting it restores the original state.</p>
+<hr />
+<h3 id="e3--does-the-engine-read-its-own-generated-cache-part-1-10-minutes-low-risk">E3 — Does the Engine read its own <code>generated</code> Cache? (Part 1, 10 minutes, low-risk)</h3>
+<p><strong>Hypothesis:</strong> <code>base/generated/decls/particle/&lt;name&gt;.bin</code> is read at startup and not regenerated on every run.</p>
+<ol>
+<li>Record timestamps and sizes of all 76 files:
+   <code>python tools/probe_loadpaths.py</code> (Section "RUNTIME: Files on disk") or
+   <code>Get-ChildItem -Recurse "D:\...\base\generated" | Select FullName,Length,LastWriteTime</code>.</li>
+<li>Start the game, play the same location as during generation (the blood particles were created when shooting at an enemy), then exit.</li>
+<li>Query timestamps again.</li>
+</ol>
+<p><strong>Proof provided if</strong> the files remain <strong>unchanged</strong> — then they were read rather than rewritten, and the folder is a genuine read path.</p>
+<p><strong>Invalidated if</strong> all timestamps are new — then it is a pure debug dump without reading back.</p>
+<p>Counter-check (stronger): overwrite one of the <code>.bin</code> files with null bytes (copy beforehand!). If it breaks and the game or effect crashes, it was read. If it repairs itself, it was a cache with Stale-Check — that also proves reading.</p>
+<hr />
+<h3 id="e4--does-masterindex-accept-an-additional-entry-part-1-30-minutes-modifies-a-game-file">E4 — Does <code>master.index</code> accept an additional entry? (Part 1, 30 minutes, modifies a game file)</h3>
+<p><strong>Hypothesis:</strong> a 15th Chunk pair in <code>base/master.index</code> is mounted and its Assets displace those from the existing Chunks (or supplement them).</p>
+<p>Modifying <code>base/master.index</code> — 520 bytes, copy beforehand. No archive is rewritten.</p>
+<ol>
+<li>Backup <code>base/master.index</code>.</li>
+<li>Build a tiny custom <code>chunk14.resources</code> + <code>chunk14.index</code> with <code>wolfsdk</code> containing exactly one modified Decl (the same as in E2).</li>
+<li>In <code>master.index</code>, increment the counter from 14 to 15 (Big-Endian u32 at offset 4) and append two length-prefixed names: <code>\x0d\x00\x00\x00chunk14.index</code> and <code>\x11\x00\x00\x00chunk14.resources</code>.</li>
+<li>Start, check the log for <code>Load N resources using M of K total resource files</code> — <code>K</code> must increase.</li>
+</ol>
+<p><strong>Proof provided if</strong> <code>K</code> increases <strong>and</strong> the change takes effect in-game.
+<strong>Partial success if</strong> <code>K</code> increases but the change does not take effect: then mount order is decisive, and the new Chunk must come <strong>before</strong> the originals.
+<strong>Invalidated if</strong> the game fails to start — restore <code>master.index</code>.</p>
+<hr />
+<h3 id="e5--does-resource_loadlooseassets-work-part-2-20-minutes-low-risk">E5 — Does <code>resource_loadLooseAssets</code> work? (Part 2, 20 minutes, low-risk)</h3>
+<p><strong>Hypothesis:</strong> with <code>resource_loadLooseAssets 1</code>, Part 2 reads a loose file instead of the container entry.</p>
+<p>Prerequisite: <strong>turn on logging first</strong>, otherwise you see nothing.</p>
+<ol>
+<li>Start with
+   <code>+logFile 1 +logFilePersistent 1 +logFilePathType 0 +resource_loadLooseAssets 1 +fs_reportReads 1</code></li>
+<li>Play until the main menu, then exit.</li>
+<li>Open <code>Saved Games\MachineGames\Wolfenstein II The New Colossus\base\qconsole.log</code>.</li>
+</ol>
+<p><strong>First check:</strong> does the log file exist at all? If not, <code>logFile</code> is not settable via command line — then try the same line in <code>base/build.cfg</code> (which is demonstrably executed, <code>Executing build.cfg...</code>), but this modifies a game file (192 bytes, copy beforehand).</p>
+<p><strong>Second check:</strong> does the log contain the block <code>Current search path:</code>? Then you know where loose files belong.</p>
+<p><strong>Third check:</strong> does <code>fs_reportReads</code> show <em>more</em> file accesses after setting <code>resource_loadLooseAssets 1</code> than without? That would be the signature of "check for loose assets": the Engine queries the filesystem additionally on every container read.</p>
+<p><strong>Proof provided when</strong> the access counter measurably increases. Then proceed to Step 4: create a file under the displayed base path and check if it wins — analogous to E2.</p>
+<hr />
+<h3 id="e6--what-does-part-2-actually-read-from-the-disc-part-2-15-minutes-low-risk-very-revealing">E6 — What does Part 2 actually read from the disc? (Part 2, 15 minutes, low-risk, very revealing)</h3>
+<p><strong>Hypothesis:</strong> <code>fs_copyfiles</code> copies every read file into a target directory, thereby revealing without guessing which names the filesystem sees.</p>
+<ol>
+<li>Create an empty folder <code>C:\wolfread\</code>.</li>
+<li>Start with <code>+fs_copyfiles "C:/wolfread/" +logFile 1</code>.</li>
+<li>Go to the main menu and exit.</li>
+<li>Inspect <code>C:\wolfread\</code>.</li>
+</ol>
+<p><strong>Proof provided when</strong> a directory structure appears there. The directory names within are <strong>the exact paths</strong> under which loose placeholder files must lie. This saves every guess required in E5.</p>
+<p><strong>Refuted/uninteresting when</strong> the folder remains empty: then everything in Part 2 truly runs over containers, and there is no file path to sample. <strong>That would be a clean, final No</strong> — and thus an equally valuable result.</p>
+<p>The same applies to Part 1 (<code>fs_copyfiles</code> does not exist there — verified); there <code>fs_reportReads 1</code> performs the equivalent, only without copies.</p>
+<hr />
+<h3 id="e7--can-a-dlc-package-be-slipped-in-part-1-45-minutes-places-files-in-the-game-folder">E7 — Can a DLC package be slipped in? (Part 1, 45 minutes, places files in the game folder)</h3>
+<p><strong>Hypothesis:</strong> a self-created <code>dlc/&lt;name&gt;/</code> with <code>info.txt</code> and <code>base/</code> will be mounted.</p>
+<p>Create new files under <code>D:\...\Wolfenstein.The.New.Order\dlc\</code>. The folder does not exist today; complete deletion restores the original state. <strong>No delivered file is touched.</strong></p>
+<h4 id="what-has-been-measured-so-far">What has been measured so far</h4>
+<p>The format was previously listed here as "unknown". Field names are now retrieved from the EXE, and the dialect is not — both with evidence.
+Reproduce: <code>python tools/dlcinfo.py</code>, check: <code>--selbsttest</code>.</p>
+<p><strong>The Literal Block.</strong> MSVC packs string constants of a translation unit contiguously. The block for the DLC function lies in <code>.rdata</code> between <code>\dlc</code> (0x140F1D1E0) and
+<code>...FAILED to parse dlcInfoVars in info.txt (%s).</code> (0x140F1D320), 376 bytes,
+<strong>14 Literals</strong> — the entire function in source order:</p>
+<pre><code>0x140F1D1E0  '\dlc'
+0x140F1D1E8  'EnumerateDownloadableContent: %s\n'
+0x140F1D210  '\tFound DLC: %s...'
+0x140F1D228  '%s/%s/info.txt'
+0x140F1D238  'and info.txt!\n'
+0x140F1D248  'Error, found %s directory without info.txt!\n'
+0x140F1D278  'Could not read info.txt (%s)'
+0x140F1D298  '%s/%s'
+0x140F1D2A0  'appID'        &lt;- Field name
+0x140F1D2A8  'dlcID'        &lt;- Field name
+0x140F1D2B0  &quot;\t\t...successfully mounted '%s.  ID: %d\n&quot;
+0x140F1D2D8  'Found invalid dlcID in info (%d)'
+0x140F1D300  '\t\tUser does not own this DLC.\n'
+0x140F1D320  '\t...FAILED to parse dlcInfoVars in info.txt (%s).'
+</code></pre>
+<p>Twelve of these are format strings and messages from the function itself, <strong>exactly two are identifiers: <code>appID</code> and <code>dlcID</code></strong>. A third field name cannot stand as a string literal there — the list is complete, not selected.</p>
+<p><strong>The Cross-check</strong> (all numbers from <code>tools/dlcinfo.py</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Finding</th>
+<th>Control Group</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Proximity: Identifiers per 376-byte window</td>
+<td>here 2</td>
+<td>2000 random <code>.rdata</code> windows: Mean 6.4; <strong>44.8% also have ≥ 2</strong></td>
+</tr>
+<tr>
+<td>Uniqueness in the whole EXE</td>
+<td><code>appID</code> 1 ×, <code>dlcID</code> 1 ×</td>
+<td>only 16% of arbitrary <code>.rdata</code> identifiers occur 1 ×</td>
+</tr>
+<tr>
+<td>Self-reference via a message</td>
+<td><code>dlcID</code> appears verbatim in <code>Found invalid dlcID in info (%d)</code></td>
+<td><code>appID</code> is not mentioned by any message</td>
+</tr>
+<tr>
+<td>Pointers from <code>.data</code> (pattern <code>cvar_table.py</code>)</td>
+<td>none, for both</td>
+<td>82.7% of arbitrary <code>.rdata</code> identifiers are referenced</td>
+</tr>
+</tbody>
+</table></div>
+<p>The first line is the crucial part: <strong>Proximity alone proves nothing here.</strong>
+Almost half of all equally wide windows satisfy this same criterion. What contributes is the combination of two things: <code>dlcID</code> is explicitly named by the error message of the function <strong>itself</strong>, and both strings appear exactly once in the 24 MB binary file — they could therefore not come from anywhere else. The pointer test yields a negative result as expected: the names are RIP-relative LEA operands in <code>.text</code>, and <code>.text</code> is SteamStub-encrypted. There is no static field table that one could read out.</p>
+<p><strong>Mandatory fields and defaults.</strong> Both fields are factually mandatory; default values do not exist in the image. <code>idDict::GetInt</code> returns 0 when the key is missing; a missing <code>dlcID</code> thus lands in <code>Found invalid dlcID in info (0)</code>, a missing <code>appID</code> in <code>User does not own this DLC.</code> — both times without any specific indication that only that field is missing.</p>
+<p><strong>The dialect is not decidable</strong>, and this is a measurement result, not a gap: the parse call site is located in <code>.text</code>. What is measurable is which <code>idDict</code> readers Part 1 actually carries — three, all with their own marker string:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Reader</th>
+<th>Marker</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idDict::Parse(idParser&amp;)</code>, parenthesized pairs</td>
+<td><code>Expected quoted string, but found '%s'</code></td>
+<td>0x1410575B8</td>
+</tr>
+<tr>
+<td>INI</td>
+<td><code>' dictionary INI reader'</code>, <code>'%s[%s]'</code></td>
+<td>0x1410577B0</td>
+</tr>
+<tr>
+<td>JSON</td>
+<td><code>'JSON reader'</code>, <code>'" : "'</code></td>
+<td>0x141057830</td>
+</tr>
+</tbody>
+</table></div>
+<p>The write format of the same <code>idDict</code> stands next to it: <code>\t"%s"\t%s</code> (0x141057848) — keys in quotes, value naked, tabulator in between.</p>
+<p>Two weak indices speak for the <strong>parenthesized</strong> reader:</p>
+<ul>
+<li>In <code>idSessionLocal</code> there are two identical pairs (filename, source name) directly adjacent to each other, with 16 bytes spacing:
+  <code>default.tss</code> / <code>netvars</code> (0x140F16500/0x140F16510) and
+  <code>info.txt</code> / <code>dlcInfo</code> (0x140F16558/0x140F16568). Only the parenthesized reader needs its own source name — INI and JSON name their parser themselves.</li>
+<li>The INI reader flattens sections to <code>section[key]</code> (<code>%s[%s]</code>). What is sought is the naked name <code>appID</code>. A <code>[dlcInfo]</code> header thus does not fit that.</li>
+</ul>
+<p>One index speaks for <strong>JSON</strong>: Part 2 provides three actual files for the same task, and they look like this (<code>dlc\dlc_1\dlcinfo.json</code>, 19 bytes, literally from disk):</p>
+<pre><code>{
+   &quot;dlcid&quot; : 1
+}
+</code></pre>
+<p>Keys in quotes, <code>:</code> as separator, value naked, three spaces indentation — exactly what the JSON writer of <code>idDict</code> produces (<code>'" : "'</code>). It is a file of another subsystem from three years later, but it is the house dialect of the same company for precisely this purpose. Part 1 has the same JSON reader, naming its file only <code>.txt</code>.</p>
+<p>All are indices, no measurement. Hence four versions, ordered by probability — to output with <code>python tools/dlcinfo.py --variante a</code> (or <code>b</code>, <code>c</code>, <code>d</code>):</p>
+<pre><code>a)  {                        b)  {
+    →   &quot;appID&quot;→&quot;201810&quot;         &quot;appID&quot; : 201810,
+    →   &quot;dlcID&quot;→&quot;1&quot;              &quot;dlcID&quot; : 1
+    }                            }
+                     (a: → = tabulator, b: three spaces like in Part 2)
+
+c)  appID &quot;201810&quot;           d)  appID = 201810
+    dlcID &quot;1&quot;                    dlcID = 1
+</code></pre>
+<p><code>201810</code> is the Steam AppID of Part 1 (from <code>appmanifest_201810.acf</code>).
+<code>c</code> is the previous hypothesis from this document — it now stands in third place because it has no evidence behind it.</p>
+<p><strong>The Steam Block.</strong> In <code>.rdata</code>/<code>.data</code>, there is <strong>no</strong> list of allowed DLC IDs and <strong>no</strong> AppID constant in the DLC block — the check derives its value from the file. Part 1 loads <code>steam_api64.dll</code> dynamically; the ownership test runs via <code>ISteamApps</code> (0x14121D1B8). Which method is invoked (<code>BIsSubscribedApp</code> checks ownership, <code>BIsDlcInstalled</code> checks an installed DLC) is defined in <code>.text</code> and is not measurable. <strong>The path is therefore not proven to be.</strong> For <code>BIsSubscribedApp(201810)</code>, Steam says yes because the base game belongs to the user — precisely why the own AppID appears in all four versions. A game launch decides it.</p>
+<h4 id="execution">Execution</h4>
+<ol>
+<li>Create <code>dlc\test\base\</code> and place a small custom archive inside. (<code>base</code> appears in the literal block of <code>OpenDLCFileHandles</code> at 0x140E6F67C, between <code>- already loaded - skipping...</code> and <code>File '%s' wasn't preloaded, trying to slow load it from disc</code>. Weak evidence — <code>base</code> is a generic string. In Part 2, it is explicitly <code>%s/base</code> — see E8.)</li>
+<li>Write <code>dlc\test\info.txt</code>, Version <strong>a</strong>.</li>
+<li>Launch and check the <code>ErrorLog</code>/<code>qconsole.log</code>.</li>
+<li>Repeat with <strong>b</strong>, then <strong>c</strong>, then <strong>d</strong> when seeing <code>...FAILED to parse</code> — one version per launch, the log states exactly where it failed each time.</li>
+</ol>
+<h4 id="how-to-recognize-what-happened">How to Recognize What Happened</h4>
+<p>The messages verbatim from the EXE, in the order they occur:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Log</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EnumerateDownloadableContent: &lt;path&gt;</code></td>
+<td>The scan is running. Already present in today's log.</td>
+</tr>
+<tr>
+<td><code>Found DLC: test...</code></td>
+<td>Directory seen.</td>
+</tr>
+<tr>
+<td><code>Error, found test directory without info.txt!</code></td>
+<td>Path correct, file not found — wrong name/location.</td>
+</tr>
+<tr>
+<td><code>Could not read info.txt (&lt;path&gt;)</code></td>
+<td>File exists, not readable.</td>
+</tr>
+<tr>
+<td><code>...FAILED to parse dlcInfoVars in info.txt (&lt;path&gt;)</code></td>
+<td><strong>Wrong dialect</strong> — try next version.</td>
+</tr>
+<tr>
+<td><code>Found invalid dlcID in info (&lt;n&gt;)</code></td>
+<td>Dialect correct, <code>dlcID</code> value rejected. Try another value.</td>
+</tr>
+<tr>
+<td><code>User does not own this DLC.</code></td>
+<td>Dialect correct, ownership check triggers.</td>
+</tr>
+<tr>
+<td><code>...successfully mounted 'test.  ID: 1</code></td>
+<td><strong>Mounted.</strong></td>
+</tr>
+<tr>
+<td><code>OpenDLCFileHandles: 1 packages mounted.</code> + <code>* Content Package #0:</code> / <code>- id: 1</code> / <code>- path: ...</code></td>
+<td>File handles open.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Proof provided if</strong> the last two lines appear.<br />
+<strong>Refuted if</strong> <code>User does not own this DLC.</code> appears even with the own AppID. Then the Steam authorization check triggers and the path is too short for Part 1 — which is an equally valid result.</p>
+<p><strong>The starting situation is already in the log.</strong> In <code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein The New Order\base\qconsole.log</code>, today it shows <code>EnumerateDownloadableContent: D:\...\Wolfenstein.The.New.Order\dlc</code> and immediately below <code>OpenDLCFileHandles: 0 packages mounted.</code> — the folder name <code>dlc</code> directly in the game root directory is thus not guessed, but output by the game itself. The <strong>0</strong> is the comparison value.</p>
+<p><strong>For Part 2, all this does not apply.</strong> <code>NewColossus_x64vk.exe</code> knows neither <code>info.txt</code> nor <code>appID</code>/<code>dlcID</code> nor <code>EnumerateDownloadableContent</code> — the anchor strings are completely missing. There, the path is at <code>%s/dlcinfo.json</code> (0x1426CF6E0) with the single key <code>dlcid</code> (0x1426CF7A8, lowercase) and <code>%s/base</code> (0x1426CF730), searched under <code>../dlc/</code>. Part 2 also lacks the bracketed <code>idDict</code> reader entirely (<code>Expected quoted string</code> occurs 0 times in EXE 0 ×) — only INI and JSON. Two games, two formats.</p>
+<p>For Part 2, this is <strong>no longer a puzzle</strong>: the three DLCs are delivered on the disc and show the structure completely —
+<code>dlc\dlc_1\dlcinfo.json</code> (content above), alongside <code>dlc\dlc_1\base\</code> with <code>packagemapspec.json</code>, <code>chunk_20.resources</code>, <code>chunk_20.texdb</code>, <code>maps\</code>, <code>sound\</code>, <code>bink\</code>, and a custom <code>dlc\dlc_1\virtualtextures\</code>. A self-built <code>dlc_4</code> must follow this pattern — that is E8, and E8 should therefore run <strong>before</strong> E7: there is nothing to guess.</p>
+<p><strong>Unexplained:</strong> The literal <code>and info.txt!\n</code> (0x140F1D238) appears mid-block. It is not a suffix of any other message, nor does it indicate an obvious call site. This suggests a second check that requires both <code>base</code> <strong>and</strong> <code>info.txt</code> — however, this is speculation, not measurement.</p>
+<hr />
+<h3 id="e8--dlc-package-for-part-2-45-minutes-creates-files-in-the-game-folder">E8 — DLC package for Part 2 (45 minutes, creates files in the game folder)</h3>
+<p><strong>Hypothesis:</strong> A <code>dlc/dlc_4/</code> directory with its own <code>packagemapspec.json</code> will be mounted without ownership verification.</p>
+<p><strong>First, the risk-free preliminary step:</strong> Start with <code>+logFile 1 +resource_dlcDbgSearchPath "C:/wolfdlc"</code> and check the log for <code>SearchDLC: found %d dlcs</code>. If it shows <strong>0</strong> instead of <strong>3</strong>, the CVar has indeed redirected the search path — and then the entire attempt can take place on <code>C:\wolfdlc\</code>, <strong>without creating a single file in the Steam folder</strong>. This is the clean approach; adopt it if it works.</p>
+<p>Next:</p>
+<ol>
+<li><code>&lt;SearchPath&gt;\dlc_4\dlcinfo.json</code> = <code>{ "dlcid": 4 }</code></li>
+<li><code>&lt;SearchPath&gt;\dlc_4\base\packagemapspec.json</code> following the pattern of <code>dlc_1</code>, but with <code>"chunkid": 26</code>, <code>"basechunkid": 6</code>, <code>"layer": -1</code>, and a <code>name</code> pointing to an <strong>existing</strong> map (e.g., <code>game/wolf/c01/c01p1</code>) — this tests overwriting rather than creating anew.</li>
+<li><code>&lt;SearchPath&gt;\dlc_4\base\chunk_26.resources</code> with the modified asset.</li>
+</ol>
+<p><strong>Proof is provided if</strong> the log reports <code>SearchDLC: found 4 dlcs</code> <strong>and</strong> the change takes effect in-game.
+<strong>Intermediate result</strong> at <code>SearchDLC: Could not load mapspec for dlc id 4 from ...</code> — the folder is found, but <code>packagemapspec.json</code> is not accepted. Then adjust the JSON, not the folder.</p>
+<hr />
+<h2 id="order-of-operations-if-time-is-tight">Order of operations if time is tight</h2>
+<ol>
+<li><strong>E6</strong> (Part 2, 15 min) — answers the fundamental question for Part 2: "is there a file path at all?" with yes or no.</li>
+<li><strong>E1 → E2</strong> (Part 1, 20 min) — answers the same question for Part 1 and decides whether <code>wolfsdk</code> can function in the future without archive write access.</li>
+<li><strong>E5</strong> (Part 2) — only makes sense if E6 has shown something.</li>
+<li><strong>E3</strong> — a small supplementary signal for Part 1.</li>
+<li><strong>E8 Preliminary</strong> (<code>resource_dlcDbgSearchPath</code>) — risk-free, and if it works, the DLC path for Part 2 is testable without any intervention.</li>
+<li><strong>E4, E7, E8</strong> — only if all easy paths lead nowhere.</li>
+</ol>
+<hr />
+<h2 id="reproduce-evidence">Reproduce evidence</h2>
+<pre><code>python tools/probe_loadpaths.py             # all evidence, sorted by topic
+python tools/probe_loadpaths.py --self-test # checks that the key witnesses are still present
+</code></pre>
+<p>The self-test verifies two things: that the core strings exist (<code>fs_overlaypath</code>, <code>r_renderProgProdOverridePath</code>, <code>resource_loadLooseAssets</code>, <code>fs_pathDeclOverride</code>, …) <strong>and</strong> that the negative findings remain negative (no <code>resource_loadLooseAssets</code> in Part 1, no <code>fs_overlaypath</code> in Part 2). If it fails after a game update, this document is outdated.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Streamed-Audio-Containers.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small><code>streamed.resources</code> and <code>english.streamed</code></a><a class="next" href="Patch-Precedence.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Do <code>patch_*.resources</code> take precedence? — 670 MB against 300 KB</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

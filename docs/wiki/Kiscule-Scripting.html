@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiscule — The Script Layer of Wolfenstein II – Wolfenstein Modloader</title>
+<meta name="description" content="The node-graph mission script format of Wolfenstein II, fully decoded and rewritable byte-for-byte.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#systems"><span class="en">Game systems</span><span class="de">Spielsysteme</span></a></p>
+<h1>Kiscule — The Script Layer of Wolfenstein II</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Kiscule-Scripting"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-executive-summary">0. Executive Summary</a></li><li><a href="#1-the-container-two-layers-both-active">1. The Container: Two Layers, Both Active</a></li><li><a href="#2-the-text-a-line-grammar-three-cases">2. The Text: A Line Grammar, Three Cases</a></li><li><a href="#3-the-graph">3. The Graph</a></li><li><a href="#4-the-205-node-types">4. The 205 Node Types</a></li><li><a href="#5-a-script-readable">5. A Script, Readable</a></li><li><a href="#6-map--script-the-rosetta-stone-holds">6. Map ↔ Script: The Rosetta Stone Holds</a></li><li><a href="#7-control-tests">7. Control Tests</a></li><li><a href="#8-what-a-mod-author-can-do-with-it">8. What a Mod Author Can Do With It</a></li><li><a href="#9-what-remains-open">9. What Remains Open</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede"><span class="t" data-t="kiscule">Kiscule</span> is the mission scripting system of Wolfenstein II (TNC): triggers, enemy waves, doors and audio are built as node graphs, like boxes connected by wires. The researchers decoded the file format completely and can read and write all 2,408 scripts back byte-for-byte identical. Modders can safely change numbers such as delays or trigger counts. Whether the game accepts rewritten scripts is not yet confirmed in the game.</p><ul><li>2,408 scripts with 70,274 nodes in 205 node types; every byte is explained.</li><li><span class="t" data-t="roundtrip">Round-trip</span>: 2,408 of 2,408 scripts written back identical, including compression.</li><li>All 205 node types match classes in the game program; 113 more exist but are never used.</li><li>30 of 2,408 original scripts contain small defects, such as 43 connections that point nowhere.</li><li>All 2,443 map references to scripts resolve.</li></ul></div><div class="de"><p class="lede"><span class="t" data-t="kiscule">Kiscule</span> ist das Missions-Skriptsystem von Wolfenstein II (TNC): Auslöser, Gegnerwellen, Türen und Audio sind als Knotengraphen gebaut, wie Kästchen, die mit Drähten verbunden sind. Die Forscher haben das Dateiformat vollständig entschlüsselt und können alle 2.408 Skripte byte-genau lesen und zurückschreiben. Zahlen wie Wartezeiten oder Auslöse-Zähler kannst du gefahrlos ändern. Ob das Spiel umgeschriebene Skripte annimmt, ist im Spiel noch nicht bestätigt.</p><ul><li>2.408 Skripte mit 70.274 Knoten in 205 Knotentypen; jedes Byte ist erklärt.</li><li><span class="t" data-t="roundtrip">Roundtrip</span>: 2.408 von 2.408 Skripten identisch zurückgeschrieben, inklusive Kompression.</li><li>Alle 205 Knotentypen entsprechen Klassen im Spielprogramm; 113 weitere existieren, werden aber nie benutzt.</li><li>30 von 2.408 Original-Skripten haben kleine Fehler, etwa 43 Verbindungen ins Leere.</li><li>Alle 2.443 Verweise von Karten auf Skripte lassen sich auflösen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Kiscule is what drives the missions in Part 2: triggers, enemy waves, intermission sequences, doors, and audio. It is the id-tech-6 equivalent to the <code>.script</code> files from Part 1 — but not a text interpreter, rather a <strong>node graph</strong>, as drawn by an editor.</p>
+<p><strong>All numbers here are measured</strong> from the unmodified Retail installation under <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\base\</code> (read-only only). Reproducible with:</p>
+<pre><code class="language-bash">python tools/kiscule.py --dump        # Unpack 2408 scripts into cache
+python tools/kiscule.py --roundtrip   # Write back bit-exactly, all 2408
+python tools/kiscule.py --verify      # Counter-tests plus negative tests
+python tools/kiscule.py --maplink     # Map &lt;-&gt; Script &lt;-&gt; Entity-Name
+python tools/kiscule.py --signatures  # 205 node types with signature
+python tools/kiscule.py --signature idKisculeNodeDelay
+python tools/kiscule.py --graph gp_kiscule_devstarts
+</code></pre>
+<p>Underlying infrastructure: <code>wolfsdk/idcl.py</code> (Archive), <code>wolfsdk/oodle.py</code> (Kraken via game DLL), <code>tools/extract_tnc.py</code> (Unpack). <code>--dump</code> requires roughly one minute initially; thereafter everything works out of <code>%TEMP%\kiscule-cache</code> (13 MiB raw, 186 MiB text).</p>
+<hr />
+<h2 id="0-executive-summary">0. Executive Summary</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Container format?</td>
+<td>16-Byte header + Kraken frame, followed by <strong>plaintext</strong></td>
+<td><code>--roundtrip</code>: 2408/2408</td>
+</tr>
+<tr>
+<td>What percentage explained?</td>
+<td><strong>100 %.</strong> No byte unexplained</td>
+<td>Parser → Emitter reproduces all 195,090,346 bytes of text and all 13,293,044 bytes of archive payload data bit-exactly</td>
+</tr>
+<tr>
+<td>Node types?</td>
+<td><strong>205 used</strong>, all 205 with RTTI class in the EXE. 113 additional classes exist but do not appear in Retail</td>
+<td><code>docs/ghidra/rtti_tnc.json</code></td>
+</tr>
+<tr>
+<td>Signatures?</td>
+<td>Fully derived from data itself — each node carries its connections and parameters with it</td>
+<td><code>--signatures</code></td>
+</tr>
+<tr>
+<td>Graph?</td>
+<td>Edges stand at both ends, 178,516 of 178,559 ends mirrored</td>
+<td><code>--verify</code></td>
+</tr>
+<tr>
+<td>Write back?</td>
+<td>Yes, bit-exactly — even the Kraken re-compression matches Retail</td>
+<td><code>--roundtrip</code></td>
+</tr>
+<tr>
+<td>Map ↔ Script?</td>
+<td>2443/2443 references resolve, 98.90% of Entity names reside in the same map</td>
+<td><code>--maplink</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>What a mod author can concretely do with this</strong> is detailed in Section 8.</p>
+<hr />
+<h2 id="1-the-container-two-layers-both-active">1. The Container: Two Layers, Both Active</h2>
+<p><code>extkisclule</code> is one of three types that appear binary in the archive but are not. Behind the archive compression lies another layer:</p>
+<pre><code>0x00  i64  usize   &gt;= 0: Length after unpacking. &lt; 0: Raw text, |usize| long
+0x08  u64  csize   always len(payload) - 16
+0x10  ...          Kraken frame (starts with 0x8C) or just the raw text
+</code></pre>
+<p>Measured against all 2408 unique entries: <strong>2393 Kraken, 15 raw.</strong></p>
+<p><strong>The 15 "negative" ones are not an exception.</strong> <code>d9ffffff…</code> = −39 simply means: 39 bytes, uncompressed. And these 39 bytes are</p>
+<pre><code>\n\tedit = {\r\n\t\tkiscule = {\r\n\t\t}\r\n\t}\r\n}\0
+</code></pre>
+<p>— a <strong>empty Kiscule</strong>. Kraken does not make 39 bytes smaller, so the packer stores them raw. The rule <code>raw if compressed &gt;= raw</code> reproduces exactly these 15 and no others (<code>--roundtrip</code>, 2408/2408).</p>
+<p><strong>The re-compression matches Retail bit-exactly.</strong> Kraken, Level 4 (Normal), via the game's own <code>oo2core_5_win64.dll</code>: 2408 of 2408 frames are byte-identical to what is in the archive. This allows rebuilding an unmodified script without any deviation — the prerequisite for a <em>desired</em> change being the only change.</p>
+<p>Compression ratio across all scripts: 13,293,044 → 195,090,346 bytes, so <strong>14.7 : 1</strong>.</p>
+<hr />
+<h2 id="2-the-text-a-line-grammar-three-cases">2. The Text: A Line Grammar, Three Cases</h2>
+<p>The unpacked content is Decl plaintext, machine-generated, and therefore strictly regular. <strong>Each line is exactly one of three</strong>, indentation is always exactly one tab per nesting depth:</p>
+<pre><code>&lt;tabs&gt;key = {          Block start
+&lt;tabs&gt;}                Block end  (at the depth of block contents minus one)
+&lt;tabs&gt;key = value;      Scalar
+</code></pre>
+<p>Five value types, and no others: <code>int</code>, <code>float</code>, <code>"string"</code>, <code>true</code>/<code>false</code>, <code>NULL</code>. Counted across all scripts: 3,026,083 int, 1,684,238 string, 682,207 bool, 12,820 float, 10,119 NULL.</p>
+<p><strong>Structure:</strong> The file <strong>begins with a newline</strong>, the root block has no own <code>{</code> line (its content is at depth 1, the closing <code>}</code> at depth 0), and at the very end stands <strong>a NUL byte</strong>. Line endings are either LF (1461 files) or CRLF (947) — never mixed.</p>
+<p><strong>Measured: 9,243,027 lines across 2408 files, 0 unparsable.</strong></p>
+<pre><code>    edit = {
+        kiscule = {
+            version = 6;
+            nodes = {
+                num = 2;
+                item[0] = {
+                    name = &quot;idKisculeNodeBeginGame&quot;;
+                    id = 1276314557;
+                    nodePos = { x = 180; y = 220; }
+                    parameters = {
+                        class = &quot;idKisculeGraphNodeParametersBeginGame&quot;;
+                        object = { ignoreInitialFlag = true; }
+                    }
+                    connectionPoints = {
+                        num = 2;
+                        item[0] = {
+                            name = &quot;OnBeginGame&quot;;
+                            id = 821853744;
+                            connections = { num = 0; }
+                            type = &quot;OutputNotification&quot;;
+                            properties = 8;
+                            visible = true;
+                        }
+                        …
+</code></pre>
+<p>(above condensed for readability; in the file each field stands on its own line)</p>
+<p>Four blocks at top level, in this order, in <strong>every</strong> script: <code>version</code>, <code>nodes</code>, <code>comments</code>, <code>variables</code>.</p>
+<ul>
+<li><code>version</code> is <strong>6</strong> in 2329 scripts and <strong>5</strong> in 64. A structural difference between 5 and 6 is not visible in the data: same blocks, same fields, same node types. What the version means remains open. (In the 15 empty scripts <code>version</code> is missing entirely.)</li>
+<li><code>comments</code> are editor notes: <code>name</code>, <code>id</code>, <code>pos</code>, <code>size</code>, <code>parameters</code> (with <code>fillColor</code>, <code>borderThickness</code>, <code>insideText</code> …). 12,068 pieces. Purely cosmetic, but they stand in the file and belong to the roundtrip.</li>
+<li><code>variables</code> are named graph variables: 829 pieces, all with fields <code>name</code>, <code>global</code>, <code>isCrossMap</code>, <code>defaultValue</code>, <code>value</code>. Classes: <code>idKisculeGraphVariableBool</code> 433, <code>…Int</code> 229, <code>…EntityReference</code> 69, <code>…Time</code> 50, <code>…Float</code> 34, <code>…ListEntityReference</code> 12, <code>…EntityDef</code> 2. <code>isCrossMap</code> is the interesting switch: a variable that survives across map changes.</li>
+</ul>
+<hr />
+<h2 id="3-the-graph">3. The Graph</h2>
+<h3 id="31-nodes">3.1 Nodes</h3>
+<pre><code>item[i] = {
+    name = &quot;idKisculeNodeDelay&quot;;     &lt;- the node type
+    id = 1276314557;                 &lt;- unique within the file
+    nodePos = { x; y; }              &lt;- editor layout only
+    parameters = { class; object; }  &lt;- or  parameters = NULL;
+    connectionPoints = { num; item[…]; }
+}
+</code></pre>
+<p>70,274 nodes in 205 types, median 19 nodes per script, maximum 532 (<code>civilians_kiscule_soldier_approach</code>, 1.5 MiB text). 15 scripts are empty.</p>
+<p><code>parameters = NULL;</code> occurs — nodes without their own parameter object.</p>
+<h3 id="32-connections">3.2 Connections</h3>
+<pre><code>item[j] = {
+    name = &quot;Trigger&quot;;
+    id = 315942819;                  &lt;- unique within the file
+    connections = { num; item[…]; }
+    type = &quot;InputRegular&quot;;
+    properties = 8;
+    visible = true;
+}
+</code></pre>
+<p>Six <code>type</code> values. The numbers in this section come from a sample of every fourth script (602 of 2408, 155,538 connections) — the roundtrip and graph numbers in section 7 are instead full surveys.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>type</th>
+<th style="text-align: right;">Count (sample 1/4)</th>
+<th>Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OutputVariable</code></td>
+<td style="text-align: right;">41,501</td>
+<td>out</td>
+</tr>
+<tr>
+<td><code>OutputRegular</code></td>
+<td style="text-align: right;">38,439</td>
+<td>out</td>
+</tr>
+<tr>
+<td><code>InputVariable</code></td>
+<td style="text-align: right;">33,097</td>
+<td>in</td>
+</tr>
+<tr>
+<td><code>InputRegular</code></td>
+<td style="text-align: right;">29,448</td>
+<td>in</td>
+</tr>
+<tr>
+<td><code>OutputNotification</code></td>
+<td style="text-align: right;">13,049</td>
+<td>out</td>
+</tr>
+<tr>
+<td><code>InputEvent</code></td>
+<td style="text-align: right;">4</td>
+<td>in</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>Regular</code> is flow control (a pulse), <code>Variable</code> is data flow (a value), <code>Notification</code> is an event output. Every parameter of a node appears additionally as <strong>InputVariable + OutputVariable of the same name</strong> — so a value can either stand inside the node or come from outside.</p>
+<p><code>properties</code> is a bitmask. Observed values: 8, 0, 24, 25, 9, 40, 1, 13, 16. What is measured:</p>
+<ul>
+<li><strong>Bit 16 (0x10) is set only on list connections.</strong> Of the 65,159 tested connections with a matching parameter: 9,280 carry Bit 16 and are lists; 55,487 do not carry it and are not — <strong>not a single exception</strong>. The reverse is not entirely true: 392 list connections do <em>not</em> carry Bit 16. Thus, the implication holds in only one direction.</li>
+<li>Bit 8 (0x8) is the standard case for outputs and for <code>InputRegular</code>; <code>InputVariable</code> rarely carries it (27,691 × <code>properties = 0</code>).</li>
+<li><strong>The meaning of Bits 1, 4, and 32 is undetermined.</strong> They appear in 2,583 out of 155,538 connections (values 1, 9, 13, 25, 40). <code>properties = 40</code> (8|32) exists only on <code>OutputNotification</code>.</li>
+</ul>
+<p>The <code>visible</code> flag toggles display in the editor (142,645 true, 12,893 false) and correlates with nothing in the execution flow.</p>
+<h3 id="33-edges">3.3 Edges</h3>
+<pre><code>connections = {
+    num = 1;
+    item[0] = {
+        name = &quot;&quot;;
+        id = 672289692;
+        endNodeID = 1700766265;
+        endConnectionPointID = 2126630981;
+    }
+}
+</code></pre>
+<p><strong>Every edge exists at both ends.</strong> Of the 178,559 connection endpoints, 178,516 have a counterpart — that is <strong>89,279 edges</strong>.</p>
+<p>A guarantee that <em>does not</em> hold and which one easily derives incorrectly: the <code>id</code> of an edge is the same at both ends — in 149,620 cases, but in <strong>28,896 it is not</strong>. Anyone who pairs edges via their <code>id</code> builds a parser that errs on every sixth case. The defining relationship is <code>(endNodeID, endConnectionPointID)</code>, not the <code>id</code>.</p>
+<p><strong>43 connection endpoints in 29 Retail files point to nothing</strong> — to node or connection IDs that do not exist in the file. This is an error in the game data, not a parser error: <code>--verify</code> lists them individually. Affected are among others <code>c01p1_gameplay_kiscule_choice</code>, <code>gp_kiscule_button1/3</code>, <code>c11p1_light_kiscule_1_*</code>. A mod tool must account for this.</p>
+<p>This is compounded by <strong>a file with duplicate connection IDs</strong>:
+<code>sub_gp_c02p3/kiscules/gp023_kiscule_peanutbutter_event.decl</code> — there, an <code>EntityReference</code> node carries its four connections twice, each pair with the same <code>id</code>. Of the eight, only one hangs from an edge. Also a defect in the game data. Together this makes <strong>30 conspicuous files out of 2,408 (1.25%)</strong>; the remaining 2,378 are consistent in every respect.</p>
+<hr />
+<h2 id="4-the-205-node-types">4. The 205 Node Types</h2>
+<p>One does not need to guess a node type's signature: <strong>every node carries it.</strong> <code>--signatures</code> aggregates across all 70,274 occurrences and provides per-type the parameters (path, value type, whether always present) and the connections that appear in <em>every</em> instance.</p>
+<pre><code>$ python tools/kiscule.py --signature idKisculeNodeDelay
+idKisculeNodeDelay  (4103 nodes in 1197 scripts)
+  parameters.class = idKisculeNodeDelayParameters
+  Parameter:
+    delay                                      int                    always
+    resetOnStart                               bool                   always
+  Connections (17 fixed):
+    out Out                              OutputRegular        properties=8
+    in  Start                            InputRegular         properties=8
+    out Start                            OutputRegular        properties=8
+    in  Pause                            InputRegular         properties=8
+    …
+    in  delay                            InputVariable        properties=0
+    out delay                            OutputVariable       properties=8
+</code></pre>
+<p>The twenty most frequent (columns: nodes, scripts, fixed inputs/outputs, parameter fields; <code>*</code> = the number of connections depends on the individual node):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node Type</th>
+<th style="text-align: right;">Node</th>
+<th style="text-align: right;">Scripts</th>
+<th style="text-align: right;">In</th>
+<th style="text-align: right;">Out</th>
+<th style="text-align: right;">Par</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EntityReference</code></td>
+<td style="text-align: right;">13,850</td>
+<td style="text-align: right;">2,202</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1*</td>
+</tr>
+<tr>
+<td><code>GetCustomEvent</code></td>
+<td style="text-align: right;">8,020</td>
+<td style="text-align: right;">1,488</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4*</td>
+</tr>
+<tr>
+<td><code>Delay</code></td>
+<td style="text-align: right;">4,103</td>
+<td style="text-align: right;">1,197</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td><code>ActionTriggerFx</code></td>
+<td style="text-align: right;">3,532</td>
+<td style="text-align: right;">538</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr>
+<td><code>ActionSoundVoiceOver2</code></td>
+<td style="text-align: right;">3,499</td>
+<td style="text-align: right;">271</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">9*</td>
+</tr>
+<tr>
+<td><code>Gate</code></td>
+<td style="text-align: right;">3,195</td>
+<td style="text-align: right;">924</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td><code>SendCustomEvent</code></td>
+<td style="text-align: right;">2,582</td>
+<td style="text-align: right;">744</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td><code>ActionBoolControl</code></td>
+<td style="text-align: right;">1,979</td>
+<td style="text-align: right;">963</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td><code>ActionShowHide</code></td>
+<td style="text-align: right;">1,837</td>
+<td style="text-align: right;">1,174</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr>
+<td><code>RandomTime</code></td>
+<td style="text-align: right;">1,808</td>
+<td style="text-align: right;">510</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td><code>ActionSoundPostEvent</code></td>
+<td style="text-align: right;">1,493</td>
+<td style="text-align: right;">374</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5*</td>
+</tr>
+<tr>
+<td><code>PlayerEnt</code></td>
+<td style="text-align: right;">1,473</td>
+<td style="text-align: right;">794</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>Light</code></td>
+<td style="text-align: right;">1,417</td>
+<td style="text-align: right;">507</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td><code>Log</code></td>
+<td style="text-align: right;">1,325</td>
+<td style="text-align: right;">268</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr>
+<td><code>NamedVariableBool</code></td>
+<td style="text-align: right;">1,206</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td><code>TriggerNotification</code></td>
+<td style="text-align: right;">1,100</td>
+<td style="text-align: right;">452</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td><code>ListEntityReference</code></td>
+<td style="text-align: right;">1,021</td>
+<td style="text-align: right;">445</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td><code>ActionMidnightControl</code></td>
+<td style="text-align: right;">958</td>
+<td style="text-align: right;">647</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">2*</td>
+</tr>
+<tr>
+<td><code>OpMidnightParametersControl</code></td>
+<td style="text-align: right;">958</td>
+<td style="text-align: right;">647</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4*</td>
+</tr>
+<tr>
+<td><code>VolumeNotification</code></td>
+<td style="text-align: right;">857</td>
+<td style="text-align: right;">458</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table></div>
+<p>(The prefixes <code>idKisculeNode</code> are omitted in the table. Full list: <code>--signatures</code>.)</p>
+<p>Roughly sorted by name, five groups emerge:</p>
+<ul>
+<li><strong>Notification</strong> — Event inputs from the game world: <code>TriggerNotification</code>,
+  <code>DamageNotification</code>, <code>UseNotification</code>, <code>VolumeNotification</code>,
+  <code>AiKilledNotification</code>, <code>PickupNotification</code>, <code>AlarmNotification</code>.</li>
+<li><strong>Action</strong> — anything that does something: <code>ActionDamage</code>, <code>ActionTeleport</code>,
+  <code>ActionAISpawn</code>, <code>ActionShowHide</code>, <code>ActionAutosave</code>, <code>ActionNextMap</code>,
+  <code>ActionGiveItems</code>, <code>ActionMission</code>.</li>
+<li><strong>Flow / Op</strong> — Logic: <code>Gate</code>, <code>Relay</code>, <code>Counter</code>, <code>Delay</code>, <code>Timer</code>,
+  <code>DynamicSwitch</code>, <code>CompareFloat</code>, <code>FlowLayerCheck</code>, <code>FlowFlagCheck</code>.</li>
+<li><strong>Variable / Cast</strong> — Values: <code>Bool</code>, <code>Int</code>, <code>Float</code>, <code>Str</code>, <code>Time</code>,
+  <code>NamedVariable*</code>, <code>EntityToString</code>, <code>FloatsToVector</code>.</li>
+<li><strong>Reference</strong> — Pointers to the map: <code>EntityReference</code>,
+  <code>ListEntityReference</code>, <code>PlayerEnt</code>, <code>ActiveAIList</code>.</li>
+</ul>
+<h3 id="cross-check-against-the-exe">Cross-check against the EXE</h3>
+<p><code>docs/ghidra/rtti_tnc.json</code> contains <strong>683 RTTI classes with "Kiscule"</strong> in the name, of which <strong>315 <code>idKisculeNode*</code></strong> (excluding the <code>…Parameters</code> suffixes).</p>
+<ul>
+<li><strong>All 205 node types used in Retail have an RTTI class — 0 Unknowns.</strong> This is a prediction derived from two independent sources (game data, EXE) yielding the same result.</li>
+<li>Three used types do not start with <code>idKisculeNode*</code>, but are instead named <code>idKisculeLeverNotification</code>, <code>idKisculePlayerNotification</code>, and <code>idKisculePlayerControlledNotification</code>.</li>
+<li><strong>113 node classes exist in the EXE but appear in no Retail scripts.</strong> Among them: <code>LogicGateAnd</code>, <code>LogicGateNot</code>, <code>LogicGateXor</code>, <code>TestBools</code>, <code>CompareBool</code>, <code>CompareString</code>, <code>ClampInt</code>, <code>ClampFloat</code>, <code>MultiplyInt</code>, <code>DivideInt</code>, <code>SquareRootFloat</code>, <code>ActionGiveUpgrades</code>, <code>ActionPlayerPerk</code>, <code>ActionPlayerManipulate</code>, <code>ActionShowScreen</code>, <code>ActionSetOrientation</code>, <code>HudTimer</code>, <code>VaultCheck</code>, <code>DoorNotification</code>, <code>NamedVariableStr</code>, <code>ListInt</code>, <code>ListString</code>, <code>ParameterListOperatorAddItem*</code>. Fully verifiable against the RTTI list via <code>--signatures</code>.
+  <strong>Whether the engine loads such a node when it is inserted remains untested</strong> — the game has not been run.</li>
+</ul>
+<hr />
+<h2 id="5-a-script-readable">5. A Script, Readable</h2>
+<p><code>python tools/kiscule.py --graph "*wooden_shipping_crate_loot_01_8364217*"</code></p>
+<pre><code># …/c05p2_gameplay_district_kiscule_wooden_shipping_crate_loot_01_8364217.decl
+# (version 6, 8 Nodes, 0 Variables, 0 Comments)
+
+[1004261757] EntityReference   @780,740
+    . value = &quot;c05p2_gameplay_district_func_separable_part_tablet_1_8364217&quot;
+    -&gt; value                        -&gt; ActionWorldMarker[1998712095].entity
+    -&gt; value                        -&gt; DamageNotification[150361742].listenedEntities
+
+[2136463365] GetCustomEvent   @460,180
+    . eventName = &quot;sumerian_show&quot;
+    . global = true
+    . enabled = true
+    . maxNotificationCount = -1
+    -&gt; Received                     -&gt; ActionShowHide[655736182].Show
+
+[655736182] ActionShowHide   @820,200
+    . showEntities.num = 0
+    . hideEntities.num = 0
+    . detachAnyAttachedObjectOnHide = false
+    &lt;- Show                         &lt;- GetCustomEvent[2136463365].Received
+    -&gt; Show                         -&gt; ActionWorldMarker[1998712095].Show
+    &lt;- showEntities                 &lt;- ListEntityReference[1163848210].value
+
+[150361742] DamageNotification   @840,640
+    . enabled = true
+    . maxNotificationCount = 1
+    . waitingTime = 0
+    . filterDamageType = &quot;DAMAGETYPE_HEALTH DAMAGETYPE_EMP DAMAGETYPE_ELECTRIC …&quot;
+    -&gt; Damaged                      -&gt; SendCustomEvent[695051612].Send
+    &lt;- listenedEntities             &lt;- EntityReference[1004261757].value
+
+[695051612] SendCustomEvent   @1140,620
+    . eventName = &quot;tablet_destroyed&quot;
+    . global = true
+    &lt;- Send                         &lt;- DamageNotification[150361742].Damaged
+    -&gt; Send                         -&gt; ActionWorldMarker[1998712095].Hide
+</code></pre>
+<p>Read: A box (<code>…part_tablet_1</code>) becomes visible as soon as the global event <code>sumerian_show</code> occurs. If it takes damage — once per damage type — then <code>tablet_destroyed</code> is sent globally and the world marker is hidden. This is a collectible item.</p>
+<p><code>--unconnected</code> additionally displays free connections.</p>
+<hr />
+<h2 id="6-map--script-the-rosetta-stone-holds">6. Map ↔ Script: The Rosetta Stone Holds</h2>
+<p>The connection is open. In the map:</p>
+<pre><code>entityDef c01p1_vo_kiscule {
+    inherit = &quot;kiscule&quot;;
+    class = &quot;idKisculeEntity&quot;;
+    edit = {
+        externalKisculeDecl = &quot;maps/game/wolf/c01/c01p1_snd_vo/kiscules/c01p1_vo_kiscule.decl&quot;;
+    }
+}
+</code></pre>
+<p><code>python tools/kiscule.py --maplink</code> checks both directions across all 29 maps:</p>
+<pre><code>29 Maps
+externalKisculeDecl resolved: 2443/2443
+EntityReference found in same map: 13520/13670 (98.90%)
+</code></pre>
+<ul>
+<li><strong>2443 of 2443 references</strong> point to a script that exists in the archive. (2443 is exactly the number of <code>kiscule</code> entities from <code>docs/moddingflaeche-tnc.md</code> — two independent counts, same number.)</li>
+<li><strong>98.90% of <code>idKisculeNodeEntityReference</code> values</strong> are in the same map as <code>entityDef &lt;name&gt; {</code>. Thus, the entity name is the common key between map and script: whoever renames an entity in the map breaks the script, and whoever wants to know which script an object interacts with searches for its name.</li>
+<li>The <strong>150 failures</strong> are distributed across 29 maps; the top offender is <code>volume_fire_damage_437646057</code> (21×). Whether these are runtime-spawned entities or map debris from the editor is <strong>undetermined</strong>.</li>
+</ul>
+<hr />
+<h2 id="7-control-tests">7. Control Tests</h2>
+<p><code>python tools/kiscule.py --roundtrip</code> and <code>--verify</code>, both across all 2408:</p>
+<pre><code>Text Roundtrip bit-exact:      2408/2408  (195090346 Byte Text)
+Container Roundtrip bit-exact: 2408/2408  (13293044 Byte Payload)
+Lines through model:           9243027
+
+== Control Tests over 2408 Scripts ==
+  clean: 2378   with broken references (Retail Defect): 30   Exception: 0
+  Nodes: 70274 in 205 Types   Edge Ends: 178559 (= 89279 Edges)
+  Edge Ends with Match: 178516   of which same edge-id: 149620, others: 28896
+
+-- Prediction against Retail --
+  ok   scripts            2408 (expected 2408)
+  ok   nodes              70274 (expected 70274)
+  ok   types              205 (expected 205)
+  ok   edge_ends          178559 (expected 178559)
+  ok   mirrored           178516 (expected 178516)
+  ok   broken files       30 (expected 30)
+</code></pre>
+<p>The numbers in <code>RETAIL</code> (above in <code>tools/kiscule.py</code>) are hard-wired: a full sweep that deviates from this causes <code>--verify</code> to fail with return value 1. Whoever breaks the parser notices it here.</p>
+<p><strong>The predictions that had to be correct:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Independent Recalculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nodes.num</code> is the node count</td>
+<td><code>item[0…num-1]</code> must all exist, and no further ones may exist — in <strong>every</strong> <code>num</code> block of the file, including <code>connectionPoints</code>, <code>connections</code>, lists</td>
+<td>2408/2408</td>
+</tr>
+<tr>
+<td>70,274 nodes in 205 types</td>
+<td><code>survey_tnc.py --maps</code> counts via regex over raw bytes, <code>kiscule.py</code> over the parsed tree</td>
+<td>identical</td>
+</tr>
+<tr>
+<td>every node type is a real class</td>
+<td>RTTI from <code>NewColossus_x64vk.exe</code></td>
+<td>205/205</td>
+</tr>
+<tr>
+<td>map references are resolvable</td>
+<td><code>externalKisculeDecl</code> against archive contents</td>
+<td>2443/2443</td>
+</tr>
+<tr>
+<td>edges exist at both ends</td>
+<td>Mirror test over <code>(endNodeID, endConnectionPointID)</code></td>
+<td>178,516/178,559</td>
+</tr>
+</tbody>
+</table></div>
+<p>All six lines are hard-coded as <code>RETAIL</code> in <code>tools/kiscule.py</code> and recalculated on every full sweep.</p>
+<p><strong>The Negative Test.</strong> A parser that reports everything green proves nothing. <code>--verify</code> therefore deliberately breaks one assurance and demands that the check succeed:</p>
+<p>-- Negative test: tests must fail with corrupted data --
+  ok   num-counter falsified      KisculeError
+  ok   Edge bent into void        Edge … points to unknown node 424242
+  ok   NUL removed from end       KisculeError
+  ok   Indent shifted             KisculeError
+  ok   csize bent in header       KisculeError
+  ok   byte flipped               divergent</p>
+<p>If any of these six fail, <code>--verify</code> returns exit code 1.</p>
+<p><strong>What is not tested:</strong> whether the game loads a rewritten script.
+The game was not started. Bit-exactness here means: identical bytes to Retail — not "accepted by the engine".</p>
+<hr />
+<h2 id="8-what-a-mod-author-can-do-with-it">8. What a Mod Author Can Do With It</h2>
+<p><strong>Safe, because it's just numbers</strong> (<code>--set</code>, one line):</p>
+<pre><code class="language-bash">python tools/kiscule.py --set gp_kiscule_devstarts \
+  &quot;edit.kiscule.nodes.item[8].parameters.object.delay=500&quot; --out payload.bin
+</code></pre>
+<p><code>--set</code> changes exactly one value and rebuilds the container. Without change, the result is byte-identical to Retail — verified. With change, Text and Container differ precisely at the intended location (calculated: 1 divergent byte for a single-character change).</p>
+<p>Useful knobs, all in <code>parameters.object</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node Type</th>
+<th>Field</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Delay</code></td>
+<td><code>delay</code></td>
+<td>Wait time in ms — tempo of script chains</td>
+</tr>
+<tr>
+<td><code>RandomTime</code></td>
+<td><code>min</code>, <code>max</code></td>
+<td>Scatter of repetitions</td>
+</tr>
+<tr>
+<td><code>DamageNotification</code></td>
+<td><code>maxNotificationCount</code>, <code>waitingTime</code>, <code>filterDamageType</code></td>
+<td>what an object reacts to</td>
+</tr>
+<tr>
+<td><code>GetCustomEvent</code></td>
+<td><code>enabled</code>, <code>maxNotificationCount</code></td>
+<td>disable or unlock a trigger</td>
+</tr>
+<tr>
+<td><code>ActionBoolControl</code></td>
+<td>Bool switch</td>
+<td>flip script branches</td>
+</tr>
+<tr>
+<td><code>ActionGiveItems</code></td>
+<td>Equipment lists</td>
+<td>what an event outputs</td>
+</tr>
+<tr>
+<td><code>ActionAISpawn</code></td>
+<td>Spawn parameters</td>
+<td>enemy waves</td>
+</tr>
+<tr>
+<td><code>ActionAutosave</code></td>
+<td>—</td>
+<td>save points</td>
+</tr>
+<tr>
+<td><code>variables[].object.defaultValue</code></td>
+<td></td>
+<td>starting value of a graph variable</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Likely feasible but untested:</strong> bending edges. Bending an edge means adjusting <code>endNodeID</code>/<code>endConnectionPointID</code> at <em>both</em> ends — the mirror check in <code>--verify</code> catches it if you forget one. Adding nodes additionally requires a free <code>id</code> (32 bits, unique within the file) and matching connections; the signature table says what those are. <strong>Whether the engine accepts this: unverified.</strong></p>
+<p><strong>The path to the archive is not part of this tool.</strong> <code>--set --out</code> delivers the finished user data; getting it into <code>.resources</code> is the job of <code>wolfsdk/patch.py</code> / <code>tncpatch.py</code>, and patch precedence (which archive wins) remains open in the project — see
+<code>docs/moddingflaeche-tnc.md</code>, section 7.</p>
+<hr />
+<h2 id="9-what-remains-open">9. What Remains Open</h2>
+<ul>
+<li><strong><code>version = 5</code> vs <code>6</code>.</strong> Scripts carrying version 5: 64; scripts carrying version 6: 2329. No difference is visible in the structure. What distinguishes them for the engine: unknown.</li>
+<li><strong><code>properties</code>-Bits 1, 4, and 32.</strong> Bit 16 (List) is set; bit 8 is the default case — the remaining bits appear in 2583 of 155,538 connections and are unassigned.</li>
+<li><strong>The <code>id</code> of an edge.</strong> It is often, but not always, the same at both ends (149,620 : 28,896). What else it means: unknown. It is unnecessary for reading the graph.</li>
+<li><strong>43 dead edges in 29 Retail files, plus one file with duplicate connection IDs.</strong> Whether the engine silently skips them or if something is broken in the game there: unobservable without starting the game.</li>
+<li><strong>84 scripts are duplicated in the archive, all 84 with different content.</strong> (<code>--dump</code> reports this.) Which version wins depends on patch precedence and is immeasurable — the same open question as for Decls.</li>
+<li><strong>150 Entity references without a target</strong> in maps (1.10%).</li>
+<li><strong>The 113 unused node classes.</strong> They exist in the EXE. Whether a script can load them: untested.</li>
+<li><strong><code>g_kisculeRuntimeTypeChecks</code></strong> ("If 1, Kiscule will log all its runtime check verification", WINDOWS/DEBUG only) would be the direct way to let the engine talk about its own scripts via them. Not used — the game was not started.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Save-Games-and-Profiles.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Save Games and Profiles for Both Wolfenstein Titles</a><a class="next" href="Ghidra-Analysis.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Ghidra: What to Extract from the EXEs — and What Not</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

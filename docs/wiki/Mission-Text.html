@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission Text Sources: Where Goal and HUD Text Comes From and What a DLC Folder Can Change – Wolfenstein Modloader</title>
+<meta name="description" content="Where Wolfenstein II&#x27;s objective and HUD texts come from, and why a DLC folder cannot simply change them.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#maps"><span class="en">Custom maps and missions</span><span class="de">Eigene Karten und Missionen</span></a></p>
+<h1>Mission Text Sources: Where Goal and HUD Text Comes From and What a DLC Folder Can Change</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Mission-Text"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result-in-three-sentences">Result in Three Sentences</a></li><li><a href="#1-the-chain-measured">1. The Chain, Measured</a></li><li><a href="#2-what-a-dlc-chunk-can-and-cannot-do">2. What a DLC Chunk Can and Cannot Do</a></li><li><a href="#3-the-safe-way-30-retail-targets">3. The Safe Way: 30 Retail Targets</a></li><li><a href="#4-the-experiment-for-own-german-texts-stringsgermanlang">4. The experiment for own German texts: strings/german.lang</a></li><li><a href="#5-tests">5. Tests</a></li><li><a href="#6-open">6. Open</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page traces how Wolfenstein II: The New Colossus shows objective text on the HUD. The game loads its language table once at startup, before any DLC content is mounted, so a mod in a DLC folder cannot replace or add objective text; new text keys or plain text show up empty. The safe option is to reuse existing objectives whose English titles fit; the page lists 30 checked ones. A workaround with a modified German language file plus a console command was built, but not yet confirmed in the game.</p><ul><li>The language table is loaded at startup and only reloaded when the sys_lang setting changes, never when a map loads.</li><li>Objective titles are text IDs looked up at load time; unknown keys or plain text become 0 and display as empty.</li><li>30 existing retail objectives were checked, e.g. &#x27;Kill all enemies&#x27;, &#x27;Search for Intel&#x27; and &#x27;Find exit&#x27;. None of the 338 retail titles mentions &#x27;survive&#x27; or &#x27;waves&#x27;.</li><li>A German language file with four changed lines was built and reproduces all 10 retail language files byte-for-byte in format; using it needs &#x27;sys_lang german&#x27; in the <span class="t" data-t="console">console</span>. Not yet confirmed in the game.</li><li>Checks: 122 of 122 and 8 of 8 pass.</li></ul></div><div class="de"><p class="lede">Diese Seite verfolgt, wie Wolfenstein II: The New Colossus Zieltexte im HUD anzeigt. Das Spiel lädt seine Sprachtabelle einmal beim Start, bevor DLC-Inhalte eingebunden werden. Ein Mod im DLC-Ordner kann Zieltexte deshalb weder ersetzen noch ergänzen; neue Textschlüssel oder reiner Text erscheinen leer. Der sichere Weg ist, vorhandene Ziele mit passendem englischem Titel wiederzuverwenden; die Seite listet 30 geprüfte. Ein Umweg über eine geänderte deutsche Sprachdatei plus Konsolenbefehl wurde gebaut, ist im Spiel aber noch nicht bestätigt.</p><ul><li>Die Sprachtabelle wird beim Start geladen und nur neu geladen, wenn sich die Einstellung sys_lang ändert – nie beim Laden einer Karte.</li><li>Zieltitel sind Text-IDs, die beim Laden nachgeschlagen werden; unbekannte Schlüssel oder reiner Text werden zu 0 und erscheinen leer.</li><li>30 vorhandene Ziele aus dem Verkaufsspiel wurden geprüft, z. B. „Kill all enemies“, „Search for Intel“ und „Find exit“. Keiner der 338 Titel enthält „survive“ oder „waves“.</li><li>Eine deutsche Sprachdatei mit vier geänderten Zeilen wurde gebaut; ihr Format stimmt mit allen 10 Sprachdateien des Spiels byte-genau überein. Du brauchst dafür „sys_lang german“ in der <span class="t" data-t="console">Konsole</span>. Im Spiel noch nicht bestätigt.</li><li>Prüfungen: 122 von 122 und 8 von 8 bestanden.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Track <code>missions/text</code>, 2026-09-25. Files: <code>tools/probe_mission_text.py</code> and <code>re_probes/missions/text/</code> (<code>objective_strings.json</code>, <code>german.lang.cfile</code>, <code>german_overrides.json</code>, <code>chunk_22.resources</code>, <code>run.log</code>, <code>container.log</code>, and this report). Only the game was read against, as well as <code>re_probes/runtime_87400/module.bin</code>. The game was not started, and nothing was installed.</p>
+<pre><code>python tools/probe_mission_text.py              # code + data + list + german: 122 Checks, ~10 s
+python tools/probe_mission_text.py container    # Chunk copy + german.lang: 8 Checks, ~1 min
+</code></pre>
+<h2 id="result-in-three-sentences">Result in Three Sentences</h2>
+<ol>
+<li><strong>A DLC chunk cannot simply replace or supplement goal text.</strong> The language table is loaded exactly once at startup from <code>gameresources</code> + <code>patch_1..4</code>. This happens before any DLC chunk is mounted. It is only reloaded if <code>sys_lang</code> changes. It never happens when loading a map.</li>
+<li><strong>A goal with plain text or a new <code>#str_</code> key will display as empty.</strong> <code>missionobj.title</code> is not text, but an <code>idStrId</code>. The Decl reader looks up the key in the currently loaded (English) table during parsing. If it does not find it, it writes 0, and 0 is displayed as <code>""</code>.</li>
+<li><strong>The smallest safe path</strong> is to use existing Retail <code>missionobj</code> Decls whose English text fits. Below are 30 checked goals. They are entered in Kiscule (<code>ActionMission.objectives</code>) by Decl name, and <strong>no new entries</strong> are needed in the container. Custom (German) texts can only go via a detour: You include <code>strings/german.lang</code> in the chunk and type <code>sys_lang german</code> into the console in-game. This path is built and structurally verified, but unconfirmed at runtime.</li>
+</ol>
+<h2 id="1-the-chain-measured">1. The Chain, Measured</h2>
+<pre><code>Kiscule ActionMission (objectives = [&quot;cobalt/c2v1/mission_c2v1_main_obj_01_find&quot;])
+   │  Decl-Name → idResourceList&lt;missionobj&gt; (Retail: all 338 in gameresources/patch_1..3)
+   ▼
+missionobj  = Class idDeclObjectiveMerc (0x3dc6108 → 0x2542c08, Field Table 0x22806c0)
+   title  : idStrId (+0x88, 4 Byte)   desc : idStrId (+0x0c)   parentMission, material
+   │  Decl Reader 0x1281060: FindIndex(Language Table 0x2fe02b0, &quot;#str_…&quot;)
+   │     found → Field = ID (FNV-1a-Hash of the lowercased key)
+   │     not found / plain text → Field = 0
+   ▼
+Display 0x121d720: ID → Value from CURRENTLY loaded table, unknown → &quot;&quot;
+   ▲
+Language Table: idLangDict::Load 0x121c260, from strings/&lt;sys_lang&gt;.lang (cfile)
+</code></pre>
+<p>Loader <code>0xa6de20</code> has exactly three call sites in the entire <code>.text</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Caller</th>
+<th>When</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idCommonLocal::Init</code> <code>0xa66425</code></td>
+<td>Once at startup, after "time 70". The start mount <code>0xabd110 → 0xabdaa0</code> (only gameresources + patch_N) has already run by then.</td>
+<td>Anchor, Caller list complete</td>
+</tr>
+<tr>
+<td><code>idCommonLocal::Frame</code> <code>0xa7663c</code></td>
+<td>Only if the MODIFIED bit (0x40000) is set in <code>sys_lang</code></td>
+<td><code>shr eax, 0x12</code> / <code>btr ecx, 0x12</code></td>
+</tr>
+<tr>
+<td><code>reloadLanguage</code> <code>0xa6e1d0</code></td>
+<td>Console command, <strong>not exposed</strong> (not callable in Retail)</td>
+<td><code>cmdtable/commands.json</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>LoadNamedResourceBlock</code> (<code>0xac1730</code>), the location that mounts the DLC chunk when loading a map, does not call the loader. The loader searches for <code>strings/&lt;sys_lang&gt;.lang</code> first as a loose file. For this to work, <code>com_loadlooseLanguages</code> must be set, and that is a CHEAT and not exposed, so it is false. Afterwards, it searches via <code>idResourceList&lt;cfile&gt;::Load</code> in everything that is <strong>currently</strong> mounted. If the file is missing, it sets <code>sys_lang</code> back to <code>english</code>. <code>idLangDict::Load</code> <strong>replaces</strong> the table instead of mixing it (pointers and count are zeroed). If two keys result in the same ID, it reports "Computed a duplicate ID" and aborts (<code>int3</code> after the error call).</p>
+<p>Regarding which container is decisive for text: <strong>the base archives at startup.</strong> The DLC chunk only plays a role if <code>sys_lang</code> is switched while it is mounted.</p>
+<p>Retail confirms this from the data side (<code>daten</code>):</p>
+<ul>
+<li><code>.lang</code> files exist only in <code>gameresources</code> and <code>patch_1..4</code>, totaling exactly 10 languages.
+    <code>german</code> and <code>japanese</code> are allowed in <code>sys_lang</code> but do not exist anywhere.</li>
+<li><code>dlc_1..3</code> contain 0 <code>.lang</code>, 0 <code>mission</code>, 0 <code>missionobj</code>, and <strong>0 <code>cfile</code></strong>. DLC mission texts were loaded via <code>base/</code>. Therefore, Retail never loads a cfile from a DLC chunk.</li>
+<li>Of the 338 Retail <code>missionobj</code>, 55 reference title keys missing from <code>english.lang</code>. According to the idStrId rule, their titles would be empty. They are listed in <code>objective_strings.json</code> under <code>nicht_verwenden_leerer_titel</code> (do not use empty titles).</li>
+</ul>
+<h2 id="2-what-a-dlc-chunk-can-and-cannot-do">2. What a DLC Chunk Can and Cannot Do</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>Result</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Override <code>strings/english.lang</code> in the chunk</td>
+<td><strong>no</strong></td>
+<td>The table is already loaded when the map loads and is not re-read. Even after a <code>sys_lang</code> switch, it remains unclear whether the chunk or <code>patch_4</code> wins.</td>
+</tr>
+<tr>
+<td>New <code>#str_</code> key (in any <code>.lang</code>)</td>
+<td><strong>no</strong></td>
+<td>The Decl parses against the table loaded at that time. The key is missing there, so ID 0, resulting in empty text.</td>
+</tr>
+<tr>
+<td>Plain text as <code>title = "Eliminiere die Offiziere"</code></td>
+<td><strong>no</strong></td>
+<td>idStrId, FindIndex fail, ID 0, empty (anchor <code>0x12810fd</code>/<code>0x1281124</code>)</td>
+</tr>
+<tr>
+<td><code>strings/german.lang</code> in the chunk plus <code>sys_lang german</code> in console</td>
+<td><strong>built, runtime open</strong></td>
+<td>This is the only free slot, and no Retail container competes for it. Existing key IDs remain unchanged; the value is re-read on every display.</td>
+</tr>
+<tr>
+<td>Reuse existing Retail <code>missionobj</code></td>
+<td><strong>yes, safe</strong></td>
+<td>They are located in the start mount and exist for every map. The fact that a target appears under a foreign <code>parentMission</code> is proven by the screenshot (anatomy E13).</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="3-the-safe-way-30-retail-targets">3. The Safe Way: 30 Retail Targets</h2>
+<p>Every line has been verified: The Decl exists in the start mount, its title key provides exactly this text in <code>english.lang</code>, and image material lies as a <code>material</code> Decl also in the start mount (two targets have none). Full data with description text, archive, and material is available in <code>objective_strings.json</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Purpose</th>
+<th>English Title</th>
+<th>missionobj-Decl</th>
+<th>Title Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>eliminate</td>
+<td>Kill all enemies</td>
+<td><code>cobalt/c1v1/mission_c1v1_main_obj_06_kill</code></td>
+<td><code>#str_mission_cobalt_c1v1_main_obj_06_kill_name</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>eliminate</td>
+<td>Kill them all</td>
+<td><code>c08p2/mission_c08p2_main_rendezvous_obj_05_lakeview</code></td>
+<td><code>#str_mission_c08p2_main_rendezvous_obj_05_lakeview_name</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>eliminate</td>
+<td>Kill Everyone</td>
+<td><code>cobalt/c1v3/mission_c1v3_main_obj_11_kill</code></td>
+<td><code>#str_mission_cobalt_c1v3_main_obj_11_kill_name</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>eliminate</td>
+<td>Kill the Witnesses</td>
+<td><code>cobalt/c1v3/mission_c1v3_main_obj_07_killwitnesses</code></td>
+<td><code>#str_mission_cobalt_c1v3_main_obj_07_killwitnesses_name</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>eliminate</td>
+<td>Fight</td>
+<td><code>c06p3/mission_c06p3_main_monster_obj_02_kill</code></td>
+<td><code>#str_mission_c06p3_main_obj_02_kill_name</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>eliminate</td>
+<td>Wreak Havoc</td>
+<td><code>cobalt/c1v1/mission_c1v1_main_obj_12_havoc</code></td>
+<td><code>#str_mission_cobalt_c1v1_main_obj_12_havoc_name</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>eliminate (c2v1)</td>
+<td>Kill Ubercommander Hans</td>
+<td><code>cobalt/c2v1/mission_c2v1_main_obj_03_kill_hans</code></td>
+<td><code>#str_mission_cobalt_c2v1_main_obj_03_kill_name</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>find</td>
+<td>Search for Intel</td>
+<td><code>cobalt/c3v1/mission_cobalt_c3v1_main_obj_05_command</code></td>
+<td><code>#str_mission_cobalt_c3v1_main_obj_05_command_name</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>find</td>
+<td>Search the office</td>
+<td><code>cobalt/c0v2/mission_c0v2_main_obj_03_search_office</code></td>
+<td><code>#str_mission_cobalt_c0v2_obj_03_folder_name</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>find (Documents)</td>
+<td>Find New Orleans Dossier</td>
+<td><code>c07p2/mission_c07p2_main_dossier_obj_04_dossier</code></td>
+<td><code>#str_mission_c07p2_main_dossier_obj_04_dossier_name</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td>find</td>
+<td>Investigate what's going on</td>
+<td><code>c10p1/mission_c10p1_main_lostatsea_obj_01_investigate</code></td>
+<td><code>#str_mission_c10p1_main_01_obj_01_investigate_name</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td>find (c2v1)</td>
+<td>Locate Hans' office</td>
+<td><code>cobalt/c2v1/mission_c2v1_main_obj_02_locate</code></td>
+<td><code>#str_mission_cobalt_c2v1_main_obj_02_locate_name</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td>find</td>
+<td>Find the command center</td>
+<td><code>c07p2/mission_c07p2_main_dossier_obj_03_command</code></td>
+<td><code>#str_mission_c07p2_main_dossier_obj_03_command_name</code></td>
+</tr>
+<tr>
+<td>14</td>
+<td>hold/survive</td>
+<td>Stall Nazis</td>
+<td><code>c03p3/mission_c03p3_main_manhattan_obj_01_stalling</code></td>
+<td><code>#str_mission_c03p3_main_manhattan_obj_01_stalling_name</code></td>
+</tr>
+<tr>
+<td>15</td>
+<td>hold/survive</td>
+<td>Assist the resistance</td>
+<td><code>c08p1/mission_c08p1_main_horton_obj_06_siege</code></td>
+<td><code>#str_mission_c08p1_main_horton_obj_06_siege_name</code></td>
+</tr>
+<tr>
+<td>16</td>
+<td>hold/survive</td>
+<td>Distract the Nazis</td>
+<td><code>c08p2/mission_c08p2_main_rendezvous_obj_01_streets</code></td>
+<td><code>#str_mission_c08p2_main_rendezvous_obj_01_streets_name</code></td>
+</tr>
+<tr>
+<td>17</td>
+<td>Sabotage</td>
+<td>Destroy radio</td>
+<td><code>c02p2/mission_c02p2_main_obj_02_destroyradio</code></td>
+<td><code>#str_mission_c02p2_main_01_obj_01b_destroyradio_name</code></td>
+</tr>
+<tr>
+<td>18</td>
+<td>Sabotage</td>
+<td>Release the door locks</td>
+<td><code>cobalt/c1v1/mission_c1v1_main_obj_03_openhangardoors</code></td>
+<td><code>#str_mission_cobalt_c1v1_main_obj_03_openhangardoors_name</code></td>
+</tr>
+<tr>
+<td>19</td>
+<td>Sabotage</td>
+<td>Override the Blast Doors</td>
+<td><code>c07p2/mission_c07p2_main_dossier_obj_blastdoor_01</code></td>
+<td><code>#str_mission_c07p2_main_dossier_obj_blastdoors_01_name</code></td>
+</tr>
+<tr>
+<td>20</td>
+<td>Sabotage</td>
+<td>Unlock Cell Block</td>
+<td><code>cobalt/c1v2/mission_c1v2_main_obj_12_unlockcells</code></td>
+<td><code>#str_mission_cobalt_c1v2_main_obj_12_unlock_name</code></td>
+</tr>
+<tr>
+<td>21</td>
+<td>enter (c2v1)</td>
+<td>Enter the offices</td>
+<td><code>cobalt/c2v1/mission_c2v1_main_obj_01_find</code></td>
+<td><code>#str_mission_cobalt_c2v1_main_obj_01_find_name</code></td>
+</tr>
+<tr>
+<td>22</td>
+<td>enter</td>
+<td>Break In</td>
+<td><code>cobalt/c1v3/mission_c1v3_main_obj_01_breakin</code></td>
+<td><code>#str_mission_cobalt_c1v3_main_obj_01_breakin_name</code></td>
+</tr>
+<tr>
+<td>23</td>
+<td>exit (c2v1)</td>
+<td>Escape</td>
+<td><code>cobalt/c2v1/mission_c2v1_main_obj_04_kill_all</code></td>
+<td><code>#str_mission_cobalt_c2v3_main_obj_07_name</code></td>
+</tr>
+<tr>
+<td>24</td>
+<td>exit</td>
+<td>Find exit</td>
+<td><code>c03p1/mission_c03p1_main_manhattan_obj_04_tunnels</code></td>
+<td><code>#str_mission_c03p1_main_manhattan_obj_04_tunnels_name</code></td>
+</tr>
+<tr>
+<td>25</td>
+<td>exit</td>
+<td>Find a way out</td>
+<td><code>cobalt/c1v1/mission_c1v1_main_obj_07_wayout</code></td>
+<td><code>#str_mission_cobalt_c1v1_main_obj_07_wayout_name</code></td>
+</tr>
+<tr>
+<td>26</td>
+<td>exit</td>
+<td>Get out of here</td>
+<td><code>cobalt/c1v1/mission_c1v1_main_obj_04_reachresistancehq</code></td>
+<td><code>#str_mission_cobalt_c1v1_main_obj_04_reachresistancehq_name</code></td>
+</tr>
+<tr>
+<td>27</td>
+<td>exit</td>
+<td>Escape outside</td>
+<td><code>c05p2/mission_c05p2_main_destroyoberkommando_obj_06_escape</code></td>
+<td><code>#str_mission_c05p2_main_destroyoberkommando_obj_06_escape_name</code></td>
+</tr>
+<tr>
+<td>28</td>
+<td>exit</td>
+<td>Head for the surface</td>
+<td><code>cobalt/c3v1/mission_cobalt_c3v1_main_obj_07_storage</code></td>
+<td><code>#str_mission_cobalt_c3v1_main_obj_07_storage_name</code></td>
+</tr>
+<tr>
+<td>29</td>
+<td>exit</td>
+<td>Find Another Way Through</td>
+<td><code>cobalt/c3v1/mission_cobalt_c3v1_main_obj_02_subpen</code></td>
+<td><code>#str_mission_cobalt_c3v1_main_obj_02_subpen_name</code></td>
+</tr>
+<tr>
+<td>30</td>
+<td>exit</td>
+<td>Reach the rooftop</td>
+<td><code>c08p2/mission_c08p2_main_rendezvous_obj_06_rooftop</code></td>
+<td><code>#str_mission_c08p2_main_rendezvous_obj_06_rooftop_name</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Matching the four user wishes:</p>
+<ul>
+<li><strong>"Eliminate the officers"</strong>: #1 <em>Kill all enemies</em> or #3 <em>Kill Everyone</em>.</li>
+<li><strong>"Find the documents"</strong>: #10 <em>Find New Orleans Dossier</em> or #8 <em>Search for Intel</em>.</li>
+<li><strong>"Survive three waves"</strong>: #14 <em>Stall Nazis</em>, #6 <em>Wreak Havoc</em> or #2 <em>Kill them all</em>.</li>
+<li><strong>"Reach the exit"</strong>: #24 <em>Find exit</em>, #25 <em>Find a way out</em> or #23 <em>Escape</em>.</li>
+</ul>
+<p>Negative finding: None of the 338 Retail target titles contain "survive", "wave", or "documents".
+Also, among all 23,224 strings, there is no short "Survive …". The only hit is a Doom rest in <code>#str_menu_root_coop_help</code>.</p>
+<p><strong>HUD frame texts</strong> are set by the game itself; they do not belong to the target. All following candidates exist. Which pair the HUD actually uses is unproven.
+<code>#str_new_objective</code> = "NEW OBJECTIVE", <code>#str_objective_completed</code> = "OBJECTIVE COMPLETED",
+<code>#str_notification_newobj</code> = "New objective:", <code>#str_notification_completedobj</code> =
+"Objective completed:", <code>#str_notification_completedmission</code> = "MISSION COMPLETED!".</p>
+<h2 id="4-the-experiment-for-own-german-texts-stringsgermanlang">4. The experiment for own German texts: <code>strings/german.lang</code></h2>
+<p>Two files are built:</p>
+<ul>
+<li><code>german.lang.cfile</code>, 478,384 bytes, sha256 <code>e4ecac70…c540e9</code>. This is <code>english.lang</code> from
+  <code>patch_4</code> with four changed values. These are exactly the keys that c2v1s targets (and the
+  wave-Kiscule of the Kiscule-track for obj_01) already use:</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Retail</th>
+<th>neu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>#str_mission_cobalt_c2v1_main_obj_01_find_name</code></td>
+<td>Enter the offices</td>
+<td>Eliminiere die Offiziere</td>
+</tr>
+<tr>
+<td><code>#str_mission_cobalt_c2v1_main_obj_02_locate_name</code></td>
+<td>Locate Hans' office</td>
+<td>Finde die Dokumente</td>
+</tr>
+<tr>
+<td><code>#str_mission_cobalt_c2v1_main_obj_03_kill_name</code></td>
+<td>Kill Ubercommander Hans</td>
+<td>Überlebe drei Wellen</td>
+</tr>
+<tr>
+<td><code>#str_mission_cobalt_c2v3_main_obj_07_name</code></td>
+<td>Escape</td>
+<td>Erreiche den Ausgang (also applies in c2v2/c2v3)</td>
+</tr>
+</tbody>
+</table></div>
+<p>The file has the same format as Retail: Kraken LEVEL_NORMAL, <code>declen</code> = plaintext length,
+AES-128-CBC and HMAC-SHA256 with the name <code>strings/german.lang</code> in the key. <strong>This path
+reproduces all 10 Retail <code>.lang</code> bytes identically</strong>, with their Salt and IV. The key set is
+identical (23,224). Thus no ID changes, and a duplicate-ID crash is excluded. Only the four
+lines differ; the rest is byte-identical. The <code>Ü</code> already appears in Retail texts ("Übercommander"), so the glyph is present.</p>
+<ul>
+<li><code>chunk_22.resources</code>, 7,129 entries, sha256 <code>8ad65ab7…e5814c</code>. This is the <strong>installed</strong>
+  dlc_0-chunk (byte-identical with <code>re_probes/dlc4_override/chunk_22.resources</code>, sha256
+  <code>cadfbfce…</code>) with <code>cfile:strings/german.lang</code> as the last entry. All 7,128 old lines
+  (without offset) and payloads are unchanged. <code>probe_datahash</code> and <code>probe_idclhash</code> are green.
+  The entry for plaintext is decrypted from the container.
+  To apply this to the Kiscule-chunk:
+  <code>python tools/probe_mission_text.py container re_probes/missions/kiscule/chunk_22.resources</code>.</li>
+</ul>
+<p>Own texts set:
+<code>python tools/probe_mission_text.py deutsch --set "#str_…=Text" …</code>. Only existing keys are allowed, and no <code>"</code>, <code>\</code>, tab or line break. A new key is rejected (Section 2).</p>
+<p><strong>What remains open at runtime</strong> (the user tests, the master installs):</p>
+<ul>
+<li>whether <code>idResourceList&lt;cfile&gt;::Load</code> finds a cfile from a chunk <strong>mounted during map loading</strong>. Retail never does this (0 cfiles in dlc_1..3). It is plausible because the <code>extkisclule</code> of the chunks load via the same resource manager.</li>
+<li>whether the language switch mid-map has side effects. Language output: according to
+  <code>vo_localizeLangs_ROW</code> ("other language will use english") falls back to English VO for German. Whether a runtime switch reloads VO is unknown.</li>
+<li>which HUD texts are redrawn: The first objective message appears ~4.6 s after start and thus before every console command. Objectives that <strong>start</strong> or are <strong>completed</strong> after the switch should show the new text.</li>
+</ul>
+<p><code>sys_lang</code> is exposed (settable in Retail), but <strong>not ARCHIVE</strong>. After every restart, the language reverts to <code>english</code>. If started without a mounted chunk, <code>german</code> cannot be found and resets to <code>english</code>. Reverting means: <code>sys_lang english</code> or a restart.</p>
+<h3 id="runbook-only-if-the-master-installed-the-chunk">Runbook (only if the Master installed the Chunk)</h3>
+<ol>
+<li>Start the game with <code>+com_enableDeveloperMode 1</code> and begin the Gestapo Office mission normally.</li>
+<li>After loading, open the console and enter <code>sys_lang german</code>.</li>
+<li>Expect in <code>qconsole.log</code>: <code>Reading strings/german.lang as UTF-8</code>, followed by <code>… strings read</code> with the same count as when starting with <code>english.lang</code>. Then, in the pause menu or at the next objective message: "Eliminate the officers" instead of "Enter the offices".</li>
+<li>Control test: If it says <code>Reading strings/english.lang</code>, then <code>german.lang</code> was <strong>not</strong> found in the mounted chunk. This is a precise negative finding for "cfile from DLC Chunk", no reason to fiddle with the container.</li>
+<li>Revert: <code>sys_lang english</code> or restart.</li>
+</ol>
+<h2 id="5-tests">5. Tests</h2>
+<p><code>run.log</code>: <strong>122/122</strong>, <code>container.log</code>: <strong>8/8</strong>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Count</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Code Anchors</td>
+<td>51 + Control Test</td>
+<td>Instructions at fixed RVAs with resolved RIP targets: Loader, Init/Frame, Table Replacement, Duplicate-ID fatal, idStrId Reader (0 on failure), Display (<code>""</code> for unknown ID). Same anchors shifted by +1 hit 0/51.</td>
+</tr>
+<tr>
+<td>Completeness</td>
+<td>8</td>
+<td>Caller of the Loader and Parser throughout <code>.text</code>, function pointers, absolute pointers. Control Test: <code>0xa6de21</code> has no callers.</td>
+</tr>
+<tr>
+<td>Snapshot Data</td>
+<td>11</td>
+<td>cfile list, resource manager vtable, four cvars (EXPOSE/CHEAT/ARCHIVE), <code>sys_lang</code> value list, <code>missionobj</code> → idDeclObjectiveMerc, title/desc = idStrId</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>3</td>
+<td>Location of <code>.lang</code>, retail DLC without text and without cfile, 10 languages</td>
+</tr>
+<tr>
+<td>List</td>
+<td>36</td>
+<td>30 objectives individually, material, HUD candidates, negative finding word choice, 55 empty titles. Control Test: false text or missing Decl are rejected.</td>
+</tr>
+<tr>
+<td>german</td>
+<td>12</td>
+<td>10/10 Retail-.lang Round-Trip, Diff, key set, line comparison, glyphs, pack format, decryption. Control Tests: false name, flipped byte, <code>"</code> in value, new key.</td>
+</tr>
+<tr>
+<td>container</td>
+<td>8</td>
+<td>+1 entry, comp 0, payload, plaintext from container, 7128 old lines and payloads, 1 appended hash, <code>probe_datahash</code>, <code>probe_idclhash</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="6-open">6. Open</h2>
+<ul>
+<li>Runtime of the german.lang path (Section 4). Everything else is statically proven.</li>
+<li>Whether a <strong>new</strong> <code>missionobj</code> Decl in the Chunk (Title = any existing key from all 23,224, e.g., <code>#str_useable_exitlevel</code> = "Exit level") is loaded. Retail DLC chunks contain none. This would be the next stage beyond the 338 Retail objectives, but was not built.</li>
+<li><code>g_debugMissions</code> (proposed by anatomy as runtime aid) is CHEAT and <strong>not exposed</strong>, so according to <code>cvartable</code> it is not settable in Retail.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Mission-Kiscule-Scripting.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Writing Kiscule – Scripts for Custom Missions</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

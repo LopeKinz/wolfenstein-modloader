@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feedback: agent-cache-orchestrator – Wolfenstein Modloader</title>
+<meta name="description" content="Feedback on the tool that coordinated several AI research workers, with bugs found and process lessons.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#status"><span class="en">Status and records</span><span class="de">Stand und Protokolle</span></a></p>
+<h1>Feedback: agent-cache-orchestrator</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Orchestrator-Feedback"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-what-was-implemented-from-the-first-report">1. What was implemented from the first report</a></li><li><a href="#2-new-defects">2. New Defects</a></li><li><a href="#3-the-most-important-finding-the-check-limit-hangs-on-the-master-and-the-master-errs">3. The most important finding: the check limit hangs on the Master, and the Master errs</a></li><li><a href="#4-smaller-observations">4. Smaller Observations</a></li><li><a href="#5-sorted-by-utility">5. Sorted by Utility</a></li><li><a href="#6-conclusion">6. Conclusion</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page is not about the games themselves but about the helper tool that split the reverse-engineering work among several AI workers. Based on two real runs (10 tasks with 8 workers, then 7 tasks with 6 workers), it confirms that all six earlier improvement requests were implemented. It reports three new defects, for example that a stopped worker stays marked as &quot;stale&quot; forever and that token counts showed 0 after about 2.5 million tokens of work. Its main lesson: work that changes a real game installation must be checked by a different worker, because an independent check found two critical errors that the coordinator&#x27;s own check missed.</p><ul><li>All 6 points from the first feedback round were fixed and verified.</li><li>New defects: no way to retire a dead worker, token counting stays at 0, config shows an old version.</li><li>An independent check found 2 critical errors in code that writes to a 40 GB installation.</li><li>One of them could have left the installation permanently unrecoverable after a failed write.</li><li>Key rule: every claim needs a check designed to fail if the claim is false.</li></ul></div><div class="de"><p class="lede">Diese Seite handelt nicht von den Spielen selbst, sondern vom Hilfswerkzeug, das die Reverse-Engineering-Arbeit auf mehrere KI-Worker verteilt hat. Auf Basis zweier echter Durchläufe (10 Aufgaben mit 8 Workern, dann 7 Aufgaben mit 6 Workern) bestätigt sie, dass alle sechs früheren Verbesserungswünsche umgesetzt wurden. Sie meldet drei neue Mängel, etwa dass ein gestoppter Worker für immer als &quot;stale&quot; markiert bleibt und die Token-Zählung nach rund 2,5 Millionen Tokens Arbeit 0 zeigte. Die wichtigste Lehre: Arbeit, die eine echte Spielinstallation verändert, muss von einem anderen Worker geprüft werden, denn eine unabhängige Prüfung fand zwei kritische Fehler, die die eigene Prüfung des Koordinators übersehen hatte.</p><ul><li>Alle 6 Punkte aus der ersten Rückmeldung wurden behoben und geprüft.</li><li>Neue Mängel: toter Worker lässt sich nicht abmelden, Token-Zählung bleibt 0, Konfiguration zeigt alte Version.</li><li>Eine unabhängige Prüfung fand 2 kritische Fehler in Code, der in eine 40-GB-Installation schreibt.</li><li>Einer davon hätte die Installation nach einem abgebrochenen Schreibvorgang dauerhaft unrettbar hinterlassen können.</li><li>Kernregel: Jede Behauptung braucht eine Prüfung, die fehlschlagen muss, wenn die Behauptung falsch ist.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Written for the further development of the Skill, not as a project documentation.
+Replaces the report for v3. The basis is two actual runs in the same project
+(Reverse Engineering of two game archive formats): <strong>v3 with 10 tasks and 8 Workers</strong>, followed by <strong>v3.1/v3.2 with 7 tasks and 6 Workers</strong>. For comparison, a prior run with 9 Agents entirely without an Orchestrator.</p>
+<hr />
+<h2 id="1-what-was-implemented-from-the-first-report">1. What was implemented from the first report</h2>
+<p>All six points, each verified:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--owns</code> overwrote instead of collecting</td>
+<td>Fixed, <code>--owns</code>/<code>--after</code> now collect</td>
+</tr>
+<tr>
+<td>Slots only changeable via <code>init</code></td>
+<td><code>config --slots</code>, and <code>init</code> now reports <code>state_preserved=yes</code></td>
+</tr>
+<tr>
+<td>Host-ID and Busname are two namespaces</td>
+<td><code>register --host-id</code> / <code>bind</code>, Dashboard shows the assignment</td>
+</tr>
+<tr>
+<td>Task quality unregulated</td>
+<td><code>templates/worker-brief.md</code> plus "the assignment is part of the engineering work"</td>
+</tr>
+<tr>
+<td><code>schedule next --reserve</code> gave everything at once</td>
+<td><code>--limit N</code>, default now <strong>one</strong> task</td>
+</tr>
+<tr>
+<td>Tokens not captured</td>
+<td><code>finish --tokens</code>, <code>usage</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Additionally, without request: <code>exclusive</code> for single-threaded work, the Live Dashboard, and the sentence "<strong>A check that cannot fail under an incorrect implementation is not verification.</strong>" in the Skill text. This had immediate effect in this project — see Section 3.</p>
+<p>The Live Dashboard is the best ingredient. It solves exactly the problem I incorrectly described in the first report: I claimed I could not see if Workers followed the protocol. A single look sufficed.</p>
+<hr />
+<h2 id="2-new-defects">2. New Defects</h2>
+<h3 id="n1--a-killed-worker-remains-stale-forever">N1 — A killed Worker remains "stale" forever</h3>
+<p><strong>Reproduced.</strong> Two Workers terminated per Host mechanism, then:</p>
+<pre><code>$ acbus schedule reconcile --apply
+NO_CHANGES
+
+$ acbus doctor
+STALE w-patchverify-a1: 895s
+STALE w-suite-a1: 967s
+</code></pre>
+<p><code>reconcile</code> only acts after <code>stale_seconds</code> (default 600), and even then it only frees the task — the <strong>Worker entry</strong> remains and reports <code>ATTENTION</code> for the rest of the run. I had to manually retrieve the tasks with <code>task retry</code>.</p>
+<p>The core: <strong>the Master knows immediately that the Worker is dead, but cannot tell the Bus.</strong> It lacks a <code>worker retire &lt;name&gt;</code> (or <code>worker kill</code>) command that closes the entry and frees the task without waiting for a time limit. As long as this is missing, <code>doctor: ATTENTION</code> after the first termination remains permanently noisy — and a health indicator that is always yellow is read by no one anymore.</p>
+<h3 id="n2--token-capture-exists-but-is-unreachable-on-this-host">N2 — Token capture exists but is unreachable on this host</h3>
+<pre><code>$ acbus usage
+TOTAL tokens=0
+</code></pre>
+<p>After approximately <strong>2.5 million tokens</strong> of actual work. The reason is not an error in <code>usage</code>, but a break in the flow: <strong>Workers never call <code>finish</code>.</strong> In the Claude code flow, the subagent reports via the host-specific return channel, and the Master learns the numbers from the notification (<code>subagent_tokens</code>, <code>tool_uses</code>, <code>duration_ms</code>). The Bus sees nothing of this.</p>
+<p>Thus <code>finish</code> is dead code in practice, along with token capture and the <code>F</code> state. Two exits:</p>
+<ul>
+<li>Clarify in the Skill text that <strong>the Master</strong> calls <code>finish</code> with the numbers from the Host notification as soon as they arrive — then it belongs in the control cycle alongside <code>task verify</code>.</li>
+<li>Or have <code>task verify</code> accept the numbers optionally (<code>--tokens</code>), because that is indeed the step the Master makes at this point.</li>
+</ul>
+<p>Either way: As long as "per token" is claimed, the usual path should also deliver numbers.</p>
+<h3 id="n3--config-reports-an-outdated-version">N3 — <code>config</code> reports an outdated version</h3>
+<pre><code>$ acbus init --slots 3
+.agent-cache v3.2 initialized slots=3 retries=2 state_preserved=yes
+
+$ acbus config
+{&quot;v&quot;:&quot;3.1&quot;, &quot;slots&quot;:7, ...}
+</code></pre>
+<p>The configuration file retains the version under which it was created. This leads astray in a bug report. <code>init</code> should increment <code>v</code>.</p>
+<hr />
+<h2 id="3-the-most-important-finding-the-check-limit-hangs-on-the-master-and-the-master-errs">3. The most important finding: the check limit hangs on the Master, and the Master errs</h2>
+<p>This is not a defect in the bus, but a gap in the procedure, and it nearly cost money in this run.</p>
+<p>A worker repaired five errors in the module that writes to a 40-GB installation. <strong>I personally verified</strong> — installation unchanged, all existing checks green, reproducing the worker's proof script — and set <code>task verify</code>. The task proceeded on <code>D</code>.</p>
+<p>A later started, independent verification worker found <strong>two critical errors</strong> in the same repair. One of them would have left a permanently unrecoverable installation after a failure midway through writing: the rollback refused itself because the check treated its own write operations as part of a game update — and every subsequent attempt did too.</p>
+<p>My verification only checked the happy paths. The second worker found it because its mandate forced it to build a counter-check for <strong>every</strong> assurance that was intentionally designed to fail.</p>
+<p><strong>Proposal, costs no lines of code:</strong> In the skill text, directly next to the sentence about checks that cannot fail —</p>
+<blockquote>
+<p>For tasks that change persistent state outside the repository, the check must come from a <strong>different</strong> worker than the implementation. The Master is unsuitable for this: he wrote the task and shares its blind spots.</p>
+</blockquote>
+<p>Optionally mechanical: capture <code>task verify &lt;id&gt; --by &lt;worker&gt;</code> and let <code>doctor</code> warn if a task with write access was taken by the Master or by the executing worker itself.</p>
+<hr />
+<h2 id="4-smaller-observations">4. Smaller Observations</h2>
+<p><strong>Reservation deadline against task length.</strong> <code>reservation_seconds</code> is set to 120. A viable task for a heavy operation in my experience is 40 to 60 lines; writing four of them takes longer than the deadline. <code>--limit</code> mitigates this. A sentence in the skill text would suffice: write tasks first, then reserve, then start.</p>
+<p><strong><code>doctor</code> does not say what is wrong.</strong> The dashboard shows <code>Health: ATTENTION (2)</code> without listing the two findings. You must call <code>doctor</code> separately. Two lines inline would save the second call.</p>
+<p><strong>Truncated status line.</strong> The non-live <code>dashboard</code> truncates the <code>CURRENT</code> column to terminal width — in a pipe, this results in losing exactly the most informative data. An option <code>--full</code> or wrapping instead of truncation.</p>
+<p><strong>What proved to be the most valuable sentence in the task.</strong> Provable from this run: the combination of "build a counter-check for every assurance that is intentionally designed to fail" and "report failed hypotheses as failures, rather than smoothing them over". Every worker that had both in its mandate provided counter-checks; the finding from Section 3 came precisely from there. In <code>templates/worker-brief.md</code>, these two lines should go at the front, not under "Verification expectations" at the end.</p>
+<hr />
+<h2 id="5-sorted-by-utility">5. Sorted by Utility</h2>
+<ol>
+<li><strong>N1 <code>worker retire</code></strong> — without this, <code>doctor</code> remains permanently yellow after the first abort and is therefore useless.</li>
+<li><strong>Section 3 in the skill text</strong> — free of cost, and in this run a 40-GB installation would have hung on it.</li>
+<li><strong>N2 <code>finish</code> in the control cycle</strong> or <code>verify --tokens</code>. Without numbers, "per token" remains an assertion.</li>
+<li><strong>N3 Version stamp</strong> raised in <code>config</code>.</li>
+<li><code>doctor</code> findings inline in the dashboard.</li>
+<li>Note on reservation deadline in the skill text.</li>
+</ol>
+<hr />
+<h2 id="6-conclusion">6. Conclusion</h2>
+<p>v3.2 is significantly better than v3, specifically at the points mentioned in the initial report. What remains is no longer a tool problem but a procedure problem: The bus manages tasks reliably, but the <strong>quality gate</strong> still hangs on a Master who shares the same blind spots as the task he wrote. The cheapest lever against this is a paragraph in the skill text, not more mechanics.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Status-2026-09-21.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Status — 21.09.2026, 21:00</a><a class="next" href="Research-Artifacts.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Reverse Engineering Artifact Inventory</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

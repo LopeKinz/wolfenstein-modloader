@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission Anatomy: How Wolfenstein II Builds a Mission (c2v1 &quot;Gestapo Office&quot;) – Wolfenstein Modloader</title>
+<meta name="description" content="How Wolfenstein II builds a mission, traced node by node through the DLC map Gestapo Office (c2v1).">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#maps"><span class="en">Custom maps and missions</span><span class="de">Eigene Karten und Missionen</span></a></p>
+<h1>Mission Anatomy: How Wolfenstein II Builds a Mission (c2v1 &quot;Gestapo Office&quot;)</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Mission-Anatomy"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result-in-one-sentence">Result in One Sentence</a></li><li><a href="#1-the-chain-from-chapter-selection-to-hud-text">1. The Chain from Chapter Selection to HUD Text</a></li><li><a href="#2-enter-the-offices-start-and-end-node-by-node">2. &quot;Enter the offices&quot;: Start and End, Node by Node</a></li><li><a href="#3-all-four-objectives-of-c2v1">3. All four objectives of c2v1</a></li><li><a href="#4-mission-end-exit--chronicle--next-map">4. Mission End: Exit → Chronicle → Next Map</a></li><li><a href="#5-enemies-trigger--spawner--group--alarm">5. Enemies: Trigger → Spawner → Group → Alarm</a></li><li><a href="#6-doors-and-locks">6. Doors and Locks</a></li><li><a href="#7-what-engine-code-says-modulebin-read-only">7. What Engine Code Says (module.bin, read only)</a></li><li><a href="#8-counterexamples-other-dlcs-and-campaign">8. Counterexamples: other DLCs and Campaign</a></li><li><a href="#9-building-blocks-for-custom-missions-documented-in-retail">9. Building Blocks for Custom Missions (Documented in Retail)</a></li><li><a href="#10-open-unconfirmed-at-runtime">10. Open, Unconfirmed at Runtime</a></li><li><a href="#11-tests-55-including-7-negative-controls-all-green">11. Tests (55, including 7 negative controls, all green)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page takes apart one Wolfenstein II: The New Colossus mission, the DLC map &#x27;Gestapo Office&#x27;, to see how objectives are set up. A mission is not its own file: it is made of mission and objective <span class="t" data-t="decl">declarations</span> plus a visual script (<span class="t" data-t="kiscule">Kiscule</span>) that starts and completes objectives when the player touches triggers, uses objects or kills enemies. All 55 automated checks pass, and the same pattern was found in another DLC map and a campaign map. Only the start of the first objective has been seen in the running game; the rest is confirmed from the data but not in-game.</p><ul><li>The objective &#x27;Enter the offices&#x27; is traced from chapter selection to the HUD text, node by node.</li><li>One silent MissionStart registers all four objectives; each objective then gets its own start (with HUD message) and completion step.</li><li>Failing an objective exists in the game code, but 0 of 2,977 retail scripts use it.</li><li>Enemies are hidden in the map and appear when a trigger activates their spawner; kill counts are done with counters in the script.</li><li>A custom mission could reuse existing objectives, triggers and enemies by swapping the map&#x27;s script; new objective text would need extra work.</li></ul></div><div class="de"><p class="lede">Diese Seite zerlegt eine Mission aus Wolfenstein II: The New Colossus, die DLC-Karte „Gestapo Office“, um zu sehen, wie Ziele aufgebaut sind. Eine Mission ist keine eigene Datei: Sie besteht aus Missions- und Ziel-<span class="t" data-t="decl">Deklarationen</span> und einem visuellen Skript (<span class="t" data-t="kiscule">Kiscule</span>), das Ziele startet und abschließt, wenn der Spieler Trigger berührt, Objekte benutzt oder Gegner tötet. Alle 55 automatischen Prüfungen sind grün, und dasselbe Muster fand sich in einer weiteren DLC-Karte und einer Kampagnenkarte. Nur der Start des ersten Ziels wurde im laufenden Spiel gesehen; der Rest ist aus den Daten belegt, aber nicht im Spiel.</p><ul><li>Das Ziel „Enter the offices“ wird von der Kapitelauswahl bis zum HUD-Text Knoten für Knoten verfolgt.</li><li>Ein stiller MissionStart meldet alle vier Ziele an; jedes Ziel hat danach einen eigenen Start (mit HUD-Meldung) und Abschluss.</li><li>Das Scheitern eines Ziels gibt es im Spielcode, aber 0 von 2.977 Skripten im Verkaufsspiel nutzen es.</li><li>Gegner stehen versteckt in der Karte und erscheinen, wenn ein Trigger ihren Spawner auslöst; Abschüsse werden im Skript mit Zählern gezählt.</li><li>Eine eigene Mission könnte vorhandene Ziele, Trigger und Gegner wiederverwenden, indem man das Skript der Karte austauscht; neue Zieltexte wären Zusatzarbeit.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Track <code>missions/anatomy</code>, 2026-09-24. Files: <code>tools/probe_mission_anatomy.py</code>, <code>re_probes/missions/anatomy/</code> (<code>anatomy.json</code>, <code>graphs/*.txt</code>, <code>run.log</code>, this report).
+All data was extracted read-only from the Retail installation, the played bundle <code>re_probes/dlc4_override/chunk_22.resources</code>, and the runtime dump <code>re_probes/runtime_87400/module.bin</code>. The game was not launched.</p>
+<pre><code>python tools/probe_mission_anatomy.py      # ~90 s, 55 Checks (7 Negative Controls), Return 1 on FAIL
+</code></pre>
+<h2 id="result-in-one-sentence">Result in One Sentence</h2>
+<p>A mission is <strong>not a standalone format</strong>. It consists of a <code>mission</code> Decl, several <code>missionobj</code> Decls (each with title and description as <code>#str_</code> keys), and a Kiscule Script that <strong>registers</strong>, <strong>starts</strong>, <strong>completes</strong>, and (unused in Retail) <strong>fails</strong> via <code>ActionMission</code> nodes. The entire process is triggered by world events (Triggers, Use, Shoot, PickUp), connected by global Custom Events. The goal "Enter the offices" from the screenshot is traced node-by-node (Section 2). This same pattern applies to DLC map c3v1 and campaign map c02p1. <strong>All 55 checks are green.</strong> Runtime evidence exists for the start chain (Screenshot); everything else is structurally documented but unverified at runtime.</p>
+<h2 id="1-the-chain-from-chapter-selection-to-hud-text">1. The Chain from Chapter Selection to HUD Text</h2>
+<pre><code>chaptervariation dlc/c2v1  (patch_3; id 230)
+ ├─ parts[0].map         = game/dlc/c02/c2v1
+ ├─ parts[0].layers      = [layer/dlc/c2v1]            ← unlocks Entities
+ ├─ parts[0].spawnSpot   = c2v1_gameplay_player_start_1  (does not exist in the map, E14)
+ └─ parts[0].mainMission = cobalt/c2v1/mission_c2v1_main
+        │
+c2v1.entities: entity { layers { &quot;layer/dlc/c2v1&quot; }  entityDef sacramento_gameplay_kiscule_c2v1
+                        class idKisculeEntity, edit.externalKisculeDecl = …/sacramento_gameplay_kiscule_c2v1.decl }
+        │
+extkisclule …/c2v1_gameplay/kiscules/sacramento_gameplay_kiscule_c2v1.decl   (122 nodes)
+        │  ActionMission(mission, objectives[], showNotification, completeHides)
+        ▼
+missionobj cobalt/c2v1/mission_c2v1_main_obj_01_find   (patch_3)
+   title  = #str_mission_cobalt_c2v1_main_obj_01_find_name
+   desc   = #str_mission_cobalt_c2v1_main_obj_01_find_summary
+   parentMission = cobalt/c2v2/mission_c2v2_main        ← Retail copy error, does not affect (E13)
+   material = textures/guis/mission_fc/c2v1/c2v1_mission_obj_1
+        ▼
+strings/english.lang (patch_4, cfile): &quot;Enter the offices&quot;
+</code></pre>
+<ul>
+<li><strong>Layer determines which scripts run.</strong> 31 of the 33 Kiscule Entities from c2v1 are active in the Story run (M01). The other two (<code>sacramento_gameplay_kiscule_challenge</code> and <code>…combat_sim_screen_fx_893872923</code>) reside in <code>layer/dlc/c2v1_challenge1</code> and only run in the Challenge Variation (E11). Entities without a <code>layers</code> block always run.</li>
+<li><strong><code>mission</code> Decl</strong> (<code>edit</code>): <code>title</code>, <code>description</code>, <code>missionFlags</code> (<code>TYPE_MAIN</code>, <code>TYPE_OPTIONAL</code>, <code>TYPE_DISTRICT</code>, <code>TYPE_HIDEONCOMPLETE</code> …), <code>material</code>, <code>duration</code>. c2v1: "Assassinate Jack's torturer", <code>TYPE_MAIN</code>.</li>
+<li><strong><code>missionobj</code> Decl</strong> knows only <code>title</code>, <code>desc</code>, <code>material</code>, and <code>parentMission</code> across all 338 Retail Decls (D01). There is no counter field, and no mission or goal text in <code>english.lang</code> has a counter placeholder (D02).</li>
+<li>Both Decl types reside in <code>gameresources</code>/<code>patch_N</code> and are therefore <strong>mounted for every map</strong>. The Decl dialect is written and read bit-exactly: 624/624 copies of mission/missionobj/chaptervariation run through Parser → Emitter (R02, including Retail manual work: spaces after <code>;</code>, empty <code>{}</code>).</li>
+</ul>
+<h2 id="2-enter-the-offices-start-and-end-node-by-node">2. "Enter the offices": Start and End, Node by Node</h2>
+<p>All nodes are located in <code>sacramento_gameplay_kiscule_c2v1.decl</code>. The chains are <strong>exactly</strong> fixed in the Probe (E01–E03). A renamed event (N01) or a dangling edge (N04) causes failure.</p>
+<p>START (Runtime occupied: Screenshot)
+BeginGame[1620406561] (ignoreInitialFlag)
+  └─OnBeginGame→ Delay[1525383468] 500 ms
+      └─Finished→ ActionMission[1476098740].MissionStart
+                   mission_c2v1_main, objectives = obj_01…obj_04, showNotification=false
+                   → Engine 0xF6F660 "Mission added" + 0xF6E8F0 "Adding objective … to mission" (X07)
+          └─MissionStart→ Delay[671776109] 4100 ms
+              └─Finished→ SendCustomEvent[1671718539] "start_obj_01" (global)
+                   ⇢ GetCustomEvent[886242348] "start_obj_01"
+                      └─Received→ ActionMission[260028346].ObjectiveStart
+                                   objectives=[obj_01_find], showNotification=TRUE
+                                   → Engine 0xF6EA20 "Start objective …" / "Show hud objective …" (X04)
+                                   → HUD: „NEW OBJECTIVE" + „Enter the offices"   (~4.6 s after map start)</p>
+<p>END
+idTrigger sacramento_gameplay_triggers_obj_1_complete   (layer/dlc/c2v1)
+  Position (-4.75, -193.75, -0.95), Form cm "maps/game/dlc/c02/c2v1/<name>.hkshape":
+  Box 4.32 × 0.32 × 7.08 m, local to origin, contact bit 0x4000 (E07, E08)
+  = the floor at the ventilation grate opening in the lobby (world marker objective_prone_grate at (-3, -193.7))
+ ⇢ EntityReference[1300045830] → TriggerNotification[1728583878].listenedEntities
+      classFilter "idPlayer", maxNotificationCount 1
+   └─Touching→ SendCustomEvent[1488908889] "end_obj_01"
+       ⇢ GetCustomEvent[169323261] └─Received→ ActionMission[1301606007].ObjectiveComplete
+                                    objectives=[obj_01_find], showNotification=false
+                                    → Engine 0xF6EDA0: Flag |=1, notice_CompleteObjective (X03)
+           └─ObjectiveComplete→ SendCustomEvent[1690454534] "start_obj_02"
+               ⇢ GetCustomEvent[1129312168] └─Received→ ActionMission[1187802266].ObjectiveStart
+                                             "Locate Hans' office", showNotification=true</p>
+<p>Machine-readable with all parameters: <code>anatomy.json</code> → <code>enter_the_offices</code>
+(<code>start_trace</code>, <code>complete_trace</code>, <code>graph</code> with 24 nodes/24 edges from chapter variation to HUD).</p>
+<h2 id="3-all-four-objectives-of-c2v1">3. All four objectives of c2v1</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Objective (<code>missionobj</code>)</th>
+<th>HUD Title (patch_3)</th>
+<th>Start</th>
+<th>End</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>obj_01_find</code></td>
+<td>Enter the offices</td>
+<td>BeginGame → 500+4100 ms → <code>start_obj_01</code></td>
+<td>Trigger <code>…triggers_obj_1_complete</code> → <code>end_obj_01</code></td>
+</tr>
+<tr>
+<td><code>obj_02_locate</code></td>
+<td>Locate Hans' office</td>
+<td><code>start_obj_02</code> from completion of obj_01</td>
+<td>Gate (once) from Trigger <code>…obj_2_complete</code> <strong>or</strong> <code>hans_notice_player</code> (Office Script: Hans notices player) <strong>or</strong> Hans dead → <code>end_obj_02</code></td>
+</tr>
+<tr>
+<td><code>obj_03_kill_hans</code></td>
+<td>Kill Ubercommander Hans</td>
+<td><code>start_obj_03</code> from completion of obj_02</td>
+<td><code>AiKilledNotification</code> Hans → 2000 ms → <code>end_obj_03</code></td>
+</tr>
+<tr>
+<td><code>obj_04_kill_all</code></td>
+<td><strong>Escape</strong> (patch_2 said "Leave no witnesses")</td>
+<td>Completion of obj_03 → world marker removed → <code>ActionRemove</code> → <code>start_obj_04</code></td>
+<td><code>UseNotification</code> on <code>sacramento_gameplay_prop_use_animated_exit_level</code> → <code>end_obj_04</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>Example: <strong>one</strong> <code>MissionStart</code> node registers all objectives silently; each objective has an <code>ObjectiveStart</code> node with a HUD message and an <code>ObjectiveComplete</code> node without. Transitions occur via global Custom Events <code>start_obj_NN</code> / <code>end_obj_NN</code>.</li>
+<li><strong>"Counter Update"</strong> does not exist as a Decl or HUD field (D01, D02). Counting is done in the script. Retail example (P01, 27 cases): <code>AiKilledNotification</code> with a list of N enemies and <code>maxNotificationCount</code> −1 or ≥ N → <code>Counter(endCount=N)</code> → <code>Reached End</code>. This implies: the notification fires <strong>per kill</strong>. <code>SetActiveObjective</code> (3 Retail usages, c02p1) sets the active objective anew; log "Set active on missionIndex… objectiveIndex…".</li>
+<li><strong>Failure</strong>: <code>ActionMission</code> has inputs <code>ObjectiveEnd</code> and <code>MissionEnd</code>. In code, both call 0xF6F210, set flag <code>|=2</code>, and send <code>notice_FailedObjective</code> or <code>notice_FailedMission</code> (X02). <code>MissionNotification</code> has outputs <code>ObjectiveFailed</code> and <code>MissionFailed</code> (X06). <strong>Retail wires none of these: 0 of 2977 scripts</strong> (S01, M03). Missions fail in-game only through player death (Checkpoint). What a failed objective does on the HUD is unknown.</li>
+<li>Dead end in Retail script: <code>SendCustomEvent[1660263701] "end_level"</code> has no input; <code>c2v1_combat_target_ai_spawn_7</code> is wired nowhere (A01).</li>
+</ul>
+<h2 id="4-mission-end-exit--chronicle--next-map">4. Mission End: Exit → Chronicle → Next Map</h2>
+<pre><code>UseNotification[1195927002] on sacramento_gameplay_prop_use_animated_exit_level
+   (idProp2 prop/use_animated, CLIPMODEL_BOX 0,2 m, flags.hide=true until world marker shows it,
+    LOOT_TOUCH_USE_TIMED 1000 ms, textOverride #str_useable_fc_c2v3_escape = &quot;Escape (Exit level)&quot;)
+ └─Used→ SendCustomEvent &quot;end_obj_04&quot; ⇢ GetCustomEvent[711716177]
+    └─→ ActionMission[1709067129].ObjectiveComplete + .MissionComplete   (Flag |=1, notice_CompleteMission)
+        └─→ SendCustomEvent[618596321] &quot;end_level&quot; ⇢ GetCustomEvent[188420141]
+            └─→ Delay[16548334] 10 ms → ActionChronicle[1306067857].End (completed=true, returnToSas=false)
+                └─End→ ActionNextMap[1488751441].NextMap (mode MODE_AUTO, mapName &quot;&quot;)
+</code></pre>
+<p>E03 checks this chain exactly. <code>MODE_AUTO</code> without map names presumably means "next part according to variation" (<code>nextVariationId = 232</code>). The chapter completion display belongs to <code>ActionChronicle</code>. Both are unseen at runtime. Counter-examples end differently: in c3v1, Level-Exit → Bink → <code>ActionChronicle(returnToSas=true)</code>, and only a custom Engine event <code>MapMovementNotification.ChronicleToSAS</code> triggers <code>ActionNextMap</code>. In c02p1, <code>UseNotification</code> (Level-Exit) → <code>ActionConsumeInventory</code> → <code>ActionNextMap</code>.</p>
+<h2 id="5-enemies-trigger--spawner--group--alarm">5. Enemies: Trigger → Spawner → Group → Alarm</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Spawner (<code>idTarget_AISpawn</code>)</th>
+<th>triggered by</th>
+<th>Targets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>…spawn_firstarea</code></td>
+<td>Trigger <code>…trigger_firstarea</code> → <code>ActionTrigger</code></td>
+<td>5 × <code>soldier_light</code>, Group FirstArea</td>
+</tr>
+<tr>
+<td><code>…spawn_secondarea_initial</code></td>
+<td>Trigger <code>…secondarea_initial(1)</code> → <code>ActionRemoveAIFromVolume</code> (Empty Lobby) → 300 ms → <code>ActionTrigger</code></td>
+<td>Human + 7 × <code>soldier_heavy</code>, SecondArea</td>
+</tr>
+<tr>
+<td><code>…spawn_secondarea_labs</code></td>
+<td>Trigger <code>…secondarea_labs</code> (+ Cleanup)</td>
+<td>4, ThirdArea, <code>maxActiveAIs 13</code></td>
+</tr>
+<tr>
+<td><code>…spawn_commanderarea_initial</code></td>
+<td>Trigger <code>…commanderarea_initial</code> → 2 × Volume empty → 300 ms</td>
+<td>6 including <strong>Hans</strong>, Commander</td>
+</tr>
+<tr>
+<td><code>…commanderarea_secondfloor</code> / <code>…thirdfloor</code></td>
+<td>Script <strong>and</strong> directly via <code>idTrigger.edit.targets</code> (A04)</td>
+<td>6 or 1</td>
+</tr>
+<tr>
+<td><code>…spawn_5</code>, <code>…spawn_6</code></td>
+<td><code>alarmSpawner</code> of both <code>idAlarmSystem</code></td>
+<td>Spawn-Scenepoints → hidden AI (Reinforcement on Alarm)</td>
+</tr>
+<tr>
+<td><code>…spawn_7</code></td>
+<td>nothing (A01)</td>
+<td>1 Elite</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>Spawned enemies stand <strong>ready but hidden</strong> (<code>flags.hide = true</code>) in the map. The spawner names them in <code>edit.targets</code> or names <code>idScenePoint_Spawn</code>, which in turn name AI templates.</li>
+<li><code>idEncounterGroupMgr c2v1_combat_ai_groupmanager_1</code>: Group commanders, SecondArea, FirstArea, ThirdArea. Commander and ThirdArea each have an <code>idAlarmSystem</code> (A03). The affiliation is stored in the enemy itself (<code>groupName</code> in the <code>aiEditable</code> block). An alarm system names its <code>idAlarm</code> boxes (<code>targets</code>) and its reinforcement spawner (<code>alarmSpawner</code>).</li>
+<li>"Room empty" is measured by Retail with <code>AIVolumeCountNotification</code> (<code>onlyAlive=true</code>, <code>min 0</code>, <code>max 0</code>, 42 of 54 cases, P02). c2v1 uses it once, in the VO script (<code>c2v1_snd_vo_volume_default_first_room</code>).</li>
+<li><strong>Side effect in the played bundle (O03):</strong> The three lobby soldiers converted to Elite (<code>soldier_light_1/3/5</code>) have lost their <code>groupName = "FirstArea"</code>. The spawner has none, and <code>retype()</code> takes over the body entirely. For waves in custom missions, the group must be retained during conversion.</li>
+</ul>
+<h2 id="6-doors-and-locks">6. Doors and Locks</h2>
+<p>c2v1 has no script-controlled door. The 45 "doors" are <code>idProp2</code> with <code>prop/doors/locked</code> (5) or <code>prop/doors/unavaliable</code> (40), each an invisible <code>CLIPMODEL_BOX</code> use point in front of a static door geometry. None of them is addressed by a script (A05). Locking and unlocking runs in Retail via <code>ActionActivatable</code> (Enable/Disable of Triggers and Use-Props), <code>ActionShowHide</code>/<code>ActionRemove</code>, and <code>Gate</code> nodes. c02p1 shows key logic with <code>PickupNotification</code> → show Use-Prop → <code>UseNotification</code> → <code>Gate</code>. <code>idKisculeNodeDoorNotification</code> exists in the Exe but is not used in any Retail script.</p>
+<h2 id="7-what-engine-code-says-modulebin-read-only">7. What Engine Code Says (module.bin, read only)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Address</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ActionMission</code> registers exactly 7 inputs: MissionStart/Complete/End, ObjectiveStart/Complete/End, SetActiveObjective</td>
+<td>Port table 0x988FF5</td>
+<td>X01, N07</td>
+</tr>
+<tr>
+<td>MissionStart sets up the mission and adds objectives, <strong>without</strong> HUD</td>
+<td>0xF6F660, 0xF6E8F0</td>
+<td>X07</td>
+</tr>
+<tr>
+<td>ObjectiveStart → "Start objective %s on mission %s", "Show hud objective %s on mission %s"</td>
+<td>0xF6EA20</td>
+<td>X04</td>
+</tr>
+<tr>
+<td>ObjectiveComplete / MissionComplete → Flag <code>|=1</code>, <code>notice_CompleteObjective</code> / <code>notice_CompleteMission</code></td>
+<td>0xF6EDA0</td>
+<td>X03</td>
+</tr>
+<tr>
+<td>ObjectiveEnd / MissionEnd → Flag <code>|=2</code>, <code>notice_FailedObjective</code> / <code>notice_FailedMission</code></td>
+<td>0xF6F210</td>
+<td>X02</td>
+</tr>
+<tr>
+<td>The log lines hang on <strong><code>g_debugMissions</code></strong> (intValue RVA 0x2FAF9C0)</td>
+<td>4 comparisons in 0xF6EA20</td>
+<td>X04</td>
+</tr>
+<tr>
+<td>The DevMenu command <code>kce &lt;event&gt;</code> (Custom Event from console) is missing in the Retail Exe</td>
+<td>–</td>
+<td>X05</td>
+</tr>
+</tbody>
+</table></div>
+<p>The HUD widget (<code>idMenuWidget_ObjectiveNotifier</code>, texts <code>#str_new_objective</code> = "NEW OBJECTIVE", <code>#str_objective_completed</code> = "OBJECTIVE COMPLETED") is a guess based on RTTI and strings. The code path up to 0xF6EA20 is confirmed.</p>
+<p><strong>Test aid for the user:</strong> <code>g_debugMissions 1</code> in the console, if you allow setting the value, should write "Start objective …", "Show hud objective …", and "Complete objective …" into <code>qconsole.log</code>. This is the direct runtime proof of a custom mission.</p>
+<h2 id="8-counterexamples-other-dlcs-and-campaign">8. Counterexamples: other DLCs and Campaign</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Map</th>
+<th>Variation / Layer</th>
+<th>Mission</th>
+<th>Objectives</th>
+<th>End</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>c3v1 (dlc_3)</td>
+<td><code>dlc/c3v1</code> / <code>layer/dlc/c3v1</code></td>
+<td>"Escape Anchorage Naval Base"</td>
+<td>6: Exit the Docks, Find Another Way Through, Search for Intel, Take the Elevator, Ascend Elevator Shaft, Steal a Truck</td>
+<td>Use <code>gp_c3v1_levelexit</code> → MissionComplete, parallel → Bink film → <code>ActionChronicle(returnToSas=true)</code>; then engine event <code>MapMovementNotification.ChronicleToSAS</code> → NextMap</td>
+</tr>
+<tr>
+<td>c02p1 (Campaign)</td>
+<td><code>c02/campaign_fergus</code> / campaign, fergus, c02p1, code</td>
+<td>"Under siege"</td>
+<td>6 (of which <code>obj_04_cutwall</code> is registered but never started in the loaded scripts)</td>
+<td>Use <code>…interact_use_level_exit</code> → <code>ActionConsumeInventory</code> (Laser rifle) → NextMap</td>
+</tr>
+</tbody>
+</table></div>
+<p>The same extraction as for c2v1 confirms the pattern in both maps: a silent MissionStart lists all objectives, each ObjectiveStart displays a HUD message, pure ObjectiveComplete nodes display none, and every objective has a Decl and an English title (G-c3v1, G-c02p1, G-c2v1).</p>
+<h2 id="9-building-blocks-for-custom-missions-documented-in-retail">9. Building Blocks for Custom Missions (Documented in Retail)</h2>
+<p>Catalog of all 47 relevant node types with parameters and fixed connections:
+<code>anatomy.json → building_blocks</code>, measured across 2977 scripts in 210 node types.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>User Request</th>
+<th>Retail Prototype</th>
+<th>Chain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Eliminate the Officers"</td>
+<td>P01 (27×)</td>
+<td><code>AiKilledNotification(listenedEntities = Officers, maxNotificationCount = N)</code> → <code>Counter(endCount N)</code> → <code>Reached End</code> → <code>SendCustomEvent end_obj</code> → <code>ActionMission.ObjectiveComplete</code></td>
+</tr>
+<tr>
+<td>"Find the Documents"</td>
+<td>c02p1 <code>PickupNotification</code>, c07p2 "Find New Orleans Dossier"</td>
+<td><code>PickupNotification</code> (or <code>UseNotification</code> on a Use-Prop) → ObjectiveComplete</td>
+</tr>
+<tr>
+<td>"Survive three waves"</td>
+<td>c2v1 waves, P02</td>
+<td>Wave k: <code>ActionTrigger(targetEntities = Spawner k)</code>; End: <code>AIVolumeCountNotification(onlyAlive, 0..0)</code> or Kill-Counter → Delay → Wave k+1; <code>Counter(endCount 3)</code> → Objective Complete</td>
+</tr>
+<tr>
+<td>"Reach the Exit"</td>
+<td>c2v1 Exit</td>
+<td>World marker on <code>prop/use_animated</code> (CLIPMODEL_BOX, no new cm needed) → <code>UseNotification</code> → MissionComplete → <code>ActionChronicle</code> → <code>ActionNextMap</code></td>
+</tr>
+<tr>
+<td>Objective Text</td>
+<td><code>anatomy.json → reusable_objectives</code></td>
+<td>283 existing missionobjs with English titles, e.g., "Kill them all", "Kill all enemies", "Kill Everyone", "Search for Intel", "Find New Orleans Dossier", "Find exit", "Escape"</td>
+</tr>
+<tr>
+<td>Failure</td>
+<td>Only Code (X02)</td>
+<td><code>ActionMission.ObjectiveEnd</code> – never used in Retail, runtime unknown</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The shortest build path without new archive entries</strong>, derived and not built:</p>
+<ol>
+<li>
+<p><strong>Script:</strong> The payload of the existing entry
+   <code>extkisclule maps/game/dlc/c02/c2v1_gameplay/kiscules/sacramento_gameplay_kiscule_c2v1.decl</code>
+   is replaced in the Override-Chunk. The Kiscule entity already indicates this, the name remains.
+   This is the same payload swap as with the <code>.entities</code> entry in <code>build_dlc4_override.py</code>.
+   Kiscule text and containers are bit-exactly writable for all 569 DLC scripts (R01),
+   while the 2408 base scripts according to <code>docs/kiscule.md</code>.</p>
+</li>
+<li>
+<p><strong>Objectives/Text:</strong> Existing <code>mission</code>-/<code>missionobj</code>-Decls reference them. They reside in
+   the always-mounted base archives. That an objective with a foreign <code>parentMission</code> is displayed under
+   another mission is documented by the screenshot (E13).</p>
+</li>
+<li>
+<p><strong>Triggers:</strong> The 48 existing c2v1 triggers are used. Their forms are local boxes (T02). A new
+   <code>idTrigger</code> entity with the <code>clipModelName</code> of an existing trigger at a different position is
+   structurally plausible, but <strong>without a Retail prototype</strong>: all 1773 Retail triggers have their own form,
+   0 shared, 0 × <code>CLIPMODEL_BOX</code> (T01). Alternatively, a new cm via <code>tools/probe_cmfmt.py --box</code>, also untested at runtime.</p>
+</li>
+<li>
+<p><strong>Enemies:</strong> Existing spawners and hidden AIs are retyped (retype) while retaining <code>groupName</code> (O03),
+   or new AI entities are added.</p>
+</li>
+</ol>
+<p>New objective texts require new <code>#str_</code> entries in <code>strings/english.lang</code>. This is an encrypted cfile,
+where the name is part of the key, and there is no German <code>.lang</code>. Additionally, new <code>missionobj</code>
+entries are required in the container. Both constitute independent work (Track <code>missions/text</code>, Add-Entry path).</p>
+<h2 id="10-open-unconfirmed-at-runtime">10. Open, Unconfirmed at Runtime</h2>
+<ul>
+<li>Everything except the start chain of obj_01 (Screenshot) is only structurally supported. This applies to the end sequence, obj_02–04, mission end, waves, and alarms.</li>
+<li>What an <code>ObjectiveEnd</code> (Failure) on the HUD indicates and whether something follows afterwards.</li>
+<li>Whether a Trigger-Form can hang between two Entities (Form reuse).</li>
+<li>Which player start takes effect. The variation requires <code>c2v1_gameplay_player_start_1</code>, which does not exist (E14). In the played bundle, the two starts are swapped. If the player starts at the top of the office, the obj_01-Trigger (Lobby Ventilation) is behind them, and "Enter the offices" remains open until they pass through there.</li>
+<li><code>MODE_AUTO</code>/<code>nextVariationId</code> as the target of <code>ActionNextMap</code>, and how the Chronicle display looks at the end.</li>
+<li>The semantics of Custom Events with <code>global = false</code> cannot be seen from the data. The model assumes "only in the same script". In c2v1, all events are global.</li>
+</ul>
+<h2 id="11-tests-55-including-7-negative-controls-all-green">11. Tests (55, including 7 negative controls, all green)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M01</td>
+<td>c2v1: 31 active scripts from 33 Kiscule-Entities, 0 dead edges</td>
+</tr>
+<tr>
+<td>E01–E03</td>
+<td>Start-, End-, and End chain exact (Node IDs and Types)</td>
+</tr>
+<tr>
+<td>E04–E06</td>
+<td>HUD flags, silent MissionStart with 4 objectives, schedule 500/4100 ms</td>
+</tr>
+<tr>
+<td>E07–E08</td>
+<td>Trigger-Entity, Layer, cm-Form (local box, bit 0x4000)</td>
+</tr>
+<tr>
+<td>E09–E14</td>
+<td>Variation, Layer, Kiscule-Entity, Challenge inactive, title "Enter the offices", parentMission copy error, missing spawnSpot</td>
+</tr>
+<tr>
+<td>M02–M03</td>
+<td>4 objectives complete, no failure wired</td>
+</tr>
+<tr>
+<td>A01–A05</td>
+<td>9 Spawners (6 script, 2 alarm, 1 dead), first wave exact, 4 groups/2 alarms, 2 triggers with <code>targets</code>, doors</td>
+</tr>
+<tr>
+<td>X01–X07</td>
+<td>Engine: Port table, Failure-, End-, Start-, and MissionStart-path, g_debugMissions, <code>kce</code> missing, MissionNotification outputs</td>
+</tr>
+<tr>
+<td>G-*</td>
+<td>Patterns and map ends in c2v1, c3v1, c02p1</td>
+</tr>
+<tr>
+<td>O01–O03</td>
+<td>played bundle: scripts byte-identical, referenced entities present, 3 lost groups</td>
+</tr>
+<tr>
+<td>P01–P02</td>
+<td>Retail pattern Kill-Counter (27/27) and "Room empty" (42/54)</td>
+</tr>
+<tr>
+<td>S01, R01, R02</td>
+<td>2977 scripts, End-Ports 0×; 569/569 DLC-scripts and 624/624 Decls bit-exact</td>
+</tr>
+<tr>
+<td>D01–D03</td>
+<td>missionobj fields, no counter placeholders, 283 reusable objectives</td>
+</tr>
+<tr>
+<td>T01–T02</td>
+<td>1773 Retail Triggers without BOX/shared form; c2v1 forms local</td>
+</tr>
+<tr>
+<td>N01–N07</td>
+<td>Negative controls: Event renamed, String missing, Trigger renamed, Edge detached, Decl indentation, Kiscule byte, Port table shifted – all rejected</td>
+</tr>
+</tbody>
+</table></div></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Kitmap-Design-Report.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Kitmap c2v1: Level Design &quot;Atriumhall&quot;</a><a class="next" href="Mission-Kiscule-Scripting.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Writing Kiscule – Scripts for Custom Missions</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

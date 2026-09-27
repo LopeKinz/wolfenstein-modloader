@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hash08 static probe report – Wolfenstein Modloader</title>
+<meta name="description" content="Search for the formula behind a TNC archive header value: no match found, likely not a content checksum.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Hash08 static probe report</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Hash08"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#outcome">Outcome</a></li><li><a href="#reproducible-command-and-result">Reproducible command and result</a></li><li><a href="#excluded--not-excluded">Excluded / not excluded</a></li><li><a href="#best-next-oracle">Best next oracle</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Archive files of Wolfenstein II: The New Colossus carry an 8-byte value at header position +0x08. This report tested common <span class="t" data-t="hash">hash</span> functions over many parts of the file and over file names, and none reproduced it. A comparison of two custom archives shows the value stays the same even when the metadata changes. So it is probably an identity value tied to how the archive is mounted, not a checksum of the content.</p><ul><li>No match for FarmHash64, CityHash64, XXH64, or MD5/SHA-1 slices over ten file regions.</li><li>No match either for hashes of the 24 retail archive file names in several spellings.</li><li>Two custom archives with different metadata share the same +0x08 value, so it is not a direct hash of that metadata.</li><li>Not ruled out: seeded or secret-keyed hashes, CRC64 variants, or a value supplied by the mount manifest.</li><li>Suggested next step: a loader test that changes only the archive&#x27;s mount identity and records the expected value.</li></ul></div><div class="de"><p class="lede">Archivdateien von Wolfenstein II: The New Colossus tragen an Header-Position +0x08 einen 8-Byte-Wert. Dieser Bericht testete gängige <span class="t" data-t="hash">Hash</span>-Funktionen über viele Dateibereiche und über Dateinamen, aber keine bildete den Wert nach. Ein Vergleich zweier eigener Archive zeigt, dass der Wert gleich bleibt, obwohl sich die Metadaten ändern. Er ist daher wahrscheinlich ein Identitätswert, der mit dem Einbinden des Archivs zusammenhängt, und keine Prüfsumme über den Inhalt.</p><ul><li>Kein Treffer für FarmHash64, CityHash64, XXH64 oder MD5/SHA-1-Ausschnitte über zehn Dateibereiche.</li><li>Ebenfalls kein Treffer für Hashes der 24 Original-Archivnamen in mehreren Schreibweisen.</li><li>Zwei eigene Archive mit unterschiedlichen Metadaten haben denselben +0x08-Wert. Er ist also kein direkter Hash dieser Metadaten.</li><li>Nicht ausgeschlossen: Hashes mit Seed oder geheimem Schlüssel, CRC64-Varianten oder ein Wert aus dem Mount-Manifest.</li><li>Vorgeschlagener nächster Schritt: ein Ladetest, der nur die Mount-Identität des Archivs ändert und den erwarteten Wert protokolliert.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><h2 id="outcome">Outcome</h2>
+<p>No reproducible algorithmic hit was found. The strongest result is that the IDCL header at <code>+0x08</code> is <strong>not a direct hash of the archive metadata</strong>: the custom <code>chunk_26_hash1.resources</code> and <code>chunk_26_oracle.resources</code> have identical values at <code>+0x08</code> (<code>3533df45c7f9b1d2</code>) but differ at <code>+0x20</code> and within the metadata byte range <code>[0x698, 0x69c)</code>. This latter mutation also changes the value at <code>+0x20</code> from <code>8447767104e04232</code> to <code>fb64ec38103aa09d</code>.</p>
+<p>This suggests that a mount/package identity value (or a value retained from the package manifest) is more plausible than a content checksum. It also explains why modifying <code>+0x08</code> alone in <code>chunk_26_mountprobe.resources</code> produces a different value without any corresponding changes to the file content.</p>
+<h2 id="reproducible-command-and-result">Reproducible command and result</h2>
+<p>Run from the repository root:</p>
+<pre><code class="language-powershell">python -u re_probes\hash08_scratch\inspect.py
+</code></pre>
+<p>The script utilizes three intentionally dissimilar retail metadata sets (<code>chunk_8.resources</code>, <code>patch_4_chunkbase_6.resources</code>, and <code>gameresources.resources</code>) and returns:</p>
+<pre><code>retail 3
+direct_matches []
+name_matches []
+</code></pre>
+<p><code>direct_matches []</code> covers FarmHash64, CityHash64, unseeded XXH64, and both endiannesses of MD5/SHA-1 first/last 64-bit slices across ten distinct regions: header, full metadata, header-normalized (<code>+0x08</code> zeroed and <code>+0x08/+0x20</code> zeroed), <code>[0x10:]</code>, <code>[0x28:]</code>, <code>[0x78:]</code>, entry table, and string/pool/table regions. <code>name_matches []</code> independently tests Farm/City/XXH unseeded variants over filename/stem, lower-case forms, and four <code>base</code> path spellings for all 24 retail archive filenames.</p>
+<p>The same invocation prints these independently useful differential checks:</p>
+<pre><code>diff hash1 chunk_26_mountprobe.resources [('0x8', '0x10', 8)]
+diff hash1 chunk_26_oracle.resources [('0x20', '0x28', 8), ('0x698', '0x69c', 4)]
+</code></pre>
+<p>The expected header value from the custom oracle is <code>3533df45c7f9b1d2</code>; the alternative <code>6e9d625602ddbc9e</code> is not derived by any of the tested candidates. Two custom artifacts with the old metadata marker are intentionally rejected by the parser; the probe reports that instead of treating their inferred regions as valid (<code>IdclError: end of metadata magic is 00000000, expected IDCL</code>). The parse-valid custom artifacts (<code>hash2</code>, <code>mountprobe_v2</code>, and <code>oracle</code>) also yield no direct Farm/City/XXH metadata hit.</p>
+<h2 id="excluded--not-excluded">Excluded / not excluded</h2>
+<p><strong>Excluded</strong>: unseeded FarmHash64/CityHash64/XXH64 direct forms over the listed metadata and path spellings; the listed MD5/SHA truncations; and a direct metadata-content interpretation (via the differential counterexample).</p>
+<p><strong>Not excluded</strong>: seeded/secret-keyed variants, CRC64 variants or combinations, and a package-map/VFS-derived identifier. Static samples cannot distinguish a secret seed from a value supplied externally by the mount manifest.</p>
+<h2 id="best-next-oracle">Best next oracle</h2>
+<p>Perform one isolated loader oracle that holds the complete container bytes fixed while changing only the <em>mount identity</em> (filename or package-map chunk identity). If the requested <code>wants</code> value changes, capture the filename, chunk/basechunk IDs, and wanted u64 for at least three identities. This approach is far more discriminating than further raw-byte hash sweeps and can reveal the exact manifest/VFS input to reverse-engineer without altering game data.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Gore-Runtime.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC Gore-Runtime: Findings and Next Test Path</a><a class="next" href="Research-Report-Idclhash.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>IDCL Header <code>+0x08</code> — Solved (derived from code, not a hash sweep)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

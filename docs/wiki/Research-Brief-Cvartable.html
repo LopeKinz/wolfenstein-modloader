@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research brief: Cvartable – Wolfenstein Modloader</title>
+<meta name="description" content="Task description: rebuild the true list of Wolfenstein II console variables from a memory image.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#briefs"><span class="en">Research briefs</span><span class="de">Forschungsaufträge</span></a></p>
+<h1>Research brief: Cvartable</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Brief-Cvartable"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Task description for rebuilding the list of console variables (<span class="t" data-t="cvar">cvars</span>) of Wolfenstein II (TNC). The existing list of 2,231 entries shown in the mod tool was known to be too large and partly mislabeled. The worker should read a memory image of the <span class="t" data-t="runtime">running</span> game and deliver a true list with flags, default values, descriptions and which cvars are locked in the <span class="t" data-t="retail">retail</span> version.</p><ul><li>The game itself listed only 8 cvars for &#x27;g_&#x27; and none for &#x27;bot_&#x27;.</li><li>Two methods, a code scan and a list walk, must agree with each other.</li><li>Every cvar from the game&#x27;s own output must appear with the same description.</li><li>A deliberately wrong starting address must produce nothing, not a plausible-looking table.</li><li>Contradictions with cvars measured as locked must be reported, not hidden.</li></ul></div><div class="de"><p class="lede">Aufgabenbeschreibung für den Neuaufbau der Liste der Konsolenvariablen (<span class="t" data-t="cvar">Cvars</span>) von Wolfenstein II (TNC). Die vorhandene Liste mit 2.231 Einträgen, die das Mod-Werkzeug anzeigt, war bekanntermaßen zu groß und teils falsch beschriftet. Der Worker soll ein Speicherabbild des <span class="t" data-t="runtime">laufenden</span> Spiels lesen und eine echte Liste liefern, mit Flags, Standardwerten, Beschreibungen und der Angabe, welche Cvars in der <span class="t" data-t="retail">Verkaufsversion</span> gesperrt sind.</p><ul><li>Das Spiel selbst listete für „g_“ nur 8 Cvars und für „bot_“ gar keine.</li><li>Zwei Methoden, ein Code-Scan und ein Listendurchlauf, müssen übereinstimmen.</li><li>Jede Cvar aus der eigenen Ausgabe des Spiels muss mit derselben Beschreibung auftauchen.</li><li>Eine absichtlich falsche Startadresse darf nichts liefern, keine plausibel wirkende Tabelle.</li><li>Widersprüche zu als gesperrt gemessenen Cvars müssen gemeldet, nicht geglättet werden.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker w-cvartable-a1; task cvartable2; research (read-only RE).
+Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Parallel: w-texdbkey-a1 reads the same image read-only. Stay in your lane.</p>
+<h1 id="objective">Objective</h1>
+<p>Rebuild the Wolfenstein II cvar catalogue from the unpacked runtime image, the
+way w-cmdtable-a1 rebuilt the command table today.</p>
+<p>This fixes a shipped artifact, not just a research question. docs/stand.md
+records two admissions about the current data:</p>
+<ul>
+<li><code>docs/cvars_tnc.json</code> with 2231 entries "is too high". The engine itself
+  answers <code>listCvars - help g_</code> with EIGHT cvars and <code>bot_</code> with "0 cvars
+  listed". Most mined names are not registered cvars at all. The file is a
+  candidate list being presented as a catalogue.</li>
+<li>Its descriptions are partly attached to the wrong cvar. Measured example:
+  <code>com_assertNoDialog</code> is "bypass the popup assert dialog" per the engine, while
+  the file carried another cvar's text.</li>
+</ul>
+<p>The loader GUI shows this data to the user. So the deliverable is a catalogue
+that is true.</p>
+<p>Answer:</p>
+<ol>
+<li>The list of actually registered cvars, with flags, default value, type and
+   the engine's own description string where one exists.</li>
+<li>Which of them are locked in retail, derived from the flags - and how that
+   compares to the measured RETAIL_BLOCKED list in wolfsdk/cvars.py.</li>
+<li>A drop-in replacement dataset plus a diff against docs/cvars_tnc.json saying
+   how many of the 2231 are real, how many are phantoms, how many descriptions
+   were misattached.</li>
+</ol>
+<h1 id="sources--starting-points">Sources / starting points</h1>
+<ul>
+<li>re_probes/runtime_87400/module.bin - read-only capture of the RUNNING,
+  SteamStub-unpacked NewColossus_x64vk.exe. Virtual RVA layout: file offset ==
+  RVA. Sections/base in manifest.json, .pdata for function bounds.</li>
+<li><strong>tools/probe_cmdtable.py is your template, read it first.</strong> The cvar system
+  sits next to the command system in this engine and yields to the same two
+  attacks: registration call sites in .text, plus a registrar/linked-list walk
+  in .data, cross-checked against each other. re_probes/agent_reports/cmdtable.md
+  documents the pattern, including the anchor check that makes the data walk
+  refuse a wrong offset. Reuse the approach; do not import its files.
+  Useful adjacent facts from it: the command system object is at RVA 0x4104420,
+  <code>AddCommand</code> at 0x1264840, and flags are compile-time constants at the call site.</li>
+<li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps python ...</li>
+<li><strong>Ground truth for the positive control</strong> - this is the valuable part, use it:
+  docs/cvars_tnc_echt.json holds the subset that came from the engine itself via
+  <code>listCvars - help</code>. Anything in there must appear in your table with the same
+  description. docs/cvars-tnc-vergleich.md and docs/cvars_tnc_tabelle.json show
+  the earlier merge attempts and where they went wrong.</li>
+<li>wolfsdk/cvars.py (read-only) holds the measured RETAIL_BLOCKED list and the
+  ALWAYS list - both came from real launches, so they are evidence.</li>
+<li>tools/cvar_table.py and tools/mine_cvars_tnc.py are the earlier static
+  attempts against the PACKED exe - read them to see what failed and why, do
+  not extend them.</li>
+</ul>
+<h1 id="ownership">Ownership</h1>
+<p>tools/probe_cvartable.py (new), re_probes/cvartable/ (new dir, including the
+proposed replacement dataset as cvars_tnc_v2.json), and
+re_probes/agent_reports/cvartable.md (new).
+<strong>Do NOT write docs/cvars_tnc.json or any other docs/ file</strong> - propose the
+replacement in your own directory and let a master merge it.</p>
+<h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
+<p>No game launch, no process attach, no writes under the Steam install or
+"C:/Users/‹user›/Saved Games". Do not touch other workers' files:
+tools/probe_cmdtable.py, tools/probe_idclhash.py, tools/probe_datahash.py,
+tools/probe_saveverify.py, tools/probe_texdbkey.py, tools/tnc_<em>.py,
+tools/vtpixel.py, re_probes/{cmdtable,idclhash,datahash,saveverify,texdbkey,vtrest}/,
+docs/</em>, wolfsdk/*, config.json. No pip install.</p>
+<h1 id="hard-constraints">Hard constraints</h1>
+<p>Python 3.11, stdlib plus vendored capstone. Reproducible from the command line,
+no running game required.</p>
+<h1 id="acceptance-criteria">Acceptance criteria</h1>
+<ul>
+<li>Every cvar in docs/cvars_tnc_echt.json appears in your table, with a matching
+  description. If one does not, your enumeration is incomplete - say so and fix
+  it rather than shipping a partial list as complete.</li>
+<li>The count must be plausible against the engine's own behaviour: `listCvars<ul>
+<li>help g_<code>returned 8. If your table claims hundreds of</code>g_` cvars, something
+  is wrong and you must explain it before proceeding.</li>
+</ul>
+</li>
+<li>Cross-check: the call-site scan and the data walk must agree. Report the diff
+  if they do not - the diff is a finding.</li>
+<li>Negative control: a deliberately wrong section base or anchor must make the
+  walk refuse or return nothing, never a plausible-looking table.</li>
+<li>The flag decoding must be checked against the measured locked/working cvars in
+  wolfsdk/cvars.py. If the flags say a cvar is free but a real launch measured it
+  as reset, that contradiction is important - report it, do not smooth it over.</li>
+</ul>
+<h1 id="verification-expectations">Verification expectations</h1>
+<p>Every important assurance needs a check that fails if it is false. A string that
+looks like a cvar name in .rdata is NOT a registered cvar - that mistake is
+exactly what produced the 2231-entry file. Keep "name present in the binary",
+"registered at runtime" and "settable in retail" strictly apart.</p>
+<h1 id="failure-honesty">Failure honesty</h1>
+<p>If the registration layout does not yield, report the obstacle with offsets.
+Partial but honest beats complete but invented - the current file is what
+"complete but invented" looks like and it is the thing being replaced.</p>
+<h1 id="coordination--deliverable">Coordination / deliverable</h1>
+<p>Checkpoint at milestones. Publish a bus fact with the headline count (real vs
+phantom). Concise German report in re_probes/agent_reports/cvartable.md.
+Finish the bus task when done.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Brief-Command-Queue.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Mission: Retail Command Execution</a><a class="next" href="Research-Brief-Datahash.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Research brief: Datahash</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

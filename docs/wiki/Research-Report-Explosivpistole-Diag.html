@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explosive Pistol Does Not Explode: Diagnosis – Wolfenstein Modloader</title>
+<meta name="description" content="Diagnosis of why a modded explosive pistol in Wolfenstein II gets 30 rounds but still does not explode.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Explosive Pistol Does Not Explode: Diagnosis</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Explosivpistole-Diag"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result">Result</a></li><li><a href="#fix-for-cause-1">Fix for Cause 1</a></li><li><a href="#test-in-game-after-fix">Test in-game (after fix)</a></li><li><a href="#re-verify">Re-verify</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">A mod for Wolfenstein II: The New Colossus was meant to make the pistol fire exploding rockets. The larger magazine worked, but the shots did not explode. Reading the game code points to the load order: the pistol is loaded before the rocket it <span class="t" data-t="inherit">inherits</span> from, so it silently copies an empty parent and stays a normal gun. The report proposes a fix that points the ammo to the rocket directly instead, but this fix has not been tested in the game yet.</p><ul><li>The pistol is the only 1 of 299 inheriting entries listed before its parent in the preload list.</li><li>The game does not reload the parent later and gives no warning, so the rocket settings are lost.</li><li>Other causes were checked and ruled out, e.g. a second copy of the pistol or an outdated <span class="t" data-t="hash">hash</span>.</li><li>Recommended fix: set the ammo&#x27;s projectile to the rocket, as the retail throwing hatchet does.</li><li>A weaker second cause (the weapon class only fires instant hits) is only ruled out by an in-game test.</li></ul></div><div class="de"><p class="lede">Ein Mod für Wolfenstein II: The New Colossus sollte die Pistole explodierende Raketen schießen lassen. Das größere Magazin funktionierte, die Schüsse explodierten aber nicht. Das Lesen des Programmcodes weist auf die Ladereihenfolge: Die Pistole wird vor der Rakete geladen, von der sie <span class="t" data-t="inherit">erbt</span>, kopiert also stillschweigend eine leere Vorlage und bleibt eine normale Waffe. Der Bericht schlägt einen Fix vor, bei dem die Munition direkt auf die Rakete zeigt; getestet ist dieser Fix im Spiel aber noch nicht.</p><ul><li>Die Pistole ist als einziger von 299 erbenden Einträgen vor ihrer Vorlage in der Vorladeliste aufgeführt.</li><li>Das Spiel lädt die Vorlage später nicht nach und warnt nicht; die Raketen-Einstellungen gehen verloren.</li><li>Andere Ursachen wurden geprüft und ausgeschlossen, z. B. eine zweite Kopie der Pistole oder ein veralteter <span class="t" data-t="hash">Hash</span>.</li><li>Empfohlener Fix: das Projektil der Munition auf die Rakete setzen, wie beim Wurfbeil im Originalspiel.</li><li>Eine schwächere zweite Ursache (die Waffenklasse feuert nur Sofort-Treffer) lässt sich erst im Spieltest ausschließen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Status as of 2026-09-26. All information is read-only: Live archives under <code>D:/.../Wolfenstein.II.The.New.Colossus</code>, runtime snapshot <code>re_probes/runtime_87400/module.bin</code> (disassembled with <code>tools/tnc_runtime_code.py</code>). Nothing written under <code>D:/SteamLibrary</code> or <code>Saved Games</code>, no project file other than this report.</p>
+<p><strong>User Finding:</strong> The magazine shows 30 rounds. Therefore, the Decl route from tncpatch reaches the game (ammo <code>clipSize</code> or Upgrade <code>valueInt</code>, both set to 30). The pistol still does not explode. Tested on the Kit map (dlc_0, c2v1).</p>
+<h2 id="result">Result</h2>
+<p><strong>Cause 1 (High Probability):</strong> The loading order breaks the new inheritance. <code>projectile/player/pistol</code> appears in the preload list <strong>before</strong> its new parent <code>projectile/player/kampf_pistol_rocket</code>. The engine places all entries "deferred" first and then loads them sequentially. When the pistol is parsed, <code>inherit</code> finds the rocket object already created but not yet loaded. The loader does not load it within this nesting. The parser copies the empty parent without warning. The pistol is thus "Class standard values + own edit block", remaining a hitscan weapon without <code>splashDamageDecl</code>. The ammunition change takes effect because it resides in its own edit block and its parent <code>base_ammo</code> is loaded beforehand.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Result</th>
+<th>Could have turned out differently</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Order of <code>inherit</code> parent vs. child in <code>common.mapresources</code> (patch_4, the read copy), types projectile/ammo/weapon/damage/upgrade</td>
+<td>298 parents before, <strong>1 after: exactly our pistol</strong> (line 3221, rocket 8769)</td>
+<td>yes, retail exceptions would have proven "order irrelevant"</td>
+</tr>
+<tr>
+<td>same in <code>c2v1.mapresources</code> (dlc_0), 17 Decl types including entityDef</td>
+<td>844 before, 26 in common (loaded earlier there), <strong>1 after: our pistol</strong> (8016 vs. 13217)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>All 129 manifests: which line loads first?</td>
+<td>every manifest with both lines has the pistol first (5 common copies + DLC-c2 maps); no campaign map lists either</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Block loader <code>LoadNamedResourceBlock</code> 0xAC1730</td>
+<td>Phase 1 <code>0xAC2FE0..0xAC306C</code>: each line is created (<code>vtable+0xC8</code>) and marked with <code>flags|=4</code> (deferred) ("allocate and defer load"). Phase 2 <code>0xAC3290..0xAC339B</code>: <code>Load(name,0,0)</code> in manifest order</td>
+<td>yes, a loader that loads line by line would be immune</td>
+</tr>
+<tr>
+<td>Search/Load 0xAB8F80</td>
+<td>deferred (<code>[+0x4C]&amp;4</code>): level 0 loads. Nested (<code>[0x30B3EF4]!=0</code>) loads only when <code>[+0x40]==2</code> (static resource), <strong>otherwise returns unloaded</strong> (<code>0xAB9224..0xAB9236</code>)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>idResourceList::Load</code> 0xABA110</td>
+<td>found object with <code>[+0x18]==0</code> is returned directly (<code>0xABA271..0xABA29D</code>), without load check</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Decl Parser 0xA55000 (Slot 26 of vtable for <code>idDeclProjectile</code> and <code>idDeclAmmo</code>, checked via RTTI)</td>
+<td><code>inherit</code> → <code>Load(parent, mode 1)</code> (0xA5519C). If parent is "in progress" (<code>&amp;2</code>), it generates FatalError "…used for parent inheritance … before it is fully defined". <strong>The parser does not check if it is loaded</strong>, it copies it (0xA55416..0xA55460)</td>
+<td>yes, a load check or reload would have refuted the cause</td>
+</tr>
+<tr>
+<td>Is the rocket a static engine resource (<code>[+0x40]=2</code>)?</td>
+<td>no: The static list at <code>0x30B4058</code> has 1289 nodes, none is the rocket, and the string appears nowhere in the Exe. Constructor 0xAB3820 sets 0 or 1. <code>0xABBAE0</code> (all static) runs only after game initialization (0xA66A29)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Subsequent reload if parent loads later?</td>
+<td>registration 0xA410A0 returns immediately when <code>[0x30B54E8]==2</code>. The block loader sets this before Phase 2 (0xAC31D8), live value is 2. Registry 0x3C789F0 otherwise uses only <code>reloadDecls</code> (0xA415E0, not exposed)</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table></div>
+<p>Proven are the code path and the data state. It has been established that the path is traversed exactly as described at runtime and that an unloaded Decl object carries only class default values. Side effect, if this holds: The pistol also loses everything from <code>projectile/player/default</code> (recoil <code>weaponRecoilInfo</code>, <code>tracerMtr</code>, <code>spread</code>).</p>
+<p>Also applies to campaign maps: <code>Init2</code> (0xABD340) loads <code>init</code> at startup and then <code>common</code> (0xABD442, 0xABD520). Pistol, ammo, upgrade, and the entire rocket chain are listed in <code>common.mapresources</code> with the Immer bit. The pistol is thus broken from game start on every map equally.</p>
+<p><strong>Cause 2 (low confidence): The standard weapon class only fires hitscan.</strong> This contradicts the retail throwing hatchet: <code>weapon/player/sp/hatchet</code> inherits like <code>handgun_nomesh</code> from <code>base_nomesh</code>, has no <code>inventoryClass</code>, and fires via <code>ammo.projectileDecl = projectile/player/axe_throw</code> an Entity projectile. This is documented by the data, not by own runtime measurement. Only a test with the fixed Cause 1 rules it out.</p>
+<p><strong>Cause 3 (only important for the fix): Upgrades swap the projectile.</strong> With silencer or elephant rounds, the weapon fires <code>pistol_silenced</code>, <code>pistol_elephant</code>, or <code>pistol_elephantrounds_silenced</code>. Under Cause 1, these are also broken because they inherit from the pistol. A fix via ammo must bend them.</p>
+<h3 id="excluded-measured">Excluded (measured)</h3>
+<ul>
+<li><strong>Other copies and priority:</strong> All 30 <code>.resources</code> scanned (base, patch_1..4 including chunkbase, all chunks, dlc_0/1/2/3/5, also our chunk_22), every type, name containing <code>player/pistol</code> or <code>handgun</code>. <code>projectile/player/pistol</code> and <code>ammo/player/sp/handgun</code> exist <strong>exactly once each</strong> (gameresources), <code>weapons/handgun/magazine_size</code> twice (gameresources, patch_3). All copies are unpacked and carry the mod text. There is no compiled or binary second form.</li>
+<li><strong>data_hash +0x50:</strong> Exactly the 4 modified entries have an outdated hash (all remaining hits match). This is checked only via <code>resourceStorage_checkDataCheckSum</code> (live 0), and a failure would be a FatalError. The ammo change with an equally outdated hash came through.</li>
+<li><strong>Rocket chain not preloaded:</strong> <code>kampf_pistol_rocket</code>, <code>projectile_ent/kampf_grenade_rocket</code>, <code>damage/player/kampf_grenade</code>, and <code>fx weapons/kampf/rocket</code> are listed with ALWAYS in common and the c2v1 manifest.</li>
+<li><strong>Console command for inspection:</strong> <code>listDecls</code>, <code>printDecl</code>, and <code>reloadDecls</code> are registered but not among the 34 exposed commands (cmdtable.md). The console cannot display the Decl. The error path also does not write a warning, so <code>dumpWarnings</code> does not help.</li>
+</ul>
+<h2 id="fix-for-cause-1">Fix for Cause 1</h2>
+<p><strong>Recommended (fits everywhere in place, no rebuild needed):</strong> Swap projectile via reference instead of via <code>inherit</code>. References may point forward: Retail has 3 such cases (upgrade <code>valueDecl</code> → later listed weapon, e.g., <code>battlerifle/marksman</code>), and they work. This is exactly the throwing hatchet pattern.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Change</th>
+<th>new / space</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>projectile:projectile/player/pistol</code></td>
+<td>Remove entry from mod.json (back to Retail)</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>ammo:ammo/player/sp/handgun</code></td>
+<td><code>edit.projectileDecl</code> = <code>projectile/player/kampf_pistol_rocket</code> (+ clipSize 30)</td>
+<td>482 / 512 B</td>
+</tr>
+<tr>
+<td><code>upgrade:weapons/handgun/silencer</code></td>
+<td><code>edit.modifiersData.item[0].data.valueDecl</code> = Rocket</td>
+<td>635 / 640 B</td>
+</tr>
+<tr>
+<td><code>upgrade:weapons/handgun/elephantrounds</code></td>
+<td>as <code>file</code>: patch_2-Retail text with <code>valueDecl</code> = Rocket (a <code>set</code> would take the DMT_UPGRADE_ANIM from the patch_2 copy)</td>
+<td>701 / 704 B in both copies</td>
+</tr>
+<tr>
+<td><code>upgrade:weapons/handgun/elephantrounds_silencer</code></td>
+<td><code>edit.modifiersData.item[0].data.valueDecl</code> = Rocket</td>
+<td>483 / 1216 B</td>
+</tr>
+</tbody>
+</table></div>
+<p>Cost: The pistol adopts the thrower's firing sound, direct hit damage, and recoil. The silencer no longer makes it silent. This works on all maps.</p>
+<p><strong>Alternative (retains pistol sound and damage):</strong> <code>inherit</code> remains <code>projectile/player/default</code>, and the rocket fields are placed directly into the pistol's edit block (<code>hitscan = false</code>, <code>notHitscanInfo{…}</code>, <code>splashDamageDecl</code>, <code>fxDecl</code>, …). The silencer and elephant variants then inherit these. This totals 534 B (only what is necessary) or 786 B (everything) versus 448 B of space.</p>
+<p>This means building new gameresources and a 702 MB backup on D:.</p>
+<p>Not recommended: reordering the lines in <code>common.mapresources</code> (5 copies, global preload list, no asset type in the loader).</p>
+<p>Inspector gap: <code>tools/verify_weapon_mod.py</code> checks if the parent is preloaded, but not if it comes <strong>before</strong> the child. This specific rule (parent line &lt; child line in the highest common copy) would have reported this error as the sole violation under 299.</p>
+<h2 id="test-in-game-after-fix">Test in-game (after fix)</h2>
+<ol>
+<li>Restart the loader, apply the explosive pistol (new version), and start the game.</li>
+<li>Shoot at a wall with the pistol from more than 10 m distance. The rocket bounces off at approximately 5 m and ignites only after 3 s.</li>
+</ol>
+<p>If it explodes, causes 1 and 2 are resolved: identical rocket Decl, but without <code>inherit</code>. If it does not explode, it is due to the weapon class (cause 2).</p>
+<p>Without a new version, immediately in the current state: Does the pistol have almost no recoil or no tracer? Then it is also missing its parent <code>default</code>. This fits cause 1, but is only a soft indicator.</p>
+<h2 id="re-verify">Re-verify</h2>
+<pre><code>python tools/tnc_runtime_code.py --rva 0xa55000 --function   # inherit-parser, 0xA55342 / 0xA55416
+python tools/tnc_runtime_code.py --rva 0xab8f80 --function   # 0xAB9224: reset + nested -&gt; not loaded
+python tools/tnc_runtime_code.py --rva 0xac1730 --function   # Phase 1 0xAC2FE0, Phase 2 0xAC3290
+</code></pre>
+<p>Order: <code>parse_mrl</code> (tools/probe_mapmanifest.py) on <code>patch_4:generated/buildgame/common.mapresources</code>, then for each Decl with <code>inherit</code>, compare the line number of the parent with its own.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Execcarrier.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>The <code>cfile</code> Carrier: Smallest DLC to Carry a Resource</a><a class="next" href="Research-Report-Gore-Runtime.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC Gore-Runtime: Findings and Next Test Path</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mesh Format (model / modelAsset / modelstream): Resolved, Box is writable – Wolfenstein Modloader</title>
+<meta name="description" content="The Wolfenstein II 3D model format is decoded and rewritten exactly; a replacement box model was built.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Mesh Format (model / modelAsset / modelstream): Resolved, Box is writable</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Meshfmt"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#results">Results</a></li><li><a href="#what-this-run-corrected-compared-to-the-report-from-run-2">What this run corrected compared to the report from Run 2</a></li><li><a href="#loader-modulebin-code-re---loader-checks-it-afterwards">Loader (module.bin, Code-RE, --loader checks it afterwards)</a></li><li><a href="#question-1-how-model-modelasset-and-modelstream-relate">Question 1: how model, modelAsset, and modelstream relate</a></li><li><a href="#question-2-the-writer">Question 2: the Writer</a></li><li><a href="#question-3-what-a-mesh-additionally-needs">Question 3: what a mesh additionally needs</a></li><li><a href="#checks-executed-in-this-run-output-in-re_probesmeshfmt">Checks (executed in this run, output in re_probes/meshfmt/)</a></li><li><a href="#open--risks">Open / Risks</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report decodes how Wolfenstein II: The New Colossus stores 3D models. Models hold their geometry uncompressed, with up to three detail levels and a fixed 48-byte layout per vertex. The reader and writer reproduce all 22,400 retail models byte-for-byte, and a simple box <span class="t" data-t="mesh">mesh</span> was built to replace a metal crate. The box passes all offline checks, but it has not been seen in the running game.</p><ul><li>22,400 of 22,400 models across all 27 retail archives parse and rewrite byte-for-byte, plus 7,465 of 7,465 vertex paint streams.</li><li>All models use one vertex layout of 48 bytes; indices are 16-bit, and up to 3 detail levels are allowed.</li><li>&#x27;modelstream&#x27; entries are per-instance vertex paint, not geometry; &#x27;modelAsset&#x27; is only a text description.</li><li>A new model needs a correctly formed name, an existing <span class="t" data-t="material">material</span> and an entity that places it; <span class="t" data-t="collision">collision</span> is stored separately.</li><li>In this run, an error in the box&#x27;s material list from an earlier run was found and fixed.</li></ul></div><div class="de"><p class="lede">Dieser Bericht entschlüsselt, wie Wolfenstein II: The New Colossus 3D-Modelle speichert. Modelle enthalten ihre Geometrie unkomprimiert, mit bis zu drei Detailstufen und einem festen 48-Byte-Aufbau pro Eckpunkt. Leser und Schreiber reproduzieren alle 22.400 Modelle des Spiels byte-genau, und als Ersatz für eine Metallkiste wurde ein einfaches Box-<span class="t" data-t="mesh">Mesh</span> gebaut. Die Box besteht alle Offline-Prüfungen, wurde im laufenden Spiel aber noch nicht gesehen.</p><ul><li>22.400 von 22.400 Modellen aus allen 27 Archiven des Spiels werden gelesen und byte-genau neu geschrieben, dazu 7.465 von 7.465 Vertex-Paint-Streams.</li><li>Alle Modelle nutzen einen Eckpunkt-Aufbau mit 48 Byte; Indizes sind 16 Bit groß, erlaubt sind bis zu 3 Detailstufen.</li><li>„modelstream“-Einträge sind Vertex-Bemalung pro Instanz, keine Geometrie; „modelAsset“ ist nur eine Textbeschreibung.</li><li>Ein neues Modell braucht einen korrekt gebildeten Namen, ein vorhandenes <span class="t" data-t="material">Material</span> und ein Objekt, das es platziert; die <span class="t" data-t="collision">Kollision</span> liegt getrennt.</li><li>In diesem Durchlauf wurde ein Fehler in der Materialliste der Box aus einem früheren Durchlauf gefunden und behoben.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Worker <code>w-meshfmt-a2</code>, third run (a1 paused by user, run 2 truncated after session limit report), 2026-09-23.
+Tool: <code>tools/probe_meshfmt.py</code>, Outputs: <code>re_probes/meshfmt/*.txt</code>.</p>
+<h2 id="results">Results</h2>
+<ul>
+<li><strong><code>model</code> contains geometry fully and uncompressed</strong>: 3 LOD slots, float32 positions, 48-byte vertices, u16 indices. There is no GPU-specific format and no streamed LOD tails.</li>
+<li><strong>Parser and Writer are byte-exact: 22,400 / 22,400 models across all 27 Retail Archives</strong> (24 × base, dlc_1..3), plus 7,465 / 7,465 <code>modelstream</code>. For the sample from the task (3 archives), it is 1,610 / 1,610.</li>
+<li><strong>New geometry is writable.</strong> The box is located in <code>re_probes/meshfmt/box_chunk_8.resources</code> (sha256 <code>221a3e00…792fd325</code>, deterministic). Container hashes match: 1562/1562, +0x08/+0x20 OK.</li>
+<li><strong>Structurally valid after these checks, NOT tested at runtime.</strong></li>
+</ul>
+<h2 id="what-this-run-corrected-compared-to-the-report-from-run-2">What this run corrected compared to the report from Run 2</h2>
+<p>All commands were re-executed. Parser, Round-Trip, Negative Controls, and Naming Rules held with the same numbers. Two points were incorrect:</p>
+<ol>
+<li><strong>The box had an incorrect material list entry.</strong> It wrote <code>(material, 0, 0, 3)</code>, i.e., a "Retail majority value". The three u32s are derived: (Surface-Index, smallest index, largest index of LOD 0). Surface areas tile their LOD-0 index range seamlessly, starting from about 32,766 vertices as two ranges. This applies to <strong>20,623 / 20,624</strong> Retail models with a list. The exception is a Skydome whose surface carries <code>missing_material</code>. Correct for the box is therefore <code>(material, 0, 0, 23)</code>. The old box would have reported the vertex range 0..3 instead of 0..23 to the engine. Fixed. <code>check_geometry()</code> now checks this rule, and the old box serves as its own negative control. Consequently, the container has a new sha256 (old <code>3389a0cf…</code>, new <code>221a3e00…</code>).</li>
+<li><strong>"The box takes Retail majority values" was not accurate.</strong> Re-measured:<ul>
+<li><code>head</code> (12 B → model+0x74) is an f32[3]. In 22,214 / 22,400 models it is (0, ±0, 0). The box writes zeros.</li>
+<li><code>head2</code> (12 B → model+0xB0) is null exactly when all surfaces have only LOD 0: 22,335 / 22,344. These are LOD parameters. The box has only LOD 0 and therefore writes zeros, which complies with the rule.</li>
+<li>The Surface <code>hash</code> is <strong>never</strong> 0 in Retail, nor is it the crc32 or fnv1a of the material name. The loader reads it at <code>[rbp-0x7C]</code> and never reads it again: throughout the entire loader there are exactly 2 accesses, the zeroing and the <code>lea</code> for the read. The box writes 0, and the loader ignores the value.</li>
+<li><code>density</code> = 1e30 (0x7149F2CA) at both values causes the engine to calculate density itself (0x82B08A compares, 0x82B0A4 sets). Only 4 of the 4,069 LOD-0 in the sample use this. The box uses it.</li>
+</ul>
+</li>
+</ol>
+<p>New additions: <code>--loader</code> checks 21 code facts, 3 <code>.pdata</code> boundaries, and the non-use of the hash directly in <code>module.bin</code> (25/25). <code>--box-into</code> now rejects Megatexture models and vertex-painted models instead of writing a broken container. The docstring sentence "Retail passes all checks" was false: only 569 / 1,610 Retail models pass the Authoring Checks. All failures concern counter-clockwise winding triangles or normals/tangents deviating by more than 0.02. The docstring has been corrected.</p>
+<h2 id="loader-modulebin-code-re---loader-checks-it-afterwards">Loader (module.bin, Code-RE, <code>--loader</code> checks it afterwards)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Function</th>
+<th>.text (.pdata)</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idStaticModel::LoadFromBinary</code></td>
+<td>0x59BEC0–0x59D0E9</td>
+<td>"bad numSurfaces" 0x59C07E, <code>cmp [rsp+0x64],0x724c4d42</code> 0x59C754, "Bad trailing magic" 0x59CF0A</td>
+</tr>
+<tr>
+<td><code>idTriangles::ReadFromFile</code></td>
+<td>0x82ABE0–0x82B0E6</td>
+<td>bad numVerts / numIndexes / vertexMask, each FatalError + <code>int3</code>; <code>cmp eax,0x30</code> 0x82AF31</td>
+</tr>
+<tr>
+<td>Vertex size</td>
+<td>0x51F290 (Leaf)</td>
+<td>Bitfield read, 0x1801F → 48</td>
+</tr>
+<tr>
+<td>Static-Model-Stream-Loader</td>
+<td>0x5A0360–0x5A08D9</td>
+<td>staticmodelstream.cpp</td>
+</tr>
+</tbody>
+</table></div>
+<p>The complete byte layout with addresses is documented in the Docstring of <code>tools/probe_meshfmt.py</code>. Vertex 0x0001801F (the only format in 174,860 / 174,860 LODs): pos f32×3 | uv0 f32×2 | normal u8×4 | tangent u8×4 | colour u8×4 | uv1 f32×2 | u16×4. bounds == min/max of positions in 174,860 / 174,860 LODs. Triangles run clockwise against the normal (chunk_1: 1 224 382 cw to 532 ccw).</p>
+<p><strong>Engine Limits</strong> (otherwise FatalError or memory corruption; the parser rejects these cases): Stride ≠ 48; numLods &gt; 3 (LOD pointers are at +0/+8/+0x10, +0x18 is a different field, 0x59CB07); missing LOD 0 (LOD 0 creates the surface, 0x59C7EB → 0x59C808); more than 7 Extra-Strings (Stack Array 7 × 0x130, 0x59C233/0x59C238); u16 indices. Rest bytes and short reads are not checked by the engine. The parser is intentionally stricter here.</p>
+<h2 id="question-1-how-model-modelasset-and-modelstream-relate">Question 1: how model, modelAsset, and modelstream relate</h2>
+<ul>
+<li><strong>model</strong> is the geometry. <code>…lwo$static_instance=1$lodgroup=g</code> is a placed mesh, <code>maps/…/_combo/*.bmodel</code> is a brush model. <code>_world.bmodel</code> has 0 surfaces, so there is <strong>no world blob</strong>.</li>
+<li><strong>modelAsset</strong> is a text declaration (renderLODs, collisionSetup), so only a description.</li>
+<li><strong>modelstream</strong> is <strong>vertex paint per instance</strong> and contains no geometry: a u16 per vertex and LOD. <code>count</code> == numVerts of the paired model in 6,135 / 6,135 pairs, byte-exact 7,465 / 7,465.</li>
+<li><strong>lodGroup</strong> (17 Decls) provides <code>lods.num = 3</code> and path prefixes for the resource name.</li>
+</ul>
+<h2 id="question-2-the-writer">Question 2: the Writer</h2>
+<pre><code>python tools/probe_meshfmt.py --box-into SRC &quot;NAME&quot; OUT
+</code></pre>
+<p>The command replaces model <code>NAME</code> in <code>SRC</code> with a box that fills the LOD-0 bounds and adopts the material. Material list membership comes from the original. Then <code>idclwrite.write()</code> and <code>finalize()</code> run, and the result is read back. Example: <code>chunk_8</code>,
+<code>models/crates/metal_crate_02_70cm_100cm.lwo$static_instance=1$lodgroup=default</code>
+→ Box −0.531..0.529 × −0.53..0.533 × 0..0.692, 1,568 bytes, 24 V / 36 I, 12/12 cw. Only 1 data hash changes. The library function for custom meshes is <code>build_box(material, lo, hi, listed=True)</code> with <code>write_model()</code>/<code>parse_model()</code>/<code>check_geometry()</code>.</p>
+<h2 id="question-3-what-a-mesh-additionally-needs">Question 3: what a mesh additionally needs</h2>
+<ol>
+<li>A <code>model</code> entry under the name formed by the engine:
+   <code>lower(model) + "$static_instance=1$lodgroup=" + g</code>. <code>g</code> is the lodGroup with the longest path prefix, otherwise <code>default</code>. The rule applies to 19,205 / 19,205 Retail names; the "all default" check only covers 7,500.</li>
+<li>A material that exists by name. If missing, there is a warning and the Default material (0x59C854). See w-matpipe.</li>
+<li>A placement via an Entity with <code>renderModelInfo.model</code> (w-entitypipe).</li>
+<li><strong>Not required</strong>: modelAsset, modelstream, LOD 1/2 (in Retail they are absent in 9,794 / 64,815 surfaces), density (1e30 → the engine calculates it).</li>
+<li>Collision is separate (<code>cm</code>, w-cmfmt). Upon replacement, the old form remains.</li>
+</ol>
+<h2 id="checks-executed-in-this-run-output-in-re_probesmeshfmt">Checks (executed in this run, output in <code>re_probes/meshfmt/</code>)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--loader</code></td>
+<td>25/25 ok, exit 0</td>
+</tr>
+<tr>
+<td><code>--selftest</code></td>
+<td>Box 1 499 B, 24 V / 36 I, 12/12 cw, List (…,0,0,23), exit 0</td>
+</tr>
+<tr>
+<td><code>--verify</code></td>
+<td>1 610/1 610 parsed and identical, bounds 10 645/10 645, Streams 252/252, Pairs 176/176, List 1 374/1 374</td>
+</tr>
+<tr>
+<td><code>--verify --all</code></td>
+<td>22 400/22 400, bounds 174 860/174 860, Streams 7 465/7 465, Pairs 6 135/6 135, List 20 623/20 624, head2 22 335/22 344</td>
+</tr>
+<tr>
+<td><code>--negative</code></td>
+<td>12 Mutations × 60 Retail Models: 0 accepted. Round-Trip Control 0/60 identical. Box from a1 (wrap) and Box from Run 2 (List) are rejected</td>
+</tr>
+<tr>
+<td><code>--conventions</code> / <code>--names</code></td>
+<td>cw 1 224 382 : ccw 532 / 19 205 : 19 205, Control 7 500</td>
+</tr>
+<tr>
+<td><code>probe_datahash</code> / <code>probe_idclhash</code> on box_chunk_8</td>
+<td>1562/1562 / +08 OK, +20 OK</td>
+</tr>
+<tr>
+<td>Same container without <code>finalize()</code></td>
+<td>1561/1562, +0x20 BAD, each exit 1</td>
+</tr>
+<tr>
+<td><code>--box-into</code> on Megatexture or Vertex-Paint Model</td>
+<td>rejected, exit 1, no file</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="open--risks">Open / Risks</h2>
+<ul>
+<li><strong>Runtime unproven.</strong> Offline proof does not demonstrate that the engine renders the Box.</li>
+<li>The consumer of the material list (model+0xC0) has not been found. The rule is measured (20 623 / 20 624) and not read from code. Similarly open is the semantics of the head/head2 floats, from <code>unk_28</code>, <code>unk_a/b</code> (Retail 0xFFFFFFFF/0 in 4 062 / 4 069) and the Normal byte 3.</li>
+<li>Megatexture materials (<code>material+0x650 ≠ -1</code>, Patch-Table at 0x59BC90) are not decoded. <code>--box-into</code> rejects them.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Matpipe.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>matpipe: material → image → texdb, end-to-end</a><a class="next" href="Research-Report-Missions.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Mission Builder Kit: Custom Missions for the Gestapo Office Map (c2v1)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asset Tab for Wolfenstein II (assetviewer) – Wolfenstein Modloader</title>
+<meta name="description" content="A new asset browser tab for Wolfenstein II that shows, decrypts, edits and saves game files as mods.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#reports"><span class="en">Research reports</span><span class="de">Forschungsberichte</span></a></p>
+<h1>Asset Tab for Wolfenstein II (assetviewer)</h1>
+<p class="meta"><span class="stamp s-solved"><span class="en">Solved</span><span class="de">Gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-Assetviewer"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#what-the-tab-shows-for-wolfenstein-ii-now">What the Tab Shows for Wolfenstein II Now</a></li><li><a href="#numbers">Numbers</a></li><li><a href="#try-it-out">Try it out</a></li><li><a href="#tests">Tests</a></li><li><a href="#examiner-findings-second-pass">Examiner findings (second pass)</a></li><li><a href="#changes-in-this-pass">Changes in this Pass</a></li><li><a href="#limits">Limits</a></li><li><a href="#notes-for-the-master">Notes for the Master</a></li><li><a href="#files">Files</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report covers a new asset browser tab in the project&#x27;s mod tool for Wolfenstein II (TNC). It lists all 218,311 entries from 29 <span class="t" data-t="archive">archives</span>, shows textures as images, and decrypts and unpacks protected text files, such as the English game text, for viewing and editing. Edits are saved as mods in a separate folder. Whether the game accepts such saved changes has not been tested in the game.</p><ul><li>379 of 400 sample images (94.75%) show a preview; the rest are special lighting formats.</li><li>All 239 encrypted or packed text files survive unpack, display and repack byte-for-byte.</li><li>Seven reviewer findings were fixed, e.g. unsafe folder names and 0-byte saves.</li><li>Assets that exist only in a DLC can be viewed but not saved as mods.</li><li>Behavior for Wolfenstein: The New Order (TNO) stays the same, except for safer mod saving.</li></ul></div><div class="de"><p class="lede">Der Bericht behandelt einen neuen Asset-Browser-Reiter im Mod-Werkzeug des Projekts für Wolfenstein II (TNC). Er listet alle 218.311 Einträge aus 29 <span class="t" data-t="archive">Archiven</span>, zeigt Texturen als Bilder und entschlüsselt und entpackt geschützte Textdateien wie den englischen Spieltext zum Ansehen und Bearbeiten. Änderungen werden als Mod in einem eigenen Ordner gespeichert. Ob das Spiel solche Änderungen annimmt, wurde im Spiel nicht getestet.</p><ul><li>379 von 400 Beispielbildern (94,75 %) zeigen eine Vorschau; der Rest sind spezielle Licht-Formate.</li><li>Alle 239 verschlüsselten oder gepackten Textdateien überstehen Entpacken, Anzeige und Neupacken byte-genau.</li><li>Sieben Befunde der Prüfer wurden behoben, etwa unsichere Ordnernamen und 0-Byte-Dateien.</li><li>Assets, die nur in einem DLC liegen, kannst du ansehen, aber nicht als Mod speichern.</li><li>Für Wolfenstein: The New Order (TNO) bleibt alles gleich, bis auf sichereres Speichern von Mods.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Status 2026-09-24, Worker w-assetviewer-a1. Continues an abandoned attempt: <code>wolfsdk/tncview.py</code>, with the changes to <code>wolfsdk/browser.py</code> and <code>tools/verify_browser_tnc.py</code> already in place; this report was missing. Verified, hardened three locations (see "Changed in this Pass"), and ran everything again against the actual installations.</p>
+<p><strong>Second Pass (same day):</strong> The seven findings from the auditors are fixed, see "Auditor Findings". Each finding first received a check in <code>tools/verify_browser_tnc.py</code>, which failed on the old code (20 ERRORS), and now runs successfully.</p>
+<p><code>wolfsdk/gui.py</code> is <strong>not</strong> touched: The GUI already passes a <code>tncpatch.Installation</code> to the browser for Part 2; that suffices.</p>
+<h2 id="what-the-tab-shows-for-wolfenstein-ii-now">What the Tab Shows for Wolfenstein II Now</h2>
+<p>After "Load", there are <strong>29 Archives with 218,311 Entries</strong> in the list:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Location</th>
+<th>Archives</th>
+<th>Entries</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base/</code></td>
+<td>24</td>
+<td>178,077</td>
+</tr>
+<tr>
+<td><code>dlc/dlc_0/base/</code> (Test DLC, not retail)</td>
+<td>1</td>
+<td>7,128</td>
+</tr>
+<tr>
+<td><code>dlc/dlc_1/base/</code></td>
+<td>1</td>
+<td>13,366</td>
+</tr>
+<tr>
+<td><code>dlc/dlc_2/base/</code></td>
+<td>1</td>
+<td>6,985</td>
+</tr>
+<tr>
+<td><code>dlc/dlc_3/base/</code></td>
+<td>1</td>
+<td>12,754</td>
+</tr>
+<tr>
+<td><code>dlc/dlc_5/base/</code> (Exec-Carrier, not retail)</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table></div>
+<p>The columns remain unchanged. The archive appears in the info line; for DLCs with additions, e.g., <code>Archive dlc_1/chunk_20.resources (DLC, read-only)</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type (Count)</th>
+<th>Text Tab</th>
+<th>Image Tab</th>
+<th>Export...</th>
+<th>Save as Mod / Import</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image</code> (37,910)</td>
+<td>Hex of the Payload</td>
+<td>Preview ≤ 512 px; below that a line with size, format, Mip number, displayed Mip, source (TexDB/embedded), and hints</td>
+<td><code>.png</code> = highest decodable Mip in full size (Status names the Mip); otherwise raw data</td>
+<td>Like Part 1, only via Import (raw data)</td>
+</tr>
+<tr>
+<td><code>cfile</code> (68)</td>
+<td><strong>decrypted</strong>; also unpacked if <code>declen &gt; 0</code>; info line <code>decrypted</code> or <code>decrypted and unpacked</code></td>
+<td>–</td>
+<td>Plaintext, or <code>.raw</code> = Payload as in Archive</td>
+<td>Text edit → re-encrypted under the <strong>same Resource Name</strong> before being read back</td>
+</tr>
+<tr>
+<td><code>compfile</code> (171)</td>
+<td><strong>unpacked</strong>; info line <code>unpacked</code></td>
+<td>–</td>
+<td>Unpacked content or <code>.raw</code></td>
+<td>Text edit → Kraken repacked (like retail), read back</td>
+</tr>
+<tr>
+<td>everything else (180,162)</td>
+<td>Text if <code>tncview.as_text</code> preserves it losslessly, otherwise Hex; Path Tab for Decls like Part 1</td>
+<td>–</td>
+<td>Raw data</td>
+<td>Text edit → byte-exact return (Decl query like Part 1); binary → "Text Only"; Import takes raw data</td>
+</tr>
+</tbody>
+</table></div>
+<p>New for "everything else": Kraken-compressed entries (Archive Mode 2 and 4) are now unpacked. Previously, selection reported only a read error for them.</p>
+<p>Saving writes only to <code>mods/&lt;folder&gt;/</code>, and <code>&lt;folder&gt;</code> must be a simple name directly under <code>mods/</code>. A new mod gets <code>"spiel": "tnc"</code>, an existing folder for Part 1 is rejected, and an existing, broken <code>mod.json</code> remains untouched. Saving and importing from a DLC archive are rejected with a reason because <code>tncpatch</code> only writes to <code>base/</code>.</p>
+<p>Lazy loading: "Load" reads only the tables (0.6 s). Oodle is not loaded and no <code>.texdb</code> table is read until an entry is selected; this has been verified.</p>
+<h2 id="numbers">Numbers</h2>
+<ul>
+<li><strong>Images, Sample:</strong> 400 random <code>image</code> entries from all 29 archives (Seed 2026), via the same path as the tab (<code>tncview.payload</code> → <code>tncview.present</code>).<ul>
+<li><strong>379 with preview (94.75 %)</strong>. 21 instead show a reason, and all 21 are light samples: 18 BC6H, 2 BIM v13, 1 BIM v12.</li>
+<li>Notes for the 379: 142 × "Tile chain skipped" (the preview falls to a smaller Mip), 21 × "TexDB without block" (fallback to the next Mip), 15 × "scaled down".</li>
+<li>Time per selection for reading and decoding, warm cache: Median 0.03 s, p90 0.08 s, Maximum 0.48 s.</li>
+</ul>
+</li>
+<li><strong>In the real widget:</strong><ul>
+<li>BC7 2048² (<code>woodboard_02</code>, Preview Mip 2 512²): 0.64 s</li>
+<li>DLC texture <code>gunslinger_shirt</code> (dlc_1): 0.17 s</li>
+<li><code>strings/english.lang</code> (2,049,240 bytes plaintext): 0.09 s</li>
+<li><code>c2v1.entities</code> (DLC, 8,329,537 characters): 0.17 s</li>
+</ul>
+</li>
+<li><strong>All 239 cfile/compfile</strong> (68 + 171) in all 29 archives run the path unpack → Text → Tk-Text → back and come out <strong>byte-for-byte identical</strong>. 8 of them are not valid UTF-8 and are shown as latin-1, 67 end with NUL. Tk rejects NUL, so the end is retained and appended again when saving. 0 are binary, 0 errors.</li>
+<li><strong>Other TNC entries that look like text</strong> (<code>looks_textual</code>, all 29 archives without image/cfile/compfile): 49,086. Of these, <code>as_text</code> rejects 138 as binary; they no longer pass through the Text widget:<ul>
+<li>93 <code>destructionmodeldata</code>, 28 <code>json</code>, 12 <code>hknavmesh</code>, 3 <code>staticShadowGeom</code>: Binary formats containing text with NUL. Tk cuts off at the first NUL. An unchanged "Save as Mod" wrote a 0-byte file for the json entries (Finding 2).</li>
+<li>2 <code>particle</code> with each one single control byte (<code>\x01</code> or <code>\x06</code>): <code>zerstorer_backpack_thrusters_explosion</code>, <code>ubergewehr/projectile_sphere</code>. These now only go through Import.</li>
+</ul>
+</li>
+</ul>
+<h2 id="try-it-out">Try it out</h2>
+<pre><code>python -m wolfsdk gui
+</code></pre>
+<p>Select "Wolfenstein II" at the top, then open the <strong>Assets</strong> tab and press <strong>Load</strong>.</p>
+<ul>
+<li>Type <code>image</code>, search <code>woodboard_02</code> → Tab <strong>Image</strong></li>
+<li>Type <code>cfile</code>, search <code>english.lang</code> → Tab <strong>Text</strong>; the info line says "decrypted and unpacked"</li>
+<li>Type <code>compfile</code>, search <code>c2v1.entities</code> → DLC entry, text starts with <code>Version 5</code></li>
+<li>Change text → <strong>Save as Mod</strong> → enter folder name → activate and apply in the Mods tab</li>
+</ul>
+<h2 id="tests">Tests</h2>
+<p><code>python tools/verify_browser_tnc.py</code> takes about 10 s with warm disk cache, up to 45 s cold; with <code>--alle</code> the run over all 239 cfile/compfile is added (+36 s). Exit 0 with "All good." (second run: 62 tests, with <code>--alle</code> 63, 0 ERRORS). The tool builds the real <code>Browser</code> with a hidden Tk window and clicks via tree selection.</p>
+<ul>
+<li>
+<p><strong>TNC positive:</strong></p>
+<ul>
+<li>The loader lists 24 + 5 archives and decodes nothing.</li>
+<li>BC7 and BC1 are converted into a single PhotoImage with neighbor correlation of 0.92 and 0.97, respectively, indicating image data rather than noise.</li>
+<li>DLC image (dlc_1): Correlation 0.96.</li>
+<li><code>english.lang</code>: Text begins with BOM + <code>// string table</code> and is byte-identical to the decryption output.</li>
+<li>Unprocessed storage → "Nothing changed."</li>
+<li>Processed → The mod file is encrypted (<code>ff ff ff ff</code>…), opens under the same name as editor text, and <code>mod.build_payloads</code> contains it.</li>
+<li><code>.cfg</code> with trailing NUL: Round-Trip successful.</li>
+<li><code>c2v1.entities</code>: <code>Version 5</code>.</li>
+<li>compfile processed → repacked, unpacked to editor text.</li>
+<li>Export: Plaintext, <code>.raw</code>, and full-size PNG.</li>
+</ul>
+</li>
+<li>
+<p><strong>Negative controls:</strong></p>
+<ul>
+<li>Stored payload under a different name → HMAC error.</li>
+<li>Intentional encryption under a false name → the browser rejects saving; nothing is written.</li>
+<li>BC6H and BIM v13 display a reason instead of crashing.</li>
+<li>3-byte payload → "Image data corrupted (IndexError …)".</li>
+<li>Random pixels are recognized as noise.</li>
+<li>Tk truly rejects NUL.</li>
+<li>Saving from DLC rejected; nothing written.</li>
+</ul>
+</li>
+<li>
+<p><strong>Part 1 (TNO), old vs new:</strong> Identical clicks on the current <code>browser.py</code> and the one from <code>git HEAD</code> (loaded via <code>git show</code>) leave identical widget states and identical files. Compared were info lines, text, paths, image pixels, status, "Save as Mod" (bytes from <code>mod.json</code> and Asset), and PNG bytes. Verified across 6 entries (3 images, weapon, damage, anim).</p>
+</li>
+<li>
+<p><strong>Mutation samples</strong> (in a scratch copy, not in the repo):</p>
+<ol>
+<li>Removal of read-back check in <code>tncview.wrap</code> → The exact check "Negative: packaged under false name → saving rejected" fails.</li>
+<li>Adding a space to the Part 1 info line → All 6 checks "Part 1 … identical with HEAD" fail.</li>
+</ol>
+</li>
+</ul>
+<p><strong><code>tools/verify_gui.py</code> before/after:</strong></p>
+<ul>
+<li>Before: Scratch mirror of the working state with <code>browser.py</code> from HEAD.</li>
+<li>After: The repo.</li>
+</ul>
+<p>Both end with Exit 0 and "All good.", and the outputs are <strong>character-identical</strong> (<code>diff</code> empty). Among other things, they contain: "All five work areas built", "Mods read in 19", "Title change loads another catalog 31 -&gt; 2231 Cvars", "Mod list follows title 7 Mod(s) for tnc". Running the second pass again before and after corrections yields Exit 0 and character-identical output. <code>config.json</code> was backed up before and restored afterwards.</p>
+<h2 id="examiner-findings-second-pass">Examiner findings (second pass)</h2>
+<p>Each check is located in <code>check_findings</code> or at the end of <code>check_tno</code>. The "before" column shows the output on the code prior to correction.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Issue</th>
+<th>Previous Behavior</th>
+<th>Correction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Importing to <code>cfile/compfile</code> blindly repacks everything that wasn't already unpacked</td>
+<td><code>.raw</code> from <code>english.lang</code> to <code>default_sp.cfg</code>; custom packed <code>.raw</code> from <code>english.lang</code> without Oodle (simulated)</td>
+<td>Both FAILED: Mod written (Garbage or double-encrypted)</td>
+<td><code>tncview.for_import</code> distinguishes: saved form exactly this entry → kept; readable text → gets repacked; everything else (foreign resource name, missing Oodle/AES, other binary data) → "Import failed" with reason</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Unpacked TNC entries ran through <code>looks_textual</code> and the Text widget</td>
+<td>all 30 json in <code>base/</code> saved unprocessed</td>
+<td>FAILED, 16 of them wrote a Mod (0 Bytes)</td>
+<td>All TNC entries saved via <code>_save_tnc</code>: only what <code>as_text</code> accepts and Tk holds exactly unchanged → "Nothing changed.", binary → "Only text … Importing"</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Folder name unchecked when attached to <code>mods_dir</code></td>
+<td>absolute path, <code>..\x</code>, <code>../x</code>, <code>a/b</code>, <code>CON</code>, <code>nul.txt</code>, <code>vb.</code></td>
+<td>all 7 FAILED, written outside of <code>mods/</code> or <code>mods\CON</code>, <code>mods\vb</code></td>
+<td>only a simple name (no separators, no drive letter, no <code>..</code>, no dot/space at end, no device name); additionally <code>Path.resolve()</code>: target must lie directly under <code>mods/</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Filename without type, two assets shared a file</td>
+<td>material and skins <code>models/animals/bessie/bessie</code> into one Mod</td>
+<td>FAILED, both keys → <code>assets/models_animals_bessie_bessie</code></td>
+<td>The first file keeps its old name. If another asset of the same mod uses the file already, it gets <code>~2</code>, <code>~3</code> … (Comparison like Windows: case insensitive). The same key takes its file back on re-save. Existing mods remain valid.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Traceback in dialog</td>
+<td>broken JSON, JSON list, <code>assets</code> as list, filename &gt; 255</td>
+<td>4 × FAILED with "Traceback (most recent call last)"</td>
+<td><code>mod.json</code> is read before every write. Broken → "mod.json not readable", it remains unchanged, nothing is written. Write errors → "Save failed" with reason and file, for &gt; 255 characters with exactly this hint.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>OSError/MemoryError from Oodle compressor landed in Tk</td>
+<td><code>Oodle.compress</code> raises OSError or MemoryError, during save and during import</td>
+<td>3 × FAILED "… escapes"</td>
+<td>both paths catch <code>TncCryptError</code>, <code>OSError</code>, <code>MemoryError</code> → dialog "… Nothing saved."; the packing happens before the first write attempt</td>
+</tr>
+<tr>
+<td>7</td>
+<td>"Load" also reset selection for Part 1</td>
+<td>TNO: Selection, Load, then Export and Import against HEAD</td>
+<td>FAILED "Export False, Import 0/2 files"</td>
+<td>Selection is only discarded on game switch, then with preview (own check "Game switch on load"). Within a game it remains as in HEAD.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Additionally new, as protection against regression: Import of own <code>.raw</code> remains byte-identical; imported plaintext is encrypted under <code>default_sp.cfg</code>; a TNC-Decl (<code>projectile_ent/bottle_throw</code>) is recognized and processed unchanged byte-for-byte saved; no message of the whole run contains "Traceback".</p>
+<p><strong>Behavioral changes in Part 1 (TNO)</strong> – only in <code>_write_mod</code>, which both parts use (Findings 3–5), everything else like HEAD:</p>
+<ol>
+<li>A folder name that is not a simple name is rejected. HEAD wrote there, also outside of <code>mods/</code>.</li>
+<li>If another asset of the same mod already uses the flat filename, the new file gets <code>…~2</code>. HEAD silently overwrote the file. Without such collisions, files and <code>mod.json</code> are byte-identical to HEAD, which is verified.</li>
+<li>An existing <code>mod.json</code> that is not a JSON object with an <code>assets</code> object is reported before anything is written. HEAD wrote the asset first and then showed a Traceback.</li>
+<li>Write errors show a German message with reason and file instead of a Traceback.</li>
+</ol>
+<p>Not changed, although related (Part 1 should remain like HEAD):</p>
+<ul>
+<li>
+<p><strong>Part 1 continues with <code>looks_textual</code>.</strong> In TNO, 60,411 non-image entries are considered textual; 15 of them (e.g., <code>model</code>, such as <code>maps/game/wolf/c01/c01p1/_combo/_world.bmodel</code>) contain a NUL byte in the middle of their content. Tk truncates there. Saving "As Mod" on top of that would, like finding 2, only write the beginning.</p>
+</li>
+<li>
+<p><strong>Placing a TNO asset into a TNC mod folder</strong> is assumed as in HEAD. Only Part 2 checks <code>spiel</code>.</p>
+</li>
+</ul>
+<h2 id="changes-in-this-pass">Changes in this Pass</h2>
+<ul>
+<li><code>tncview.wrap</code> reads every newly wrapped cfile/compfile back with <code>unwrap</code> and outputs it only if exactly the editor text comes out. The reason: The module <code>assetcrypt</code> is considered untrustworthy in finding 2 (7/8). Therefore, an error there cannot create a mod that the game does not open. Import runs via the same path.</li>
+<li>Non-<code>TncImageError</code>s from <code>tncimage</code> now read as "Image data corrupted (Type: …)" instead of just with the bare Python type.</li>
+<li>PNG Export: The status line names the exported Mip. A tile chain can push the export below the original size, and that should be visible.</li>
+</ul>
+<h2 id="limits">Limits</h2>
+<ul>
+<li><strong>Light probes without image:</strong> BC6H as well as BIM v10/v12/v13 show a reason. In the sample set, these were 5.25% of all images.</li>
+<li><strong>Tile chains</strong> (Codec 2, those ≥ 512-px Mips of most BC4/BC5 Maps) are not decoded. Preview and PNG Export take the next Mip; a 2048 Normal Map comes out as 256² in this way.</li>
+<li><strong>"TexDB without Block":</strong> There are textures whose large Mips have no <code>.texdb</code>. They fall back to a smaller Mip, in the extreme case 32², and that is displayed.</li>
+<li><strong>No PNG Import:</strong> Importing takes raw data (<code>.bimage</code>), as in Part 1.</li>
+<li><strong>"Export all hits"</strong> writes the payload behind the archive compression, i.e., cfile/compfile in their stored form, not decrypted. This fits what importing expects.</li>
+<li><strong>Not tested in game</strong> (the game was never started):<ul>
+<li>A saved cfile is always unpacked (<code>declen = 0xFFFFFFFF</code>). The <code>jle</code> in the reader after that is allowed; loading a file like this the game has not done yet.</li>
+<li>If a payload does not fit into its slot, <code>tncpatch</code> packs the entry at archive level with Kraken (compression 0 → 2).</li>
+</ul>
+</li>
+<li><strong>DLC only read:</strong> Assets that lie only in a DLC cannot be modded via the tab.</li>
+<li><strong>Windows only:</strong> <code>tnccrypt</code> uses <code>bcrypt.dll</code> and finds Oodle via <code>Game.find(title='tnc')</code>. If that fails, it shows the info line "not readable: …" and the text tab Hex; it does not crash.</li>
+<li><strong>Corrupted compfiles</strong> do not fall back: Kraken frames have no CRC. Retail does not affect this, but a broken user DLC can show nonsense as text.</li>
+<li><strong>Foreign exceptions from <code>tncimage</code>:</strong><ul>
+<li><code>IndexError</code> at <code>b"BIM"</code></li>
+<li><code>ValueError</code> at a <code>.texdb</code> offset behind the file end</li>
+<li><code>KeyError</code> in <code>decode</code> at an unknown format</li>
+</ul>
+</li>
+</ul>
+<p><code>tncview.present</code> catches all of them. The actual correction belongs in <code>tncimage.py</code>. The first two I could fix in the second pass; it is not needed because <code>present</code> already catches them. Therefore I did not touch <code>tncimage.py</code>.</p>
+<ul>
+<li><strong>Text that Tk does not losslessly hold</strong> blocks saving. In the 239 cfile/compfiles, this never happened.</li>
+<li><strong>Binary entries and text with control characters</strong> (see "Numbers", 138 entries) can only be replaced via importing.</li>
+<li><strong>Import on cfile/compfile</strong> takes only the stored form of exactly this entry or text without control characters. The unpacked content of a binary cfile/compfile would not work; retail has none.</li>
+<li><strong>Asset names whose flat filename is longer than 255 characters</strong> (338 <code>animEvent</code> in TNC) cannot be saved into a mod. A message comes that says so.</li>
+<li><strong>No atomic writing:</strong> If writing fails halfway through a file (disk full), the asset file can be half-written. <code>mod.json</code> is written last. The behavior is the same as in HEAD.</li>
+</ul>
+<h2 id="notes-for-the-master">Notes for the Master</h2>
+<ul>
+<li><strong><code>tools/verify_gui.py</code> writes <code>config.json</code>.</strong> The title change test calls <code>_resolve_game</code> → <code>Game.remember()</code> → <code>save_config</code>; only the <code>check_play</code> stub is executed. After execution, <code>game_path</code> pointed to TNO instead of TNC. I restored <code>config.json</code> from HEAD; that was the state at session start. The correction belongs to the owner of <code>verify_gui.py</code>. Until then, secure <code>config.json</code> before execution.</li>
+<li><strong>The installation now has <code>dlc_0</code> and <code>dlc_5</code>.</strong> Both are test DLCs from other agents; <code>dlc_4</code> no longer exists. Both are also listed as read-only. The check requires only that <code>dlc_1..3</code> be present.</li>
+<li><strong><code>tools/probe_tno_tex.py</code> contains NUL bytes.</strong> The file originates from another, aborted workflow and has not been touched. The <code>compileall</code> in <code>verify_all</code> fails on it, independently of <code>browser.py</code>. <code>python -m compileall -q wolfsdk tools/verify_browser_tnc.py</code> runs cleanly.</li>
+</ul>
+<h2 id="files">Files</h2>
+<ul>
+<li><code>wolfsdk/tncview.py</code> (new):<ul>
+<li><code>dlc_archives</code>, <code>read_only</code>, <code>where</code> – Archives</li>
+<li><code>payload</code> – Archive compression including mode 4, ported from <code>tools/extract_tnc.py</code></li>
+<li><code>unwrap</code> / <code>wrap</code> / <code>for_import</code> – the second wrapper</li>
+<li><code>as_text</code> / <code>from_text</code> – text without loss</li>
+<li><code>present</code> – everything for a selection</li>
+</ul>
+</li>
+<li><code>wolfsdk/browser.py</code>: Part-2 branch in Load, Select, Export, All-export, Import, and Save-as-mod. The Part-1 code runs unchanged, except the shared <code>_write_mod</code> (Findings 3–5, see "Behavioral Changes in Part 1").</li>
+<li><code>tools/verify_browser_tnc.py</code> (new; in the second pass, <code>check_findings</code> and checks after reload were added)</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Explosive-Pistol-Research.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Pistol: Decl Chain and Explosive Pistol</a><a class="next" href="Research-Report-C2v1-Identity.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>c2v1-Alias: File-Corrupt-Identitaet</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>
