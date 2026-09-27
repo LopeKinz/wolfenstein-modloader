@@ -182,14 +182,14 @@ footer { background: var(--bunker); padding: 2.5rem 0 3rem; color: var(--plaster
 footer p { max-width: 46rem; margin: 0 0 .8rem; }
 
 @media (max-width: 860px) {
-  .file > .wrap { grid-template-columns: 1fr; gap: 1.2rem; }
+  .file > .wrap { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; }
   .rail { position: static; }
   .mast nav { display: none; }
   .lang { margin-left: auto; }
 }
 @media (max-width: 560px) {
   .hero { padding: 3.5rem 0 3rem; }
-  .entry { grid-template-columns: 1fr; gap: .4rem; }
+  .entry { grid-template-columns: minmax(0, 1fr); gap: .4rem; }
   .level { grid-template-columns: 1fr; gap: .2rem; }
   .reads a { grid-template-columns: 1fr; gap: .1rem; }
   .dossier { padding: 1.6rem 1.3rem; }
@@ -293,6 +293,8 @@ footer p { max-width: 46rem; margin: 0 0 .8rem; }
 .subhead { font-family: var(--display); font-weight: 800; font-size: 1.6rem; margin: 0 0 .6rem; }
 .plainbox .update { background: var(--bunker); color: var(--plaster); margin: -.2rem 0 1.1rem; padding: .7rem .9rem; border-left: 6px solid var(--verdigris); font-size: 1rem; }
 .plainbox .update b { color: var(--verdigris); margin-right: .3rem; }
-.proof { margin: .9rem 0 .2rem; max-width: var(--measure); }
-.proof img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); }
+.proof { margin: .9rem 0 .2rem; max-width: min(100%, var(--measure)); min-width: 0; contain: inline-size; }
+.proof img { display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid var(--rule); }
 .proof figcaption { font-size: .92rem; color: var(--plaster-dim); font-style: italic; margin-top: .35rem; }
+
+.entry > *, .body, .games > * { min-width: 0; }
