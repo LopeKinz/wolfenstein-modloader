@@ -82,7 +82,7 @@
 </tbody>
 </table></div>
 <p>Both files land in
-<code>C:\Users\‹user›\Saved Games\MachineGames\Wolfenstein II The New Colossus\base\</code>.</p>
+<code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein II The New Colossus\base\</code>.</p>
 <p>Additional commands found in the EXE: <code>listCmds</code>, <code>listDecls</code>, <code>reloadDecls</code>, <code>god</code>, <code>noclip</code>, <code>notarget</code>, <code>spawn</code>, <code>teleport</code>, <code>devmap</code>, <code>killMonsters</code>, <code>kill</code>, <code>r_showTris</code>, <code>exec</code>, <code>bind</code>, <code>toggle</code>, <code>screenshot</code>.</p>
 <h2 id="two-corrections-to-my-own-work">Two Corrections to My Own Work</h2>
 <p><strong>1. <code>docs/cvars_tnc.json</code> with 2231 entries is overestimated.</strong> The engine itself responds to <code>listCvars - help g_</code> with eight Cvars, and to <code>bot_</code> with "0 cvars listed". Most harvested names are therefore not registered Cvars. The file is a candidate list, not a catalog.</p>
@@ -154,7 +154,7 @@
 </ul>
 <h2 id="what-else-is-missing">What else is missing</h2>
 <p>The attempt at a retail lock in Part 2 failed: <code>g_infiniteAmmo</code> and <code>g_freeCamSpeed</code> do not exist there (<code>Unknown command</code>); they came from the harvested name list. For a valid attempt, take names from <code>docs/cvars_tnc_echt.json</code>. The game crashed with an Access Violation (21:11:04); save files are intact.</p>
-<p>And a find from our own log, not yet pursued: Part 2 searches <code>C:\Users\‹user›\Saved Games\...\base\</code> <strong>before</strong> the Steam folder. Experiments on this are ready in <code>tools/experiment_loadpaths.py</code>.</p>
+<p>And a find from our own log, not yet pursued: Part 2 searches <code>%USERPROFILE%\Saved Games\...\base\</code> <strong>before</strong> the Steam folder. Experiments on this are ready in <code>tools/experiment_loadpaths.py</code>.</p>
 <hr />
 <h1 id="status-2145--third-restart-all-aborted">Status 21:45 — third restart, all aborted</h1>
 <h2 id="f1-and-f2-are-repaired-inspection-not-yet-complete">F1 and F2 are repaired, inspection not yet complete</h2>
@@ -172,7 +172,7 @@
 <p>Last status of the auditor before the abort: <strong>275 names lose their grouping due to the F2-Fix</strong>, because they contain multiple tokens with a forward slash — yet there is <strong>0 overlap</strong>, meaning these 275 have no variants at all. Re-calculate.</p>
 <p><strong>Until this is verified: do not run <code>wolfsdk apply</code> against the real installation.</strong></p>
 <h2 id="ghidra--installation-started-aborted">Ghidra — Installation started, aborted</h2>
-<p>Script: <code>&lt;scratchpad&gt;\setup_ghidra.ps1</code>, callable again, skips already loaded files. Target <code>C:\Users\‹user›\tools</code>, partial download resides in <code>C:\Users\‹user›\tools\_download</code>.</p>
+<p>Script: <code>&lt;scratchpad&gt;\setup_ghidra.ps1</code>, callable again, skips already loaded files. Target <code>%USERPROFILE%\tools</code>, partial download resides in <code>%USERPROFILE%\tools\_download</code>.</p>
 <ul>
 <li>Ghidra 12.1.4 (543 MB), JDK 21 Temurin (196 MB), both as ZIP without installer and without elevation.</li>
 <li>URLs are stored in <code>%TEMP%\ghidra_url.txt</code>, <code>ghidra_name.txt</code>, <code>jdk_url.txt</code>.</li>

@@ -38,7 +38,7 @@
 <a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Modding-Guide"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
 </div></div>
 <div class="wrap docgrid">
-<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#core-principles">Core Principles</a></li><li><a href="#1-weapons">1. Weapons</a></li><li><a href="#2-weapon-skins">2. Weapon Skins</a></li><li><a href="#3-characters-and-clothing">3. Characters and Clothing</a></li><li><a href="#4-conflicts-and-load-order">4. Conflicts and Load-Order</a></li><li><a href="#5-pitfalls">5. Pitfalls</a></li></ol></aside>
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#core-principles">Core Principles</a></li><li><a href="#1-weapons">1. Weapons</a></li><li><a href="#2-weapon-skins">2. Weapon Skins</a></li><li><a href="#3-characters-and-clothing">3. Characters and Clothing</a></li><li><a href="#4-console-commands-and-debug-access-the-new-colossus">4. Console Commands and Debug Access (The New Colossus)</a></li><li><a href="#5-conflicts-and-load-order">5. Conflicts and Load-Order</a></li><li><a href="#6-pitfalls">6. Pitfalls</a></li></ol></aside>
 <div>
 <section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This guide shows, step by step, how to build mods for Wolfenstein: The New Order with the project&#x27;s tool. Most interesting game data lives in text <span class="t" data-t="decl">definitions</span>, and a mod is a list of changes to them, either single values or whole files. Examples cover weapon damage and fire rate, weapon skins, and enemy looks, health and weapons. It also explains how mods are layered by priority and common pitfalls, such as inherited values and re-doing backups after a game update.</p><ul><li>Two kinds of change: &#x27;set&#x27; edits single values, &#x27;file&#x27; replaces a whole asset; &#x27;set&#x27; is usually better.</li><li>A dry run (verify_mods.py) shows every change as a diff before anything is written.</li><li>New 3D models are not possible; &#x27;new&#x27; weapons are built by recombining existing parts.</li><li>For weapon skins, the <span class="t" data-t="vt">virtual texture</span> coordinates (virtualmapping) must be changed along with the texture name.</li><li>When two mods set the same value, the higher priority wins and the conflict is reported.</li></ul></div><div class="de"><p class="lede">Diese Anleitung zeigt Schritt für Schritt, wie du mit dem Tool des Projekts Mods für Wolfenstein: The New Order baust. Die meisten interessanten Spieldaten liegen in Text-<span class="t" data-t="decl">Definitionen</span>, und ein Mod ist eine Liste von Änderungen daran, entweder einzelne Werte oder ganze Dateien. Beispiele zeigen Waffenschaden und Feuerrate, Waffen-Skins sowie Aussehen, Gesundheit und Bewaffnung von Gegnern. Außerdem erklärt sie, wie Mods nach Priorität übereinandergelegt werden, und nennt typische Stolperfallen wie geerbte Werte und neue Backups nach einem Spiel-Update.</p><ul><li>Zwei Arten von Änderungen: &#x27;set&#x27; ändert einzelne Werte, &#x27;file&#x27; ersetzt ein ganzes Asset; &#x27;set&#x27; ist meist besser.</li><li>Ein Probelauf (verify_mods.py) zeigt jede Änderung als Diff, bevor etwas geschrieben wird.</li><li>Neue 3D-Modelle sind nicht möglich; &#x27;neue&#x27; Waffen entstehen durch Kombination vorhandener Teile.</li><li>Bei Waffen-Skins müssen die <span class="t" data-t="vt">Virtual-Texture</span>-Koordinaten (virtualmapping) zusammen mit dem Texturnamen geändert werden.</li><li>Setzen zwei Mods denselben Wert, gewinnt die höhere Priorität, und der Konflikt wird gemeldet.</li></ul></div></section>
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
@@ -210,7 +210,27 @@ edit.clipModelInfo.size.z                         96
 <p>There are 3,182 <code>entityDef</code>s. Many enemies exist per chapter separately (<code>c02/…</code>, <code>c10/…</code>) — whoever wants to change an enemy type game-wide must capture all variants. <code>wolfsdk list --type entityDef --grep &lt;name&gt;</code> shows them.</p>
 </blockquote>
 <hr />
-<h2 id="4-conflicts-and-load-order">4. Conflicts and Load-Order</h2>
+<h2 id="4-console-commands-and-debug-access-the-new-colossus">4. Console Commands and Debug Access (The New Colossus)</h2>
+<p>Part 2's console only shows 34 of 234 commands and 304 of 3,256 Cvars from the normal, restricted console. That restriction is one process-wide integer, not an encryption — and one of those 34 commands, <code>resourceExec</code>, is a complete, no-patch way through it. Full mechanism and in-game proof: <a href="TNC-Console-Unlock.html">TNC Console Unlock</a>.</p>
+<p>Workflow, reusing the same <code>cfile</code> patch route the loader already uses:</p>
+<ol>
+<li>Pick an <strong>unused retail <code>cfile</code></strong> to carry your lines — <code>snapdemo.cfg</code>/<code>snapedit.cfg</code> (unused SnapMap configs in <code>gameresources</code>) are the ones already proven. Write plain text, one command per line:
+   <code>God 1
+   Notarget 1
+   g_infiniteAmmo 1</code></li>
+<li>Ship it as a loader mod asset keyed <code>"cfile:snapdemo.cfg"</code> — the loader's <code>wolfsdk/tnccrypt.py</code> handles the AES/HMAC encryption the archive expects, so you never write the encrypted bytes yourself.</li>
+<li>In the normal, restricted in-game console, type:
+   <code>resourceExec snapdemo.cfg -s</code>
+   Every line in the file runs with the restriction dropped for that one call — <code>God</code>, <code>Notarget</code>, <code>g_infiniteAmmo</code>, and any other registered-but-non-exposed command or Cvar, confirmed executing in a real save game.</li>
+<li>Bind it to a key so it survives beyond one console session (binds persist across launches):
+   <code>bind F6 "resourceExec snapdemo.cfg -s"</code></li>
+<li>For a whole debug menu instead of one-off lines, put just <code>devgui 4</code> in the file. It needs the <code>resourceExec</code> call only <strong>once per session</strong> — after that, the engine's own ImGui debug pages draw and their buttons/toggles (<code>g_infiniteAmmo</code>, <code>ai_drawBounds</code>, <code>killAI</code>, dozens of others) work with no further <code>resourceExec</code>.</li>
+</ol>
+<p><strong>Never</strong> ship a cheat/debug toggle as a startup <code>+arg</code> on the launch command line — that path is bracketed at the <em>restricted</em> level and every non-exposed name comes back <code>Unknown command</code>, confirmed in game.</p>
+<p>A map's own Kiscule script can reach the same unrestricted path with no console interaction at all, via the <code>Command</code> node (<code>idKisculeNodeCommand</code>) — see <a href="Kiscule-Node-Reference.html">Kiscule Node Reference</a> §8. That route is proven by code, not yet by a loaded custom map.</p>
+<p><code>give</code>, <code>give all</code>, <code>spawn</code>, <code>noclip</code>, and lowercase <code>god</code> are not shortcuts away from this recipe — they are absent from the 234-command table entirely, under any route, and would need a binary patch to add.</p>
+<hr />
+<h2 id="5-conflicts-and-load-order">5. Conflicts and Load-Order</h2>
 <p>Mods are layered by <code>priority</code>, <strong>low first</strong>. Each mod works on the result of the previous one.</p>
 <ul>
 <li>Two mods change <strong>different</strong> values of the same Decl → both work.</li>
@@ -219,7 +239,7 @@ edit.clipModelInfo.size.z                         96
 </ul>
 <p>Conflicts do not block; they are reported — in the GUI in the message field, on the command line at <code>apply</code>.</p>
 <hr />
-<h2 id="5-pitfalls">5. Pitfalls</h2>
+<h2 id="6-pitfalls">6. Pitfalls</h2>
 <p><strong>Numbers do not automatically preserve their original formatting.</strong> <code>25</code> and <code>25.0</code> are different text in Decl. Write floating-point numbers as floating-point numbers if the original is one — <code>"maxDamage": 30.0</code>, not <code>30</code>.</p>
 <p><strong>Strings are automatically quoted</strong> if the original was quoted. For block values like <code>virtualmapping</code>, you must include the curly brackets yourself.</p>
 <p><strong>An asset can appear multiple times.</strong> The same <code>(type, name)</code> combination may exist in multiple chunks. The Patcher writes <strong>all</strong> occurrences so it does not matter which one the engine encounters first.</p>

@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker w-cvartable-a1; task cvartable2; research (read-only RE).
-Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Read .agent-cache/WORKER.md. Bus: python "%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
 Parallel: w-texdbkey-a1 reads the same image read-only. Stay in your lane.</p>
 <h1 id="objective">Objective</h1>
 <p>Rebuild the Wolfenstein II cvar catalogue from the unpacked runtime image, the
@@ -105,7 +105,7 @@ re_probes/agent_reports/cvartable.md (new).
 replacement in your own directory and let a master merge it.</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
 <p>No game launch, no process attach, no writes under the Steam install or
-"C:/Users/‹user›/Saved Games". Do not touch other workers' files:
+"%USERPROFILE%/Saved Games". Do not touch other workers' files:
 tools/probe_cmdtable.py, tools/probe_idclhash.py, tools/probe_datahash.py,
 tools/probe_saveverify.py, tools/probe_texdbkey.py, tools/tnc_<em>.py,
 tools/vtpixel.py, re_probes/{cmdtable,idclhash,datahash,saveverify,texdbkey,vtrest}/,

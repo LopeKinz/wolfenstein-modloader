@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NPC Model and Skin Swap: Reskinning vs. Replacing a Model – Wolfenstein Modloader</title>
+<meta name="description" content="NPC Model and Skin Swap: Reskinning vs. Replacing a Model">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>NPC Model and Skin Swap: Reskinning vs. Replacing a Model</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R3-Npcswap"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-reference-chain">The reference chain</a></li><li><a href="#reskinning-same-mesh-different-texturesub-mesh--low-risk-decl-only">Reskinning (same mesh, different texture/sub-mesh) — low risk, decl-only</a></li><li><a href="#model-swap-different-character-entirely--the-hard-constraint">Model swap (different character entirely) — the hard constraint</a></li><li><a href="#for-modders">For modders</a></li><li><a href="#in-game-test">In-game test</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>This research asked whether enemy models and skins in TNC can be swapped — reskinning the same character versus replacing one enemy type's model with a different one entirely — and what constraints (skeleton, animation, hit zones, ragdoll) apply. Reskinning turns out to be fully decl-only and low-risk: a validated three-line mod design was built and dry-run-checked against live retail decl text, though not yet tested in a running game. Replacing a model with a visually different character crosses a hard, corpus-proven boundary: not one of the 403 character models with their own mesh in the entire game shares its skeleton with any other distinct mesh, so a true cross-species model swap is a jump into genuinely untested territory whose in-game outcome (graceful fallback, frozen pose, or crash) cannot be determined without starting the game.</p>
+<h2 id="the-reference-chain">The reference chain</h2>
+<pre><code>entityDef.renderModelInfo.model
+  → (optionally through a modelAsset &quot;X.idasset&quot; — a previously undocumented indirection layer
+     that can also carry cloth physics, used by 26% of model references)
+  → md6Def &quot;Y.md6&quot; (skeleton/skin config)
+  → the .md6mesh binary (actual geometry)
+skins &quot;Y&quot; (same path as the mesh, no extension)  -- material-redirect table, picked by name
+</code></pre>
+<p>827 of 1,602 entityDefs set <code>renderModelInfo.model</code> directly; all 25 of the fully-animated (<code>idTreeAnimator</code>) <code>modelAsset</code> indirections resolve correctly to a real mesh config — no dangling references found at this layer.</p>
+<h2 id="reskinning-same-mesh-different-texturesub-mesh--low-risk-decl-only">Reskinning (same mesh, different texture/sub-mesh) — low risk, decl-only</h2>
+<p>130 of 1,495 <code>md6Def</code>s carry a <code>defaultSkin</code>; 126 <code>skins</code> decls exist; some characters additionally expose per-instance overrides (<code>entityDef.edit.initialSkin</code>, <code>edit.meshKits.*</code>). The richest example found: a mini-boss character has 16 named head variants shared identically between its mesh-kit sub-mesh groups and its material-redirect <code>skins</code> decl — 6 of the 16 names are already used by named retail instances of that character, a built-in positive control for any mod reusing one of those same strings. A validated example mod (a 3-line decl <code>"set"</code> patch, retargeting one placed instance to a different already-existing head variant) applies cleanly against live retail decl text; not yet confirmed visually in a running game.</p>
+<h2 id="model-swap-different-character-entirely--the-hard-constraint">Model swap (different character entirely) — the hard constraint</h2>
+<p>Of the 403 <code>md6Def</code>s that own their own mesh, decoding each one's embedded skeleton name directly from the binary mesh data (not guessed from the decl text) found <strong>369 distinct skeletons and zero shared by two different meshes</strong> — not even within the single largest "family" of 90 characters that share the same decl-inherit ancestor, which alone spans 70 different skeletons. The only skeleton reuse found anywhere is between literal duplicate wrapper files of the exact same mesh. <strong>A same-inherit-chain or "both are humanoid" intuition is not a valid proxy for swap-safety at all</strong> — any swap to a genuinely different-looking model crosses a skeleton boundary, full stop, with zero counter-examples in 403/403 checked.</p>
+<p>Hit zones, mesh-kit variants, and the ragdoll-pose alias all live <em>inside</em> the <code>md6Def</code>, so they travel automatically with any model swap. Two things that live on the <em>entityDef</em> instead do <strong>not</strong> travel and must be hand-copied: <code>radiusDamageJoints</code> (18/1,602 entities) and <code>declConstrainedBodies</code> (5/1,602) — both reference joint names from the old skeleton. This is the same class of gotcha already documented for retyping a placed enemy's definition on the map-instance level (losing its encounter-group wiring), just on the decl-template level instead.</p>
+<p>A true humanoid ragdoll is <strong>not</strong> gated by the small <code>articulatedFigure</code> decl type (only 3 exist, all non-humanoid creatures) — the real mechanism is unresolved, likely the <code>declConstrainedBodies</code> reference or an engine-generic humanoid path keyed by the skeleton itself.</p>
+<h2 id="for-modders">For modders</h2>
+<ul>
+<li>A decl-only reskin (texture/head-variant swap) is proven low-risk; it needs a target entity whose own decl text already carries the field being edited (editing an inherited-only field needs a full-replace, not a patch).</li>
+<li>A genuine model swap across species is structurally a one-field edit but functionally unknown territory — the skeleton always changes, and whether the engine degrades gracefully (fallback animation retargeting), freezes in a bind pose, or crashes is a real open question only a live test can answer.</li>
+</ul>
+<h2 id="in-game-test">In-game test</h2>
+<ol>
+<li><strong>Reskin (low risk):</strong> apply the validated head-variant mod, go to where the mini-boss character is placed (a frequently-reloaded hub area), and look — any visible face/head change confirms decl-level skin control over an already-placed instance.</li>
+<li><strong>Cross-species swap (risky, optional):</strong> point a species-wide enemy base entity at a completely different retail character's mesh, load an early area with that enemy type, and observe: normal combat behavior, a frozen pose, or a crash are all informative, previously-unknown outcomes.</li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R3-Newweapon.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Weapon Decl Anatomy and Building a New Weapon End to End</a><a class="next" href="Research-Report-R3-Swfui.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>The SWF-Based UI: Format, Menu Entries, and HUD Restyling</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

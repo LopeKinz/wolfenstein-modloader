@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Skinned Models: Mesh-Count Rule and a Corpus-Proven Reader – Wolfenstein Modloader</title>
+<meta name="description" content="TNO Skinned Models: Mesh-Count Rule and a Corpus-Proven Reader">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Skinned Models: Mesh-Count Rule and a Corpus-Proven Reader</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R3-Tnoskinned"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-mesh-count-puzzle-solved">The mesh-count puzzle, solved</a></li><li><a href="#per-mesh-layout">Per-mesh layout</a></li><li><a href="#coverage-and-reliability">Coverage and reliability</a></li><li><a href="#whats-needed-to-use-this">What&#x27;s needed to use this</a></li><li><a href="#in-game-test">In-game test</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>This track (for the first game, The New Order) works out the binary layout of its skinned-character mesh format (<code>.md6mesh</code>/<code>baseModel</code>), including the long-standing puzzle of how many meshes a model file actually contains versus a header field that doesn't reliably say so. The resulting reader decodes 96% of all 755 skinned models in the game byte-exact to the literal end of file, with a clean negative control and, this pass, a second, independently-written decoder that reproduces the same results from scratch. This pass's main job was fixing one mistaken claim from earlier passes (a header field was wrongly said to always equal 1; it doesn't, in under 7% of files) and extending several findings to the full corpus instead of a handful of samples. None of this is runtime-tested since it's pure binary-format research with nothing yet wired into the project's asset viewer.</p>
+<h2 id="the-mesh-count-puzzle-solved">The mesh-count puzzle, solved</h2>
+<p>A model file carries two different "mesh count"-looking fields; only one of them is actually reliable. Field <strong>B</strong>, located by a constraint-propagation scan (not read directly from any single header position), is the true mesh count on <strong>755/755</strong> files, including both known counter-examples where a naive reading would get it wrong (one file with 7 meshes, one with 3) — now independently reproduced by a second decoder sharing no code with the first. Field <strong>A</strong> (a separate count appearing after a joint-remap table) is <strong>not</strong> reliably the mesh count and, contrary to an earlier claim carried across two prior passes without ever actually being checked corpus-wide, is <strong>not</strong> always 1 either — it differs from 1 on 51 of 755 files (6.8%), concentrated on multi-piece player/creature models (hands, wounded characters, a mechanical creature) and destructible multi-part props. It most likely represents a pre-export "meshes before splitting" count rather than the runtime mesh count.</p>
+<h2 id="per-mesh-layout">Per-mesh layout</h2>
+<p>Each mesh's preamble carries explicit vertex-count/triangle-count fields. Two smaller per-mesh flag fields were checked corpus-wide for the first time this pass: one is 1 on 99.6% of meshes, with its only exceptions on destructible/mechanical props (not hair, correcting an earlier guess); a second is 1 on 99.5% of meshes, with its exceptions exclusively on foliage/bush props. A whole-file trailer (materials list) decodes cleanly for every file that reaches it. One 12-byte range inside each vertex is the strongest remaining candidate for a per-vertex joint-weight index — corpus-wide, it is the lowest-entropy of three candidate byte ranges on 99.7% of meshes with enough vertices to test meaningfully, with the handful of exceptions being plausible non-skinned special cases (a rigid propeller, an instrument dial, a flat billboard sprite) rather than counter-evidence. This remains an inference, not a proof — no skeleton joint ID table was actually cross-checked against it, because the skeleton file's own binary joint hierarchy is still undecoded.</p>
+<h2 id="coverage-and-reliability">Coverage and reliability</h2>
+<ul>
+<li>725 of 755 (96.0%) skinned models decode byte-exact to the literal end of the file.</li>
+<li>The remaining ~4% (mostly character/hair/destructible models with extra trailer content) have a known, bounded location but undecoded content.</li>
+<li>A corpus-wide negative control (random 1–4 byte file mutations, 600 mutated samples across 5 random seeds) produced <strong>zero</strong> false accepts.</li>
+</ul>
+<h2 id="whats-needed-to-use-this">What's needed to use this</h2>
+<p>Wiring the reader into the project's model viewer would cover 96% of skinned models with roughly half a day to a day of integration work and no further format research. Decoding the remaining ~4% and the skeleton's own joint hierarchy (needed to turn the joint-weight inference above into a proven fact) is separate, open work.</p>
+<h2 id="in-game-test">In-game test</h2>
+<p>Not needed for this pass — pure offline format research, nothing changed that touches a running game. Once the reader is wired into the project's viewer: open a simple prop model (e.g. a compass or combat knife) and check visually that shape and texture look plausible — a one-step visual check, no game launch required.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R3-Tileinner.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Texture Codec 2 Tile Chains: Inner Pixel Layout (Still Unsolved)</a><a class="next" href="Research-Report-R4-Ai-Decls.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>R4 Research Report: AI Decl Hierarchy and Difficulty (TNC)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

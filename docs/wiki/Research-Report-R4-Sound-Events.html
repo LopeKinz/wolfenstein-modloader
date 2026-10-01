@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding a New Wwise Sound Event (TNC) – Wolfenstein Modloader</title>
+<meta name="description" content="Adding a New Wwise Sound Event (TNC)">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Adding a New Wwise Sound Event (TNC)</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Sound-Events"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-naming-mechanism">The naming mechanism</a></li><li><a href="#hirc-object-formats-confirmed-by-building-not-just-reading">HIRC object formats (confirmed by building, not just reading)</a></li><li><a href="#bus-routing">Bus routing</a></li><li><a href="#the-round-trip-structural-proven">The round trip (structural, PROVEN)</a></li><li><a href="#recipe-to-ship-a-new-event-in-a-mod">Recipe to ship a new event in a mod</a></li><li><a href="#inferred-not-runtime-proven">INFERRED (not runtime-proven)</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Builds on the project's existing proof that a Wwise sound <em>replacement</em> works, and asks the next question: how to ADD a genuinely new event (not overwrite an existing one), and how weapon/kiscule decls name the event they trigger. Found and structurally proven: a sound event's engine-side id is a hash of its lowercased name, the same mechanism already known from cutscene videos turns out to be identical for weapon fire events, and a complete new Event→Action→Sound chain (plus new audio data) can be appended to a copy of a real sound bank without touching any existing object, then be found again, correctly routed, and correctly decoded by the project's own unmodified readers. <strong>Everything here is a structural round trip on file copies — the game was never launched, so whether a posted event actually plays audible sound in-game is not yet known.</strong></p>
+<h2 id="the-naming-mechanism">The naming mechanism</h2>
+<p>An event's HIRC object id is <strong>FNV-1 (not FNV-1a) of the lowercased name</strong>: <code>digest = 0x811C9DC5; for each byte: digest = (digest * 0x01000193) XOR byte</code>. Already known for <code>play_&lt;video&gt;</code> cutscene names; this pass confirms the <em>same</em> formula resolves real weapon event names pulled live from decls:</p>
+<pre><code>play_p61_pl_single          -&gt; real Event object   (projectile/player/pistol's fireSoundEvent)
+play_mp61_pl_fire_single     -&gt; real Event object   (projectile/player/smg)
+play_this_event_does_not_exist_zz9z -&gt; not found    (negative control)
+</code></pre>
+<p>Case does not matter — <code>fnv1("Play_x") == fnv1("play_x")</code> — which matters because decls spell event names with mixed case. <strong>47 <code>projectile</code> decls carry a <code>fireSoundEvent</code> field</strong>; this is the field a mod edits to point a weapon at a different, or a brand-new, event — a plain text-decl edit, the same already-proven write path as any other decl value edit.</p>
+<h2 id="hirc-object-formats-confirmed-by-building-not-just-reading">HIRC object formats (confirmed by building, not just reading)</h2>
+<ul>
+<li><strong>Event (type 4):</strong> <code>u8 count, u32[count] action_ids</code>.</li>
+<li><strong>Action (type 3), Play (<code>0x0403</code>):</strong> <code>u16 type, u32 target, u8 isBus, &lt;props block&gt;</code>, then undecoded trailing bytes whose exact meaning is not settled — handled safely by cloning a real Action's bytes and patching only the known fields, never composing new ones.</li>
+<li><strong>Sound (type 2):</strong> <code>u32 plugin, u8 stream_type, u32 source (media id), u32 size (must equal the DIDX row's size), u8 bits</code>, then <code>NodeBaseParams</code> at offset 14 including a <code>u32 bus</code> field — same clone-and-patch-3-fields discipline.</li>
+</ul>
+<p>A Play action's <code>target</code> points at a Sound object <strong>directly</strong> in 91.5% of all 38,236 surveyed retail cases (the rest go through Random/Switch/Blend containers or music objects) — so building a new event as the simple <code>Event → Action(Play) → Sound</code> chain, skipping any container, is the representative case, not a toy simplification.</p>
+<h2 id="bus-routing">Bus routing</h2>
+<p>81 real Audio Bus (type 8) objects exist corpus-wide. Hashing plausible Wwise bus names and checking against the real id set confirms 6 real buses by direct id match, not by reading strings: <code>Master Audio Bus</code> (the root, parent id 0), <code>Music</code>, <code>Ambience</code>, <code>Explosions</code>, <code>VO</code>, and <strong><code>Weapons</code></strong> (<code>0x577F56AC</code>) — the bus this round's new Sound object was routed to, independently verified rather than guessed. TNC's entire mix-bus graph lives inside <code>init.bnk</code>'s HIRC data; it has no <code>soundmixing</code>-decl equivalent (that mechanism is TNO-only).</p>
+<h2 id="the-round-trip-structural-proven">The round trip (structural, PROVEN)</h2>
+<p>Three new HIRC objects + one new media slot were appended to a copy of a real bank, with zero existing objects touched, then re-read with the project's own unmodified readers:</p>
+<ul>
+<li>Sound cloned from a real object, 3 fields patched (<code>source</code>, <code>size</code>, <code>bus</code>).</li>
+<li>Action cloned from a real Play action, 1 field patched (<code>target</code>).</li>
+<li>Event built fresh, id = <code>FNV1(new_name)</code>, verified absent from the 85,719-id retail+DLC corpus beforehand.</li>
+<li>A synthetic 16-bit PCM tone appended as new media, indexed by a new DIDX row; <code>HIRC</code>'s object count bumped by 3.</li>
+</ul>
+<p>Result: the new event resolves by its hashed name, walks to the right action, to the right Sound, to the right byte-exact media, on the correct bus; every pre-existing sound in the same bank still decodes (regression control); a 1-character-different name does not collide; and — the sharpest negative control — leaving the HIRC object-count field un-bumped makes the new Event genuinely invisible to the same parser that otherwise finds it, confirming the count field is load-bearing.</p>
+<p><strong>Honest limitation:</strong> the real pistol event is structurally deeper than what this build uses — it goes through a type-6 Switch Container (for <code>soundStateSwitchName</code> variant selection), which was not decoded this round. Not needed for the deliverable, since a direct-to-Sound chain is the dominant retail shape anyway, but it means the switch-based variant mechanism itself remains unexplored.</p>
+<h2 id="recipe-to-ship-a-new-event-in-a-mod">Recipe to ship a new event in a mod</h2>
+<ol>
+<li>Find the bank certainly loaded when the trigger posts the event — for a weapon, resolve its existing <code>fireSoundEvent</code> name and read off which bank it lives in (the pistol's is <code>sb_pl_p61.bnk</code>, overridden by a patch-level pack — same name-precedence rule this project already documents for every other asset type).</li>
+<li>Clone a real Sound and a real Action object <strong>from that same bank</strong>, patch only <code>source</code>/<code>size</code>/<code>bus</code> and <code>target</code>.</li>
+<li>Append the media, add its DIDX row, append the 3 new HIRC objects, bump the object count — all through the project's existing archive write/finalize path.</li>
+<li>Point a weapon at it by editing the projectile decl's <code>fireSoundEvent</code> text field.</li>
+<li>Re-verify offline exactly as this round did before touching the real game.</li>
+</ol>
+<h2 id="inferred-not-runtime-proven">INFERRED (not runtime-proven)</h2>
+<ul>
+<li>Whether a newly-added event is resolvable only from the specific bank it was added to, or from any bank currently loaded in memory — the safe assumption is "same bank as the weapon's own real events," never verified against a running game.</li>
+<li>That the undecoded trailing bytes on Action/Sound objects are safely ignorable when cloned verbatim from a real object in the same bank.</li>
+<li>That posting a custom event through a real decl edit produces audible sound in game, as opposed to silence or a validation rejection.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Patch two things together: the target bank gets the new Event/Action/Sound/media quartet (use a distinctive 2–3 second tone, not silence, so a "no audible difference" result is unambiguous), and the pistol's <code>fireSoundEvent</code> is redirected to the new event name. Fire the (non-silenced) pistol once. Three distinguishable outcomes: new tone plays (mechanism works end to end); normal pistol shot plays (event not found — the bank-scope assumption above is wrong, or something in the construction is off); no sound or a crash (the undecoded trailing bytes or the Switch Container layer are not safely ignorable after all). Revert and re-fire to confirm the change was scoped to only this bank/decl.</p>
+<p>Related: <a href="Audio.html">Audio</a>, <a href="Streamed-Audio-Containers.html">Streamed Audio Containers</a>, <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Savegame.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>R4 Research Report: Save Structure, Chapter Selection and Loadout (TNC)</a><a class="next" href="Research-Report-R4-Strings.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>R4 Research Report: TNC String Tables and the Key Hash</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

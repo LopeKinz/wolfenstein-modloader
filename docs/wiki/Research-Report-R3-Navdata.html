@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigation Data in TNC Maps: Format, Toggleable Regions, and the Kit Map – Wolfenstein Modloader</title>
+<meta name="description" content="Navigation Data in TNC Maps: Format, Toggleable Regions, and the Kit Map">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Navigation Data in TNC Maps: Format, Toggleable Regions, and the Kit Map</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R3-Navdata"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-navmesh-format-fully-decoded">The navmesh format, fully decoded</a></li><li><a href="#a-second-navigation-layer-toggleable-blocked-regions">A second navigation layer: toggleable blocked regions</a></li><li><a href="#no-classic-aascover-system-in-this-game">No classic &quot;AAS&quot;/cover system in this game</a></li><li><a href="#what-the-projects-reused-custom-map-inherits">What the project&#x27;s reused custom map inherits</a></li><li><a href="#whats-achievable-for-custom-map-navigation">What&#x27;s achievable for custom-map navigation</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test">In-game test</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>This track maps out how TNC's AI navigation data works — the binary format of the baked navmesh files, whether there's any way to toggle or edit walkable area at runtime, and whether a custom map built by reusing an existing donor map's navmesh (as the project's proof-of-concept custom map already does) carries any gaps. The binary navmesh format is now fully decoded across every file in the game (not just spot-checked), and a second, previously-undocumented navigation layer was found: named regions that mission scripts can toggle open or closed at runtime without any new geometry or rebuilt mesh — a real, corpus-common authoring lever this project didn't know about before. Everything here is static format/corpus analysis; the one practical question this can't answer offline (whether enemies actually move and path correctly on the project's reused navmesh) is queued as a short in-game test at the end.</p>
+<h2 id="the-navmesh-format-fully-decoded">The navmesh format, fully decoded</h2>
+<p>Every <code>.hknavmesh</code> file in the game (55 distinct payloads) now decodes with zero failures:</p>
+<pre><code>u32 N                           -- count of named navigation regions
+N × { u32 len; char[len] name } -- region names, plain ASCII
+u32 size (little-endian)
+u32 size (big-endian, same value repeated byte-swapped)
+&quot;TAG0&quot; ...                      -- a standard Havok binary tagfile containing
+                                    the actual baked walkable mesh (faces/edges/
+                                    vertices) plus a clearance cache
+</code></pre>
+<p>An earlier tool only handled this correctly by accident, for files with zero named regions — any file with named regions needs the region-list header parsed first, which this pass adds. Some maps carry extra sibling <code>.hknavmesh</code> files (e.g. <code>..._nav_section_1</code>); these are not a different format, just separately-loadable chunks of the same map's navmesh sharing the identical region-name list.</p>
+<h2 id="a-second-navigation-layer-toggleable-blocked-regions">A second navigation layer: toggleable blocked regions</h2>
+<p>A map's region-name header is not decoration — it is <strong>exactly</strong> the set of <code>idNavRegionEnt</code> entities placed in that map (confirmed matching for 38 of 39 map directories checked; the one mismatch is a harmless, retail-shipped stale reference, proof the engine tolerates a name in the header with no matching entity). Each region entity has a <code>startFlags</code> field (e.g. <code>NAVREGION_BLOCKED</code>, or archetype-specific flags like <code>NAVREGION_BLOCK_COMMANDER</code>) and can be flipped open or closed at runtime by the mission-script node <code>ActionModifyNavRegion</code> — used <strong>310 times across 216 of the 2,408 retail mission scripts</strong>, overwhelmingly in the pattern "a breakable prop takes damage → the region behind it unblocks." This is a real, corpus-proven, currently-authorable lever for editing where AI can walk without touching the baked mesh at all — reusing an existing region's own flags, not creating new walkable area.</p>
+<h2 id="no-classic-aascover-system-in-this-game">No classic "AAS"/cover system in this game</h2>
+<p>This game's AI navigation architecture has <strong>zero</strong> of the older cover/obstacle classes (<code>idAAS2</code>, <code>idCoverBlocker</code>, etc.) that the first game in this series used — that whole system was replaced wholesale by the Havok navmesh plus scene points plus the toggleable-region layer above. This is a genuine architecture change between the two games this project covers, not just a renamed format.</p>
+<h2 id="what-the-projects-reused-custom-map-inherits">What the project's reused custom map inherits</h2>
+<p>The project's proof-of-concept custom map (built by reusing an existing donor map's geometry and navmesh) never touches the navmesh file at all — it ships byte-identical to the donor map's own navmesh, and the donor map happens to have zero toggleable regions, so this second layer was never exercised by that map. The geometry reuse mostly lines up with the new layout by construction, but not entirely: one whole room has retail navmesh underneath it that is not actually connected to the player start over walkable new floor, so the enemy originally planned for that room had to be relocated to a corridor instead. Areas genuinely beyond the donor map's old walkable footprint simply have no navigation data at all (not a mismatch, an absence) — careful layout work reduced this unavoidable gap from an early draft's 163 m² down to about 3 m² in the final version.</p>
+<h2 id="whats-achievable-for-custom-map-navigation">What's achievable for custom-map navigation</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reuse a donor map's navmesh by aligning new geometry to it</td>
+<td>Proven, implemented — the only way to get new walkable surface at all</td>
+</tr>
+<tr>
+<td>Toggle an existing named region's block flags</td>
+<td>Proven possible and corpus-common — can only affect faces the bake already has, never create new ones</td>
+</tr>
+<tr>
+<td>Build a new navmesh from scratch</td>
+<td>Not feasible — no encoder exists in the project, and the baked format needs more than just the walkable mesh (a working clearance cache too). The engine's only in-game navmesh edit is a cutter that <em>removes</em> surface (an obstacle hole), never adds any.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether a genuinely new, hand-added region entity (a name not already in the navmesh's baked header) is tolerated at load time, by symmetry with the proven reverse case — not tested.</li>
+<li>Exact runtime meaning of the region flag strings beyond their literal names.</li>
+</ul>
+<h2 id="in-game-test">In-game test</h2>
+<p>Two separate, cheap checks on the already-built custom map: (1) confirm the placed enemies actually move and path normally in the reused-navmesh area; (2) only relevant for a future custom map built from a donor that <em>does</em> have toggleable regions — place an additional, previously-unknown region over an already-walkable area and confirm the map still loads normally and that area stays usable for AI.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R3-Missionsetter.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Fixing the Missing HUD Objective Banner for Out-of-Order Missions</a><a class="next" href="Research-Report-R3-Newassetsv.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Appending Brand-New Decl Entries: Independent Re-Verification</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Console Unlock — the Retail Restriction Level, Proven in Game – Wolfenstein Modloader</title>
+<meta name="description" content="TNC Console Unlock — the Retail Restriction Level, Proven in Game">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tnc"><span class="en">The New Colossus</span><span class="de">The New Colossus</span></a></p>
+<h1>TNC Console Unlock — the Retail Restriction Level, Proven in Game</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNC-Console-Unlock"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#tldr">TL;DR</a></li><li><a href="#1-the-mechanism-one-integer-gates-both-commands-and-cvars">1. The mechanism: one integer gates both commands and Cvars</a></li><li><a href="#2-what-was-measured-in-game--the-testers-test-2026-10-01">2. What was measured in game — the tester&#x27;s test, 2026-10-01</a></li><li><a href="#3-what-was-rejected-args-on-the-startup-line">3. What was rejected: +args on the startup line</a></li><li><a href="#4-the-kiscule-command-node-route--proven-by-code-path-not-yet-in-game">4. The Kiscule Command-node route — proven by code path, not yet in game</a></li><li><a href="#5-what-doesnt-exist-at-all">5. What doesn&#x27;t exist at all</a></li><li><a href="#6-open-questions">6. Open questions</a></li><li><a href="#related-pages">Related pages</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p><strong>The retail console of Wolfenstein II only shows 34 of 234 commands and 304 of 3,256 Cvars. That block is not a build-type flag and not an encryption — it is one process-wide integer, and the mod loader already has a proven, no-patch way through it.</strong> This page is the practical write-up: what the mechanism is (static, from disassembly), what the loader actually does with it (runtime-proven, tester's own test on 2026-10-01), and what still doesn't exist no matter which door you try.</p>
+<p>Grading follows the project convention (see <a href="Home.html">Home</a>): <strong>Measured/RUNTIME</strong> beats <strong>Inferred/CVAR</strong> beats <strong>Speculated/STRING</strong>. Everything under "What was measured in game" below is the first grade; everything under "The mechanism" is a disassembly reading of the running process image, not a game launch.</p>
+<hr />
+<h2 id="tldr">TL;DR</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Works without a patch?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resourceExec &lt;loader-replaced cfile&gt; -s</code> from the normal, restricted console</td>
+<td><strong>yes, proven in game</strong></td>
+<td>tester's test, 2026-10-01 (§2)</td>
+</tr>
+<tr>
+<td><code>+args</code> on the game's own startup line (<code>+com_allowConsole</code>, <code>+g_infiniteAmmo</code>, …)</td>
+<td><strong>no — rejected, "Unknown command"</strong></td>
+<td>same test (§3)</td>
+</tr>
+<tr>
+<td>A Kiscule <code>Command</code> node firing in a map script</td>
+<td><strong>yes, by code path</strong> — not yet seen in game</td>
+<td><a href="Research-Report-R5-Kiscule-Command.html">Research-Report-R5-Kiscule-Command</a> (§4)</td>
+</tr>
+<tr>
+<td><code>give</code>, <code>give all</code>, <code>spawn</code>, <code>noclip</code>, <code>god</code> (lowercase), <code>SpawnAI</code></td>
+<td><strong>no route exists — these commands are not compiled into retail at all</strong></td>
+<td>§5</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="1-the-mechanism-one-integer-gates-both-commands-and-cvars">1. The mechanism: one integer gates both commands and Cvars</h2>
+<p>Static finding, from a read-only snapshot of the running <code>NewColossus_x64vk.exe</code> (full writeup: <a href="Research-Report-R4-Console-Commands.html">Research-Report-R4-Console-Commands</a>).</p>
+<p>The engine keeps two lists per system — all 234 commands / all 3,256 Cvars, and a second, "exposed" list of only 34 commands / 304 Cvars — plus a single <strong>restriction-level</strong> integer shared, bit for bit, between <code>idCmdSystemLocal</code> and <code>idCVarSystemLocal</code>:</p>
+<ul>
+<li><strong>level 0</strong> → the dispatcher searches the full list. Every registered command and every Cvar is reachable.</li>
+<li><strong>level 1</strong> (the only other value ever written anywhere in the image) → the dispatcher searches only the 34/304 exposed entries. This is what the live console, the game's own startup <code>+args</code>, and a <code>.cfg</code> loaded by the normal <code>exec</code> command all run at.</li>
+</ul>
+<p>Six call sites set the level to 1 and <strong>restore the previous value before returning</strong> — the interactive console (both key handlers), <code>+</code>-prefixed startup arguments, the startup-config exec, and the <code>exec</code> command itself. Because every one of them restores what it found, and the constructor default is 0, <strong>the level sits at 0 — fully unrestricted — for essentially the whole session</strong>, except for the few instructions it takes to process one keystroke, one <code>+arg</code>, or one <code>exec</code>'d line.</p>
+<p>One already-exposed command breaks this pattern on purpose: <strong><code>resourceExec &lt;name&gt; -s</code></strong> sets the level to 0 for the entire duration of the file it loads, then restores it. Since <code>resourceExec</code> is itself one of the 34 commands anyone can type from the plain console, this is a complete, no-patch route to the other 200 commands and ~3,000 Cvars — you just have to get your lines into a file the engine will <code>resourceExec</code>.</p>
+<p>A second, better-scaling route exists once the console is open: the compiled-in ImGui <strong>DevGUI</strong> debug menu calls the dispatcher directly, with no save/restore bracket of its own, so it runs at whatever the level happens to be — <code>0</code>, essentially always. Setting the non-exposed Cvar <code>devgui 4</code> once (itself needing one <code>resourceExec</code> call) makes at least 41 confirmed-live, non-exposed debug buttons (<code>toggle g_infiniteAmmo</code>, <code>ai_drawBounds</code>, <code>killAI</code>, <code>disconnect</code>, …) clickable for the rest of the session with <strong>no further <code>resourceExec</code> per click</strong>.</p>
+<hr />
+<h2 id="2-what-was-measured-in-game--the-testers-test-2026-10-01">2. What was measured in game — the tester's test, 2026-10-01</h2>
+<p>A loader mod (<code>mods/sandbox_tools</code>) replaces two <strong>unused SnapMap configs already present in retail</strong>, <code>cfile:snapdemo.cfg</code> and <code>cfile:snapedit.cfg</code>, with the loader's own cfile payloads — reusing the same <code>dlc_0</code>-precedence patch route already proven for custom maps, decl edits, and weapon skins, now combined with the solved <code>cfile</code> encryption (AES-128-CBC + HMAC-SHA256, key derived in <a href="Research-Report-Cfilekey2.html">Research-Report-Cfilekey2</a>; the loader's own encoder lives in <code>wolfsdk/tnccrypt.py</code>). <code>cfile</code> was listed as "definitively not possible" in <a href="TNC-Modding-Surface.html">TNC Modding Surface</a> §6 — that verdict is now superseded for exactly this use: the loader builds valid, game-accepted <code>cfile</code> payloads under names the archive already indexes.</p>
+<p>Typed from the live, restricted console in the running game:</p>
+<pre><code>resourceExec snapdemo.cfg -s
+</code></pre>
+<p>Result, confirmed across two sessions:</p>
+<ul>
+<li>A main-menu run printed both marker lines from the file and <strong>no</strong> <code>Unknown command</code> for <code>devgui 4</code>, <code>God</code>, <code>Notarget</code>, <code>g_infiniteAmmo 1</code>, or <code>snapEdit_devMode 1</code> — all five are non-exposed.</li>
+<li>In an actual save game, the same call printed <strong><code>godmode ON for player 0</code></strong> and <strong><code>notarget ON for player 0</code></strong> — non-exposed commands genuinely executing, not just failing to error. <code>g_infiniteAmmo 1</code> was confirmed by play (ammo no longer depleted).</li>
+<li><code>devgui 4</code> was accepted (no error), but no ImGui window became visible on screen in that run — open, see §6.</li>
+<li><code>Notarget</code> printed <code>ON</code>, but enemies that were <strong>already engaged in combat kept attacking</strong> — the command ran, but did not retroactively drop existing aggro. Treat <code>Notarget</code> as "stops new detection", not "stops an ongoing fight", until re-tested.</li>
+</ul>
+<p><code>mods/sandbox_tools</code> packages this as two hotkeys, bound once and persisted by the engine's own <code>bind</code> command:</p>
+<pre><code>bind F6 &quot;resourceExec snapdemo.cfg -s&quot;   # toggles God, Notarget, infinite ammo
+bind F7 &quot;resourceExec snapedit.cfg -s&quot;   # killMonsters — not yet confirmed in game
+</code></pre>
+<p>God mode and infinite ammo are confirmed; <code>killMonsters</code> is shipped but not yet verified at runtime.</p>
+<hr />
+<h2 id="3-what-was-rejected-args-on-the-startup-line">3. What was rejected: <code>+args</code> on the startup line</h2>
+<p>The same test session ran the loader's usual startup tweaks as <code>+</code>-prefixed command-line arguments — <code>+com_skipIntroVideo</code>, <code>+pm_autoSprint</code>, <code>+g_EnableGore</code>, <code>+g_goreBloodyMess</code>, <code>+com_allowConsole</code> — and every one of them came back <strong><code>Unknown command</code></strong>.</p>
+<p>This matches §1 exactly: the <code>+args</code> parser is one of the six bracketed sites that forces the level to 1 for the duration of parsing the command line, then restores it. None of those five names are among the 34 exposed commands/Cvars, so at level 1 they are invisible — not locked by content, just not in the list the dispatcher is searching at that moment.</p>
+<p><strong>Practical rule for the loader:</strong> never ship a cheat or debug toggle as a startup <code>+arg</code>. Ship it as a line inside a loader-patched <code>cfile</code> and fire it with <code>resourceExec &lt;file&gt; -s</code> (console, a bound key, or — untested — the engine's own <code>default.cfg</code>, which it already <code>resourceExec</code>s at startup per <a href="Research-Report-Command-Queue.html">Static Research: Retail Command Queue (TNC)</a>).</p>
+<hr />
+<h2 id="4-the-kiscule-command-node-route--proven-by-code-path-not-yet-in-game">4. The Kiscule Command-node route — proven by code path, not yet in game</h2>
+<p>A map's own script can reach the exact same unrestricted window, with <strong>no <code>resourceExec</code> call and no DevGUI</strong>, purely from gameplay events. Static finding, full disassembly in <a href="Research-Report-R5-Kiscule-Command.html">Research-Report-R5-Kiscule-Command</a> (builds on <a href="Research-Report-R4-Console-Commands.html">Research-Report-R4-Console-Commands</a> and the node catalogue in <a href="Kiscule-Node-Reference.html">Kiscule Node Reference</a>):</p>
+<p><code>idKisculeNodeCommand</code>'s <code>Exec</code> handler does <strong>not</strong> call the dispatcher directly. It reads the <code>command</code> parameter, appends a newline, and calls <code>idCmdSystemLocal::AppendCommandText</code> — which queues the text into whichever of the engine's two command buffers the restriction level currently selects. Since the level rests at 0 for almost the entire session (§1), a Command node firing during ordinary play — a trigger volume, a timer, a dialogue callback — lands in the <strong>same unrestricted buffer <code>resourceExec</code> feeds</strong>.</p>
+<p>That buffer is drained <strong>twice every engine frame</strong>, inside the main loop (<code>idCommonLocal::Frame()</code>), against the full 234-command/3,256-Cvar catalog — the same drain mechanism the engine uses once at startup for <code>default.cfg</code>/<code>package.cfg</code>, just reused generically.</p>
+<p><strong>Caveat, reported honestly:</strong> none of the 7 retail <code>idKisculeNodeCommand</code> instances actually needs this path — 6 use already-exposed names (<code>r_dof</code>, <code>print</code>), and the 7th (<code>triggernextmap</code>) is not a registered command at all and fails identically at any level. The yes/no verdict rests entirely on the disassembled code path, not on an observed retail example, and <strong>no custom map has exercised it in game yet</strong>. The report's own smallest test: a <code>Trigger_Volume</code> → <code>Command</code> node with <code>command = "God 1"</code> in a custom map, verifying no damage is taken on the next hit without ever opening the console.</p>
+<hr />
+<h2 id="5-what-doesnt-exist-at-all">5. What doesn't exist at all</h2>
+<p>Confirmed absent from the 234-entry command table under <strong>any</strong> name or capitalization, independently re-checked a second way (the DevGUI's own compiled-in buttons reference the identical strings and are themselves dead):</p>
+<ul>
+<li><code>give</code>, <code>give all</code> — DevGUI's "Give Ammo"/"Give Grenades" buttons build and dispatch the literal string <code>give ammo</code>, which also fails.</li>
+<li><code>spawn</code> — DevGUI's own <code>spawn %s</code> button references the same non-existent name.</li>
+<li><code>noclip</code>, <code>god</code> (lowercase; <code>God</code>, capitalized, is the real, flagged <code>0x200000</code> command).</li>
+<li><code>SpawnAI</code> — DevGUI's debug menu references <code>SpawnAI ai/testing/test_elite</code>/<code>test_commander</code>, but the name is not in the 234-entry command table. An earlier pass of the Round-4 static command-table scan misread the table and listed <code>SpawnAI</code> as registered; a static re-check of the same table found that wrong and corrected it (see <a href="Research-Report-R4-Console-Commands.html">Research-Report-R4-Console-Commands</a> and <a href="Known-Contradictions.html">Known Contradictions</a> W21). No in-game test of <code>SpawnAI</code> has been logged — the correction is a data fix to the command-table reading, not a runtime result.</li>
+</ul>
+<p>These are not console-restricted — <strong>they were never compiled into this retail build as callable commands</strong>, under either the restricted or unrestricted list. No Cvar, cfile, or decl can reach code that was never registered; only a binary patch could add them, which is out of scope for this project.</p>
+<hr />
+<h2 id="6-open-questions">6. Open questions</h2>
+<ul>
+<li><strong><code>devgui 4</code> accepted no error, but no window appeared</strong> in the save-game run (§2) — unclear whether DevGUI needs a key bind to toggle visibility that the main-menu session happened to have set and the save-game session did not, or whether something else gates the draw call. Not resolved.</li>
+<li><strong><code>killMonsters</code></strong> is shipped in <code>mods/sandbox_tools</code> but not yet confirmed to do anything in game.</li>
+<li><strong>Whether <code>default.cfg</code> — which the engine already <code>resourceExec</code>s at startup — can carry these lines so the tweaks apply automatically without the player typing <code>resourceExec</code> at all.</strong> Plausible from the command-queue mechanism, not yet runtime-tested.</li>
+<li><strong>Whether a Kiscule Command node's non-exposed call (§4) actually executes once loaded in a real custom map</strong> — code-path proof only.</li>
+<li><strong>Case sensitivity of command lookup</strong> — unresolved per the static report; relevant to any future hand-written <code>.cfg</code> line.</li>
+</ul>
+<hr />
+<h2 id="related-pages">Related pages</h2>
+<p><a href="TNC-Modding-Surface.html">TNC Modding Surface</a> · <a href="Kiscule-Node-Reference.html">Kiscule Node Reference</a> · <a href="Known-Contradictions.html">Known Contradictions</a> · <a href="Developer-Mode.html">Developer Mode</a> (pre-runtime, string-level analysis this page supersedes for the restriction mechanism) · <a href="Research-Report-R4-Console-Commands.html">Research-Report-R4-Console-Commands</a> · <a href="Research-Report-R5-Kiscule-Command.html">Research-Report-R5-Kiscule-Command</a> · <a href="Research-Report-Command-Queue.html">Static Research: Retail Command Queue (TNC)</a></p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNC-CVar-Catalog.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Cvars: Wolfenstein II - The New Colossus</a><a class="next" href="TNC-Texture-Database.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>The <code>.texdb</code> Format (Wolfenstein II: The New Colossus)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

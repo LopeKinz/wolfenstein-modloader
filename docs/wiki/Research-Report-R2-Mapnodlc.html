@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom TNC Maps Without Owning Any DLC – Wolfenstein Modloader</title>
+<meta name="description" content="Custom TNC Maps Without Owning Any DLC">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Custom TNC Maps Without Owning Any DLC</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Mapnodlc"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#why-a-dlc-folder-can-never-steal-a-base-map-name">Why a DLC folder can never steal a base map name</a></li><li><a href="#routes-ranked">Routes, ranked</a></li><li><a href="#failed-hypotheses">Failed hypotheses</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>The proven custom-map route rides on <code>dlc/dlc_0</code> claiming the Freedom Chronicles map slot <code>c2v1</code>, which needs the real DLC2 payload (sound, virtual-texture pages, intro video, ~400 MB) to exist on disk — so that whole route still requires Freedom Chronicles ownership. This note asks whether a route exists that needs <strong>no DLC ownership at all</strong>: claiming a base-campaign map slot instead, exposing a brand-new map name through the menu, or overriding a base slot the way <code>dlc_0</code> overrides <code>c2v1</code>. Static disassembly of the map-mount code gives a firm <strong>no</strong> for "a DLC folder steals a base map's slot" — base is always checked first. What is open and DLC-free is editing an existing base map's own archive directly with the already-proven technique, and a newly-investigated, retail-precedented route through the chapter-select data. All mechanism claims here are static analysis; only the <code>dlc_0</code>-beats-<code>dlc_2</code> collision itself was previously confirmed with a screenshot.</p>
+<h2 id="why-a-dlc-folder-can-never-steal-a-base-map-name">Why a DLC folder can never steal a base map name</h2>
+<p><code>idResourceManagerLocal::LoadNamedResourceBlock</code> (<code>0xac1730</code>) does two spec lookups — <code>0xabf440</code> (chunk id) and <code>0xabf500</code> (directory prefix) — and <strong>both check <code>base/packagemapspec.json</code> first</strong>, consulting the DLC list only when base has no entry for that name; first hit wins, no comparison across DLCs ever happens. <code>0xabd940</code> builds the chunk filename, <code>0x1211e70</code> joins the directory, <code>0xacc6b0</code> mounts. DLC discovery itself (<code>0xabdcf0</code>, <code>SearchDLC</code>) appends folders in scan order and skips a duplicate id, logging <code>found dlc id %d at %s</code>. Measured live: a <code>dlc_0</code>/id-4 folder beat retail <code>dlc_2</code>/id-2 for the identical map name <code>game/dlc/c02/c2v1</code> — not a "last-registered wins" effect, since <code>dlc_2</code> is scanned later and still lost.</p>
+<p><strong>Consequence:</strong> none of the 31 base campaign map names in <code>base/packagemapspec.json</code> can ever be taken over by a DLC folder; the DLC fallback only fires for a name base has no entry for at all — exactly <code>c2v1</code>'s case.</p>
+<h2 id="routes-ranked">Routes, ranked</h2>
+<p><strong>Route 1 — edit a base map's own chunk directly (recommended, DLC-free).</strong> The same technique already proven on the DLC map (<code>c2v1</code>: entity retype/relight/respawn, archive rebuild, header-hash finalize) applied to <code>base/chunk_N.resources</code> instead. Cost model (TNC-specific, not TNO's): every entry sits in a payload followed by a zero-filled gap before the next entry; median gap is 48 B in <code>gameresources</code>, 650 B in <code>chunk_12</code>, 63 B in <code>patch_1</code>. A representative edit (every integer in a decl scaled up) fits that gap 21–25 times out of 25 for most decl types without a full chunk rebuild; a rebuild, if needed, runs 73–466 MB depending on the chunk. This route needs zero DLC folders, zero ownership checks, zero name-collision gamble.</p>
+<p><strong>Route 2 — a self-built patch layer overriding a base map's entity data (untested).</strong> Patch containers are searched up to a declared patch level and the highest present layer wins for a name — proven for decls/tables/images (strong corpus evidence), not yet confirmed for the map-entity resource type specifically.</p>
+<p><strong>Route 3 — a DLC folder claiming an existing base map name — closed</strong>, by the lookup-order evidence above.</p>
+<p><strong>Route 4/5 — exposing a brand-new map through chapter-select.</strong> <code>chapter</code> and <code>chaptervariation</code> are ordinary, patchable decl entries (confirmed by their class hierarchy), not a hardcoded 4-slot list — 28 <code>chapter</code> + 105 <code>chaptervariation</code> decls exist in the live install, including Kraken-compressed ones, all read directly. <strong>Retail itself already ships a patch-only new <code>chaptervariation</code> name</strong> (present only in a patch archive, absent from the base archive) — proof the mechanism accepts brand-new decl names for this type, not just overrides. But the chapter-select UI does <strong>not</strong> enumerate every <code>chapter</code> decl present: at least 8 leftover debug/demo chapters sit in the same non-DLC-gated layers every player mounts yet never appear on screen (two even reuse an existing chapter's numeric id with no apparent ill effect). The safer sub-route is therefore not a whole new chapter, but <strong>appending one more <code>chaptervariation</code> entry to an already-shown chapter's variations list</strong>.</p>
+<p>A related, already-tried dead end: flipping a map's "show in developer map menu" flag <strong>crashed the game on start</strong> in earlier work; not re-attempted.</p>
+<h2 id="failed-hypotheses">Failed hypotheses</h2>
+<ul>
+<li>"The DLC folder enumerated later wins" — falsified by the <code>dlc_0</code>-beats-<code>dlc_2</code> result (the loser was scanned later, not earlier).</li>
+<li>"<code>refchunks</code> is an override mechanism" — tested twice, the primary chunk always won regardless.</li>
+<li>"<code>packagechunklist.json</code> can pre-mount a DLC chunk at the main menu" — disassembly-traced dead end; on PC the streaming-install "chunk installed" check is hardwired to always-true with zero writers to the active flag.</li>
+<li>"Console or <code>resourceExec</code> can load an arbitrary map without a save" — measured: <code>resourceExec</code> at the main menu fails with <code>can't generate in production</code>, because DLC chunks mount only inside the map-load function itself, never at startup/menu time.</li>
+<li>"An offline-edited save can register a new map id" — two increasingly-correct candidate saves both produced <code>File Corrupt</code>; each save's six verification files are AES ciphertext with an unidentified signing key.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether the patch level that gates container precedence is enforced per-container or as a global maximum across all mounted specs.</li>
+<li>Whether the map-entity resource type follows the same patch-override rule proven for decls/tables/images.</li>
+<li>Whether the chapter-select screen's own UI widget walks a chapter's full current variations array each time, or caches a fixed count baked at build time — the one question that decides whether appending a variation entry is enough.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Two decisive tests, in order:</p>
+<ol>
+<li><strong>Route 1–3 decision test:</strong> install a DLC-style folder carrying a modified <code>base/packagemapspec.json</code> that re-registers an existing base chapter's map name under a different chunk id, start that chapter fresh, and take a hit — normal damage confirms base always wins (expected, closes Route 3); no damage overturns this report's central claim.</li>
+<li><strong>Route 5 test:</strong> build a one-entry patch archive that appends a new <code>chaptervariation</code> to an already-shown chapter's variations list (pointing at already-proven custom map content), bump the patch level, start the game fresh, and open chapter select. A new, selectable entry settles whether the Timeline UI reads appended chapter data at all.</li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R2-Maplightstairs.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Kit Map Quality: Lighting New Geometry, and Walkable Stairs</a><a class="next" href="Research-Report-R2-Md6anim.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Skeleton (<code>.md6skl</code>) and Animation (<code>.md6anim</code>) Format</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

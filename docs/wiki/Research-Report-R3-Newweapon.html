@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weapon Decl Anatomy and Building a New Weapon End to End – Wolfenstein Modloader</title>
+<meta name="description" content="Weapon Decl Anatomy and Building a New Weapon End to End">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Weapon Decl Anatomy and Building a New Weapon End to End</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R3-Newweapon"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-weapon-class-system">The weapon class system</a></li><li><a href="#other-weapon-decl-anatomy">Other weapon decl anatomy</a></li><li><a href="#how-the-player-actually-gets-weapons--and-how-they-dont">How the player actually gets weapons — and how they don&#x27;t</a></li><li><a href="#the-weapon-wheel-ceiling">The weapon wheel ceiling</a></li><li><a href="#what-a-brand-new-separately-named-weapon-needs-end-to-end">What a brand-new, separately-named weapon needs end to end</a></li><li><a href="#in-game-test">In-game test</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>This research decodes how weapon decls are structured in TNC end to end — the entity/class system, fire modes, hitscan vs. travelling-projectile logic, viewmodel/animation/sound wiring, upgrades, dual wield, and the three ways the player actually receives a weapon — and works out exactly what a brand-new, separately-named weapon clone would need. The key finding is a clean, corpus-measured refutation of an earlier diagnosis that the default weapon class could only fire hitscan: the pistol and the hatchet share the identical absence of a specialized weapon class, and the hatchet already fires a genuine travelling projectile in unmodified retail, proving the restriction never existed. All of this is static decl-corpus analysis (no game launch); one incidental finding is that the explosive-pistol mod currently installed on the test machine is still the older, pre-fix version.</p>
+<h2 id="the-weapon-class-system">The weapon class system</h2>
+<p>Every player and AI weapon in the game — all 34 <code>weapons/entity/*</code> entity definitions — is rendered and fired through the <strong>same single C++ entity class</strong>, <code>idWeaponEntity</code>. One level down, an optional <code>inventoryClass</code> decl field can name one of exactly <strong>12</strong> compiled logic subclasses (<code>idShotgun</code>, <code>idBattleRifle</code>, <code>idKampfpistol</code>, etc.) — corpus-measured 12/12 match against the engine's own class list, 0 extra, 0 unused. The handgun sets no <code>inventoryClass</code> at all (runs on the engine's bare default), and so does the hatchet — whose <code>axe_throw</code> projectile already fires as a real, non-hitscan travelling entity in unmodified retail. Since both weapons share the identical missing field, there is no hitscan-only restriction baked into the default class; whether a weapon fires hitscan or a travelling projectile is decided purely by the fired <strong>projectile</strong> decl (<code>hitscan=false</code> plus a populated <code>notHitscanInfo.entityDef</code>) — 27 of the 44 retail player projectiles already take that path, including an ordinary full-auto rifle, not just melee/throwables.</p>
+<h2 id="other-weapon-decl-anatomy">Other weapon decl anatomy</h2>
+<ul>
+<li><strong>Viewmodel/worldmodel:</strong> two independent fields — <code>handsModelMD6</code> on the weapon decl (first person) and <code>renderModelInfo.model</code> on its <code>attachEntityDef</code> (world/third-person) — sometimes the same <code>.md6</code> file, sometimes a dedicated one.</li>
+<li><strong>Animations:</strong> a decl-driven state machine (<code>animSysDecl</code>) reacts to fire/reload/equip/unequip events and names clip aliases resolved through an <code>md6Def</code> to <code>.md6anim</code> files. Since <code>.md6anim</code>'s per-frame compression still isn't decoded (see the animation-decode report), a new weapon can <em>reuse</em> an existing animation set for free but can't get bespoke new animations yet.</li>
+<li><strong>Sounds:</strong> three separate channels — an <code>fx</code> decl for particle/sound trigger events, a Wwise switch-container key on the weapon decl, and a <code>fireSoundEvent</code> on the projectile decl — plus a fourth, <code>gunfireEventDecl</code>, which governs how loud AI perceives each shot.</li>
+<li><strong>Upgrades:</strong> <code>upgrade</code> decls (195 corpus-wide) are referenced by an ordered unlock-slot list on the weapon decl, with up to three typed modifier arrays each (weapon/ammo/data modifiers).</li>
+<li><strong>Dual wield:</strong> purely decl-side — <code>dualwieldable=true</code> plus <code>maxCount=2</code> on the same weapon decl, no second decl needed.</li>
+</ul>
+<h2 id="how-the-player-actually-gets-weapons--and-how-they-dont">How the player actually gets weapons — and how they don't</h2>
+<p>Three corpus-proven, independent routes: <strong><code>devInvLoadout</code> decls</strong> (per-map dev/test starting kits, 21-item default list, gated per story-timeline), <strong><code>propItem</code> pickups</strong> placed in a map's entity data, and the mission-script node <strong><code>idKisculeNodeActionGiveItems</code></strong> (45 uses across 29 retail scripts). There is <strong>no console "give" command</strong> — the full list of 234 registered console commands was checked exhaustively and contains none.</p>
+<h2 id="the-weapon-wheel-ceiling">The weapon wheel ceiling</h2>
+<p>The weapon-wheel/HUD is an unwritable, closed Flash-derived binary format with no existing or buildable writer. A weapon decl only controls the <em>data</em> the wheel reads — icon, display name, and two small closed enums (<code>weaponSlotFlash</code>, 8 values; <code>weaponSelectionGroup</code>, 7 values), both shared by several weapons each. A new weapon can occupy an existing slot but can never invent its own.</p>
+<h2 id="what-a-brand-new-separately-named-weapon-needs-end-to-end">What a brand-new, separately-named weapon needs end to end</h2>
+<p>Every single piece — decl chain, viewmodel, animations, sounds, upgrades, pickup — is individually buildable with existing tooling by <em>reusing</em> retail assets, except making it a genuinely new <strong>name</strong> rather than a retune of an existing one, which needs appending new entries to the archive (structurally proven possible, not yet a production tool — see the related new-assets report). Until that tool exists, the proven, shippable version of "a new weapon" is retuning an existing weapon's own decl in place, exactly as the project's current explosive-pistol mod does.</p>
+<h2 id="in-game-test">In-game test</h2>
+<ol>
+<li>Re-apply the explosive-pistol mod's current (fixed) version — the archive on the test machine was found to still carry the older, pre-fix build — then fire at a wall beyond 10 m on the custom map. An explosion (where there wasn't one before) confirms both the earlier load-order diagnosis and that redirecting via the ammo decl's own field (rather than the projectile's inherit chain) is the correct approach.</li>
+<li>No action needed to confirm travelling projectiles work with a specialized weapon class too — just observe during normal play that the Dieselgewehr rifle (which already uses a specialized <code>inventoryClass</code> and a travelling projectile) behaves normally.</li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R3-Newassetsv.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Appending Brand-New Decl Entries: Independent Re-Verification</a><a class="next" href="Research-Report-R3-Npcswap.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>NPC Model and Skin Swap: Reskinning vs. Replacing a Model</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

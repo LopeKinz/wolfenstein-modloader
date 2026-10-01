@@ -253,7 +253,7 @@ python tools/probe_save_structure.py --selftest
 <hr />
 <h2 id="6-open">6. Open</h2>
 <ul>
-<li><strong>Runtime Proof.</strong> Whether the game <code>FC2-WOLF0-c2v1_custom_struct</code> (= v3) accepts is undecidable offline. To determine this, one would need to save the state in <code>C:\Users\‹user›\Saved Games</code> and launch the game — both of which are excluded here. Before attempting such a test: the backups under <code>re_probes/save_backups/</code> are the only copies of the real states.</li>
+<li><strong>Runtime Proof.</strong> Whether the game <code>FC2-WOLF0-c2v1_custom_struct</code> (= v3) accepts is undecidable offline. To determine this, one would need to save the state in <code>%USERPROFILE%\Saved Games</code> and launch the game — both of which are excluded here. Before attempting such a test: the backups under <code>re_probes/save_backups/</code> are the only copies of the real states.</li>
 <li><strong>Sub-entries in the Card Storage.</strong> The branch with <code>Anzahl &gt; 0</code> (elements at 0x30 bytes) does not exist in the entire inventory; the parser explicitly rejects it rather than guessing.</li>
 <li><strong>Component Stream from Byte ~0x2142.</strong> <code>idQuickSaveStream</code> with Magic <code>0x3832E21A</code> before each day, non-fatal tag comparison (<code>idQuickSaveStream::SerializeCheck: tag mismatch: is: %s, should be %s</code>, <code>0x66aa60</code>) and compressed heap sections. Excessive — whoever intends to modify munitions or upgrades there must start here.</li>
 </ul></article></section>

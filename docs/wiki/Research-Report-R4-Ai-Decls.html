@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R4 Research Report: AI Decl Hierarchy and Difficulty (TNC) – Wolfenstein Modloader</title>
+<meta name="description" content="R4 Research Report: AI Decl Hierarchy and Difficulty (TNC)">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>R4 Research Report: AI Decl Hierarchy and Difficulty (TNC)</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Ai-Decls"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-corpus-structure">1. Corpus structure</a></li><li><a href="#2-the-field-surface">2. The field surface</a></li><li><a href="#3-difficulty-a-cvar-layer-not-a-decl-table">3. Difficulty: a cvar layer, not a decl table</a></li><li><a href="#4-cross-checked-against-the-compiled-executable">4. Cross-checked against the compiled executable</a></li><li><a href="#5-modder-reference">5. Modder reference</a></li><li><a href="#6-the-smallest-decl-only-hardereasier-enemies-mod">6. The smallest decl-only &quot;harder/easier enemies&quot; mod</a></li><li><a href="#failed-hypotheses">Failed hypotheses</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-for-the-tester">In-game test (for the tester)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Scope: TNC only. A corpus census of 340 AI entity decls across all 29 archives, plus a string/pointer cross-check against the game executable's compiled schema tables. Builds on the existing finding that enemy health lives at <code>entityDef.aiHealth.components.components[0].max/cur</code> — re-measured and confirmed here, not rediscovered.</p>
+<h2 id="summary">Summary</h2>
+<p>The question was where AI tuning lives in TNC's decls and what the smallest edit is that makes enemies noticeably harder or easier. An AI's entire tuning lives under one decl (the <code>entityDef</code> it spawns as), split into clear sibling blocks: hit points, a 480-leaf behavior/perception/accuracy block, faction-based hostility, and starting weapon. There is no "aggression" field anywhere — neither in any decl nor as a compiled string in the executable at all — hostility is entirely faction-based. "Difficulty scaling tables" turned out to be a misnomer for what actually ships: the one decl-level hook shaped like a per-archetype difficulty table is empty in retail and carries no numeric payload even if read; real difficulty scaling is seven global cvars, not a decl table. <strong>Decl field names were cross-checked as compiled schema entries in the game executable (static, read-only); the proposed health edit was proven to touch only its three intended values by diffing the patched decl text. Neither of those is a game launch</strong> — the mechanism itself (<code>"set"</code>-style decl edits reaching the running game) is confirmed in game only via an unrelated, already-proven edit (pistol magazine size), not this specific field.</p>
+<h2 id="1-corpus-structure">1. Corpus structure</h2>
+<p>340 <code>entityDef</code>s descend from the AI base class across all 29 archives. Twelve archetype "bases" (soldier, commander, elite übersoldat, supersoldat, attack dog, boss, drone, civilian, etc.) sit directly under the root; every other AI inherits, directly or transitively, from one of these twelve.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Root archetype</th>
+<th style="text-align: right;">Descendants</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>civilian base</td>
+<td style="text-align: right;">152</td>
+<td>non-combat NPCs, not "enemies"</td>
+</tr>
+<tr>
+<td><strong>soldier base</strong></td>
+<td style="text-align: right;"><strong>125</strong></td>
+<td>soldiers, elites, officers — <strong>68% of real combat archetypes</strong></td>
+</tr>
+<tr>
+<td>commander base</td>
+<td style="text-align: right;">25</td>
+<td>commanders</td>
+</tr>
+<tr>
+<td>supersoldier base</td>
+<td style="text-align: right;">9</td>
+<td>elite super-soldiers</td>
+</tr>
+<tr>
+<td>combat drone base</td>
+<td style="text-align: right;">6</td>
+<td>drones</td>
+</tr>
+<tr>
+<td>über-soldier base</td>
+<td style="text-align: right;">6</td>
+<td>über-soldiers</td>
+</tr>
+<tr>
+<td>attack-dog base</td>
+<td style="text-align: right;">5</td>
+<td>dogs</td>
+</tr>
+<tr>
+<td>boss base</td>
+<td style="text-align: right;">3</td>
+<td>bosses</td>
+</tr>
+<tr>
+<td>4 misc bases</td>
+<td style="text-align: right;">2 each</td>
+<td>mechs, alligator, etc.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Combat archetypes total 185 of the 340; soldier base alone covers 125 of those 185 — the single biggest lever for "enemies in general."</p>
+<h2 id="2-the-field-surface">2. The field surface</h2>
+<p>Health is its own block, separate from the behavior block:</p>
+<pre><code>edit.aiHealth.components.components[0].{max,cur,starting}   # the HP field
+edit.aiHealth.components.components[1].*                     # always 0 in all 340 decls, corpus-wide — dead, unused second health pool
+</code></pre>
+<p>The behavior block has <strong>480 distinct field paths</strong> corpus-wide, grouped as: perception (detection radius, field of view, light-meter usage), AI-side weapon handling (which weapon slot, swap behavior — the weapon itself is a separate starting-inventory field), melee/grenade damage references, and accuracy. Accuracy is an 8-tier named enum (from "use the skill/difficulty default" up to "perfect") explicitly overridden on only 2 of 74 sampled archetypes; the actually continuous accuracy knob lives one hop away, in a separate, shared "tracking parameters" decl referenced by name — lowering its aim-error value toward 0 is, functionally, "never misses," and it is shared across every soldier-type AI that doesn't set its own tracking parameters, so it is just as corpus-wide-leveraged as the soldier-base health field.</p>
+<p><strong>"Aggression" does not exist as a field, anywhere</strong> — confirmed both by a corpus-wide text search and by its total absence as a compiled string in the game executable. What the game has instead is faction membership: each AI names a <code>faction</code> decl, and that decl's relationship table assigns one of 9 compiled attitude values (hate, dislike, neutral, like, love, etc.) toward other factions — this is exactly the mechanism an existing shipped mod already uses to make two factions fight each other.</p>
+<h2 id="3-difficulty-a-cvar-layer-not-a-decl-table">3. Difficulty: a cvar layer, not a decl table</h2>
+<p>The one decl-level hook shaped like a per-archetype difficulty table ships <strong>empty</strong> in retail, and even its one populated entry carries no numeric payload field at all — there is nothing to scale with even if a filled block were read. The real difficulty system is seven cvars scaling AI-incoming damage per difficulty tier, three scaling player-incoming damage, three scaling player health/armor, plus three manual debug-override cvars — all confirmed to have real code cross-references in the executable (not just unused strings). <strong>None of these are per-archetype</strong> — they are single global multipliers, which is why only the decl-level health edit can target one archetype specifically.</p>
+<h2 id="4-cross-checked-against-the-compiled-executable">4. Cross-checked against the compiled executable</h2>
+<p>For 15 real field/cvar names, each exists as a compiled string in the executable with exactly one schema-table pointer reference — proof the engine's decl-binding code knows the field, not just that game-data text happens to use the word. Two negative controls (<code>aggression</code>, and a fabricated nonexistent field name) both resolve to <strong>zero</strong> occurrences anywhere in the executable. This proves the field is compiled into the schema; it does not prove a specific code path reads it every frame (that needs a decompiler, not available for this pass).</p>
+<h2 id="5-modder-reference">5. Modder reference</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Want to change…</th>
+<th>Edit this path</th>
+<th>On this decl</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>one archetype's max HP</td>
+<td><code>edit.aiHealth.components.components[0].{max,cur,starting}</code></td>
+<td>that archetype's base (or one specific NPC)</td>
+<td>per-decl, inherited downward</td>
+</tr>
+<tr>
+<td>hit-rate for most soldiers at once</td>
+<td><code>edit.aimError.aimError</code></td>
+<td>the shared default tracking-parameters decl</td>
+<td>every AI using the default tracker</td>
+</tr>
+<tr>
+<td>one archetype's accuracy tier</td>
+<td><code>edit.aiEditable.skill.aimAccuracy</code></td>
+<td>that archetype's base</td>
+<td>per-decl</td>
+</tr>
+<tr>
+<td>detection range/field of view</td>
+<td>the perception sub-block</td>
+<td>that archetype's base</td>
+<td>per-decl</td>
+</tr>
+<tr>
+<td>melee punch damage</td>
+<td>the damage decl the attack references</td>
+<td>that <code>damage</code> decl</td>
+<td>shared by every AI referencing it</td>
+</tr>
+<tr>
+<td>which weapon an archetype spawns with</td>
+<td>the starting-inventory item field</td>
+<td>that archetype's base</td>
+<td>per-decl</td>
+</tr>
+<tr>
+<td>who an archetype fights</td>
+<td>add a relationship entry with an attitude value</td>
+<td>the relevant <code>faction</code> decl</td>
+<td>per-faction</td>
+</tr>
+<tr>
+<td>overall difficulty</td>
+<td>the 7+3+3 difficulty cvars, or the difficulty splines</td>
+<td>cvars / <code>table</code> decls (not editable by this project's mod system for the cvars)</td>
+<td>global</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="6-the-smallest-decl-only-hardereasier-enemies-mod">6. The smallest decl-only "harder/easier enemies" mod</h2>
+<p>One decl, three numbers, using the exact <code>set</code>-style edit every shipped mod already relies on. Targets the soldier base decl, which reaches 125 of 340 AI archetypes (68% of the real combat roster):</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;example.tnc_aidecl_soldiers_tougher&quot;,
+  &quot;name&quot;: &quot;Soldiers: Much Tougher&quot;,
+  &quot;spiel&quot;: &quot;tnc&quot;,
+  &quot;priority&quot;: 150,
+  &quot;assets&quot;: {
+    &quot;entityDef:ai/soldier/soldier_base&quot;: {
+      &quot;set&quot;: {
+        &quot;edit.aiHealth.components.components[0].max&quot;: 300,
+        &quot;edit.aiHealth.components.components[0].cur&quot;: 300,
+        &quot;edit.aiHealth.components.components[0].starting&quot;: 300
+      }
+    }
+  }
+}
+</code></pre>
+<p>For "easier/near one-hit-kill," use <code>5</code> instead of <code>300</code>. The patched decl re-parses cleanly and a diff against the original touches exactly these three numeric leaves and nothing else.</p>
+<h2 id="failed-hypotheses">Failed hypotheses</h2>
+<ul>
+<li>Per-difficulty decl variants (e.g. a separate "hard" soldier decl) — none exist; difficulty is not an archetype axis at all.</li>
+<li>A dedicated "weapons" sub-block inside the behavior block — doesn't exist; weapon-related tuning is scattered across combat-behavior and starting-inventory fields instead.</li>
+<li>The second (always-zero) health component is a used armor/shield pool — refuted corpus-wide, it is dead data in every shipped AI.</li>
+<li>"Aggression" exists under a different name (a tactical-positioning weight field was checked and ruled out; it's a cover-selection weight, not a hostility knob) — the only real mechanism is faction attitude.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether the empty difficulty-mapping hook is ever actually read by a live code path — only its schema presence was confirmed, not its consumer (needs a decompiler).</li>
+<li>Whether the shared aim-error field meaningfully changes hit rate at runtime — schema-bound and referenced by name, but its numeric effect was not traced.</li>
+<li>Whether the same <code>aiHealth</code> lever exists in the other game (The New Order) the same way — plausible by analogy (an existing doc for that game uses the identical field path), not independently re-verified here.</li>
+<li>Whether raising the soldier base's HP is actually visible in game as "clearly harder" — the decl-edit mechanism itself is proven in game (via an unrelated field), this specific field was not launch-tested.</li>
+</ul>
+<h2 id="in-game-test-for-the-tester">In-game test (for the tester)</h2>
+<ol>
+<li>Save the mod above, enable it, build and run normally.</li>
+<li>On the custom kit map, shoot a regular soldier with the pistol and count hits. With the "harder" variant it should take noticeably more hits than the untouched game; with the "easier" variant, one pistol shot should be enough. If no difference shows, check that the soldier actually inherits from <code>ai/soldier/soldier_base</code> and not one of the other eleven archetype bases.</li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R3-Tnoskinned.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Skinned Models: Mesh-Count Rule and a Corpus-Proven Reader</a><a class="next" href="Research-Report-R4-Ai-Spawn-Waves.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>AI Spawn Waves: Trigger → Spawner → Wave</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

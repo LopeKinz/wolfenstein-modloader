@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R4 Research Report: TNC String Tables and the Key Hash – Wolfenstein Modloader</title>
+<meta name="description" content="R4 Research Report: TNC String Tables and the Key Hash">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>R4 Research Report: TNC String Tables and the Key Hash</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Strings"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-the-container">1. The container</a></li><li><a href="#2-the-text-format-measured-on-all-50-retail-files">2. The text format (measured on all 50 retail files)</a></li><li><a href="#3-the-id-hash--disassembled-not-just-labeled">3. The id hash — disassembled, not just labeled</a></li><li><a href="#4-how-a-key-is-referenced">4. How a key is referenced</a></li><li><a href="#5-the-round-trip">5. The round trip</a></li><li><a href="#6-recipe-for-new-weaponmission-text">6. Recipe for new weapon/mission text</a></li><li><a href="#open-questions">Open questions</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Builds on the existing <code>cfile</code> encryption and mission-text research. New tooling: a stdlib-only probe that reuses the project's existing crypto and archive modules as written.</p>
+<h2 id="summary">Summary</h2>
+<p>The question was how TNC's localization string tables (<code>strings/*.lang</code>) are structured, how a <code>#str_...</code> key is hashed to the runtime id that decls and UI reference, and whether a writer can prove a full round trip that both edits an existing key and adds a genuinely new one. Every <code>strings/*.lang</code> entry in every shipped archive is UTF-8 text wrapped in the already-solved <code>cfile</code> encryption container; the runtime key id is FNV-1a-32 with ASCII case-folding, disassembled byte-for-byte at two independent call sites in the game binary, with two non-obvious details (sign-extension of each byte, and a <code>0</code>→<code>1</code> remap for the one unlucky hash result) that no prior report had traced. A test build changed one existing key and added one brand-new key directly inside a real copy of a shipped archive, written through the project's actual archive-write path, and reading it back from a <strong>freshly reopened</strong> archive object reproduced both changes byte-for-byte with all other keys untouched. <strong>The container, hash and round-trip are proven against real game files. Whether a new key added this way is actually readable and shown on screen once the game is running is inferred, not confirmed in game</strong> — the game was never launched.</p>
+<h2 id="1-the-container">1. The container</h2>
+<p>Every <code>strings/&lt;lang&gt;.lang</code> entry in the archives that ship one is of type <code>cfile</code>, stored uncompressed at the archive layer (the archive's own compression is skipped because the payload is already AES+Kraken-wrapped by the <code>cfile</code> container). No <code>.lang</code> entry of type <code>file</code> exists anywhere in this game's archives — a prior, unrelated document's numbers for a <code>file</code>-type <code>.lang</code> almost certainly describe the other game's (unencrypted) string table, not this one.</p>
+<h2 id="2-the-text-format-measured-on-all-50-retail-files">2. The text format (measured on all 50 retail files)</h2>
+<pre><code>EF BB BF  &quot;// string table&quot;\r\n &quot;//&quot;\r\n \r\n &quot;{&quot;\r\n
+\t&quot;#key&quot;&lt;tab-or-spaces&gt;&quot;value&quot;\r\n   ... one line per key ...
+\r\n &quot;}&quot; 0x00                        (one literal NUL, no trailing \r\n)
+</code></pre>
+<ul>
+<li>Keys are case-mixed in the file itself (<code>#STR_QUICK_EQUIP</code> next to <code>#str_dlg_...</code>) — this is exactly why the hash folds case.</li>
+<li>316 lines carry extra quoted fields after the value (UI layout numbers), untouched by a value edit.</li>
+<li>All ~1.08 million key occurrences across all 50 files are plain ASCII.</li>
+<li>One real retail bug: <code>patch_1/strings/english.lang</code> has an unterminated quoted value for one key; <code>patch_2</code>/<code>patch_3</code>/<code>patch_4</code> all fixed it. Since the game always mounts the highest patch level, <code>patch_1</code>'s broken copy is never actually loaded — informational, not a modding obstacle.</li>
+</ul>
+<h2 id="3-the-id-hash--disassembled-not-just-labeled">3. The id hash — disassembled, not just labeled</h2>
+<pre><code class="language-python">def fnv1a_lower(s: bytes) -&gt; int:
+    h = 0x811C9DC5
+    for b in s:
+        if 0x41 &lt;= b &lt;= 0x5A:                      # 'A'..'Z', ASCII only
+            b += 0x20
+        signed = b - 0x100 if b &gt;= 0x80 else b      # movsx, not movzx
+        h = ((h ^ (signed &amp; 0xFFFFFFFF)) * 0x01000193) &amp; 0xFFFFFFFF
+    return h or 1                                   # 0 is the &quot;not found&quot; sentinel
+</code></pre>
+<p>Two details a prior report's "FNV-1a" label had missed, both confirmed directly against the disassembly at two identical call sites (table build and <code>FindIndex</code>):</p>
+<ol>
+<li><strong>Sign-extension, not zero-extension.</strong> Any byte <code>&gt;= 0x80</code> (any accented character in a non-English key) XORs in with its top bits set to <code>1</code>. Getting this wrong silently mis-hashes any key containing a non-ASCII byte.</li>
+<li><strong>A raw result of <code>0</code> is remapped to <code>1</code>.</strong> <code>0</code> is the engine's own "key not found" sentinel; a hash that happened to land on <code>0</code> would be indistinguishable from a missing key. Confirmed with a constructed negative-control string that genuinely hashes to <code>0</code> before the remap.</li>
+</ol>
+<p>Checked against real data: zero id collisions across the full 23,224-key authoritative file, and zero collisions in any of the 50 shipped <code>.lang</code> files individually — exactly the precondition the engine enforces as a fatal error at load time.</p>
+<h2 id="4-how-a-key-is-referenced">4. How a key is referenced</h2>
+<p>A decl field of the <code>idStrId</code> type (e.g. a mission objective's title) is looked up by this same hash at decl-parse time against whatever table happens to be loaded; not found, or plain text without <code>#str_</code>, becomes id <code>0</code>, displayed as an empty string. The table itself is built exactly once at startup from the base archive and patches — a DLC chunk mounted while loading a map is never consulted for <code>.lang</code>, and the table only reloads on a language change. One caveat found and kept separate: 14 <code>#str_</code> keys are compiled directly into one UI screen's own binary dictionary and are not reachable just by adding a key to <code>.lang</code> at all — that screen's own format is a different, unsolved problem.</p>
+<h2 id="5-the-round-trip">5. The round trip</h2>
+<ol>
+<li>Decrypt <code>strings/english.lang</code> from a copy of a real archive the normal way (the same decrypt function the project's asset browser already uses).</li>
+<li>Change one existing, low-risk value in place (a Challenge-screen label) and append one brand-new line with a key that never existed in retail — after first computing its hash and checking it doesn't collide with any of the 23,224 existing ids (the check caught that the same key in upper case would collide, confirming it isn't a no-op check).</li>
+<li>Re-pack with the same compression level retail uses and re-encrypt with the real per-file key derivation.</li>
+<li>Write it through the project's real archive-apply path — the same call the normal mod patcher uses for every mod, not a bespoke test writer. The growth (+16 bytes) fit inside the existing padding gap behind the entry, so no archive rebuild was needed; a larger addition would fall back to the normal rebuild path automatically.</li>
+<li><strong>Close the archive, open a brand-new archive object on the same file</strong>, find the entry again, decrypt and parse it: both the changed and the new key read back exactly as written, and the other 23,223 keys compare equal to the original.</li>
+<li>Negative controls: decrypting the new blob under the wrong entry name, or with one flipped byte, both fail the authentication tag as expected.</li>
+</ol>
+<h2 id="6-recipe-for-new-weaponmission-text">6. Recipe for new weapon/mission text</h2>
+<ol>
+<li>Decrypt the target <code>strings/&lt;lang&gt;.lang</code> from inside the base archive/patches (not a DLC chunk — the table is built before any DLC mounts).</li>
+<li>Pick a key, compute its hash, confirm it doesn't collide with the existing id set.</li>
+<li>Append the new line, leave every other line byte-identical.</li>
+<li>Repeat per shipped language, or accept the key showing as empty text in languages it wasn't added to.</li>
+<li>Re-pack/re-encrypt and let the normal mod patch pipeline write it — it already uses the exact path step 4 above exercised directly.</li>
+</ol>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether the running game actually logs the new key count and whether a decl referencing the new key displays it on screen — not run, the game was never launched.</li>
+<li>Whether adding a key to only <code>english.lang</code> (not every shipped language) is acceptable, or whether a missing key inside an otherwise-present file behaves differently from a missing file (the existing fallback-to-English-on-missing-<em>file</em> case is proven; a missing-<em>key</em> case is not the same thing and wasn't tested).</li>
+<li>Whether a much larger batch of new keys (tens or hundreds, for a full weapon set) still fits the zero-padding gap or routinely needs the normal rebuild path — only one 16-byte growth was measured; the rebuild path itself is already known to be fast enough to not be a real obstacle.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Sound-Events.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Adding a New Wwise Sound Event (TNC)</a><a class="next" href="Research-Report-R4-Tno-Custom-Maps.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Custom Maps: How Maps Load, and Why There Is No <code>dlc_0</code>-Style Route</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

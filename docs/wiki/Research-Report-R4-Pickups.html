@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R4 Research Report: Pickups, Givers and Start Loadouts (TNC) – Wolfenstein Modloader</title>
+<meta name="description" content="R4 Research Report: Pickups, Givers and Start Loadouts (TNC)">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>R4 Research Report: Pickups, Givers and Start Loadouts (TNC)</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Pickups"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-the-pickup-class">1. The pickup class</a></li><li><a href="#2-player-spawn-placement-vs-loadout--two-separate-things">2. Player-spawn placement vs. loadout — two separate things</a></li><li><a href="#3-the-smallest-edit-for-every-weapon-at-the-kit-maps-start">3. The smallest edit for &quot;every weapon at the kit map&#x27;s start&quot;</a></li><li><a href="#4-devmap-is-a-real-separate-console-command">4. devmap is a real, separate console command</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-for-the-tester">In-game test (for the tester)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>A corpus scan of every TNC single-player/DLC map file (27 archives, 39 distinct map files, 637,117 entities), plus the related decl types. Builds on the existing <code>.entities</code> format and weapon-decl research.</p>
+<h2 id="summary">Summary</h2>
+<p>The question was which entity classes place weapons/ammo/health/armor in the world or into the player's inventory, and what the smallest edit is to hand the player every weapon at the kit map's start. Every single world pickup placement across all 39 scanned maps — 6,931 of them, zero exceptions — is the same generic engine class, driven entirely by its decl and one field naming what it actually gives; a set of eleven RTTI classes that look purpose-built for pickups/inventory are compiled into the game but placed <strong>zero</strong> times anywhere in the single-player corpus (a genuine negative control, not just an unsearched gap). No map "target" entity gives items either. Starting loadout instead comes from three separate, additive decl mechanisms, none of them console commands or save-file edits. <strong>This is corpus-wide static analysis of the real shipped archives — the game was never launched</strong>, though the underlying decl-edit mechanism this report's recipe uses is the same one already confirmed working in game for an unrelated field.</p>
+<h2 id="1-the-pickup-class">1. The pickup class</h2>
+<p><strong>100% (6,931/6,931)</strong> of <code>prop/pickup/*</code> placements are the same generic prop class; its behavior comes entirely from its <code>inherit</code> decl (one of ~52 pickup decls for weapons/ammo/health/armor) and one field, <code>useableComponentDecl</code> (present on 98.9% of placements), which names the item decl it actually grants. The remaining ~1.1% without that field are narrative collectibles (gold, readables), identifiable by a different field cluster.</p>
+<p><strong>Negative control:</strong> eleven RTTI classes that look pickup/inventory-shaped by name (coop starting inventory, item-case loot, inventory storage, deathmatch player start, etc.) have <strong>zero</strong> placements across the same 637,117-entity scan that correctly finds the 6,931 real pickups and 152 player starts — multiplayer/coop-only or genuinely dead surface for single-player modding. One more class, the "static weapon" prop, is used (50 times) but exclusively for AI-operated turrets, never a player pickup.</p>
+<p><strong>No <code>idTarget_*</code> class gives anything.</strong> The full RTTI list of 14 target classes contains nothing named Give/Item/Inventory; only two are ever placed at all (AI-spawn and fake-enemy triggers), neither item-related. Item-giving runs exclusively through the pickup-prop mechanism above and the script layer below, never a map "target" entity.</p>
+<h2 id="2-player-spawn-placement-vs-loadout--two-separate-things">2. Player-spawn placement vs. loadout — two separate things</h2>
+<p>Player-start entities (152 placements corpus-wide) carry <strong>zero</strong> inventory-shaped fields — pure placement data (position, orientation, an "initial" flag). What the player holds on spawn comes from three independent, additive mechanisms instead:</p>
+<ol>
+<li><strong><code>world.edit.devmapInvLoadout</code></strong> — present on 23 of 39 maps' world entity, naming a <code>devInvLoadout</code> decl (43 such decls exist: one per major story checkpoint, one per challenge map, one per DLC episode, plus a generic fallback named <code>devinvloadout/code_referenced/default_sp_devloadout</code> that carries all 9 player weapon families with ammo).</li>
+<li><strong>The single global player entity's</strong> <code>startingInventory</code> — exactly one item in retail (the perk tracker), the campaign-wide floor every spawn gets regardless of map.</li>
+<li><strong>Kiscule script <code>ActionGiveItems</code> nodes</strong> — 45 uses across 29 scripts, mid-script grants (catalogued separately, reused unchanged here).</li>
+</ol>
+<h2 id="3-the-smallest-edit-for-every-weapon-at-the-kit-maps-start">3. The smallest edit for "every weapon at the kit map's start"</h2>
+<p>Three routes were compared; only one reaches all 9 weapon families:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>What it does</th>
+<th>Weapon coverage</th>
+<th>New entities needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A — loadout redirect</strong></td>
+<td>Point the map's <code>world.edit.devmapInvLoadout</code> at the generic fallback decl (<code>devinvloadout/code_referenced/default_sp_devloadout</code>) instead of its own</td>
+<td><strong>all 9</strong>, including the two "super-weapons" that have zero placed pickups anywhere in the 39-map corpus</td>
+<td><strong>0</strong> — target decl already exists and is always reachable</td>
+</tr>
+<tr>
+<td><strong>B — donor retype</strong> (existing technique: retype an existing non-weapon prop onto a weapon-pickup prop already placed in the map)</td>
+<td>reuses an existing placed pickup</td>
+<td>only <strong>4 of 9</strong> — the kit map itself only has donor pickups for four weapon types in retail</td>
+<td>0, but structurally capped</td>
+</tr>
+<tr>
+<td><strong>C — edit the global player's own <code>startingInventory</code></strong></td>
+<td>extend the one-item list directly</td>
+<td>all, if extended the same way the fallback decl already is</td>
+<td>0, but <strong>global</strong> — affects every chapter start in the whole campaign, not just the kit map</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Route A is the smallest and most targeted fix</strong> — a single field-value swap, the same shape as every other proven decl edit in this project. One caveat: the custom-map build tool's own safety check (which rejects any string value that wasn't already present in the map's own text) would currently reject this specific edit as "novel," since it can't tell a valid decl reference from a typo — a known, not-yet-fixed tooling gap, not a game-side blocker.</p>
+<h2 id="4-devmap-is-a-real-separate-console-command">4. <code>devmap</code> is a real, separate console command</h2>
+<p>Both <code>map</code> and <code>devmap</code> are registered commands with <strong>different callback functions</strong> — not aliases. Since the loadout field is literally named <code>devmapInvLoadout</code>, it's plausible the field is specifically read on the <code>devmap</code> path rather than <code>map</code>; this was not resolved offline (see "Open questions").</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether <code>devmapInvLoadout</code> actually fires via the existing load route (which issues a <code>map</code> load) or specifically requires the literal <code>devmap</code> command — the one open question that decides whether Route A works as a pure field edit or needs the load route changed too.</li>
+<li>Whether editing the global player's <code>startingInventory</code> (Route C) is layered under or overridden by a map's own <code>devmapInvLoadout</code>/script grants, or double-grants ammo — untested.</li>
+<li>The custom-map build tool's "novel string" safety gate needs a fix (an allowlist, or a check against the mounted archives) before Route A can go through the normal unattended build pipeline.</li>
+</ul>
+<h2 id="in-game-test-for-the-tester">In-game test (for the tester)</h2>
+<ol>
+<li>On the already-proven custom kit map, change its <code>world.edit.devmapInvLoadout</code> field from its own loadout to <code>devinvloadout/code_referenced/default_sp_devloadout</code>, rebuild, install.</li>
+<li>Load the map twice to settle the <code>devmap</code>-vs-<code>map</code> question in one pass: once through the normal existing load route, and — if the console accepts it at that point — once directly with <code>devmap &lt;map-id&gt;</code>.</li>
+<li>Open the weapon wheel and count equipped weapons. Expected on success: all 9 weapon families instead of the map's retail default loadout. If only one of the two load routes shows the effect, that settles the open question above without needing a second session.</li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Model-Import.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>R4 Research Report: Importing OBJ/GLB Models into TNC</a><a class="next" href="Research-Report-R4-Savegame.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>R4 Research Report: Save Structure, Chapter Selection and Loadout (TNC)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

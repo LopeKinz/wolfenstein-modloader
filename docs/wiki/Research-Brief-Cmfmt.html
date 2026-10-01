@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker w-cmfmt-a1; task cmfmt; research/implement.
-Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Read .agent-cache/WORKER.md. Bus: python "%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
 Parallel: w-meshfmt-a1 (geometry), w-entitypipe-a1 (placement), w-matpipe-a1
 (surfaces), w-mapmanifest-a1 (streaming). You own collision.</p>
 <h1 id="objective">Objective</h1>
@@ -83,7 +83,7 @@ read the field offsets out of it.</p>
   assume <code>cm</code> is Havok, but check for its signatures before inventing a theory.</li>
 <li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps</li>
 <li>Game data READ ONLY:
-  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+  <Steam library>/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
 </ul>
 <h1 id="ownership">Ownership</h1>
 <p>tools/probe_cmfmt.py (new), re_probes/cmfmt/ (new dir),
@@ -91,7 +91,7 @@ re_probes/agent_reports/cmfmt.md (new).
 <code>wolfsdk/*</code> and other workers' <code>tools/probe_*.py</code>: READ-ONLY, import them.</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
 <p>No game launch, no process attach, no writes under the Steam install or
-"C:/Users/‹user›/Saved Games". Do not touch other workers' files or dirs
+"%USERPROFILE%/Saved Games". Do not touch other workers' files or dirs
 (probe_meshfmt.py, probe_entitypipe.py, probe_matpipe.py, probe_mapmanifest.py,
 re_probes/{meshfmt,entitypipe,matpipe,mapmanifest,execcarrier,cfilekey,
 idclwriter,save_structure,map_alias_v3}/), docs/*, config.json. No pip install.</p>

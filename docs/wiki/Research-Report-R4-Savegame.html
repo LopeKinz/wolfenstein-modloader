@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R4 Research Report: Save Structure, Chapter Selection and Loadout (TNC) – Wolfenstein Modloader</title>
+<meta name="description" content="R4 Research Report: Save Structure, Chapter Selection and Loadout (TNC)">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>R4 Research Report: Save Structure, Chapter Selection and Loadout (TNC)</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Savegame"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-mapchapter-naming-and-the-decl-level-chapter-system">1. Map/chapter naming and the decl-level chapter system</a></li><li><a href="#2-player-inventory">2. Player inventory</a></li><li><a href="#3-starting-a-sandbox-map-at-a-chosen-spotloadout--without-editing-the-save">3. Starting a sandbox map at a chosen spot/loadout — without editing the save</a></li><li><a href="#4-checksums-a-save-carries">4. Checksums a save carries</a></li><li><a href="#failed-hypotheses">Failed hypotheses</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#recipe-for-the-sandbox-map-spot--loadout-no-save-edit">Recipe for the sandbox map (spot + loadout, no save edit)</a></li><li><a href="#in-game-test-for-the-tester">In-game test (for the tester)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Builds on the existing save-structure, checksum and save-verify research. Read-only against the real archives and a backup corpus of save files; no file under the live save folder or the Steam install was written.</p>
+<h2 id="summary">Summary</h2>
+<p>The question was how a TNC save names its chapter/checkpoint, where the live player inventory lives inside it, whether a hand-edited save can start the kit/sandbox map at a chosen spot with a chosen loadout, and which checksums protect a save. The useful answer is that <strong>the save file is not the right lever at all</strong>: TNC ships a complete, plain-text, already-editable decl-level mission system — the same one every Challenge or Freedom Chronicles menu entry already uses — that picks the map, a named spawn point, the player-character variant and the starting weapon list, with no save editing involved. Editing <code>checkpoint.dat</code> directly remains the inferior path: its live weapon-state block is now fully decoded byte-for-byte (both the reader and writer functions were disassembled), but what the decoded numbers actually mean is still an inference, not read from the consuming code. One previously-unsolved checksum (the plain-text <code>game.details</code> file's own <code>checksum=</code> field) was solved this round. <strong>Everything below is read directly from real save/archive files; nothing was tested with the game actually running</strong>, beyond citing the project's already-confirmed decl-edit precedent (an unrelated field, pistol magazine size).</p>
+<h2 id="1-mapchapter-naming-and-the-decl-level-chapter-system">1. Map/chapter naming and the decl-level chapter system</h2>
+<p>A save's two leading identifier-looking fields in <code>checkpoint.dat</code> turned out to be a <strong>constant build/version stamp</strong>, identical across all 25 real save files checked (five backups plus every save in the live save folder, from two different maps and three different save-slot kinds) — not a per-checkpoint id as an earlier pass had guessed. There is no separate short "checkpoint name" field; which point in the level a save represents is carried by the slot name, the map path, and the live inventory state, not a dedicated id.</p>
+<p>The actual mechanism that picks a map, a spawn point, a player-character variant and a starting loadout is a decl type with <strong>105 entries</strong>, one per chapter/district/bonus-map/challenge/DLC episode, e.g. (shortened):</p>
+<pre><code>chaptervariation:dlc/c2v1
+{
+    parts = { item[0] = { map = &quot;game/dlc/c02/c2v1&quot;; playerDef = &quot;...&quot;; spawnSpot = &quot;c2v1_gameplay_player_start_1&quot;; } }
+    unlockVariations = { ... }
+}
+</code></pre>
+<p><code>spawnSpot</code> names an actual placed entity in the map (the engine's own "player start" class), never a coordinate — the same map routinely carries several named starts (a normal one and a separate one for its Challenge variant). <code>playerDef</code> selects a player-character variant decl (own model, health multipliers) — this is why Chronicles episodes play as a different character and why some story chapters reskin the main character.</p>
+<p><strong>Pairing with starting loadout is not one name convention.</strong> An exhaustive check against the other 43-entry starting-loadout decl type found only <strong>66 of 105</strong> chapter entries matched by either of two naming conventions. Reading the other 39 individually (not guessed) splits them cleanly: about 11 are abstract template decls never themselves launched, one is a dev-only reference map, 7 real playable entries get their forced loadout through a <strong>second, independent mechanism</strong> instead (the character variant's own baked-in starting-inventory block), and the remaining ~20 are ordinary continuing story chapters that get <strong>no</strong> forced loadout at all — they simply keep whatever the player is already carrying. This matters: a loadout reset is the exception at specific scripted points, not a blanket per-chapter grant.</p>
+<h2 id="2-player-inventory">2. Player inventory</h2>
+<p><strong>Starting/chapter-entry inventory is decl-level and directly editable</strong>, same mechanism as every other proven decl edit:</p>
+<ul>
+<li>The one global player entity has exactly one baked-in starting item (a perk tracker) — no weapon is hard-coded onto the base player.</li>
+<li>The 43-entry loadout-decl type covers major story checkpoints, challenge maps and DLC episodes, including a generic fallback explicitly named as a fallback/debug loadout that hands out 9 of the game's weapon families with ammo.</li>
+</ul>
+<p><strong>Live/mid-game inventory inside <code>checkpoint.dat</code></strong> is one level deeper than earlier research reached. The weapon-tracking block is <strong>fully decoded, byte-exact, both directions</strong>: 13 weapon slots x 3 big-endian 32-bit values = 156 bytes, no per-field tags, confirmed identical across all 25 real save files, with both the reading and writing engine functions disassembled and shown to be exact mirrors of each other. <strong>What the numbers mean is still inferred, not proven</strong>: across all 25 files every nonzero value observed is exactly <code>3</code> (one single exception has a <code>3</code> in a different slot) — never a spread of values — which fits a capped per-weapon tier/counter much better than continuously-varying "ammo in reserve." The field's actual consumer was not read (would need a decompiler).</p>
+<h2 id="3-starting-a-sandbox-map-at-a-chosen-spotloadout--without-editing-the-save">3. Starting a sandbox map at a chosen spot/loadout — without editing the save</h2>
+<p>Editing the save directly for this purpose is a known dead end from earlier rounds: even a structurally perfect hand-edited save candidate can't be shown to actually load, because the header checks are only half the loader's gate and a genuinely new map id still needs its full archive bundle present anyway. The decl-level chapter system above needs no save at all:</p>
+<ol>
+<li>The sandbox/kit map is already reachable through the existing, proven custom-map route (claiming an existing map id via mod-folder precedence).</li>
+<li><strong>Chosen loadout</strong> = edit the matching loadout decl (or point the chapter entry at a different, already-full one, such as the generic fallback that already hands out 9 weapons) — the exact same mechanism as the proven magazine-size mod, just a different decl type.</li>
+<li><strong>Chosen spot</strong> = add one more named player-start entity to the map and point <code>spawnSpot</code> at it, or reuse the convention retail already uses twice for the same map (a normal start and a separate challenge start).</li>
+<li>Reach it through the normal retail Challenges/Chronicles menu entry for that chapter — not a console command, and not a hand-edited save.</li>
+</ol>
+<p><strong>Open and not verifiable offline:</strong> which challenge entries are unlocked is almost certainly tracked in an encrypted per-profile file whose key wasn't recovered — reusing an already-unlocked slot (editing its map/spawn/loadout in place, keeping its name) sidesteps this; authoring a brand-new chapter entry does not.</p>
+<h2 id="4-checksums-a-save-carries">4. Checksums a save carries</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Files</th>
+<th>Algorithm</th>
+<th>Blocks loading?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4-byte header</td>
+<td>every <code>.dat</code></td>
+<td>MD5 of the body, folded to 4 bytes</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>checksum=</code> field</td>
+<td><code>game.details</code></td>
+<td><strong>solved this round</strong>: id Tech's own dictionary checksum — CRC32 over every field's key+value, sorted by key, the <code>checksum</code> field itself excluded</td>
+<td>informational only, not observed gating anything</td>
+</tr>
+<tr>
+<td><code>.verify</code></td>
+<td>every data file except the profile</td>
+<td>a keyed HMAC over the whole file, derived per-user/per-file</td>
+<td>no — a mismatch only sets a "possibly corrupted/dev-mode" flag</td>
+</tr>
+<tr>
+<td>profile/progression files</td>
+<td>AES-encrypted</td>
+<td>—</td>
+<td>gates the same dev-mode flag, key not recovered</td>
+</tr>
+</tbody>
+</table></div>
+<p>The <code>game.details</code> checksum was previously tried as a plain CRC32/Adler32 over the raw file and found to not match; the real formula (a sorted key+value dictionary CRC32, a known id-Tech formula) verifies <strong>26 of 26</strong> real <code>game.details</code> files checked (backups plus the live save folder), including a built-in negative control that mutates the map-name field and confirms the checksum then correctly fails.</p>
+<h2 id="failed-hypotheses">Failed hypotheses</h2>
+<ul>
+<li>The leading identifier pair in <code>checkpoint.dat</code> is a per-save checkpoint id — refuted, identical across all 25 independently checked saves.</li>
+<li>A name-convention pairing between the chapter-entry decl and the loadout decl covers "near every chapter" — narrowed to 66 of 105 by an exhaustive check; the rest split into template decls, a second independent loadout mechanism, and chapters that keep existing inventory.</li>
+<li>The <code>game.details</code> checksum as plain CRC32/Adler32 — already refuted in an earlier round; this round supplies the actual formula instead of leaving it open.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether the weapon-tracker's capped values (0 or 3 only, never anything in between) really are a tier/unlock counter rather than ammo — the field's consuming code was not read.</li>
+<li>Whether a new chapter entry's unlock flag can be set without touching the encrypted progression file — not attempted; reusing an already-unlocked slot avoids the question entirely.</li>
+<li>The next obvious adjacent block (mission/objective state) was identified by name in the save's component stream but not decoded this round.</li>
+</ul>
+<h2 id="recipe-for-the-sandbox-map-spot--loadout-no-save-edit">Recipe for the sandbox map (spot + loadout, no save edit)</h2>
+<ol>
+<li>Mount the sandbox content under an existing, already-complete map id via the proven mod-precedence route.</li>
+<li>Place one named player-start entity where the player should spawn.</li>
+<li>Pick (or add) a chapter-entry decl for that map id whose <code>spawnSpot</code> is that entity's name, and whose paired loadout decl is edited to the desired weapon/ammo list.</li>
+<li>Reach it in retail through the matching Challenges/Chronicles menu entry.</li>
+</ol>
+<h2 id="in-game-test-for-the-tester">In-game test (for the tester)</h2>
+<p>A small, low-risk way to confirm the whole chapter/loadout chain without touching a save, using the same pattern as the already-proven magazine-size test:</p>
+<ol>
+<li>Build a mod that edits one challenge's loadout decl, changing its starting ammo count from its retail value to something obviously different (e.g. 40 to 999).</li>
+<li>Start the game, go to the main menu's Challenges section, and start that challenge (if not yet unlocked, play the normal episode once first).</li>
+<li>Check the ammo readout on the HUD immediately at start: seeing the edited value confirms the whole mechanism (map + spawn + loadout via decls, no save involved) live.</li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Pickups.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>R4 Research Report: Pickups, Givers and Start Loadouts (TNC)</a><a class="next" href="Research-Report-R4-Sound-Events.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Adding a New Wwise Sound Event (TNC)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

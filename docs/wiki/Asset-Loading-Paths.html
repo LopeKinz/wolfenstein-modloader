@@ -122,8 +122,8 @@
 <p><strong>LAUFZEIT</strong> — the engine prints its search paths on startup. From <code>Saved Games/.../Wolfenstein The New Order/base/ErrorLog_*.txt</code>:</p>
 <pre><code>------ Initializing File System ------
 Current search path:
-C:/Users/‹user›/Saved Games/MachineGames/Wolfenstein The New Order/base/
-D:/SteamLibrary/steamapps/common/Wolfenstein.The.New.Order/base/
+%USERPROFILE%/Saved Games/MachineGames/Wolfenstein The New Order/base/
+&lt;Steam library&gt;/steamapps/common/Wolfenstein.The.New.Order/base/
 file system initialized.
 </code></pre>
 <p>Two entries because <code>fs_overlaypath</code> is empty. A <code>base/</code> prefix is appended to each path (in the Binary, during FS initialization, there are five consecutive <code>base</code> literals at addresses <code>0x141058b40</code>–<code>0x141058b68</code> — one per path level). A configured overlay path should appear here as a third line, <strong>above</strong> the Steam path. This is E1 and costs nothing.</p>
@@ -360,7 +360,7 @@ The Binary knows both ways (<code>Failed to read default.cfg</code>, <code>Could
 <p>Both games have this, but with <strong>different formats</strong>. This is the most interesting finding besides <code>fs_overlaypath</code>.</p>
 <h3 id="part-1-dlcinfotxt">Part 1: <code>dlc/&lt;name&gt;/info.txt</code></h3>
 <p><strong>RUNTIME</strong> from the log:</p>
-<pre><code>EnumerateDownloadableContent: D:\SteamLibrary\steamapps\common\Wolfenstein.The.New.Order\dlc
+<pre><code>EnumerateDownloadableContent: &lt;Steam library&gt;\steamapps\common\Wolfenstein.The.New.Order\dlc
 OpenDLCFileHandles: 0 packages mounted.
 </code></pre>
 <p>The folder does not exist in this installation — the engine still scans it and reports 0. <strong>STRING</strong> chain at <code>0x140f1d1e0</code> (order = logic):</p>
@@ -445,7 +445,7 @@ dlc/dlc_1/virtualtextures/maps/game/…
 <pre><code>Current search path:
 C:/Users/.../Saved Games/.../base/
 C:/wolfmods/base/
-D:/SteamLibrary/.../Wolfenstein.The.New.Order/base/
+&lt;Steam library&gt;/.../Wolfenstein.The.New.Order/base/
 </code></pre>
 <p><strong>Refuted if</strong> the list remains unchanged two lines — then the Cvar <code>CVAR_ROM</code> is evaluated before the command line. Next attempt: same line in <code>binary.cfg</code> inside the game folder (which is searched and executed according to log; that it <em>resets Cvar values</em> must not apply for FS-init because it runs before).</p>
 <p>Without E1, E2 is pointless.</p>
@@ -457,7 +457,7 @@ D:/SteamLibrary/.../Wolfenstein.The.New.Order/base/
 <ol>
 <li><code>python -m wolfsdk cat damage:damage/tungsten/mg60 &gt; mg60.decl</code> and set the damage value to something absurd (e.g., 500).</li>
 <li>Determine the <strong>exact</strong> archive path of the asset — do not guess:
-   <code>python -c "d=open(r'D:\SteamLibrary\steamapps\common\Wolfenstein.The.New.Order\base\chunk0.index','rb').read(); i=d.find(b'damage/tungsten/mg60'); print(d[i-60:i+160])"</code>
+   <code>python -c "d=open(r'&lt;Steam library&gt;\steamapps\common\Wolfenstein.The.New.Order\base\chunk0.index','rb').read(); i=d.find(b'damage/tungsten/mg60'); print(d[i-60:i+160])"</code>
    (For other chunks the same with <code>chunk1.index</code> … <code>chunk13.index</code>.)
    The path looks like <code>generated/decls/damage/tungsten/mg60.decl</code>.</li>
 <li>Place the file exactly under this path:

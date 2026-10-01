@@ -298,12 +298,12 @@ key    = SHA256( nonce(8)
 <p>Checked and <strong>excluded</strong> candidates (each with and without trailing NUL, against 4 files from <code>SLOT0_before_c2custom</code>):</p>
 <ul>
 <li>empty string</li>
-<li><code>‹steam-id›</code> (SteamID64, = folder name), <code>‹account-id›</code> (AccountID),
+<li><code>&lt;SteamID&gt;</code> (SteamID64, = folder name), <code>‹account-id›</code> (AccountID),
   <code>‹steam-id›</code>, <code>‹account-id›</code></li>
 <li><code>SchwitzerOhneTalent</code> (Steam Persona Name from <code>loginusers.vdf</code> and
   <code>userdata/‹account-id›/config/localconfig.vdf</code>), <code>xymrscroubzxyx</code> (AccountName)</li>
-<li><code>‹user›</code>, <code>‹user›</code>, <code>CYBERDEMON</code>, <code>SLOT0</code>, <code>FC2-WOLF0</code>,
-  <code>savegame.user/‹steam-id›</code>, full relative path</li>
+<li><code>the tester</code>, <code>MARCWINDOWS</code>, <code>CYBERDEMON</code>, <code>SLOT0</code>, <code>FC2-WOLF0</code>,
+  <code>savegame.user/&lt;SteamID&gt;</code>, full relative path</li>
 <li><strong>Brute-force all strings of length 0–3</strong> from the printable ASCII range (839,515 candidates)</li>
 </ul>
 <p>Additionally vary, without hits: all 24 permutations of the four key components; <code>CYBERDEMON</code> with length 10 instead of 11; filename with/without NUL, without extension, case-insensitive, as full path; message = entire file vs. file minus first 4 bytes; Key = Digest vs. Hex-string vs. 16-byte vs. raw concatenation; <code>SHA256(key||msg)</code> instead of HMAC.</p>

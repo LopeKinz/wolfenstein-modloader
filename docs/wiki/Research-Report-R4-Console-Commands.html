@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R4 Research Report: The Console Command Gate (TNC) – Wolfenstein Modloader</title>
+<meta name="description" content="R4 Research Report: The Console Command Gate (TNC)">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>R4 Research Report: The Console Command Gate (TNC)</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Console-Commands"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-the-shared-gate">1. The shared gate</a></li><li><a href="#2-what-sets-the-level-and-that-it-always-comes-back">2. What sets the level, and that it always comes back</a></li><li><a href="#3-devgui-a-second-route-with-a-caveat">3. DevGUI: a second route, with a caveat</a></li><li><a href="#4-devmode_enable-is-a-real-gate-but-an-unreachable-one">4. devMode_enable is a real gate, but an unreachable one</a></li><li><a href="#5-verdict-per-name">5. Verdict per name</a></li><li><a href="#6-cvar-equivalents-for-give-all--infinite-ammo--noclip">6. Cvar equivalents for &quot;give all&quot; / infinite ammo / noclip</a></li><li><a href="#7-the-decl-route-already-proven-bypasses-this-gate-entirely">7. The decl route (already proven, bypasses this gate entirely)</a></li><li><a href="#recipe">Recipe</a></li><li><a href="#open-questions">Open questions</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Static disassembly of a read-only snapshot of the running <code>NewColossus_x64vk.exe</code> process (no debugger attached, no game launched by this track). Builds on the command-table and cvar-table research already on the wiki.</p>
+<h2 id="summary">Summary</h2>
+<p>The question was whether the retail console's ~34-command limit can be bypassed to reach commands like <code>map</code>, <code>devmap</code>, <code>teleport</code>, <code>killMonsters</code>, <code>give</code>, <code>spawn</code>, <code>noclip</code> and <code>god</code> without patching the executable. The gate turned out to be a single process-wide integer shared by the command and cvar systems: at rest it is <code>0</code> (unrestricted, all 234 commands / 3,256 cvars searchable), and only narrow, self-restoring windows — one console keystroke, one <code>exec</code>, one startup line — force it to <code>1</code> (the restricted, 34-command list) and then put it back. The already-proven command <strong><code>resourceExec &lt;file&gt; -s</code></strong> is the one built-in command that deliberately drops the level to <code>0</code> for the duration of the file it runs, making every registered command and cvar reachable with no code patch. All of this is static analysis of the executable image; nothing below was confirmed with the game actually running. <strong>Correction applied to this report's own earlier claim:</strong> <code>SpawnAI</code> is <strong>not</strong> a registered command in this retail build, the same as <code>give</code>, <code>spawn</code>, <code>noclip</code> and lowercase <code>god</code> — none of these five names appear anywhere in the 234-entry command table, under any flag.</p>
+<h2 id="1-the-shared-gate">1. The shared gate</h2>
+<p><code>idCmdSystemLocal</code> (RVA <code>0x4104420</code>) holds two command lists — "all" (234 entries) and "exposed" (34 entries) — plus a restriction-level field at <code>+0x200b8</code> (RVA <code>0x41244d8</code>). <code>idCVarSystemLocal</code> shares the <strong>identical</strong> global for its own 3,256-entry / 304-exposed split. The dispatcher (<code>0x1265150</code>) picks which list to search with one <code>cmp</code>/<code>cmove</code> against that global:</p>
+<pre><code>level == 0  -&gt; search all 234 commands / 3,256 cvars
+level != 0  -&gt; search only the 34 exposed commands / 304 exposed cvars
+</code></pre>
+<p>A command not in the active list prints <code>Unknown command '%s'</code> — this is the entire reason <code>map</code>/<code>devmap</code>/<code>teleport</code>/<code>killMonsters</code> fail from a normal console line even though they are registered.</p>
+<h2 id="2-what-sets-the-level-and-that-it-always-comes-back">2. What sets the level, and that it always comes back</h2>
+<p>Six built-in entry points write <code>1</code> to the level: both console-input handlers, the <code>+</code>-prefixed startup-argument parser, the startup-config <code>exec</code>, the <code>exec</code> command itself, and the one-time engine <code>Init()</code> call. All six were disassembled in full: every one of them <strong>saves the old value and restores it before returning</strong>. Nothing in the binary ever leaves the level changed after it returns, and the constructor default is <code>0</code> — so for nearly the entire session the level simply sits at <code>0</code>, unrestricted, except for the handful of instructions it takes to process one keystroke or one config line.</p>
+<p><code>resourceExec</code> (one of the 34 already-exposed commands, callback <code>0xa7a040</code>) is the one path that deliberately sets the level to <code>0</code> while a resource-archive file it reads runs, then restores it afterward — this is the mechanism the existing custom-map/decl-edit route already relies on.</p>
+<h2 id="3-devgui-a-second-route-with-a-caveat">3. DevGUI: a second route, with a caveat</h2>
+<p>The compiled-in ImGui debug menu (<code>idDevGuiMainPage_*</code>/<code>idDevGuiChildPage_*</code>) calls the dispatcher directly from 74 call sites across 28 functions, and — unlike the six entry points above — <strong>without</strong> its own save/restore bracket, so a DevGUI click runs at whatever level is currently ambient (which is <code>0</code> essentially always). Of those 74 calls: 12 already work from the plain console (exposed), 41 are real registered-but-non-exposed commands/cvar toggles that become clickable once DevGUI is drawing, and 18 — including the DevGUI's own "Give Ammo", "Give Grenades" and "spawn %s" buttons — reference names that are <strong>not registered at all</strong>; those buttons are dead code, consistent with <code>give</code>/<code>spawn</code> not existing as commands.</p>
+<p><code>devgui</code> is itself a non-exposed cvar (needs the same level-0 window once to turn on, e.g. <code>devgui 4</code>), but after that its buttons keep working for the rest of the session with no further <code>resourceExec</code> call needed.</p>
+<h2 id="4-devmode_enable-is-a-real-gate-but-an-unreachable-one">4. <code>devMode_enable</code> is a real gate, but an unreachable one</h2>
+<p>The dispatcher has a second branch, after a found command executes, that checks <code>devMode_enable</code>: if <code>0</code>, it prints "Dev Mode is not enabled..." and returns <strong>without executing</strong> the command; if <code>1</code>, it warns and executes anyway. This branch only fires for a command found at level <code>!=0</code> that <em>lacks</em> the exposed bit — a combination none of the documented entry points (console, <code>+args</code>, <code>exec</code>, <code>resourceExec</code>) or the DevGUI calls ever produce (at level <code>1</code> only exposed commands are found; at level <code>0</code> the dispatcher already took its execute-immediately exit before this branch). So the branch is real but practically dead on every reachable path. <code>devMode_enable</code> and <code>com_gameMode</code> are themselves exposed, retail-settable cvars — a live process snapshot showed both already set to non-default values (<code>1</code> and <code>5</code>/<code>GAMEMODE_MOD</code>) with no crash — but neither one affects the restriction level.</p>
+<h2 id="5-verdict-per-name">5. Verdict per name</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Registered?</th>
+<th>Exposed?</th>
+<th>Reachable without a patch?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>map</code>, <code>devmap</code>, <code>cmap</code>, <code>fastmap</code>, and the other map-load variants</td>
+<td>yes</td>
+<td>no</td>
+<td>yes, via <code>resourceExec</code> level-0 window</td>
+</tr>
+<tr>
+<td><code>teleport</code>, <code>setviewpos</code>, <code>killMonsters</code>, <code>killAI</code>, <code>killAllAI</code></td>
+<td>yes</td>
+<td>no</td>
+<td>yes, via <code>resourceExec</code></td>
+</tr>
+<tr>
+<td><code>getviewpos</code>, <code>listCmds</code>, <code>exec</code>, <code>vid_restart</code>, <code>BuildInfo</code></td>
+<td>yes</td>
+<td><strong>yes</strong></td>
+<td>already works in the plain console</td>
+</tr>
+<tr>
+<td><code>God</code>, <code>InfiniteHealth</code>, <code>NoPlayerDeath</code>, <code>Notarget</code></td>
+<td>yes (flag <code>0x200000</code>)</td>
+<td>no</td>
+<td>yes, via <code>resourceExec</code>; no internal gate in the callback itself beyond "is a game active"</td>
+</tr>
+<tr>
+<td><code>god</code> (lowercase), <code>noclip</code>, <code>spawn</code>, <code>give</code>/<code>give all</code>, <strong><code>SpawnAI</code></strong></td>
+<td><strong>no</strong></td>
+<td>—</td>
+<td><strong>does not exist in this build at all — a code patch would be required to add it</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>listCmds</code> is a cheap, non-destructive way to confirm the model in game: typed into the plain console it must print exactly 34 names; called from inside a <code>resourceExec</code>'d file it should print all 234.</p>
+<h2 id="6-cvar-equivalents-for-give-all--infinite-ammo--noclip">6. Cvar equivalents for "give all" / infinite ammo / noclip</h2>
+<p>The cvar system shares the same gate, so these non-exposed <code>CVAR_CHEAT</code> cvars are reachable the same way, from inside a <code>resourceExec</code>'d file:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cvar</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g_infiniteAmmo</code></td>
+<td>1 = infinite ammo for player/AI/turrets, 2 = infinite backpack ammo</td>
+</tr>
+<tr>
+<td><code>g_infiniteEnergy</code> / <code>g_infiniteThrowItems</code></td>
+<td>infinite energy / infinite grenades</td>
+</tr>
+<tr>
+<td><code>g_demoAmmo</code></td>
+<td>fully replenishes weapon ammo on every pickup</td>
+</tr>
+<tr>
+<td><code>snapEdit_devMode</code></td>
+<td>"Sets dev mode on match parms. This will give the player ALL THE THINGS" — closest literal match to "give all"; untested, inferred to need setting before the map loads</td>
+</tr>
+<tr>
+<td><code>pm_noclipspeed</code> / <code>pm_noclipfriction</code></td>
+<td>confirm a noclip <em>mode</em> exists in the engine, but no command named <code>noclip</code> triggers it in this build — likely only reachable from a DevGUI page not individually traced</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="7-the-decl-route-already-proven-bypasses-this-gate-entirely">7. The decl route (already proven, bypasses this gate entirely)</h2>
+<p>Decls are a completely separate subsystem from the command/cvar restriction level — they are data the resource loader reads, not something <code>idCmdSystemLocal</code> touches. For <code>give</code>/<code>spawn</code>, which do not exist as commands under any flag, the decl route (starting-inventory/pickup decls) is the actual mechanism the game uses, not a workaround.</p>
+<h2 id="recipe">Recipe</h2>
+<ol>
+<li>Add a small script file reachable through the already-proven <code>dlc_0</code>-precedence mod route, e.g. <code>sandbox.cfg</code>:
+   <code>devgui 4
+   devmap &lt;map&gt;</code></li>
+<li>From the normal, restricted console (which can still run <code>resourceExec</code>, it is one of the 34 exposed commands): <code>resourceExec sandbox.cfg -s</code>. Both lines run at level <code>0</code>. <code>devgui 4</code> is a one-time switch; afterward its ~50 confirmed-live buttons (<code>g_infiniteAmmo</code>, <code>killAI</code>/<code>killAllAI</code>, dozens of <code>toggle &lt;debug cvar&gt;</code> switches) work without any further <code>resourceExec</code> call.</li>
+<li>For anything DevGUI doesn't cover, or to batch several lines (<code>God 1</code>, <code>Notarget 1</code>, <code>snapEdit_devMode 1</code>, <code>devmap &lt;map&gt;</code>), put them in one file and call it the same way.</li>
+<li>For actually giving weapons/items (<code>give</code>/<code>spawn</code> do not exist as commands): use the decl/starting-inventory route instead — see the pickups report.</li>
+</ol>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether <code>resourceExec</code> resolves a brand-new filename from a mod archive the same way it resolves an overridden existing name — untested.</li>
+<li>Where the noclip mode implied by <code>pm_noclipspeed</code>/<code>pm_noclipfriction</code> is actually toggled if not by a console command.</li>
+<li>Whether <code>snapEdit_devMode</code> truly grants "ALL THE THINGS", and at what point it is consumed.</li>
+<li>Whether <code>idCmdSystemLocal::Find</code>'s name lookup is case-sensitive (would decide whether some DevGUI button strings with different casing than the registered name are themselves silently dead).</li>
+<li>A generic <code>ExecuteCommandTextAtLevel</code>-style helper (RVA <code>0x1265800</code>) is called from ~14 places across the engine beyond <code>Init()</code>/DevGUI; whether any of the untraced call sites passes level <code>0</code> with a mod-controllable string during normal gameplay — independent of <code>resourceExec</code> and DevGUI — was not resolved.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Ai-Spawn-Waves.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>AI Spawn Waves: Trigger → Spawner → Wave</a><a class="next" href="Research-Report-R4-Integrity.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Where TNC Verifies Data: A Map of Every Integrity Check</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

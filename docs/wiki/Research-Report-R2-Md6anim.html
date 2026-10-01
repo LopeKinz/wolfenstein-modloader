@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skeleton (`.md6skl`) and Animation (`.md6anim`) Format – Wolfenstein Modloader</title>
+<meta name="description" content="Skeleton (`.md6skl`) and Animation (`.md6anim`) Format">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Skeleton (<code>.md6skl</code>) and Animation (<code>.md6anim</code>) Format</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Md6anim"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#md6skl--unchanged-corpus-verified">.md6skl — unchanged, corpus-verified</a></li><li><a href="#the-bind-pose-puzzle-still-open-bigger-than-previously-thought">The bind-pose puzzle (still open, bigger than previously thought)</a></li><li><a href="#md6anim-outer-header-decoded-one-field-further">.md6anim outer header (decoded one field further)</a></li><li><a href="#failed-hypotheses--dead-ends">Failed hypotheses / dead ends</a></li><li><a href="#open-questions">Open questions</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Continues decoding the skeleton and animation formats used by posed/skinned character models, aiming to pose a weapon and a soldier at a given frame. The skeleton format and its posing math for a flat weapon rig are unchanged and still corpus-verified; a prior claim that the per-joint quaternion table stores the <em>inverse</em> of the per-joint matrix's rotation is corrected on a large corpus — it is the <strong>same</strong> rotation. The humanoid bind-pose puzzle, previously scoped to a handful of torso/shoulder joints, turns out to be much bigger: no tested hierarchy-composition hypothesis gives plausible bone lengths for most of a soldier rig's non-root joints. The animation file's outer header is decoded one field further, and the search space for its still-undecoded per-frame compressed data is narrowed from the whole executable to a specific, small code cluster. Everything here is offline format research; posing an animation frame could not be completed, since no per-frame data is decoded yet to apply.</p>
+<h2 id="md6skl--unchanged-corpus-verified"><code>.md6skl</code> — unchanged, corpus-verified</h2>
+<p>Header, joint name table, parent-index array, and per-joint bind matrix are decoded and corpus-verified across essentially the whole shipped skeleton corpus (one corrupt/truncated file is correctly rejected). <strong>Correction this pass:</strong> the per-joint quaternion table encodes the <strong>same</strong> rotation as the matrix table's own rotation, not its inverse — checked on over 24,000 individual joints across every parseable skeleton, not a single hand-checked example.</p>
+<h2 id="the-bind-pose-puzzle-still-open-bigger-than-previously-thought">The bind-pose puzzle (still open, bigger than previously thought)</h2>
+<p>"Invert each joint's own matrix in model space, no hierarchy (FK) composition" fully and correctly poses a flat weapon rig (e.g. a pistol). For a humanoid soldier rig, this hypothesis is only solidly right for the hip root and the first 1–2 hierarchy levels: <strong>45 of 71 non-root joints</strong> get an implausible bone length to their named parent under this hypothesis, and <strong>65 of 71</strong> have an implausible raw translation magnitude outright — which rules out <em>both</em> "no FK" and <em>any</em> ordering of hierarchical composition for most of the rig simultaneously, not a short exception list. A concrete structural clue: left/right mirror symmetry of the raw translation breaks at almost exactly the same joints where bone length also breaks (9 of 10 tested limb pairs) — a lead toward the real mechanism, not an explanation of it.</p>
+<h2 id="md6anim-outer-header-decoded-one-field-further"><code>.md6anim</code> outer header (decoded one field further)</h2>
+<pre><code>u32-len + ascii   skeleton name (ends .md6skl)
+u32-len + ascii   OPTIONAL reference-animation name (ends .md6anim when present,
+                  empty for a standalone animation — present on ~23% of a
+                  400-file random sample: &quot;bodyparts&quot;/single-limb and
+                  &quot;additive&quot; animations that supply partial joint data on
+                  top of a named base animation)
+12 x s16          two groups of 6; small/plausible on the large majority of
+                  sampled files; the handful of exceptions are genuinely
+                  world-scale set-piece animations (a sliding tunnel wall, a
+                  vehicle, a collapsing walkway), not parse failures
+</code></pre>
+<p>The 12-<code>s16</code> header is likely a per-channel quantization range: two different animation files of unrelated content but the same generic prop-animation template reproduce the exact same 12 values bit-for-bit. Which group quantizes which channel, and the fixed-point scale, are <strong>not resolved</strong>.</p>
+<p><strong>Per-frame bit-packed joint data is still not decoded.</strong> The known compressor function is located in the executable; the animation class's own RTTI gives exactly two constructor/destructor cross-references, bounding a dense ~51-function, ~20 KB cluster immediately bordering the compressor that almost certainly contains the frame decoder — a sharply narrowed search space versus the whole executable. (A previously proposed search method — looking for code references to a related matrix-type's RTTI name — is a dead end: that type has no RTTI/vtable entry at all, so it is never referenced from code; the vtable-of-a-related-class method above is what actually worked.)</p>
+<p>Supporting decl types (<code>spineIK</code>, <code>playerArmIK</code>, <code>playerLegIK</code>, a per-character animation-alias table) are plain text, already readable, and corroborate joint naming but say nothing about the bind-pose matrix encoding itself.</p>
+<p><strong>Prior art:</strong> closed-source community extractors for this game family exist and advertise animation support, evidence the format has been solved elsewhere, but no public documentation of the per-frame bit layout was found.</p>
+<h2 id="failed-hypotheses--dead-ends">Failed hypotheses / dead ends</h2>
+<ul>
+<li>Matrix grouped as 4 sequential 3-vectors; FK composition in any order/convention; reading the quaternion one float early as a negative control; joint count read as the wrong integer width.</li>
+<li>Searching for code references to the matrix-type's own RTTI string (it has none).</li>
+<li>Guessed decoder function names (none exist as strings in the executable) — the decoder must be found structurally, by its position in the narrowed code cluster, not by name.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>What operation (not plain per-joint inverse, not any FK ordering — both corpus-ruled-out) recovers correct bone lengths for most of the soldier rig.</li>
+<li>Whether the left/right mirror-break is the same root cause as the bone-length puzzle, or a separate fact about how chain-root/roll-helper joints are authored.</li>
+<li>Which of the two <code>s16</code> groups in the animation header quantizes which channel, and at what fixed-point scale.</li>
+<li>The animation format's actual per-frame bit layout — next step: disassemble the narrowed code cluster described above, using known constants (the header's quantization-range shape, a groups-of-8 addressing idiom already seen inside the compressor) as correlation anchors.</li>
+</ul>
+<p>No in-game test applies yet — this is pure offline format research; nothing changes visibly in a mod until both the per-frame compression and the full bind-pose reconstruction are decoded.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R2-Mapnodlc.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Custom TNC Maps Without Owning Any DLC</a><a class="next" href="Research-Report-R2-Missionhud.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Custom Objective Shows in Journal but Not in the HUD Banner</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

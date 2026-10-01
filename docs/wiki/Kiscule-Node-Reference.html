@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiscule Node Reference – Wolfenstein Modloader</title>
+<meta name="description" content="Kiscule Node Reference">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#systems"><span class="en">Game systems</span><span class="de">Spielsysteme</span></a></p>
+<h1>Kiscule Node Reference</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Kiscule-Node-Reference"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-the-shape-of-a-node">0. The shape of a node</a></li><li><a href="#1-spawn-and-ai-waves">1. Spawn and AI waves</a></li><li><a href="#2-trigger-volumes-and-interaction">2. Trigger volumes and interaction</a></li><li><a href="#3-objectives-and-mission-flow">3. Objectives and mission flow</a></li><li><a href="#4-doors-and-moving-geometry">4. Doors and moving geometry</a></li><li><a href="#5-dialogue-and-ui">5. Dialogue and UI</a></li><li><a href="#6-music-sound-and-rtpcs">6. Music, sound, and RTPCs</a></li><li><a href="#7-checkpoint--save">7. Checkpoint / save</a></li><li><a href="#8-console-commands--command">8. Console commands — Command</a></li><li><a href="#9-flow-control--the-glue">9. Flow control — the glue</a></li><li><a href="#10-variables-entities-and-math">10. Variables, entities, and math</a></li><li><a href="#11-visibility-effects-and-presentation">11. Visibility, effects, and presentation</a></li><li><a href="#12-player-state-and-control">12. Player state and control</a></li><li><a href="#13-ai-control">13. AI control</a></li><li><a href="#14-the-notification-family--one-shared-shape">14. The Notification family — one shared shape</a></li><li><a href="#15-full-index-by-the-numbers">15. Full index, by the numbers</a></li><li><a href="#related-pages">Related pages</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>A readable catalogue of Wolfenstein II's Kiscule node types, for modders who want to wire a custom map's logic rather than just reading <a href="Kiscule-Scripting.html">Kiscule Scripting</a>'s container-format writeup. Built from <code>re_probes/kisculeref/catalogue.json</code> — every node type, every port, every parameter, and every wiring statistic measured across all <strong>2,408 retail scripts, 70,274 node instances, 178,559 edge ends</strong>, cross-checked against the engine's own RTTI class table. Full report: <a href="Research-Report-R3-Kisculeref.html">Research-Report-R3-Kisculeref</a>.</p>
+<p>This page is a curated summary, not the JSON — it groups nodes by what a modder actually uses them <em>for</em>, names typical wiring with real retail counts, and flags which ones matter for a custom map. For a node not covered here, or for exact per-port numeric ranges, read <code>catalogue.json</code> directly (992 KB, <code>re_probes/kisculeref/</code>) or use <code>python tools/kiscule.py --signature &lt;NodeTypeName&gt;</code>.</p>
+<p><strong>Grading:</strong> everything below is <strong>measured</strong> — a node's ports, parameters, and wiring counts come from parsing every retail script, not a guess. What is <em>not</em> measured: whether any of the "unused" classes (§7) actually work if added to a script by hand, and most engine-side semantics beyond name/base-class/wiring pattern. The game was not started for this catalogue; see <a href="TNC-Console-Unlock.html">TNC Console Unlock</a> §4 for the one place a Kiscule node (<code>Command</code>) ties directly into console-command execution.</p>
+<hr />
+<h2 id="0-the-shape-of-a-node">0. The shape of a node</h2>
+<p>Every node has <strong>ports</strong> of three kinds:</p>
+<ul>
+<li><strong>Regular</strong> (<code>InputRegular</code>/<code>OutputRegular</code>) — an execution pulse, like a wire carrying "now".</li>
+<li><strong>Variable</strong> (<code>InputVariable</code>/<code>OutputVariable</code>) — a value (bool, int, float, string, vector, entity reference, list). Every parameter is <em>also</em> exposed as a Variable port pair of the same name, so a value can be wired in instead of typed as a constant.</li>
+<li><strong>Notification</strong> (<code>OutputNotification</code>) — an event output, functionally a Regular output that fires asynchronously from something the engine observed (damage taken, a volume entered, a trigger fired).</li>
+</ul>
+<p>205 node types are used in retail; by RTTI base chain, <strong>153 inherit directly from <code>idKisculeInstanceNode</code>, 29 directly from <code>idKisculeNodeNotification</code></strong> (the ~20 <code>*Notification</code> listener nodes, §2.1), and <strong>23 indirectly</strong> (the typed <code>idKisculeVariableNode&lt;T&gt;</code> template family — <code>Bool</code>, <code>Int</code>, <code>Float</code>, <code>EntityReference</code>, <code>ListEntityReference</code>, and the five <code>NamedVariable*</code> globals). A further 102 node classes exist in the engine but are used in <strong>zero</strong> retail scripts (§7 covers the 13 most relevant to custom-map work).</p>
+<p>Three <code>properties</code> bits on a port are behaviourally characterized (not proven from source, no engine access):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Bit</th>
+<th>Correlates with</th>
+<th>Measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x1</code></td>
+<td>a per-instance, optional/variadic port rather than a fixed core one</td>
+<td>95.4% of 8,899 occurrences on non-core ports</td>
+</tr>
+<tr>
+<td><code>0x4</code></td>
+<td>exclusive to <code>FlowFlagCheck</code>'s dynamically-named per-flag ports</td>
+<td>176/176 occurrences, 0 elsewhere</td>
+</tr>
+<tr>
+<td><code>0x20</code></td>
+<td>the port was never wired in any retail script</td>
+<td>100% both directions, 1,817 occurrences, all 0 edges — and not just the <code>visible=false</code> flag in disguise (88% of them are <code>visible=true</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="1-spawn-and-ai-waves">1. Spawn and AI waves</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Ports</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>AiKilledNotification</code></strong></td>
+<td style="text-align: right;">157 / 102</td>
+<td><code>Killed</code>, <code>DeathDone</code> (notifications); <code>listenedEntities</code> (in var)</td>
+<td>Kill-counter input for wave logic. <strong>73% of instances filter by entity</strong> — 84 with exactly one <code>EntityReference</code> wired to <code>listenedEntities</code>, 29 with exactly two, one outlier with eight (the multi-edge idiom, §0); 34 instead wire one <code>ListEntityReference</code>; the remaining 27% listen for <em>any</em> AI kill, unfiltered.</td>
+</tr>
+<tr>
+<td><strong><code>PlayerStartNotification</code></strong></td>
+<td style="text-align: right;">76 / 46</td>
+<td><code>Start</code>, <code>Respawned</code>, <code>Spawning</code></td>
+<td>Fires once per <code>idPlayerStart</code> chosen at map load. <code>maxNotificationCount = -1</code> (unlimited) in 76/76 retail uses.</td>
+</tr>
+<tr>
+<td><strong><code>AISpawnNotification</code></strong></td>
+<td style="text-align: right;">8 / 7</td>
+<td><code>AI Spawned</code>, <code>Wave empty</code>, <code>Spawner empty</code></td>
+<td>Fired by an <code>idTarget_AISpawn</code> <strong>map entity</strong> (not kiscule) when it spawns — the listener side, not the spawner.</td>
+</tr>
+<tr>
+<td><strong><code>ActionAISpawn</code></strong></td>
+<td style="text-align: right;">1 / 1</td>
+<td><code>Activate</code>, <code>Deactivate</code>, <code>Spawn</code>; params <code>maxActiveAIs</code>, <code>maxNumOfSpawn</code>, <code>interval</code>, <code>spawnScenepoints</code>, <code>AIs</code></td>
+<td>Retail almost never spawns AI from inside kiscule this way (n=1/2408) — the proven path is the entity-layer <code>idTarget_AISpawn</code> per wave, same as <a href="Research-Report-Missions.html">Mission Builder Kit</a> uses.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Unused, relevant (exist in the EXE, 0 retail instances, untested):</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Base</th>
+<th>Plausible role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idKisculeNodeMoveAIToSceneNotification</code></td>
+<td>Notification</td>
+<td>Fires once an AI has been relocated into a "Midnight" cinematic scene</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeActionMidnightMoveAIToScene</code></td>
+<td>InstanceNode</td>
+<td>The action-side counterpart — moves an AI into such a scene</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="2-trigger-volumes-and-interaction">2. Trigger volumes and interaction</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Ports</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>TriggerNotification</code></strong></td>
+<td style="text-align: right;">1,100 / 452</td>
+<td><code>Touching</code>, <code>Untouched</code>, <code>Empty</code></td>
+<td><code>maxNotificationCount</code> ∈ {−1, 1}. Top-5 outgoing wiring from <code>Touching</code>: <code>Delay.Start</code> (121×), <code>SendCustomEvent.Send</code> (117×), <code>ActionWorldMarker.Hide</code> (110×), <code>ActionRemoveAIFromVolume.RemoveAIs</code> (101×), <code>ActionTrigger.Activate</code> (100×).</td>
+</tr>
+<tr>
+<td><strong><code>VolumeNotification</code></strong></td>
+<td style="text-align: right;">857 / 458</td>
+<td><code>Enter</code>, <code>Leave</code>, <code>Touching</code>, <code>Untouched</code>, <code>Empty</code></td>
+<td><code>classFilter</code>: <code>"idPlayer"</code> in 797/857 (93%), <strong><code>"idAI2"</code> in 58/857 (7%) — AI-only volumes are real, measured retail usage</strong>, <code>"idProp2"</code> in 2/857.</td>
+</tr>
+<tr>
+<td><strong><code>UseNotification</code></strong></td>
+<td style="text-align: right;">373 / 310</td>
+<td><code>Used</code>, <code>CancelUsed</code></td>
+<td><code>classFilter = "idPlayer"</code> in 373/373 — zero counterexample; this is the "player pressed Use" listener.</td>
+</tr>
+<tr>
+<td><strong><code>ActionActivatable</code></strong></td>
+<td style="text-align: right;">357 / 202</td>
+<td><code>Enable</code>, <code>Disable</code>, <code>Toggle</code></td>
+<td>Turns another entity's use/trigger interactivity on or off.</td>
+</tr>
+<tr>
+<td><strong><code>ActionTrigger</code></strong></td>
+<td style="text-align: right;">339 / 170</td>
+<td><code>Activate</code>; params <code>activator</code>, <code>targetEntities</code></td>
+<td>Fires an <code>idTarget</code>-style trigger by reference — the generic "make something happen" action.</td>
+</tr>
+<tr>
+<td><strong><code>ActionRemoveAIFromVolume</code></strong></td>
+<td style="text-align: right;">160 / 79</td>
+<td><code>RemoveAIs</code>; params <code>volume</code>, <code>actionType</code>, <code>removeDead</code></td>
+<td>Clears AI out of a volume — commonly wired straight off <code>TriggerNotification.Touching</code> (101/1,100 times).</td>
+</tr>
+<tr>
+<td><strong><code>AIVolumeCountNotification</code></strong></td>
+<td style="text-align: right;">35 / 31</td>
+<td><code>Count Reached</code>; params <code>types</code>, <code>minCount</code>, <code>maxCount</code>, <code>onlyDead</code>/<code>onlyAlive</code></td>
+<td>Counts AI currently inside a volume against a threshold.</td>
+</tr>
+<tr>
+<td><strong><code>FlowEntityInVolume</code></strong></td>
+<td style="text-align: right;">7 / 7</td>
+<td><code>In Volume</code>, <code>Not In Volume</code></td>
+<td>One-shot boolean check, not a persistent listener.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Unused, relevant:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Base</th>
+<th>Plausible role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idKisculeNodeActivatableNotification</code></td>
+<td>Notification</td>
+<td>A notification counterpart to <code>ActionActivatable</code> — fires <em>when</em> activation state changes, vs. only setting it</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeActionCountAIInVolume</code></td>
+<td>InstanceNode</td>
+<td>Looks like a one-shot query version of <code>AIVolumeCountNotification</code>, which is a persistent counter</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="3-objectives-and-mission-flow">3. Objectives and mission flow</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Ports</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>ActionMission</code></strong></td>
+<td style="text-align: right;">407 / 69</td>
+<td><code>MissionStart</code>, <code>MissionComplete</code>, <code>MissionEnd</code>, <code>ObjectiveStart</code>, <code>ObjectiveComplete</code>, <code>ObjectiveEnd</code>, <code>SetActiveObjective</code></td>
+<td>The objective-chain hub — a 7-port echo family, params <code>player</code>, <code>mission</code>, <code>objectives</code>, <code>showNotification</code>, <code>completeHides</code>.</td>
+</tr>
+<tr>
+<td><strong><code>ActionNextMap</code></strong></td>
+<td style="text-align: right;">80 / 69</td>
+<td><code>NextMap</code>; params <code>mode</code>, <code>mapName</code>, <code>spawnSpot</code>, <code>layers</code></td>
+<td><code>mode</code> is <code>"MODE_AUTO"</code> in 80/80 — no other mode value is used in retail.</td>
+</tr>
+<tr>
+<td><strong><code>MissionNotification</code></strong></td>
+<td style="text-align: right;">12 / 6</td>
+<td><code>ObjectiveCompleted</code>, <code>ObjectiveFailed</code>, <code>MissionCompleted</code>, <code>MissionFailed</code></td>
+<td>Listener side of the objective chain, filtered by <code>mission</code>/<code>objective</code> params.</td>
+</tr>
+<tr>
+<td><strong><code>FlowMissionCheck</code></strong></td>
+<td style="text-align: right;">6 / 1</td>
+<td><code>Completed</code>, <code>Matching</code>, <code>ObjectiveActive</code>, <code>ObjectiveActiveNotCompleted</code></td>
+<td>One-shot query against current mission/objective state.</td>
+</tr>
+<tr>
+<td><strong><code>ActionGameCompleted</code></strong>, <strong><code>ActionChronicle</code></strong>, <strong><code>ActionGiveSecret</code></strong></td>
+<td style="text-align: right;">2/1/1</td>
+<td>—</td>
+<td>Rare, end-of-game / secret-collectible actions.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Unused, relevant:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Base</th>
+<th>Plausible role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idKisculeNodeAlarmGlobalNotification</code></td>
+<td>Notification</td>
+<td>Global counterpart to the used <code>AlarmNotification</code> (20 instances) — maybe fires for <em>any</em> alarm, not a specific one</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeAlarmBrokenNotification</code></td>
+<td>Notification</td>
+<td>Fires when an alarm is disabled/destroyed rather than triggered</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeHudTimer</code></td>
+<td>InstanceNode</td>
+<td>Named like a countdown/objective-timer HUD element — no <em>used</em> node currently drives a visible countdown</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeVaultCheck</code></td>
+<td>InstanceNode</td>
+<td>Puzzle/combination check — speculative pairing with <code>ActionGiveSecret</code></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="4-doors-and-moving-geometry">4. Doors and moving geometry</h2>
+<p><strong>No node named "Door" is used in any of the 2,408 retail scripts.</strong> <code>idKisculeNodeDoorNotification</code> exists in the engine, well-formed, 0 retail instances. Doors are built by combining movement/constraint nodes instead:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Ports</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>ParametricTranslation</code></strong></td>
+<td style="text-align: right;">178 / 54</td>
+<td><code>Start</code>, <code>StartReverse</code>, <code>ReachedStart</code>, <code>ReachedEnd</code></td>
+<td>Eased linear movement between two offsets — the most common door/elevator driver.</td>
+</tr>
+<tr>
+<td><strong><code>ActionRotateEntity</code></strong></td>
+<td style="text-align: right;">160 / 77</td>
+<td><code>Begin</code>, <code>End</code>, <code>Rotate Over Time</code>, <code>Full Speed</code>, <code>Stopped</code></td>
+<td>Swinging doors, turning fans, rotating platforms.</td>
+</tr>
+<tr>
+<td><strong><code>KeyframedTranslation</code></strong></td>
+<td style="text-align: right;">115 / 48</td>
+<td><code>Start</code>, <code>Stop</code>, <code>Reverse</code>, <code>Push</code>, <code>ReachedEnd</code></td>
+<td>Physically-driven movement with velocity/acceleration (can push the player).</td>
+</tr>
+<tr>
+<td><strong><code>DisableConstraint</code></strong></td>
+<td style="text-align: right;">60 / 15</td>
+<td><code>Disable</code>; params <code>constraint</code></td>
+<td>Releases a physics constraint — e.g. letting a hinged part swing free.</td>
+</tr>
+<tr>
+<td><strong><code>ModifyConstraint</code></strong></td>
+<td style="text-align: right;">54 / 21</td>
+<td><code>Enable</code>, <code>Disable</code>; params <code>constraints</code></td>
+<td>Batch enable/disable on a list of constraints.</td>
+</tr>
+<tr>
+<td><code>ParametricRotation</code>, <code>ParametricInterpolation</code>, <code>ParametricFollowSpline</code>, <code>FollowSpline</code></td>
+<td style="text-align: right;">17–89</td>
+<td>similar Start/Reverse/ReachedEnd shape</td>
+<td>The wider family of eased movement nodes — rotation, generic interpolation, and spline-follow variants (<code>ApplyImpulse</code>, <code>34</code> instances, adds a one-shot physics impulse).</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Unused, relevant:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Base</th>
+<th>Plausible role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idKisculeNodeDoorNotification</code></td>
+<td>Notification</td>
+<td>A notification counterpart that nothing currently wires</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeChallengeEntity</code></td>
+<td>InstanceNode</td>
+<td>Counterpart to the used, 10-instance <code>ActionChallenge</code> — possibly a gate/door tied to completing a challenge</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="5-dialogue-and-ui">5. Dialogue and UI</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Ports</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>ActionSoundVoiceOver2</code></strong></td>
+<td style="text-align: right;">3,499 / 271</td>
+<td><code>Play</code>, <code>Stop</code>, <code>Finished</code>, <code>Interrupted</code></td>
+<td>The dialogue workhorse — params <code>voiceOver</code>, <code>soundEvent</code>, <code>approachTalk</code>, <code>muteGroup</code>, <code>fromWho</code>, <code>subtitleOverride</code>.</td>
+</tr>
+<tr>
+<td><strong><code>ActionSoundVoiceOver</code></strong></td>
+<td style="text-align: right;">102 / 18</td>
+<td><code>Play</code>, <code>Stop</code>, <code>Speaker missing</code></td>
+<td>Older/simpler variant, params <code>voToPlay</code>, <code>potentialSpeakers</code>.</td>
+</tr>
+<tr>
+<td><strong><code>ActionTutorial</code></strong></td>
+<td style="text-align: right;">66 / 49</td>
+<td><code>Start</code>, <code>Complete</code>, <code>Fail</code>; params <code>player</code>, <code>tutorial</code></td>
+<td>Tutorial hint prompts.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Unused, relevant:</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Base</th>
+<th>Plausible role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idKisculeNodeGeneralUINotification</code></td>
+<td>Notification</td>
+<td>Notification counterpart to the used, 1-instance <code>ActionGeneralUI</code></td>
+</tr>
+<tr>
+<td><code>idKisculeNodeActionShowScreen</code></td>
+<td>InstanceNode</td>
+<td>A full-screen UI trigger — more direct than <code>ActionTutorial</code>'s hint text</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeActionIngameComment</code></td>
+<td>InstanceNode</td>
+<td>A lightweight alternative to <code>ActionSoundVoiceOver2</code> for short in-game remarks</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="6-music-sound-and-rtpcs">6. Music, sound, and RTPCs</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>ActionSoundPostEvent</code></strong></td>
+<td style="text-align: right;">1,493 / 374</td>
+<td>The general-purpose sound trigger (params <code>entity</code>/<code>entities</code>, <code>soundEvent</code>, <code>distanceCull</code>) — about 16% of its 620 distinct <code>soundEvent</code> values match <code>/mus/</code>, but the node itself is not music-exclusive.</td>
+</tr>
+<tr>
+<td><strong><code>ActionSpeakerController</code></strong></td>
+<td style="text-align: right;">122 / 58</td>
+<td><code>Start</code>/<code>Stop</code>/<code>Modify</code> on one or more <code>soundObject</code>s.</td>
+</tr>
+<tr>
+<td><strong><code>ActionSoundSetRTPC</code></strong> / <strong><code>ActionSoundGetRTPC</code></strong></td>
+<td style="text-align: right;">22 / 14</td>
+<td>Set/read a real-time parameter by free-text <code>name</code> — RTPC names are not enumerated anywhere outside the <code>.bnk</code> soundbanks.</td>
+</tr>
+<tr>
+<td><strong><code>SoundEvent</code></strong></td>
+<td style="text-align: right;">1 / 1</td>
+<td>A typed variable node holding one sound-event decl reference.</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="7-checkpoint--save">7. Checkpoint / save</h2>
+<p><strong><code>ActionAutosave</code></strong> — 177 instances / 53 scripts. <code>persistToStorage = true</code> in 177/177. <code>saveSlot</code> is <code>"AUTOSAVE"</code> in 176, <code>"TRANSITION"</code> in 1 (a mid-level checkpoint distinct from the main autosave slot).</p>
+<hr />
+<h2 id="8-console-commands--command">8. Console commands — <code>Command</code></h2>
+<p><strong><code>idKisculeNodeCommand</code></strong> (short <code>Command</code>) — 7 instances / 4 scripts, tiny node (<code>Exec</code> in/out, one <code>command</code> string parameter) with outsized consequences: its Exec handler queues the string straight into the engine's command-text buffer, the same mechanism <code>resourceExec</code> uses, reachable <strong>without ever opening the console</strong>. Full writeup, including the exact disassembly and the one caveat (none of retail's 7 instances actually needs the unrestricted path — see <a href="TNC-Console-Unlock.html">TNC Console Unlock</a> §4 and <a href="Research-Report-R5-Kiscule-Command.html">Research-Report-R5-Kiscule-Command</a>).</p>
+<hr />
+<h2 id="9-flow-control--the-glue">9. Flow control — the glue</h2>
+<p>These carry no <code>custom_map_tags</code> (they're used everywhere, not specific to any map feature) but are what everything above gets wired through:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>GetCustomEvent</code></strong> / <strong><code>SendCustomEvent</code></strong></td>
+<td style="text-align: right;">8,020 / 1,488 · 2,582 / 744</td>
+<td>The global message bus — named events, optionally cross-map (<code>global</code> flag). By far the most common way two unrelated parts of a script talk to each other.</td>
+</tr>
+<tr>
+<td><strong><code>Delay</code></strong></td>
+<td style="text-align: right;">4,103 / 1,197</td>
+<td><code>Start</code>/<code>Pause</code>/<code>Resume</code>/<code>Stop</code>/<code>Reset</code> → <code>Finished</code>, params <code>delay</code> (ms), <code>resetOnStart</code>.</td>
+</tr>
+<tr>
+<td><strong><code>Gate</code></strong></td>
+<td style="text-align: right;">3,195 / 924</td>
+<td><code>Test</code>/<code>Open</code>/<code>Close</code>/<code>Toggle</code> → <code>Gate is Open</code>/<code>Gate is Closed</code>. Has two ports both named <code>Open</code> — one <code>InputRegular</code> (pulse that opens it), one <code>OutputRegular</code> (pulse fired once opened) — disambiguated by port <code>type</code>, not name. Most common driver into <code>Gate.Open</code> (in): <code>GetCustomEvent.Received</code> (1,054×) and <code>Delay.Finished</code> (434×).</td>
+</tr>
+<tr>
+<td><strong><code>ActionBoolControl</code></strong></td>
+<td style="text-align: right;">1,979 / 963</td>
+<td>A stored boolean with <code>SetTrue</code>/<code>SetFalse</code>/<code>Toggle</code> and an <code>Updated</code> notification — the most common branch-flag primitive.</td>
+</tr>
+<tr>
+<td><strong><code>ActionTestBool</code></strong></td>
+<td style="text-align: right;">834 / 726</td>
+<td>One-shot branch: <code>In</code> → <code>True</code>/<code>False</code> on a wired <code>value</code>.</td>
+</tr>
+<tr>
+<td><strong><code>RandomTime</code></strong> / <strong><code>RandomFloat</code></strong> / <strong><code>RandomInt</code></strong></td>
+<td style="text-align: right;">1,808 / 46 / 11</td>
+<td>Uniform random in <code>[min, max]</code>.</td>
+</tr>
+<tr>
+<td><strong><code>Log</code></strong></td>
+<td style="text-align: right;">1,325 / 268</td>
+<td><code>prefix</code> + <code>text</code> to the console/log — the standard debug aid while building a script; see the in-game test recipes on this page and <a href="TNC-Console-Unlock.html">TNC Console Unlock</a>.</td>
+</tr>
+<tr>
+<td><strong><code>Relay</code></strong></td>
+<td style="text-align: right;">264 / 124</td>
+<td>A pure pass-through pulse — no logic, just a named junction point in the graph.</td>
+</tr>
+<tr>
+<td><strong><code>Timer</code></strong></td>
+<td style="text-align: right;">487 / 295</td>
+<td>Repeating <code>Tick</code> at <code>interval</code> for <code>duration</code>, then <code>Finished</code>.</td>
+</tr>
+<tr>
+<td><strong><code>Counter</code></strong></td>
+<td style="text-align: right;">116 / 83</td>
+<td><code>Increment</code>/<code>Decrement</code>/<code>Reset</code> between <code>startCount</code>/<code>endCount</code>, fires <code>Reached End</code>.</td>
+</tr>
+<tr>
+<td><strong><code>DynamicSwitch</code></strong> / <strong><code>StaticSwitch</code></strong></td>
+<td style="text-align: right;">209 / 1</td>
+<td>Multi-output branch by index, with optional <code>random</code>/<code>looping</code>/<code>autoIncrement</code>.</td>
+</tr>
+<tr>
+<td><strong><code>CompareFloat</code></strong> / <strong><code>CompareInt</code></strong> / <strong><code>CompareEntity</code></strong></td>
+<td style="text-align: right;">96 / 13 / 1</td>
+<td><code>A == B</code> / <code>A &gt; B</code> / <code>A &lt; B</code> outputs for two wired values.</td>
+</tr>
+<tr>
+<td><strong><code>FlowFlagCheck</code></strong></td>
+<td style="text-align: right;">72 / 48</td>
+<td>Tests an arbitrary list of named save-flags; its per-flag <code>"&lt;flag&gt; on"</code>/<code>"&lt;flag&gt; off"</code> ports are the <em>only</em> place <code>properties</code> bit <code>0x4</code> ever appears (§0).</td>
+</tr>
+<tr>
+<td><strong><code>ActionActivateCountRandom</code></strong> / <strong><code>ActionActivateCount</code></strong></td>
+<td style="text-align: right;">10 / 5</td>
+<td>Counts N activations before firing, with optional random delay — crowd-trigger / "every Nth time" patterns.</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="10-variables-entities-and-math">10. Variables, entities, and math</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>EntityReference</code></strong></td>
+<td style="text-align: right;">13,850 / 2,202</td>
+<td>The single most-used node in the engine — a stored reference to one entity by name. Its <code>value</code> output is the single highest-fan-out port measured: up to 12 edges from one instance, 2,771 instances with 2+ outgoing edges (top targets: <code>ActionTriggerFx.targets</code> 3,045×, <code>ActionShowHide.showEntities</code> 1,515×, <code>Light.entity</code> 1,283×).</td>
+</tr>
+<tr>
+<td><strong><code>ListEntityReference</code></strong></td>
+<td style="text-align: right;">1,021 / 445</td>
+<td>Same idea, but a list — the preferred way to wire "this whole group" instead of one <code>EntityReference</code> per member.</td>
+</tr>
+<tr>
+<td><strong><code>PlayerEnt</code></strong></td>
+<td style="text-align: right;">1,473 / 794</td>
+<td>Returns the local player entity — no input ports.</td>
+</tr>
+<tr>
+<td><strong><code>Bool</code></strong> / <strong><code>Int</code></strong> / <strong><code>Float</code></strong> / <strong><code>Str</code></strong> / <strong><code>Time</code></strong> / <strong><code>Vec3</code></strong></td>
+<td style="text-align: right;">85–792</td>
+<td>Typed constant/variable holders — the basic value building blocks, each just <code>Set</code> in, <code>value</code> out.</td>
+</tr>
+<tr>
+<td><strong><code>NamedVariableBool</code></strong> / <strong><code>…Int</code></strong> / <strong><code>…Float</code></strong> / <strong><code>…Time</code></strong> / <strong><code>…EntityReference</code></strong></td>
+<td style="text-align: right;">57–1,206</td>
+<td>Script-global named variables (keyed by <code>variableName</code>, not graph position) — <code>NamedVariableBool</code> (1,206 instances) is the most common, used wherever a flag needs to survive a graph reload or be shared across node islands.</td>
+</tr>
+<tr>
+<td><strong><code>EntityToLocation</code></strong> / <strong><code>EntityToDirectionVector</code></strong> / <strong><code>EntityToString</code></strong> / <strong><code>EntityToVelocity</code></strong> / <strong><code>EntityToRotation</code></strong></td>
+<td style="text-align: right;">6–119</td>
+<td>Entity → value extractors, feeding math or comparison chains.</td>
+</tr>
+<tr>
+<td><strong><code>AddFloat</code></strong> / <strong><code>AddVector</code></strong> / <strong><code>AddInt</code></strong>, <strong><code>SubstractVector</code></strong>/<strong><code>SubstractFloat</code></strong>, <strong><code>MultiplyFloat</code></strong>/<strong><code>MultiplyVector</code></strong>, <strong><code>DivideFloat</code></strong>, <strong><code>DotProduct</code></strong>, <strong><code>NormalizeVector</code></strong></td>
+<td style="text-align: right;">1–29</td>
+<td>Plain arithmetic nodes — small counts because most logic needs only comparisons and flags, not math.</td>
+</tr>
+<tr>
+<td><strong><code>GetItem</code></strong> / <strong><code>ListCount</code></strong></td>
+<td style="text-align: right;">89 / 8</td>
+<td>Index into / measure a list-typed variable.</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="11-visibility-effects-and-presentation">11. Visibility, effects, and presentation</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>ActionTriggerFx</code></strong></td>
+<td style="text-align: right;">3,532 / 538</td>
+<td>Fire a particle/FX event on one or more <code>targets</code>, with optional <code>delay</code>. The #1 destination wired from <code>EntityReference.value</code> (3,045 edges).</td>
+</tr>
+<tr>
+<td><strong><code>ActionShowHide</code></strong></td>
+<td style="text-align: right;">1,837 / 1,174</td>
+<td><code>Show</code>/<code>Hide</code>/<code>Toggle</code> on entity lists — the generic visibility switch, with combined <code>Show/Hide</code>, <code>Show/Toggle</code> etc. port variants for one-pulse combined actions.</td>
+</tr>
+<tr>
+<td><strong><code>Light</code></strong></td>
+<td style="text-align: right;">1,417 / 507</td>
+<td><code>On</code>/<code>Off</code>/<code>FadeIn</code>/<code>FadeOut</code> with <code>fadeInTable</code>/<code>fadeOutTable</code> curves.</td>
+</tr>
+<tr>
+<td><strong><code>ActionShowHideMeshKit</code></strong></td>
+<td style="text-align: right;">78 / 34</td>
+<td>Shows/hides named mesh-kit pieces on a model — the mechanism behind modular character/prop variation.</td>
+</tr>
+<tr>
+<td><strong><code>ActionSetSkin</code></strong></td>
+<td style="text-align: right;">14 / 9</td>
+<td>Swaps a <code>skins</code>-decl set on target entities at runtime (see the material-skin mechanism in <a href="Modding-Guide.html">Modding Guide</a> §2).</td>
+</tr>
+<tr>
+<td><strong><code>SetRenderParm</code></strong></td>
+<td style="text-align: right;">23 / 10</td>
+<td>Pushes a vector/alpha value into a named <code>renderParm</code> on target materials.</td>
+</tr>
+<tr>
+<td><strong><code>ActionWorldMarker</code></strong></td>
+<td style="text-align: right;">292 / 85</td>
+<td>Shows/hides the on-screen objective-direction marker for an entity.</td>
+</tr>
+<tr>
+<td><strong><code>ActionFadeView</code></strong></td>
+<td style="text-align: right;">55 / 27</td>
+<td>Screen fade to a color over <code>fadeTime</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="12-player-state-and-control">12. Player state and control</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>PlayerState</code></strong></td>
+<td style="text-align: right;">195 / 151</td>
+<td>One-shot check of weapon-handling/posture state (<code>Unarmed</code>, <code>Dual wield</code>, <code>Crouching</code>, <code>Wheelchair …</code>, <code>Panzerhund</code>, …) for a given <code>entity</code>.</td>
+</tr>
+<tr>
+<td><strong><code>WeaponState</code></strong></td>
+<td style="text-align: right;">89 / 45</td>
+<td>Same idea for equipped-weapon identity (<code>HammerGewehr</code>, <code>DieselGewehr</code>, <code>LaserGewehr</code>, <code>UberGewehr</code>, <code>Out of ammo</code>).</td>
+</tr>
+<tr>
+<td><strong><code>CustomPlayerMode</code></strong></td>
+<td style="text-align: right;">46 / 36</td>
+<td>Switches the player into special locomotion/camera modes (<code>Wheelchair</code>, <code>Firefighter</code>, <code>Periscope</code>, <code>Submarine</code>, <code>Ausmerzer</code>, …) — the mechanism behind TNC's vehicle/gimmick sequences.</td>
+</tr>
+<tr>
+<td><strong><code>DisablePlayerControl</code></strong></td>
+<td style="text-align: right;">19 / 9</td>
+<td>Disables specific input channels via <code>inhibitFlags</code> — cutscenes, forced walks.</td>
+</tr>
+<tr>
+<td><strong><code>ActionHudFlags</code></strong></td>
+<td style="text-align: right;">40 / 19</td>
+<td>Sets/clears HUD element flags (<code>disableJournal</code>, <code>disableWeaponWheel</code>, …) per player.</td>
+</tr>
+<tr>
+<td><strong><code>PlayerPermissions</code></strong></td>
+<td style="text-align: right;">7 / 5</td>
+<td>Enables/disables specific player abilities (<code>groundPound</code>, <code>kobra</code>, <code>specialWeaponAttacks</code>, <code>crouching</code>, …).</td>
+</tr>
+<tr>
+<td><strong><code>ActionGiveItems</code></strong> / <strong><code>ActionConsumeInventory</code></strong> / <strong><code>FlowInventoryCheck</code></strong></td>
+<td style="text-align: right;">45 / 19 / 61</td>
+<td>Give, consume, and check inventory items — the loadout-management trio.</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="13-ai-control">13. AI control</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node</th>
+<th style="text-align: right;">Instances / scripts</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>ActionAIManipulate</code></strong></td>
+<td style="text-align: right;">317 / 121</td>
+<td>The broad AI-state hammer — one node, <code>kill</code>/<code>set_immunity</code>/<code>perception</code>/<code>muted</code>/<code>inhibitLookAtPlayer</code>/<code>forceInjured</code>/<code>minStance</code>/… all as optional params on a list of <code>ais</code>.</td>
+</tr>
+<tr>
+<td><strong><code>ActionModifyNavRegion</code></strong></td>
+<td style="text-align: right;">310 / 216</td>
+<td>Enables/disables navmesh regions — opens/closes AI pathing through an area without touching geometry.</td>
+</tr>
+<tr>
+<td><strong><code>ActionAITestState</code></strong></td>
+<td style="text-align: right;">100 / 77</td>
+<td>One-shot query of an AI's current behavior state (<code>Safe</code>/<code>Roam</code>/<code>Search</code>/<code>Combat</code>).</td>
+</tr>
+<tr>
+<td><strong><code>AINotification</code></strong></td>
+<td style="text-align: right;">93 / 61</td>
+<td>Listener for AI perception events (<code>Spotted Player</code>, <code>Spotted Enemy</code>, <code>Entered Combat</code>, <code>Noticed Something</code>, <code>Lost Vision Of Enemy</code>).</td>
+</tr>
+<tr>
+<td><strong><code>ActionNavAgentControl</code></strong></td>
+<td style="text-align: right;">56 / 34</td>
+<td>Activates/deactivates nav-agent pathing for a list of agents.</td>
+</tr>
+<tr>
+<td><strong><code>ActiveAIList</code></strong> / <strong><code>AIEquippedWeaponEnt</code></strong></td>
+<td style="text-align: right;">25 / 25</td>
+<td>Query helpers — all currently-active AI, or one AI's equipped weapon entity.</td>
+</tr>
+<tr>
+<td><strong><code>AlarmNotification</code></strong></td>
+<td style="text-align: right;">20 / 17</td>
+<td><code>Alarm activated</code>/<code>Spawner empty</code>/<code>Stand down from alarm</code> — the alarm-state listener behind guard-reinforcement logic.</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="14-the-notification-family--one-shared-shape">14. The Notification family — one shared shape</h2>
+<p>Roughly twenty node types — <code>TriggerNotification</code>, <code>VolumeNotification</code>, <code>UseNotification</code>, <code>DamageNotification</code>, <code>AiKilledNotification</code>, <code>PlayerStartNotification</code>, <code>AINotification</code>, <code>AlarmNotification</code>, <code>MissionNotification</code>, <code>PickupNotification</code>, <code>ScenepointNotification</code>, <code>BreakableNotification</code>, <code>SeparableNotification</code>, <code>WeaponFireNotification</code>, <code>AISpawnNotification</code>, <code>UINotification</code>, <code>MapMovementNotification</code>, <code>WarmapNotification</code>, <code>SavegameNotification</code>, and several rarer/unused ones — all inherit from <code>idKisculeNodeNotification</code> and share almost the identical port set:</p>
+<pre><code>Reset (in/out)        — clears the notification's internal state
+Out (notification)    — fires on ANY of the type-specific events below
+&lt;type-specific events&gt; (notification, e.g. Touching/Untouched/Empty, Spotted Player, Pickup, …)
+listenedEntities (in/out var)  — optional entity/list filter; unfiltered if left empty
+enabled (in/out var)
+activator (out var)   — who/what triggered the most recent event
+maxNotificationCount (in/out var)  — -1 = unlimited, otherwise a hard cap
+</code></pre>
+<p>Once you recognize this shape, reading any new Notification node in <code>catalogue.json</code> is just "what are its type-specific event ports and its type-specific filter params" — the plumbing around them is always the same.</p>
+<hr />
+<h2 id="15-full-index-by-the-numbers">15. Full index, by the numbers</h2>
+<p>For anything not covered above: <code>catalogue.json</code>'s <code>nodes</code> array has one entry per type (ports, parameters with measured <code>distinct_values_seen</code>/examples, and up to-5 <code>typical_targets</code> per port), sorted by nothing in particular — query it directly, e.g.</p>
+<pre><code class="language-bash">python -c &quot;import json; d=json.load(open('re_probes/kisculeref/catalogue.json', encoding='utf-8')); \
+  print([n['short'] for n in sorted(d['nodes'], key=lambda x:-x['count'])[:20]])&quot;
+python tools/kiscule.py --signature idKisculeNodeDelay
+</code></pre>
+<p>The 205 catalogued types span from <code>EntityReference</code> (13,850 instances) down to 25 types used exactly once in all of retail — one-off nodes like <code>ActionTrial</code>, <code>BulletTime</code>, <code>DebugPoint</code>, <code>LogicGateOr</code>, <code>CompareEntity</code>, or title-specific set pieces (<code>ActionAlligatorGrappleActivation</code>, <code>ActionPanzerhundRideCompleted</code>, <code>EnvironmentDamage</code>). These are real, working node types — just rare because the content they drive is rare.</p>
+<hr />
+<h2 id="related-pages">Related pages</h2>
+<p><a href="TNC-Console-Unlock.html">TNC Console Unlock</a> · <a href="Kiscule-Scripting.html">Kiscule Scripting</a> (container format, round-trip, how to edit a value) · <a href="Mission-Kiscule-Scripting.html">Mission Kiscule Scripting</a> · <a href="Mission-Anatomy.html">Mission Anatomy</a> · <a href="Research-Report-R3-Kisculeref.html">Research-Report-R3-Kisculeref</a> · <a href="Research-Report-R5-Kiscule-Command.html">Research-Report-R5-Kiscule-Command</a></p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Kiscule-Scripting.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Kiscule — The Script Layer of Wolfenstein II</a><a class="next" href="Ghidra-Analysis.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Ghidra: What to Extract from the EXEs — and What Not</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

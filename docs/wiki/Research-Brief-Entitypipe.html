@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker w-entitypipe-a1; task entitypipe; implement.
-Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Read .agent-cache/WORKER.md. Bus: python "%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
 Parallel: w-meshfmt-a1 (geometry), w-cmfmt-a1 (collision), w-matpipe-a1
 (surfaces), w-mapmanifest-a1 (streaming). You own placement and authoring.</p>
 <h1 id="objective">Objective</h1>
@@ -75,7 +75,7 @@ without an editor, and everything needed for it is already solved.</p>
 </ul>
 <h1 id="sources--starting-points">Sources / starting points</h1>
 <ul>
-<li>Retail source map: <code>D:/SteamLibrary/.../dlc/dlc_2/base/chunk_22.resources</code>
+<li>Retail source map: <code>&lt;Steam library&gt;/.../dlc/dlc_2/base/chunk_22.resources</code>
   (c2v1, Gestapo Office). READ ONLY.</li>
 <li><code>re_probes/agent_reports/{small_custom_map,idclwriter,execcarrier}.md</code></li>
 <li><code>docs/karten.md</code>, <code>docs/kiscule.md</code> (2408 script files, 205 node types -
@@ -93,7 +93,7 @@ re_probes/{map_alias_v3,idclwriter,execcarrier,cfilekey}/.</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
 <p><strong>Do not install into the game folder and do not launch the game.</strong> The user
 runs installs themselves, in a five-minute window. No writes to
-"C:/Users/‹user›/Saved Games". No pip install. Do not edit any other worker's
+"%USERPROFILE%/Saved Games". No pip install. Do not edit any other worker's
 files, docs/*, or config.json.</p>
 <h1 id="hard-constraints">Hard constraints</h1>
 <p>Python 3.11, stdlib only. Reproducible from the command line.</p>

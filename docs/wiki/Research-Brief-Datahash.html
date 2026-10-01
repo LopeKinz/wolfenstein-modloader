@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker w-datahash-a1; task datahash; research (read-only RE).
-Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Read .agent-cache/WORKER.md. Bus: python "%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
 Parallel: astra-map-v3 (map bundle, other host), astra-save-v3, w-cmdtable-a1,
 w-saveverify-a1, w-vtrest-a3. Stay in your lane.</p>
 <h1 id="objective">Objective</h1>
@@ -87,14 +87,14 @@ content: the per-entry fields <strong><code>entry+0x50</code> (data_hash)</stron
 <li>wolfsdk/idcl.py (our parser, read-only), tools/probe_tnc_hash.py (read-only),
   docs/texdb.md, re_probes/agent_reports/texdb_rewrite.md, docs/moddingflaeche-tnc.md.</li>
 <li>Retail corpus, READ ONLY:
-  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+  <Steam library>/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
 </ul>
 <h1 id="ownership">Ownership</h1>
 <p>tools/probe_datahash.py (new), re_probes/datahash/ (new dir),
 re_probes/agent_reports/datahash.md (new).</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
 <p>No game launch, no process attach, no writes under the Steam install or
-"C:/Users/‹user›/Saved Games". Do not touch files owned by others:
+"%USERPROFILE%/Saved Games". Do not touch files owned by others:
 tools/probe_idclhash.py, tools/probe_cmdtable.py, tools/probe_saveverify.py,
 tools/tnc_container_hash.py, tools/tnc_runtime<em>.py, tools/build_tnc_map_alias_v3.py,
 tools/verify_tnc_map_alias_v3.py, tools/build_custom_save_candidate.py,

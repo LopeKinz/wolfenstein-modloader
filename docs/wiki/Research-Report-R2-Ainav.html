@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI and Navigation for a Custom TNC Map – Wolfenstein Modloader</title>
+<meta name="description" content="AI and Navigation for a Custom TNC Map">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>AI and Navigation for a Custom TNC Map</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Ainav"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-five-entity-layers">The five entity layers</a></li><li><a href="#navigation-mesh-hknavmesh-reuse-only">Navigation mesh (hknavmesh): reuse-only</a></li><li><a href="#kit-map-state">Kit map state</a></li><li><a href="#minimal-recipe-for-a-sandbox-map-with-a-few-enemies">Minimal recipe for a sandbox map with a few enemies</a></li><li><a href="#failed-hypotheses--gotchas">Failed hypotheses / gotchas</a></li><li><a href="#open-question">Open question</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>What makes enemies spawn, stand, and (potentially) fight in a map, and whether a from-scratch "kit" level built on reused floor can have working combat. A combat encounter in a TNC map turns out to be five separate, independently-named entity layers glued together by name reference, not by containment, sitting over a baked navigation mesh that has <strong>no author path at all</strong> — nothing in this project or the retail engine's own runtime can create or rebuild one. The existing kit map places enemies on validated, reused navmesh with zero spawners and zero cover/patrol graph, which proves "exists and stands on walkable floor," not "spawns" or "fights." Everything below is static file-format research plus one in-game session unrelated to AI (an earlier collision-bug test); no AI combat behavior has been observed running.</p>
+<h2 id="the-five-entity-layers">The five entity layers</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Role</th>
+<th>Key fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idAI2</code></td>
+<td>the enemy body</td>
+<td><code>flags.hide</code> (true = inert until named by a spawner/scene point; false = alive from map load), <code>spawnPosition</code>/<code>spawnOrientation</code>, <code>aiEditable.groupName</code> (ties it to one <code>idEncounterGroupMgr</code> group), <code>aiEditable.roam.targets[0]</code> (its home <code>idScenePoint_Roam</code>)</td>
+</tr>
+<tr>
+<td><code>idTarget_AISpawn</code></td>
+<td>the spawner, fired by a trigger/script</td>
+<td><code>targets[]</code> — either <code>idScenePoint_Spawn</code> names or bare <code>idAI2</code> names directly; optional <code>maxActiveAIs</code></td>
+</tr>
+<tr>
+<td><code>idScenePoint_Spawn</code></td>
+<td>named position + AI template a spawner hands off to</td>
+<td><code>targets[]</code> — the actual <code>idAI2</code> names placed at this point; selection-arc fields relative to the player</td>
+</tr>
+<tr>
+<td><code>idEncounterGroupMgr</code></td>
+<td>one per map; maps a <code>groupName</code> string to an optional alarm</td>
+<td><code>groups[].{groupName, alarmSystem}</code> — <strong>no member list</strong>; membership lives only in each AI's own <code>groupName</code></td>
+</tr>
+<tr>
+<td><code>idAlarmSystem</code> / <code>idAlarm</code></td>
+<td>an alarm box group / the physical alarm prop</td>
+<td><code>alarmSpawner</code> names the <code>idTarget_AISpawn</code> used for reinforcements once tripped</td>
+</tr>
+<tr>
+<td><code>idScenePoint_Combat</code> / <code>Roam</code> / <code>Search</code> / <code>Traversal</code></td>
+<td>cover/patrol/search/special-movement graph</td>
+<td>a separate, finer-grained graph laid directly in world space, independent of the navmesh's face graph; gated per-AI by <code>aiTypeFlags</code>/<code>aiNavsize</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Chain:</strong> trigger → script node → <code>idTarget_AISpawn.targets</code> → (scene point or direct) <code>idAI2</code> → <code>groupName</code> ties it into <code>idEncounterGroupMgr</code> → <code>alarmSystem</code> (if any) → its <code>alarmSpawner</code> handles reinforcements once an <code>idAlarm</code> is tripped.</p>
+<p><strong>Known gotcha:</strong> retyping a hidden AI's def in place (swap the donor body, keep the entity name) silently <strong>drops <code>groupName</code></strong> if the donor body has none. Any recipe that transplants or clones AI must copy <code>aiEditable.groupName</code> (and, for roamers, <code>aiEditable.roam.targets</code>) by hand.</p>
+<p>A corpus-wide census across every <code>.entities</code> file in the live install confirms this five-layer pattern is the norm across the large majority of maps, not a one-map curiosity (<code>idScenePoint_Combat</code> alone: 45,090 placements corpus-wide).</p>
+<h2 id="navigation-mesh-hknavmesh-reuse-only">Navigation mesh (<code>hknavmesh</code>): reuse-only</h2>
+<p>One per map by convention (sometimes two — a secondary "combat nav section"), Kraken-compressed inside a small, generic Havok tag-file wrapper. Decoded structure: <code>vertices</code> (flat <code>f32[4*N]</code>), <code>faces</code> (<code>{startEdgeIndex, numEdges}</code>), <code>edges</code> (<code>{a: vertex-index, oppositeFace}</code>). A reader for this already exists in the project's kit-map tooling; <strong>no encoder exists anywhere</strong>.</p>
+<p>A missing navmesh at load only produces a warning, never a load-abort — the engine tolerates a missing navmesh but does not build one. The only runtime mutation is a <strong>cutter</strong> (triggered by an <code>isNavObstacle = true</code> flag on an entity, 28 retail uses) that can carve a <em>hole</em> out of existing baked navmesh; it cannot add new walkable surface.</p>
+<p><strong>Conclusion: new geometry must sit exactly on top of an existing map's baked navmesh footprint.</strong> Generating navmesh data is not a viable path with anything in this project or in the retail engine's own behavior.</p>
+<h2 id="kit-map-state">Kit map state</h2>
+<p>The existing from-scratch kit level places 9 <code>idAI2</code> enemies, <code>hide=false</code>, directly on checked-reused navmesh — <strong>zero</strong> spawners, <strong>zero</strong> encounter groups/alarms, <strong>zero</strong> scene points of any kind (the skeleton-build step deletes all 290 AI-class entities in the donor map and never adds any back). This proves "exist and stand on walkable floor," nothing about spawning, patrol, or combat. It has <strong>never been confirmed in game for AI</strong> — the only recorded in-game session with this kit map was testing an unrelated static-geometry collision bug.</p>
+<h2 id="minimal-recipe-for-a-sandbox-map-with-a-few-enemies">Minimal recipe for a sandbox map with a few enemies</h2>
+<ol>
+<li>Build new geometry only where an existing map's navmesh already is, at the same world height — the kit-map tooling's navmesh-check/floor-matching logic already automates this end to end.</li>
+<li>Keep the skeleton minimum (world spawn, player starts) and discard the donor building's props/lights/triggers freely — safe for the one map this was corpus-checked against; the entity-class shape census suggests the same rule set transfers to another base map.</li>
+<li>Two ways to get enemies, increasing in what they prove:<ul>
+<li><strong>Cheapest:</strong> clone an <code>idAI2</code> block, any already-mounted AI definition, <code>hide = false</code>, inside the backed navmesh area. Proves only "exists and the navmesh accepts it" — nothing about spawning or combat behavior.</li>
+<li><strong>More faithful:</strong> instead of deleting a retail room's spawner/group/alarm/scene-point graph, keep it intact and only retype the hidden <code>idAI2</code> bodies it already wires up ("body transplant": swap the inherited definition, keep name/targets/<code>groupName</code>/roam-point). This reuses an intact, already-proven spawn/combat graph, at the cost of being confined to rooms that still have their old scene points — it does not compose with "build new rooms on reused navmesh footprint."</li>
+</ul>
+</li>
+<li>Do not attempt to author new scene points or a new navmesh — no tool exists for either, and the retail engine has no runtime fallback that creates one.</li>
+</ol>
+<h2 id="failed-hypotheses--gotchas">Failed hypotheses / gotchas</h2>
+<ul>
+<li>A bare new map-spec/entity file alone does not make a new map (must go through the proven DLC-folder route).</li>
+<li><code>refchunks</code> is not proven to be an override mechanism.</li>
+<li>Not every retail spawner target is actually wired — one <code>idTarget_AISpawn</code> target in retail is dead code, a reminder to pick a spawner with a traced trigger when copying one, not any one at random.</li>
+</ul>
+<h2 id="open-question">Open question</h2>
+<p>Whether AI placed with <code>hide=false</code> and no scene points actually moves and fights, or just stands motionless — untested in this project.</p>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Install the kit level, load it with developer console access, and walk into the room holding 3 of the 9 enemies. Any reaction beyond standing still — turning toward the player, shooting, searching for cover — would be the first runtime evidence that <code>hide=false</code> without scene points is enough for combat behavior; currently unproven in either direction.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="Research-Report-R2-Maplightstairs.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Kit Map Quality: Lighting New Geometry, and Walkable Stairs</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

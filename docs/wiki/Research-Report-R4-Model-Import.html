@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R4 Research Report: Importing OBJ/GLB Models into TNC – Wolfenstein Modloader</title>
+<meta name="description" content="R4 Research Report: Importing OBJ/GLB Models into TNC">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>R4 Research Report: Importing OBJ/GLB Models into TNC</h1>
+<p class="meta">
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Model-Import"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#summary">Summary</a></li><li><a href="#1-the-model-static-mesh-writer">1. The model (static mesh) writer</a></li><li><a href="#2-the-cm-collision-box">2. The cm collision box</a></li><li><a href="#3-md6mesh-feasible-with-one-correction">3. md6mesh: feasible, with one correction</a></li><li><a href="#4-what-a-mapentity-needs-to-place-a-new-model">4. What a map/entity needs to place a new model</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-for-the-tester">In-game test (for the tester)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p><span class="en">A plain-language summary of this page is still being written.</span><span class="de">Eine Zusammenfassung in einfachen Worten wird für diese Seite noch geschrieben.</span></p></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Builds on the existing mesh-format, collision-format and manifest research. New tooling: a standalone OBJ/glTF importer that reuses the project's own, unmodified model/collision/manifest writers rather than re-deriving any of those formats.</p>
+<h2 id="summary">Summary</h2>
+<p>The question was whether an artist-made OBJ or GLB file can be converted into TNC's static <code>model</code> + <code>cm</code> (collision) format, and whether a skeletal <code>md6mesh</code> writer is feasible, well enough for the game's own parsers to accept the result. A new importer turns a hand-authored cube <strong>and</strong> a real 3,543-vertex retail crate (exported through the project's own existing exporter first, then re-imported) into <code>model</code>/<code>cm</code> payloads that round-trip byte-identically through the project's parsers, pass the geometry checker with zero problems, and — written into a real copy of a game archive with correct hashes — pass the project's independent container-integrity checkers. A new <code>md6mesh</code> writer round-trips all 450 decompilable retail skeletal meshes byte-identically and also accepts a brand-new, hand-authored unskinned mesh through the project's own, unmodified reader. <strong>Everything here is static: format, round-trip and container-hash checks only — the game was never launched, so none of it is confirmed to render or collide correctly on screen.</strong> One concrete new fact about the engine's own content pipeline was found in the process: it re-corrects vertex normals on <em>static</em> models too, not only on skinned ones, contrary to the existing tooling's own documentation.</p>
+<h2 id="1-the-model-static-mesh-writer">1. The <code>model</code> (static mesh) writer</h2>
+<p>Nothing about the container-level <code>model</code> format itself is new — that was already solved byte-exact over 22,400 retail models. What's new is everything upstream: a real OBJ parser (<code>v</code>/<code>vt</code>/<code>vn</code>, <code>usemtl</code> per material, triangle fans for n-gons), a real glTF/GLB reader (interleaved or non-interleaved accessors, any index width, sparse accessors explicitly rejected rather than silently misread), normal generation for files that don't carry one (reusing the project's existing area-weighted normal function, not reimplemented), and per-vertex tangent generation (a simple accumulate-and-orthogonalize scheme — marked as a known simplification: good enough to pass every check run against it, including the real retail crate, but not full MikkTSpace; upgrade if a mirrored-UV model ever shows a visibly wrong tangent handedness).</p>
+<p><strong>Cube proof:</strong> an independently hand-authored OBJ cube round-trips through parse→build→write→reparse byte-identically (1,499 bytes), passes the geometry checker with 0 problems, and — written in place of a real metal-crate prop inside a 27.8 MB copy of a real game archive — passes the project's own independent hash checkers (entry-level data hash and the IDCL container header hash) with zero deviations elsewhere in the 1,562-entry archive.</p>
+<p><strong>Re-encoded retail prop:</strong> the same crate, exported through the project's own existing exporter to both OBJ and GLB, then re-imported here, reproduces the original retail vertex positions and UVs exactly (bit-identical for GLB, float-text-rounding only for OBJ) and the normals exactly — <strong>once compared against the correct baseline</strong> (see §1.1). The only field that doesn't round-trip to the original bytes is the tangent, which is expected: no interchange format carries a tangent channel, every importer regenerates it.</p>
+<h3 id="11-new-finding-the-content-pipeline-fixes-normals-on-static-models-too">1.1 New finding: the content pipeline fixes normals on static models too</h3>
+<p>The first comparison attempt showed a normal mismatch on 136 of the crate's 3,543 vertices (3.8%). Running the project's existing <code>fix_normals</code> tool — documented as a <em>skinned-model</em> tool only — directly on the crate's raw retail data zeroes exactly those same 136 vertices, and the exporter's normal output matches bit-for-bit afterward. None of the 136 were near-zero (the condition the plain normal function alone checks); they are normals that disagree with their own triangle, which only <code>fix_normals</code> catches. This is an inference from an exact reproduction, not a read of the actual content-pipeline source: whatever builds static <code>model</code> geometry evidently runs the same normal-correction pass that was previously thought skinned-mesh-only.</p>
+<h2 id="2-the-cm-collision-box">2. The <code>cm</code> collision box</h2>
+<p>Nothing new in the format: the collision writer is a thin wrapper around the already-proven (also runtime-untested) box builder, fed the imported mesh's own bounding box. Both the cube and the re-encoded crate produce a clean collision hull (0 problems: corners, planes, winding, connectivity, mass, penetration) and round-trip byte-identically through the same container replace.</p>
+<h2 id="3-md6mesh-feasible-with-one-correction">3. <code>md6mesh</code>: feasible, with one correction</h2>
+<p>The existing <code>md6</code> parser silently <strong>discards</strong> two opaque per-mesh data blocks right after the morph list (sized <code>8*n</code>/<code>16*n</code> bytes). Measured across all 450 decompilable retail skeletal meshes this install has: <strong>396 of 5,188 meshes, in 99 of 450 files, have non-empty blocks</strong>, up to 3.04 MB in one mesh — plausibly per-morph vertex deltas (not decoded, out of scope here). Practical consequence: any tool built only on the existing parser cannot losslessly rewrite 22% of retail skeletal-mesh files.</p>
+<p>A new full-fidelity shadow parser/writer keeps those two blocks as opaque bytes instead of discarding them and round-trips <strong>450/450</strong> of the retail corpus byte-identically (negative controls: truncated-by-4 and padded-by-4 both correctly raise). A brand-new, OBJ-authored, unskinned, bind-pose single mesh built with this writer parses correctly through the project's <strong>existing, unmodified</strong> reader and reproduces the input geometry exactly. Scope: bind pose only — joint weights, multiple LODs and morphs are not attempted, matching the existing exporter's own stated limitation.</p>
+<h2 id="4-what-a-mapentity-needs-to-place-a-new-model">4. What a map/entity needs to place a new model</h2>
+<p>A new resource needs one row in the map's resource manifest (author tool reused unmodified, all of its own internal consistency checks pass for a brand-new name) and one <code>idStaticInstanceEntity</code> block in the map's entity text (built with the project's existing kit-map helper, unmodified). The generated entity block was cross-checked field-for-field against a <strong>real retail entity</strong> placing this exact crate, found by searching a real campaign map — identical shape, confirming the reused helper produces retail's own form, not just a plausible-looking one.</p>
+<p><strong>The one remaining, inherited gap:</strong> the project's archive writer only ever replaces the <strong>payload</strong> of an entry already in a container's table — it cannot add a brand-new <code>(type, name)</code> entry to an existing archive. A same-name replacement (§1) is therefore container-provable today; a brand-new name's manifest row and entity text are provable today (this section); but depositing that new name's actual bytes into a container is not, until a table-growing writer exists. This pass added one concrete fact for whoever builds it: growing the table is fully specified (every affected header field and region is already documented), not an unknown format — it just hasn't been written.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Runtime behavior of all of the above — nothing was run in game.</li>
+<li>The two opaque <code>md6</code> per-mesh blocks' internal layout (located and sized, not decoded).</li>
+<li>Whether the <code>model</code> format's <code>density=UNSET</code>/3-LOD convention this writer carries over to <code>md6mesh</code> is actually meaningful there, or just tolerated.</li>
+<li>A table-growing IDCL writer (the append gap, §4) — fully specified, not yet built.</li>
+</ul>
+<h2 id="in-game-test-for-the-tester">In-game test (for the tester)</h2>
+<p>This test temporarily replaces a base-game archive (not a DLC folder) with a copy where one metal crate is swapped for a plain gray cube of the same size.</p>
+<ol>
+<li><strong>Back up and install</strong> (game closed): copy <code>&lt;game folder&gt;/base/chunk_8.resources</code> to a <code>.bak</code>, then copy the generated <code>cube_chunk_8.resources</code> over the original.</li>
+<li><strong>Start the game</strong> and go to Chapter 4, second part (map <code>c04p2</code>), the "cooling" area, roughly position <code>x=-7.6, y=-86.5, z=-8.1</code> — fastest via a save already in that chapter.</li>
+<li><strong>Look:</strong> the small metal crate (about 70x100 cm) should now be a plain gray cube of the same size, with solid collision. If it still looks like the normal crate, the replacement file was not loaded (check the path). A crash on map load: proceed straight to step 4.</li>
+<li><strong>Restore</strong> (game closed): copy the <code>.bak</code> back over <code>chunk_8.resources</code>.</li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Materials.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Material Decls: Render-Program &quot;Flags&quot; and Adding a New Material</a><a class="next" href="Research-Report-R4-Pickups.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>R4 Research Report: Pickups, Givers and Start Loadouts (TNC)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

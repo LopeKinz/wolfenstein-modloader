@@ -46,7 +46,7 @@
 <article class="doc" data-autohint><p>This directory describes two games and a tool:</p>
 <ul>
 <li><strong>Wolfenstein: The New Order</strong> (id Tech 5, <code>WolfNewOrder_x64.exe</code>) — the SDK reads, patches, and launches this game.</li>
-<li><strong>Wolfenstein II: The New Colossus</strong> (id Tech 6, <code>NewColossus_x64vk.exe</code>) — the SDK locates and launches it, passing Cvars; <strong>Archives are not written there</strong> (<code>wolfsdk/game.py</code>, <code>TITLES["tnc"].mods = False</code>).</li>
+<li><strong>Wolfenstein II: The New Colossus</strong> (id Tech 6, <code>NewColossus_x64vk.exe</code>) — the SDK locates and launches it, passing Cvars, and <strong>now writes its archives too</strong>: <code>wolfsdk/tncpatch.py</code> patches its IDCL containers directly (<code>wolfsdk/game.py</code>, <code>TITLES["tnc"].mods = True</code> for both titles). Decl value edits, a BC1 weapon skin, and a full <code>dlc_0</code>-precedence custom map have all been confirmed working in a real, running game — see the table below and <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>.</li>
 </ul>
 <p>The tool itself is described in <code>../README.md</code>. This section contains what has been discovered about the games.</p>
 <hr />
@@ -149,6 +149,14 @@
 <tr>
 <td>What has happened since the last session, what is open?</td>
 <td><a href="Research-Status-2026-09-21.html"><code>Research-Status-2026-09-21.md</code></a></td>
+</tr>
+<tr>
+<td>How does Part 2's console/Cvar restriction work, and which commands reach the game without a patch?</td>
+<td><a href="TNC-Console-Unlock.html"><code>TNC-Console-Unlock.md</code></a></td>
+</tr>
+<tr>
+<td>What do Kiscule's 205 script node types do, grouped by purpose?</td>
+<td><a href="Kiscule-Node-Reference.html"><code>Kiscule-Node-Reference.md</code></a></td>
 </tr>
 </tbody>
 </table></div>
@@ -316,8 +324,8 @@
 </tr>
 <tr>
 <td>Apply mods / write archives</td>
-<td><strong>does not work</strong> — <code>mods=False</code>, no write path</td>
-<td><code>wolfsdk/game.py</code></td>
+<td><strong>works, measured</strong> — <code>wolfsdk/tncpatch.py</code> writes IDCL containers directly; decl value edits (pistol magazine 10→30) confirmed in game</td>
+<td><code>wolfsdk/game.py</code> (<code>mods=True</code>), <code>tnc-decl-edits</code> session notes</td>
 </tr>
 <tr>
 <td>Change audio</td>
@@ -325,8 +333,13 @@
 <td><code>Audio.md</code> §7</td>
 </tr>
 <tr>
-<td>Replace textures</td>
-<td><strong>does not work</strong> — Key-to-asset name mapping missing, tile content undeciphered, every size change rewrites the entire (up to 8 GB) file</td>
+<td>Replace textures (weapon skin, single material)</td>
+<td><strong>works, measured</strong> — a custom BC1 pistol skin (<code>.bimage</code>+<code>.texdb</code> blocks re-encoded and appended, all 40 <code>textures.cache</code> copies patched) shows on the first-person model in a running game</td>
+<td>session notes, 2026-09-25</td>
+</tr>
+<tr>
+<td>Replace textures (Virtual-Texture/Megatexture pixel plane)</td>
+<td><strong>does not work</strong> — Key-to-asset name mapping missing, tile content undeciphered, every size change rewrites the entire (up to 8 GB) file; unaffected by the weapon-skin finding above, which is a different, smaller container</td>
 <td><code>TNC-Texture-Database.md</code> §6</td>
 </tr>
 <tr>
@@ -340,14 +353,24 @@
 <td><code>Asset-Loading-Paths.md</code>, E5/E6</td>
 </tr>
 <tr>
-<td>Custom DLC (<code>dlc/dlc_4/dlcinfo.json</code>)</td>
-<td><strong>unverified</strong> — no visible possession check, this is the most promising path</td>
-<td><code>Asset-Loading-Paths.md</code>, E8</td>
+<td>Custom DLC / custom map (<code>dlc/&lt;name&gt;/…</code>, <code>dlc_0</code> precedence)</td>
+<td><strong>works, measured</strong> — the engine mounts the first <code>dlc/*</code> folder (alphabetical) whose <code>packagemapspec.json</code> lists the map; a <code>dlc_0</code> folder beats retail <code>dlc_2</code> for map <code>c2v1</code>, confirmed in game with a relit custom light layout and a normal mission start</td>
+<td><a href="TNC-Custom-Map-Status.html"><code>TNC-Custom-Map-Status.md</code></a>, <a href="Research-Report-Tnc-Custom-Maps.html">Research-Report-Tnc-Custom-Maps</a></td>
+</tr>
+<tr>
+<td><code>cfile</code> entries (encrypted configs/localization under <code>.resources</code>)</td>
+<td><strong>works, measured</strong> — the AES-128-CBC/HMAC-SHA256 key is derived (<code>"swapTeam\n\x00"</code> + salt + resource name), round-trip byte-exact on 67/67 retail payloads; the loader builds new, game-accepted payloads under existing names (<code>wolfsdk/tnccrypt.py</code>), used to unlock the restricted console below</td>
+<td><a href="Research-Report-Cfilekey2.html">Research-Report-Cfilekey2</a></td>
+</tr>
+<tr>
+<td>Console/Cvar restriction (34/304 exposed vs. 234/3,256 total)</td>
+<td><strong>works, measured</strong> — <code>resourceExec &lt;loader-replaced cfile&gt; -s</code> drops the restriction for the file; <code>God</code>, <code>Notarget</code>, <code>g_infiniteAmmo 1</code> confirmed executing in a real save game</td>
+<td><a href="TNC-Console-Unlock.html"><code>TNC-Console-Unlock.md</code></a></td>
 </tr>
 <tr>
 <td><code>+devMode_</code> prefix, <code>devMode_enable</code></td>
-<td><strong>unverified</strong> — present in binary, effect not observed</td>
-<td><code>Save-Games-and-Profiles.md</code> §5</td>
+<td><strong>partially confirmed</strong> — <code>devMode_enable</code> is a real, exposed, retail-settable Cvar (observed live at value <code>1</code> on a running process), but it gates only one dispatcher branch that no proven entry point reaches — not load-bearing for the console unlock above</td>
+<td><a href="TNC-Console-Unlock.html"><code>TNC-Console-Unlock.md</code></a> §1, <code>Save-Games-and-Profiles.md</code> §5</td>
 </tr>
 </tbody>
 </table></div>
