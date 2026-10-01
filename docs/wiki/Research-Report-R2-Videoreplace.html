@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cutscene and Loading Video (.bk2) Replacement – Wolfenstein Modloader</title>
+<meta name="description" content="Where cutscene and loading videos live in both games and how they could be replaced or retargeted.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Cutscene and Loading Video (.bk2) Replacement</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Videoreplace"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#storage-and-integrity--proven">Storage and integrity — PROVEN</a></li><li><a href="#forward-decl-links--now-proven-both-directions">Forward decl links — now PROVEN, both directions</a></li><li><a href="#bank-audio-tnc">Bank audio (TNC)</a></li><li><a href="#two-replacement-routes-both-structurally-proven">Two replacement routes, both structurally proven</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report looked at the Bink cutscene and loading videos in Wolfenstein: The New Order and Wolfenstein II: The New Colossus. All 209 videos are <span class="t" data-t="loose">loose files</span> on disk, not inside archives, and no size or integrity check was found. A test with the game&#x27;s own video library played a swapped-in video correctly at its own different size and length, and four kinds of <span class="t" data-t="decl">decls</span> that name video paths can be retargeted cleanly; a replacement playing inside the running game is still untested.</p><ul><li>All 209 .bk2/.bik videos are loose files under base/bink; none is in an archive.</li><li>The game&#x27;s own video decoder accepted a video with a different resolution and frame count under another file&#x27;s name.</li><li>Four decl types name videos, for example map info with loading videos for 63 of 70 maps.</li><li>9 of 75 decl video paths (Chronicles clips) only match a file after a fixed suffix is added.</li><li>In Wolfenstein II, video sound comes from separate Wwise audio events named play_&lt;video name&gt;.</li></ul></div><div class="de"><p class="lede">Dieser Bericht untersucht die Bink-Videos für Zwischensequenzen und Ladebildschirme in Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Alle 209 Videos liegen als <span class="t" data-t="loose">lose Dateien</span> auf der Festplatte, nicht in Archiven, und es wurde keine Größen- oder Integritätsprüfung gefunden. Ein Test mit der Videobibliothek des Spiels spielte ein untergeschobenes Video korrekt in seiner eigenen, anderen Größe und Länge ab, und vier Arten von <span class="t" data-t="decl">Decls</span>, die Videopfade nennen, lassen sich sauber umleiten; dass ein Ersatz im laufenden Spiel abgespielt wird, ist noch ungetestet.</p><ul><li>Alle 209 .bk2/.bik-Videos sind lose Dateien unter base/bink; keines liegt in einem Archiv.</li><li>Der Videodecoder des Spiels akzeptierte ein Video mit anderer Auflösung und Bildanzahl unter dem Namen einer anderen Datei.</li><li>Vier Decl-Typen nennen Videos, zum Beispiel die Karteninfo mit Ladevideos bei 63 von 70 Karten.</li><li>9 von 75 Videopfaden in Decls (Chronicles-Clips) passen erst zu einer Datei, wenn ein festes Suffix angehängt wird.</li><li>In Wolfenstein II kommt der Videoton aus separaten Wwise-Audioereignissen namens play_&lt;Videoname&gt;.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Where Bink2 cutscene/loading videos live, whether the engine checks size/hash/signature on them, which decls reference them, and whether a replacement can have a different length or resolution. All 209 shipped videos across both games are loose files on disk — never inside an archive — with no hash/size/signature check found anywhere near them. A prior pass only knew the <em>reverse</em> link (a video's filename implies a Wwise audio-bank event name); this pass finds and closes the <em>forward</em> link too: four plain-text decl types name a video path, and the project's generic decl-editing tool can retarget one of those fields to a different file with a clean, single-span edit. A decoder-level test — not a running game, but the actual video-decoding library the game ships with — opens a deliberately mismatched video under an unrelated file's name and decodes it correctly at its own, different resolution and frame count: the strongest evidence yet that no fixed size or length is enforced. The one remaining gap is a replacement actually playing inside a running game, which this track's research rules did not allow.</p>
+<h2 id="storage-and-integrity--proven">Storage and integrity — PROVEN</h2>
+<p>Every <code>.bk2</code>/<code>.bik</code> in both installs is a <strong>loose file</strong> on disk under <code>base/bink/**</code> (plus, for TNC, a per-DLC equivalent for the Chronicles episodes) — none sits inside an archive. The project's own asset catalog builder is structurally the only asset kind that reads video files straight off disk instead of through the archive reader, and the project's own mod-replace feature code already documents this as the reason an automated video-replace button does not exist: loose files have no archive entry, and no video encoder exists in this (standard-library-only) project.</p>
+<p>No archive-level hash/size/signature check can apply to a loose file. The full registered video-related cvar list (8 cvars, all cheat-flagged, none settable in the shipped game) has nothing that checks content integrity. A corpus parse of all 209 shipped videos across both games succeeds with 0 errors and already mixes two resolutions, several codec revisions, and a duration range from under a second to over 9 minutes.</p>
+<p><strong>Decoder-level test (new this pass):</strong> one video's bytes were copied under a different, unrelated video's filename (original: one resolution/frame count; swapped-in content: a different resolution/frame count) and opened through the actual video-decoding library the game ships with. It decoded correctly, reporting the <strong>swapped content's own</strong> shape, not the original filename's — the strongest evidence so far that no fixed size, resolution, or length is enforced, one level below an actual running game.</p>
+<h2 id="forward-decl-links--now-proven-both-directions">Forward decl links — now PROVEN, both directions</h2>
+<p>A corpus scan of every archive, decompressing and searching decl text (plain text, parseable by the project's existing generic decl reader — <strong>not</strong> compiled script bytecode) finds four decl types that name a video path:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Decl type</th>
+<th>Entries naming a video</th>
+<th>Field(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Map info</td>
+<td>63 of 70</td>
+<td>a per-layer list of loading-video paths</td>
+</tr>
+<tr>
+<td>Chronicle episode info</td>
+<td>6 of 6</td>
+<td>its credits video</td>
+</tr>
+<tr>
+<td>Chronicle store info</td>
+<td>1 of 1</td>
+<td>its preview video</td>
+</tr>
+<tr>
+<td>Shell/menu resource</td>
+<td>4 of 4</td>
+<td>credits/menu-loop/replay video fields</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Layer-keyed branching:</strong> the map-info loading-video list is keyed by story-branch/area <em>layer</em>, not a single value — up to 4 entries have been seen on one map, the same mechanism that already gates other branch-dependent content.</p>
+<p><strong>Filename convention is not always literal.</strong> Of 75 distinct video paths named in decls, 66 match an on-disk filename exactly; the other 9 — every one a Chronicles intro/outro/transition clip — only resolve once a fixed suffix is appended to the stem. A retarget that ignores this points at a file that will never exist.</p>
+<p><strong>A real decl retarget was built and verified:</strong> the project's existing generic decl-patch tool changes one map-info video path to a new filename with a single-span edit, confirmed to touch nothing else in the decl text.</p>
+<h2 id="bank-audio-tnc">Bank audio (TNC)</h2>
+<p>A cutscene with no embedded audio track triggers a Wwise event named <code>play_&lt;stem&gt;</code> (stem = the video's filename without extension, lower-cased, including any suffix). This is now confirmed to be the <strong>same mechanism for ingame cutscenes, loading-screen videos, and a recap video</strong>, not just ingame cutscenes as previously scoped — only credits/menu-loop/chronicle-intro clips have no matching event. A cvar (default on, cheat-flagged, not settable in the shipped game) always routes TNC video audio through this Wwise-bank layer instead of a video's own embedded track, and a modder cannot flip that in the shipped game.</p>
+<p>No static-image alternative to a loading video exists as a map-info field; a separate, parallel system of per-chapter loading-screen images (shared with the in-game death screen) exists on disk but is referenced by no decl this pass could find — selection must happen in engine code this project cannot read.</p>
+<h2 id="two-replacement-routes-both-structurally-proven">Two replacement routes, both structurally proven</h2>
+<p><strong>A. Overwrite the file in place</strong>, under its existing path/filename, inside a DLC-folder-precedence override (no encoder exists in this project — needs a third-party video encoder, outside this standard-library-only toolkit).</p>
+<p><strong>B. Retarget a decl to a new filename instead</strong> (new this pass): extract the target decl, patch the field to a new path with the generic decl-patch tool, and remember the filename-suffix convention above for the four field kinds that need it.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Which engine code decides between the static loading-screen image and the video, or whether both can show together — not resolved, the game's main code is encrypted and unreadable here.</li>
+<li>What the always-empty-in-retail "looping"/"checkpoint" loading-video fields do if a mod ever sets them.</li>
+<li>TNO's own DLC folder does not exist on the tested install, so TNO DLC videos are unverifiable there.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Swap two existing, equally short videos against each other under one file's name (no new content needed), inside a DLC-folder-precedence override. Trigger the scene that plays that video and confirm it plays the other file's content without error — the last open question after this pass.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R2-Tnomodels.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Model Formats: Static Solved, Skinned Vertex/Index Block Now Decoded</a><a class="next" href="Research-Report-R2-Wwisereplace.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Sound Replacement Write Path (TNC Wwise Audio)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The SWF-Based UI: Format, Menu Entries, and HUD Restyling – Wolfenstein Modloader</title>
+<meta name="description" content="Wolfenstein II&#x27;s Flash-like menu and HUD files: their format, menu entries, and what can be restyled.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>The SWF-Based UI: Format, Menu Entries, and HUD Restyling</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R3-Swfui"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#format">Format</a></li><li><a href="#menu-construction">Menu construction</a></li><li><a href="#hud-restyling--two-channels-very-different-outlook">HUD restyling — two channels, very different outlook</a></li><li><a href="#dev-menu--a-dead-end-for-tnc-specifically">Dev menu — a dead end for TNC specifically</a></li><li><a href="#open--needs-a-live-test">Open / needs a live test</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report studied the menu and HUD system of Wolfenstein II: The New Colossus, which is built on id Software&#x27;s own Flash-like binary format (idSWF). It redid an earlier pass that had looked at the wrong game&#x27;s files by mistake, and found that 17 of the 18 UI files are <span class="t" data-t="compression">compressed</span>. Plain HUD icon textures can be swapped with the already-proven texture route, but the artwork packed inside the UI files themselves cannot be edited yet; all of this is static analysis, and whether a new menu entry appears needs an in-game test.</p><ul><li>TNC has 18 .bswf UI files (format version 31); reading them without decompressing gives convincing-looking garbage.</li><li>Chapter and DLC menu content is ordinary, patchable decl data; the UI files only provide named containers.</li><li>About 1,700 HUD/GUI images are normal textures; none of 1,430 sampled uses virtual texturing.</li><li>The art atlas embedded in each UI file is blocked: there is no reader or writer for its format.</li><li>The dev menu file debugmenu.txt does not exist in any of the 24 TNC archives.</li></ul></div><div class="de"><p class="lede">Dieser Bericht untersucht das Menü- und HUD-System von Wolfenstein II: The New Colossus, das auf id Softwares eigenem Flash-ähnlichen Binärformat (idSWF) beruht. Er wiederholt einen früheren Durchlauf, der versehentlich die Dateien des falschen Spiels untersucht hatte, und stellt fest, dass 17 der 18 UI-Dateien <span class="t" data-t="compression">komprimiert</span> sind. Einfache HUD-Icon-Texturen lassen sich über den bereits bewiesenen Texturweg tauschen, die in den UI-Dateien selbst verpackten Grafiken aber noch nicht; alles ist statische Analyse, und ob ein neuer Menüeintrag erscheint, braucht einen Test im Spiel.</p><ul><li>TNC hat 18 .bswf-UI-Dateien (Formatversion 31); liest man sie ohne Entpacken, erhält man überzeugend aussehenden Datenmüll.</li><li>Kapitel- und DLC-Menüinhalte sind normale, patchbare Decl-Daten; die UI-Dateien liefern nur benannte Container.</li><li>Etwa 1.700 HUD/GUI-Bilder sind normale Texturen; keines von 1.430 geprüften nutzt Virtual Texturing.</li><li>Der in jede UI-Datei eingebettete Grafik-Atlas ist blockiert: Für sein Format gibt es weder Leser noch Schreiber.</li><li>Die Dev-Menü-Datei debugmenu.txt existiert in keinem der 24 TNC-Archive.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>This track investigates TNC's menu/HUD system, which is built on id Software's own closed Flash-like binary format (idSWF), asking whether a custom-map menu entry or HUD restyling is possible without an SWF bytecode writer. An earlier pass accidentally analyzed the wrong game's files entirely (a tooling default silently falls back to The New Order when both games are installed), and this pass redid the whole investigation against the real TNC archives, catching and documenting that mistake plus a second one — TNC's UI files are compressed and silently produce plausible-looking garbage if read without decompressing first. Everything here is static format/corpus analysis — the actual, still-open question of whether a new menu entry shows up on screen needs a real in-game test, already queued by a related report and unaffected by this pass's corrections.</p>
+<h2 id="format">Format</h2>
+<p>TNC has 18 distinct <code>.bswf</code> UI files (idSWF version 31 — a real, later format than the version 20 reported for the other game by the earlier mis-scoped pass). 17 of the 18 are Kraken-compressed; reading them without decompressing first produces data that <em>looks</em> plausible but is complete garbage (wrong magic, nonsense dimensions) — worth flagging as an easy trap for any future tooling touching these files. Unlike the other game, TNC embeds its bitmap/dictionary atlas data directly inside each (larger) <code>.bswf</code> file rather than in a separate sibling file — there is no separate atlas file to re-encode. The header's stage-size field (two big-endian floats) and a following frame-rate field hold corpus-wide once correctly decompressed: 14 files at 1920×1080, 4 at 1280×960, frame value 60 in 17/18 files (one file is a build-specific outlier at 61).</p>
+<h2 id="menu-construction">Menu construction</h2>
+<p>Chapter and DLC content is still plain, patchable decl data (<code>chapter</code>/<code>chaptervariation</code>) resolved through the normal patch-layer mechanism — the SWF layer only supplies named UI containers that compiled game code fills in. The real shell/main-menu file lists 29 named sprite containers (including a <code>_absLeft_devMenu</code> one) and contains <strong>zero</strong> console-variable-shaped strings in its text pool — the one coincidental substring match was proven by byte-context inspection to sit inside unrelated binary shape data, not a real reference. Per-screen, the number of individually-named "item" slots ranges from 4 to 46 across different screens, which looks more like each screen's own authored instance count than one shared list-length cap — but this is inference from file structure, not a read of the actual bytecode (no disassembler for this format exists in the project).</p>
+<h2 id="hud-restyling--two-channels-very-different-outlook">HUD restyling — two channels, very different outlook</h2>
+<ul>
+<li><strong>Standalone icon/texture assets</strong> (the low-risk, already-proven channel): TNC's real GUI/HUD texture convention is <code>textures/guis/...</code>/<code>textures/effects/hud/...</code>, under which roughly 1,700+ <code>image</code> and similarly many <code>material</code> entries exist. A large sample (1,430 of them) was checked and <strong>none</strong> use virtual texturing — they're ordinary BC-compressed textures, the same pipeline already proven in-game for a weapon skin.</li>
+<li><strong>The embedded per-screen atlas</strong> inside each <code>.bswf</code> — this is where restyling actually touches the menu/HUD chrome itself, and it remains blocked: there is no reader or writer for the idSWF dictionary/bitmap-tag structure the atlas data lives in. The archive write mechanics themselves (compressing and writing back into the slot) are not the obstacle — the project's existing archive-writer code already round-trips this kind of compressed entry — only a format-level serializer for the embedded bitmap content is missing, and that is a substantially larger reverse-engineering project than re-encoding a sibling file would have been.</li>
+</ul>
+<h2 id="dev-menu--a-dead-end-for-tnc-specifically">Dev menu — a dead end for TNC specifically</h2>
+<p>The file the project's existing dev-menu-unlock tooling injects into (<code>debugmenu.txt</code>) is <strong>absent from all 24 real TNC archives</strong> — the entire "dev menu exists, but the renderer isn't connected" finding documented for the other game simply doesn't apply here; TNC doesn't even ship the target file to test.</p>
+<h2 id="open--needs-a-live-test">Open / needs a live test</h2>
+<ul>
+<li>Whether an appended <code>chaptervariation</code> entry actually appears as a selectable item in the chapter-select screen — the decisive, already-queued in-game test from the related DLC-ownership report, unaffected by anything in this pass.</li>
+<li>Whether TNC's localization text tables (a different, encrypted container type than the plain text files the HUD-text-rewrite technique was proven against) support the same byte-length-exact rewrite trick — not attempted this pass.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R3-Npcswap.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>NPC Model and Skin Swap: Reskinning vs. Replacing a Model</a><a class="next" href="Research-Report-R3-Tileinner.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Texture Codec 2 Tile Chains: Inner Pixel Layout (Still Unsolved)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

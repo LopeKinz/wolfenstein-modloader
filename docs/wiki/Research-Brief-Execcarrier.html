@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker w-execcarrier-a1; task execcarrier; implement.
-Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Read .agent-cache/WORKER.md. Bus: python "%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
 Parallel: w-savestructure-a1.</p>
 <h1 id="objective">Objective</h1>
 <p>Assemble the smallest mountable DLC that carries one <code>cfile</code> resource, so the
@@ -86,7 +86,7 @@ objection disappears.</p>
 <ul>
 <li>re_probes/agent_reports/{idclwriter,cfilekey2,texdbkey,cmdtable}.md</li>
 <li>The live retail DLCs as the structural model, READ ONLY:
-  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus/dlc/dlc_1..3
+  <Steam library>/steamapps/common/Wolfenstein.II.The.New.Colossus/dlc/dlc_1..3
   (<code>dlcinfo.json</code>, <code>base/packagemapspec.json</code>, <code>base/chunk_NN.resources</code>)</li>
 <li><code>dlc/dlc_4</code> is already installed and has mounted successfully before; it
   carries the <code>game/dlc/c02/c2v1_custom</code> alias the script will call. Your
@@ -105,7 +105,7 @@ re_probes/agent_reports/execcarrier.md.</p>
 <p><strong>Do not install anything into the game folder yourself, and do not launch the
 game.</strong> The installer script you write must not run as a side effect of
 building - installing is the user's call, in their window, with their hands.
-No writes to "C:/Users/‹user›/Saved Games". Do not modify dlc_4, re_probes/map_alias_v3/,
+No writes to "%USERPROFILE%/Saved Games". Do not modify dlc_4, re_probes/map_alias_v3/,
 re_probes/idclwriter/, re_probes/custom_save_candidates/, re_probes/cfilekey/,
 docs/*, config.json, or another worker's tools. No pip install.</p>
 <h1 id="hard-constraints">Hard constraints</h1>

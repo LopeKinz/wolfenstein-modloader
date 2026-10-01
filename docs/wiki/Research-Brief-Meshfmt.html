@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker: w-meshfmt-a1; Task: meshfmt; Status: research/implement.
-Read <code>.agent-cache/WORKER.md</code>. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Read <code>.agent-cache/WORKER.md</code>. Bus: python "%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
 Parallel tasks: w-cmfmt-a1 (collision), w-entitypipe-a1 (placement), w-matpipe-a1 (surfaces), w-mapmanifest-a1 (streaming/manifest). You own geometry.</p>
 <h1 id="objective">Objective</h1>
 <p>Make new 3D geometry writable. This is the single hardest remaining piece of "a real custom map", and the survey states it is tractable: a TNC map has no monolithic world blob—it consists of 955 <code>model</code> + 253 <code>modelAsset</code> + 249 <code>modelstream</code> entries placed into the world. Solve the mesh triple, and new shapes become possible.</p>
@@ -70,7 +70,7 @@ Parallel tasks: w-cmfmt-a1 (collision), w-entitypipe-a1 (placement), w-matpipe-a
 <li>Part 1 knowledge, read-only: <code>docs/formats.md</code>, <code>docs/moddingflaeche-tno.md</code> (md6Def is text, geometry in binary <code>.md6mesh</code>), <code>wolfsdk/bim.py</code>. TNC is id Tech 6; its <code>md6Def</code> entries (31 in chunk_22) are the descriptor side and are likely text—read some first, they may name the fields.</li>
 <li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps</li>
 <li>Game data READ ONLY:
-  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+  <Steam library>/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
 </ul>
 <h1 id="ownership">Ownership</h1>
 <p>tools/probe_meshfmt.py (new), re_probes/meshfmt/ (new dir),
@@ -78,7 +78,7 @@ re_probes/agent_reports/meshfmt.md (new).
 <code>wolfsdk/idcl.py</code>, <code>wolfsdk/idclwrite.py</code>, <code>wolfsdk/oodle.py</code>,
 tools/probe_*.py from other workers: READ-ONLY, import them.</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
-<p>No game launch, no process attach, no writes under the Steam install or "C:/Users/‹user›/Saved Games". Do not touch other workers' files or dirs (tools/probe_cmfmt.py, probe_entitypipe.py, probe_matpipe.py, probe_mapmanifest.py, and re_probes/{cmfmt,entitypipe,matpipe,mapmanifest,execcarrier,cfilekey,idclwriter,save_structure,map_alias_v3}/), docs/*, config.json. No pip install.</p>
+<p>No game launch, no process attach, no writes under the Steam install or "%USERPROFILE%/Saved Games". Do not touch other workers' files or dirs (tools/probe_cmfmt.py, probe_entitypipe.py, probe_matpipe.py, probe_mapmanifest.py, and re_probes/{cmfmt,entitypipe,matpipe,mapmanifest,execcarrier,cfilekey,idclwriter,save_structure,map_alias_v3}/), docs/*, config.json. No pip install.</p>
 <h1 id="hard-constraints">Hard constraints</h1>
 <p>Python 3.11, stdlib plus vendored capstone. Reuse <code>wolfsdk/oodle.py</code> for Kraken. Reproducible from the command line, no running game.</p>
 <h1 id="acceptance-criteria">Acceptance criteria</h1>

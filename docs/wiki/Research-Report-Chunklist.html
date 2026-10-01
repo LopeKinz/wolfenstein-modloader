@@ -72,7 +72,7 @@
 </tr>
 <tr>
 <td>4</td>
-<td>Location: <code>ReadJsonFile</code> (<code>0x1217d10</code>) calls <code>fileSystem</code> vtable+0xd0. This is <code>idFileSystemLocal::ReadFile</code> (<code>0x1248630</code>), called with the <strong>naked</strong> name <code>packagechunklist.json</code>, without a path prefix. For comparison: <code>packagemapspec.json</code> receives a DLC prefix at <code>0xac5910</code>. The name is resolved against the search path from the log: 1. <code>C:/Users/‹user›/Saved Games/MachineGames/Wolfenstein II The New Colossus/base/</code>, 2. <code>D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus/base/</code>. The order comes from the log. I did not trace <code>OpenFileReadFlags</code> (<code>0x124d880</code>).</td>
+<td>Location: <code>ReadJsonFile</code> (<code>0x1217d10</code>) calls <code>fileSystem</code> vtable+0xd0. This is <code>idFileSystemLocal::ReadFile</code> (<code>0x1248630</code>), called with the <strong>naked</strong> name <code>packagechunklist.json</code>, without a path prefix. For comparison: <code>packagemapspec.json</code> receives a DLC prefix at <code>0xac5910</code>. The name is resolved against the search path from the log: 1. <code>%USERPROFILE%/Saved Games/MachineGames/Wolfenstein II The New Colossus/base/</code>, 2. <code>&lt;Steam library&gt;/steamapps/common/Wolfenstein.II.The.New.Colossus/base/</code>. The order comes from the log. I did not trace <code>OpenFileReadFlags</code> (<code>0x124d880</code>).</td>
 <td><code>c_readjson_is_filesystem</code>, <code>c_log</code></td>
 </tr>
 <tr>

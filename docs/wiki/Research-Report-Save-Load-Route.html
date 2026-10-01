@@ -46,9 +46,9 @@
 <article class="doc" data-autohint><h2 id="result">Result</h2>
 <p>The viable Retail load path is the standard menu sequence: initialize the game to the main menu, then select <strong>Continue/Resume</strong> (the latest <code>TRANSITION</code> state) or <strong>Load Game</strong>, and subsequently choose slot <code>SLOT2</code> with <code>GAME-AUTOSAVE0</code>. A new <code>idLoadScreen::LaunchLoadScreen("game/wolf/c02/c02p0")</code> and <code>LoadMap(game/wolf/c02/c02p0)</code> block must then appear in the log. For the DLC Canary, only <code>100000</code> versus <code>900000</code> within this block needs to be compared.</p>
 <p>The exact savegame path is occupied by the existing file:</p>
-<pre><code>savegame.user/‹steam-id›/SLOT2/GAME-AUTOSAVE0
+<pre><code>savegame.user/&lt;SteamID&gt;/SLOT2/GAME-AUTOSAVE0
 </code></pre>
-<p><code>re_probes/tnc_dlc_test/runtime_primary_c02/load_save.cfg</code> and <code>load_save.after.cfg</code> contain exactly the engine syntax <code>loadGame savegame.user/‹steam-id›/SLOT2/GAME-AUTOSAVE0</code> (without the leading drive letter or <code>base/</code> part). This syntax is thus occupied as a Console/Config command, but not as a pre-menu start option.</p>
+<p><code>re_probes/tnc_dlc_test/runtime_primary_c02/load_save.cfg</code> and <code>load_save.after.cfg</code> contain exactly the engine syntax <code>loadGame savegame.user/&lt;SteamID&gt;/SLOT2/GAME-AUTOSAVE0</code> (without the leading drive letter or <code>base/</code> part). This syntax is thus occupied as a Console/Config command, but not as a pre-menu start option.</p>
 <h2 id="runtime-evidence">Runtime Evidence</h2>
 <ul>
 <li>In <code>qconsole.after.log</code> (among others from line 5618 onwards), following each fresh start without <code>+map</code>, <code>+exec</code>, or <code>+loadGame</code>:

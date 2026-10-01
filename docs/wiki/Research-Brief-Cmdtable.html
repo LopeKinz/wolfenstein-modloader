@@ -44,8 +44,8 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker w-cmdtable-a1; task cmdtable; research (read-only RE).
-Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
-(identical copy at C:/Users/‹user›/.agents/skills/... ; use one consistently).
+Read .agent-cache/WORKER.md. Bus: python "%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+(identical copy at %USERPROFILE%/.agents/skills/... ; use one consistently).
 Two other workers run in parallel on other hosts (astra-map-v3 = map bundle,
 astra-save-v3 = save serialization). Stay inside your ownership.</p>
 <h1 id="objective">Objective</h1>
@@ -93,7 +93,7 @@ re_probes/agent_reports/custom_save_registration.md.</p>
 re_probes/agent_reports/cmdtable.md (new).</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
 <p>No launching the game, no writing to the Steam install, no writing to
-"C:/Users/‹user›/Saved Games", no process attach or memory writes. Read module.bin
+"%USERPROFILE%/Saved Games", no process attach or memory writes. Read module.bin
 read-only. Do not edit anything owned by others: tools/build_tnc_map_alias_v3.py,
 tools/verify_tnc_map_alias_v3.py, re_probes/map_alias_v3/,
 tools/build_custom_save_candidate.py, tools/probe_details_checksum.py,

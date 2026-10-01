@@ -77,25 +77,25 @@
  "Home": {
   "status": "reference",
   "en": {
-   "oneLine": "Start page: what is known about modding both Wolfenstein games and which page answers which question.",
-   "summary": "This is the entry page of the wiki for Wolfenstein: The New Order (id Tech 5) and Wolfenstein II: The New Colossus (id Tech 6). It explains the three levels of proof used everywhere: measured in the running game, inferred from the program file, or only speculated from a text string. It then lists what works, what does not and what is unverified for each game. In short, The New Order can be read, patched and loaded with mods, while for Wolfenstein II the tool could only read files and not yet write mods at the time.",
+   "oneLine": "Start page: how proof is graded, which page answers which question, and what works in both games.",
+   "summary": "The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game. It also links to the detailed pages and to read-only tools that recompute the evidence.",
    "points": [
-    "Three proof levels: measured, inferred, speculated; a text in the program file alone proves nothing.",
-    "TNO: 14/14 rebuilt archives loaded in the game, 48 minutes of play with 0 errors in the log.",
-    "TNO: new 3D geometry, particle changes and patching the program file do not work.",
-    "TNC: developer console works; writing mods was not possible yet (no write path).",
-    "The documents contradicted each other in 20 places; 17 were fixed, 3 remain open."
+    "Strict rule: a text found in the game program does not prove the feature exists; only 222 of 2,231 harvested setting names in Wolfenstein II were real.",
+    "The New Order: patched archives load in game (14/14 rebuilt files, 48 minutes of play, 0 errors); the {console|console} stays locked.",
+    "Wolfenstein II: value edits (pistol magazine 10 to 30), a custom weapon skin and a custom map are confirmed in a running game.",
+    "Wolfenstein II: the encrypted config files were cracked and used to run God mode and infinite ammo in a real save.",
+    "Still not working or unverified: The New Order's new 3D models and megatexture pixels, Wolfenstein II's megatexture pixels and loose files."
    ]
   },
   "de": {
-   "oneLine": "Startseite: was über das Modding beider Wolfenstein-Spiele bekannt ist und welche Seite welche Frage beantwortet.",
-   "summary": "Das ist die Einstiegsseite des Wikis zu Wolfenstein: The New Order (id Tech 5) und Wolfenstein II: The New Colossus (id Tech 6). Sie erklärt die drei Beweisstufen, die überall gelten: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur aus einem Textstring vermutet. Danach listet sie für jedes Spiel, was funktioniert, was nicht und was ungeprüft ist. Kurz gesagt: The New Order kann gelesen, gepatcht und mit Mods geladen werden, bei Wolfenstein II konnte das Werkzeug damals nur Dateien lesen, aber noch keine Mods schreiben.",
+   "oneLine": "Startseite: wie Beweise bewertet werden, welche Seite welche Frage beantwortet und was in beiden Spielen geht.",
+   "summary": "Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie erklärt drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur als Text in der Datei gefunden. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist. Dazu kommen Links zu den Detailseiten und zu Werkzeugen, die die Belege nur lesend nachrechnen.",
    "points": [
-    "Drei Beweisstufen: gemessen, abgeleitet, vermutet; ein Text in der Programmdatei allein beweist nichts.",
-    "TNO: 14/14 neu gebaute Archive im Spiel geladen, 48 Minuten Spielzeit mit 0 Fehlern im Log.",
-    "TNO: neue 3D-Geometrie, Partikeländerungen und das Patchen der Programmdatei funktionieren nicht.",
-    "TNC: Entwicklerkonsole funktioniert; Mods schreiben war noch nicht möglich (kein Schreibpfad).",
-    "Die Dokumente widersprachen sich an 20 Stellen; 17 wurden behoben, 3 sind offen."
+    "Strenge Regel: Ein Text im Spielprogramm beweist nicht, dass die Funktion existiert; von 2.231 gesammelten Einstellungsnamen in Wolfenstein II waren nur 222 echt.",
+    "The New Order: gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); die {console|Konsole} bleibt gesperrt.",
+    "Wolfenstein II: Wertänderungen (Pistolenmagazin 10 auf 30), ein eigener Waffenskin und eine eigene Karte sind im laufenden Spiel bestätigt.",
+    "Wolfenstein II: Die verschlüsselten Konfigurationsdateien wurden geknackt und damit Gottmodus und unendliche Munition in einem echten Spielstand ausgelöst.",
+    "Noch nicht möglich oder unbestätigt: neue 3D-Modelle und Megatextur-Pixel in The New Order, Megatextur-Pixel und lose Dateien in Wolfenstein II."
    ]
   }
  },
@@ -370,8 +370,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
-   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
+   "en": "Newer than this page: the wiki's start page now records custom maps as working and measured in The New Colossus – a dlc_0 folder takes over map c2v1, confirmed in game with a relit light layout and a normal mission start. The text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Karten in The New Colossus jetzt als funktionierend und gemessen – ein dlc_0-Ordner übernimmt die Karte c2v1, im Spiel bestätigt mit neu beleuchtetem Licht-Layout und normalem Missionsstart. Der Text unten zeigt noch den früheren Stand."
   }
  },
  "Virtual-Texture-Planes": {
@@ -427,25 +427,25 @@
  "Known-Contradictions": {
   "status": "reference",
   "en": {
-   "oneLine": "Log of 20 contradictions found in the project's docs and code, and how each one was resolved.",
-   "summary": "This page is a cleanup log for the project's documentation about modding Wolfenstein: The New Order and The New Colossus. All docs were compared with the code and with files on disk, and 20 places were found where they disagreed or presented a guess as a measurement. For each point the page says what was fixed and what stays open. The goal is to keep \"measured\" and \"assumed\" clearly apart.",
+   "oneLine": "Log of 22 contradictions found between the project's docs and code, and how each was fixed.",
+   "summary": "This page compares what the project's documents and tool code claim about Wolfenstein: The New Order modding, mostly, and lists every place where they disagreed. Each of the 22 points says what was wrong, what was changed, or why it is still open. The rule was strict: where proof was missing, the text now says unverified instead of works. This matters because the whole project depends on keeping measured facts apart from guesses.",
    "points": [
-    "17 of 20 points are fixed; 3 still have an open remainder or exist only in the code.",
-    "The intro-skip {cvar|setting} is passed on but wiped again by the game's cheat reset, so the docs no longer promise it works.",
-    "A patched run of about 48 minutes loaded all 14 rewritten archives with 373 patched assets and 0 error lines in the log.",
-    "The megatexture folder was remeasured at 39 files and 35.6 GB, replacing the wrong figures of 34 and 41 GB.",
-    "Still open: whether the intro actually skips, whether self-made images look right on screen, and whether backups are bit-exact."
+    "17 of the first 20 points are fixed; 3 still need a game start or a Steam file check to close.",
+    "The game log shows that command-line {cvar|cheat settings} such as intro-skip are accepted and then wiped by a cheat reset.",
+    "A 48-minute game run with all 14 patched {archive|archives} and 373 changed assets logged zero errors.",
+    "Several wrong numbers were remeasured, for example the virtual texture data is 39 files and 35.6 GB.",
+    "Added later: SpawnAI is not a real command in the retail build (a static correction, never typed in game), and the cfile type is now usable, but only for small config files."
    ]
   },
   "de": {
-   "oneLine": "Protokoll von 20 Widersprüchen in Doku und Code des Projekts und wie jeder aufgelöst wurde.",
-   "summary": "Diese Seite ist ein Aufräumprotokoll für die Projektdoku zum Modding von Wolfenstein: The New Order und The New Colossus. Alle Dokumente wurden mit dem Code und den Dateien auf der Platte verglichen. Dabei fanden sich 20 Stellen, die sich widersprachen oder eine Vermutung als Messung ausgaben. Für jeden Punkt steht dort, was korrigiert wurde und was offen bleibt. Ziel ist, „gemessen“ und „angenommen“ klar zu trennen.",
+   "oneLine": "Protokoll von 22 Widersprüchen zwischen Doku und Code des Projekts und wie sie behoben wurden.",
+   "summary": "Diese Seite vergleicht, was die Dokumente und der Tool-Code des Projekts vor allem über das Modden von Wolfenstein: The New Order behaupten, und listet jede Stelle auf, an der sie sich widersprachen. Jeder der 22 Punkte sagt, was falsch war, was geändert wurde oder warum er noch offen ist. Die Regel war streng: Wo ein Beweis fehlte, steht jetzt unbestätigt statt funktioniert. Das ist wichtig, weil das ganze Projekt davon lebt, gemessene Fakten von Vermutungen zu trennen.",
    "points": [
-    "17 von 20 Punkten sind behoben; bei 3 bleibt ein Rest offen oder sie betreffen nur den Code.",
-    "Die {cvar|Einstellung} zum Überspringen des Intros kommt zwar an, wird aber vom Cheat-Reset des Spiels wieder gelöscht. Die Doku verspricht das daher nicht mehr.",
-    "Ein gepatchter Lauf von etwa 48 Minuten lud alle 14 neu geschriebenen Archive mit 373 gepatchten Assets, ohne eine einzige Fehlerzeile im Log.",
-    "Der Megatextur-Ordner wurde neu vermessen: 39 Dateien und 35,6 GB statt der falschen Angaben von 34 und 41 GB.",
-    "Noch offen: ob das Intro wirklich übersprungen wird, ob selbst gebaute Bilder im Spiel richtig aussehen und ob die Backups bitgenau sind."
+    "17 der ersten 20 Punkte sind behoben; 3 brauchen noch einen Spielstart oder eine Steam-Dateiprüfung.",
+    "Das Spiel-Log zeigt, dass {cvar|Cheat-Einstellungen} wie Intro-Skip über die Kommandozeile angenommen und dann durch einen Cheat-Reset gelöscht werden.",
+    "Ein 48-minütiger Spiellauf mit allen 14 gepatchten {archive|Archiven} und 373 geänderten Assets lieferte null Fehler im Log.",
+    "Mehrere falsche Zahlen wurden neu gemessen, zum Beispiel sind die virtuellen Texturen 39 Dateien mit 35,6 GB.",
+    "Später ergänzt: SpawnAI ist im Retail-Build kein echter Befehl (statische Korrektur, nie im Spiel eingetippt), und der Typ cfile ist jetzt nutzbar, aber nur für kleine Konfigurationsdateien."
    ]
   }
  },
@@ -499,8 +499,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: custom weapon skins now show up correctly in The New Colossus (27 Sep 2026).",
-   "de": "Neuer als diese Seite: Eigene Waffen-Skins erscheinen inzwischen korrekt in The New Colossus (27.09.2026)."
+   "en": "Newer than this page: the wiki's start page now records custom weapon skins as working and measured in The New Colossus – a custom BC1 pistol skin shows on the first-person model in the running game.",
+   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Waffen-Skins in The New Colossus jetzt als funktionierend und gemessen – ein eigener BC1-Pistolen-Skin erscheint im laufenden Spiel am Modell in der Ich-Perspektive."
   }
  },
  "Research-Report-Texdbkey": {
@@ -528,8 +528,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: custom weapon skins now show up correctly in The New Colossus (27 Sep 2026).",
-   "de": "Neuer als diese Seite: Eigene Waffen-Skins erscheinen inzwischen korrekt in The New Colossus (27.09.2026)."
+   "en": "Newer than this page: the wiki's start page now records custom weapon skins as working and measured in The New Colossus – a custom BC1 pistol skin shows on the first-person model in the running game.",
+   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Waffen-Skins in The New Colossus jetzt als funktionierend und gemessen – ein eigener BC1-Pistolen-Skin erscheint im laufenden Spiel am Modell in der Ich-Perspektive."
   }
  },
  "Research-Report-Cfilekey2": {
@@ -832,8 +832,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
-   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
+   "en": "Newer than this page: the wiki's start page now records custom maps as working and measured in The New Colossus – a dlc_0 folder takes over map c2v1, confirmed in game with a relit light layout and a normal mission start. The text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Karten in The New Colossus jetzt als funktionierend und gemessen – ein dlc_0-Ordner übernimmt die Karte c2v1, im Spiel bestätigt mit neu beleuchtetem Licht-Layout und normalem Missionsstart. Der Text unten zeigt noch den früheren Stand."
   }
  },
  "Research-Report-Texdb-Rewrite": {
@@ -859,8 +859,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: custom weapon skins now show up correctly in The New Colossus (27 Sep 2026).",
-   "de": "Neuer als diese Seite: Eigene Waffen-Skins erscheinen inzwischen korrekt in The New Colossus (27.09.2026)."
+   "en": "Newer than this page: the wiki's start page now records custom weapon skins as working and measured in The New Colossus – a custom BC1 pistol skin shows on the first-person model in the running game.",
+   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Waffen-Skins in The New Colossus jetzt als funktionierend und gemessen – ein eigener BC1-Pistolen-Skin erscheint im laufenden Spiel am Modell in der Ich-Perspektive."
   }
  },
  "Research-Brief-Command-Queue": {
@@ -889,25 +889,25 @@
  "Asset-Loading-Paths": {
   "status": "open",
   "en": {
-   "oneLine": "Can both games load loose modded files from disk instead of rewritten archives? Candidates and planned tests.",
-   "summary": "This page looks for ways to make Wolfenstein: The New Order (TNO) and Wolfenstein II: The New Colossus (TNC) load single modded files from disk, so mods would not need to rewrite the game's {archive|archives}. The evidence comes from text inside the game programs, config files and game logs, because the program code itself is encrypted. TNO has a promising extra search folder setting and a DLC folder scan; TNC has a setting for loose assets and a well-documented DLC folder format. None of this has been tested in the game yet; the page lists eight experiments to decide it.",
+   "oneLine": "Can both games load loose mod files from disk instead of rewritten archives? Clues, dead ends and planned tests.",
+   "summary": "This page asks whether Wolfenstein: The New Order and Wolfenstein II: The New Colossus can read loose mod files from a folder, so modders would not have to rewrite the game's {archive|archives}. It collects clues from the game files and logs: The New Order has an extra 'overlay' search path setting, and The New Colossus has a setting called resource_loadLooseAssets plus a well-structured DLC folder format. None of these routes has been proven to actually replace a game asset; the page lists eight experiments (E1–E8) to settle it, none of which had been run when it was written.",
    "points": [
-    "TNO has a {cvar|setting} called fs_overlaypath, described as an extra game folder that takes priority over the normal one. Not yet tested.",
-    "TNC has resource_loadLooseAssets, described as checking for loose files before reading from an archive. Whether it works in the retail game is open.",
-    "The TNC setting image_useLooseStreaming has nothing to do with loose files on disk; it only switches between two texture streaming methods.",
-    "Neither game has a classic mod folder setting like fs_game or fs_mod.",
-    "TNC's DLC folders (dlc_1 to dlc_3) show a clear format with no visible ownership check, so a self-made dlc_4 is the most plausible way to add content. TNO's DLC scan includes a 'User does not own this DLC' check."
+    "The New Order: the fs_overlaypath setting claims priority over the normal game folder, but no test shows a loose file beating the archive yet.",
+    "The game writes 76 loose cache files into base/generated at runtime, proven from timestamps; whether it also reads them back is untested.",
+    "The New Colossus: resource_loadLooseAssets literally means 'check for loose assets', but its effect in the retail game is unproven.",
+    "There is no classic mod-folder setting (fs_game, fs_mod) in either game, and image_useLooseStreaming has nothing to do with loose files.",
+    "DLC folders are the maker's own expansion path: The New Order checks Steam ownership, The New Colossus shows no visible ownership check."
    ]
   },
   "de": {
-   "oneLine": "Können beide Spiele lose Mod-Dateien statt umgeschriebener Archive laden? Kandidaten und geplante Tests.",
-   "summary": "Diese Seite sucht Wege, wie Wolfenstein: The New Order (TNO) und Wolfenstein II: The New Colossus (TNC) einzelne veränderte Dateien direkt von der Festplatte laden, damit Mods die {archive|Archive} des Spiels nicht umschreiben müssen. Die Belege stammen aus Texten in den Spielprogrammen, aus Config-Dateien und Spiel-Logs, weil der eigentliche Programmcode verschlüsselt ist. TNO hat eine vielversprechende Einstellung für einen zusätzlichen Suchordner und durchsucht einen DLC-Ordner; TNC hat eine Einstellung für lose Assets und ein gut dokumentiertes DLC-Ordnerformat. Nichts davon ist bisher im Spiel getestet; die Seite beschreibt acht Experimente, die das klären sollen.",
+   "oneLine": "Können beide Spiele lose Mod-Dateien statt umgeschriebener Archive laden? Hinweise, Sackgassen und geplante Tests.",
+   "summary": "Diese Seite untersucht, ob Wolfenstein: The New Order und Wolfenstein II: The New Colossus lose Mod-Dateien aus einem Ordner lesen können, damit Modder die {archive|Archive} des Spiels nicht umschreiben müssen. Sie sammelt Hinweise aus den Spieldateien und Logs: The New Order hat eine zusätzliche „Overlay“-Suchpfad-Einstellung, The New Colossus eine Einstellung namens resource_loadLooseAssets und ein gut strukturiertes DLC-Ordnerformat. Keiner dieser Wege ist bisher als echter Ersatz für ein Spiel-Asset bewiesen; die Seite listet acht Experimente (E1–E8), die beim Schreiben noch nicht durchgeführt waren.",
    "points": [
-    "TNO hat eine {cvar|Einstellung} namens fs_overlaypath, beschrieben als zusätzlicher Spielordner mit Vorrang vor dem normalen. Noch nicht getestet.",
-    "TNC hat resource_loadLooseAssets, beschrieben als Prüfung auf lose Dateien vor dem Lesen aus einem Archiv. Ob das im Verkaufsspiel funktioniert, ist offen.",
-    "Die TNC-Einstellung image_useLooseStreaming hat nichts mit losen Dateien zu tun; sie wechselt nur zwischen zwei Arten des Textur-Streamings.",
-    "Keines der beiden Spiele hat eine klassische Mod-Ordner-Einstellung wie fs_game oder fs_mod.",
-    "Die DLC-Ordner von TNC (dlc_1 bis dlc_3) zeigen ein klares Format ohne sichtbare Besitzprüfung, daher ist ein selbst gebautes dlc_4 der plausibelste Weg für neue Inhalte. Die DLC-Suche von TNO enthält dagegen eine Prüfung „User does not own this DLC“."
+    "The New Order: Die Einstellung fs_overlaypath beansprucht Vorrang vor dem normalen Spielordner, aber kein Test zeigt bisher, dass eine lose Datei das Archiv schlägt.",
+    "Das Spiel schreibt zur Laufzeit 76 lose Cache-Dateien nach base/generated, belegt durch Zeitstempel; ob es sie auch wieder einliest, ist ungetestet.",
+    "The New Colossus: resource_loadLooseAssets bedeutet wörtlich „nach losen Assets suchen“, die Wirkung im Verkaufsspiel ist aber unbewiesen.",
+    "Keines der beiden Spiele hat eine klassische Mod-Ordner-Einstellung (fs_game, fs_mod), und image_useLooseStreaming hat nichts mit losen Dateien zu tun.",
+    "DLC-Ordner sind der offizielle Erweiterungsweg: The New Order prüft den Steam-Besitz, bei The New Colossus ist keine Besitzprüfung sichtbar."
    ]
   }
  },
@@ -1036,8 +1036,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: custom weapon skins now show up correctly in The New Colossus (27 Sep 2026).",
-   "de": "Neuer als diese Seite: Eigene Waffen-Skins erscheinen inzwischen korrekt in The New Colossus (27.09.2026)."
+   "en": "Newer than this page: the wiki's start page now records custom weapon skins as working and measured in The New Colossus – a custom BC1 pistol skin shows on the first-person model in the running game.",
+   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Waffen-Skins in The New Colossus jetzt als funktionierend und gemessen – ein eigener BC1-Pistolen-Skin erscheint im laufenden Spiel am Modell in der Ich-Perspektive."
   }
  },
  "Research-Report-Missions": {
@@ -1268,23 +1268,23 @@
  "Research-Artifacts": {
   "status": "reference",
   "en": {
-   "oneLine": "Inventory of the large research files kept in the repository instead of the wiki.",
-   "summary": "This page lists the generated research files behind the wiki, such as rebuilt game archives, texture databases, screenshots and logs. They stay in the project repository rather than the wiki because many are several gigabytes and would exceed GitHub file-size limits. It gives file counts and sizes per research area and per file type. It is a catalog for orientation, not a research result.",
+   "oneLine": "Inventory of the project's raw research files and an index of the round 2–5 research reports.",
+   "summary": "This page lists the large raw files produced by the reverse-engineering work, which stay in the code repository instead of the wiki because they are too big. It also links every research report from rounds 2 to 5, added on 1 October 2026. It notes that this research is static (reading files and code) unless a page says a change was confirmed in the running game.",
    "points": [
-    "In total 1,918 files with 7.4 GiB.",
-    "The largest share is 60 .resources {archive|archive} files (3.8 GiB) and 28 .texdb files (2.5 GiB).",
-    "The biggest area is 'kitmap' with 1.6 GiB.",
-    "Every prose research note is in the wiki as its own page; only the large generated files stay out."
+    "Inventory size at generation time: 1,918 files, 7.4 GiB in total.",
+    "The biggest parts are game archives (.resources, 3.8 GiB) and texture databases (.texdb, 2.5 GiB).",
+    "Round 2 has 10 reports, round 3 has 11, round 4 has 11 and round 5 has 1.",
+    "The console unlock and the Kiscule Command node are written up with in-game proof on the TNC Console Unlock page."
    ]
   },
   "de": {
-   "oneLine": "Übersicht über die großen Forschungsdateien, die im Repository statt im Wiki liegen.",
-   "summary": "Diese Seite listet die erzeugten Forschungsdateien hinter dem Wiki auf, etwa neu gebaute Spielarchive, Texturdatenbanken, Screenshots und Logs. Sie bleiben im Projekt-Repository statt im Wiki, weil viele mehrere Gigabyte groß sind und die Dateigrößen-Grenzen von GitHub sprengen würden. Die Seite nennt Dateianzahl und Größe pro Forschungsbereich und pro Dateityp. Sie ist ein Katalog zur Orientierung, kein Forschungsergebnis.",
+   "oneLine": "Bestandsliste der Rohdaten des Projekts und Index der Forschungsberichte aus den Runden 2–5.",
+   "summary": "Diese Seite listet die großen Rohdateien der Reverse-Engineering-Arbeit auf, die wegen ihrer Größe im Code-Repository statt im Wiki bleiben. Außerdem verlinkt sie alle Forschungsberichte der Runden 2 bis 5, die am 1. Oktober 2026 dazukamen. Sie weist darauf hin, dass diese Forschung statisch ist (Dateien und Code lesen), außer eine Seite sagt ausdrücklich, dass eine Änderung im laufenden Spiel bestätigt wurde.",
    "points": [
-    "Insgesamt 1.918 Dateien mit 7,4 GiB.",
-    "Den größten Anteil haben 60 .resources-{archive|Archiv}dateien (3,8 GiB) und 28 .texdb-Dateien (2,5 GiB).",
-    "Der größte Bereich ist „kitmap“ mit 1,6 GiB.",
-    "Jede Forschungsnotiz in Textform steht als eigene Seite im Wiki; nur die großen erzeugten Dateien bleiben draußen."
+    "Umfang zum Erstellungszeitpunkt: 1.918 Dateien, insgesamt 7,4 GiB.",
+    "Die größten Anteile sind Spielarchive (.resources, 3,8 GiB) und Texturdatenbanken (.texdb, 2,5 GiB).",
+    "Runde 2 hat 10 Berichte, Runde 3 hat 11, Runde 4 hat 11 und Runde 5 einen.",
+    "Konsolen-Freischaltung und der Kiscule-Command-Knoten sind mit Beweis im Spiel auf der Seite TNC Console Unlock beschrieben."
    ]
   }
  },
@@ -1434,32 +1434,32 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
-   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
+   "en": "Newer than this page: the wiki's start page now records custom maps as working and measured in The New Colossus – a dlc_0 folder takes over map c2v1, confirmed in game with a relit light layout and a normal mission start. The text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Karten in The New Colossus jetzt als funktionierend und gemessen – ein dlc_0-Ordner übernimmt die Karte c2v1, im Spiel bestätigt mit neu beleuchtetem Licht-Layout und normalem Missionsstart. Der Text unten zeigt noch den früheren Stand."
   }
  },
  "TNC-Modding-Surface": {
   "status": "reference",
   "en": {
-   "oneLine": "A measured map of what can and cannot be modded in the Wolfenstein II game archives.",
-   "summary": "This page surveys all 24 {archive|archives} of Wolfenstein II: The New Colossus (TNC) and sorts what modders can change. Most gameplay values live in 141 readable text formats, and the project's parser reads 44,140 of 44,374 text files without error and edits them correctly. The page lists the concrete levers for difficulty, enemy health, weapon damage, starting gear, gore and perks. Game text is {encryption|encrypted} and out of reach, and whether patch archives win over base archives was still unmeasured.",
+   "oneLine": "Map of what can and cannot be changed in Wolfenstein II's game files, with measured numbers.",
+   "summary": "This page surveys all 24 archives of Wolfenstein II: The New Colossus and sorts the 174 kinds of game files into easy, harder and impossible to change. Most game settings are plain-text definitions that the project's parser reads and edits without errors. It lists the useful levers: difficulty, enemy health, weapon damage, starting gear, gore and perks. It also explains how much space an edit may take inside an {archive|archive} and which questions are still open.",
    "points": [
-    "24 archives with 178,077 entries and 174 resource types were measured.",
-    "Test edits worked 1,432 of 1,432 times, and the parser never crashed.",
-    "Difficulty is seven tiny tables; 'Mein Leben' uses the same 1.75 damage multiplier as 'Nightmare'.",
-    "Recompressed data is byte-identical to the original game files (401 of 401 samples).",
-    "Nothing was tested in the game itself, because the game was not started."
+    "24 archives, 178,077 entries, 174 types; 141 types are text, and 44,140 of 44,374 text files parse with 0 errors.",
+    "Edit test: 1,432 of 1,432 changed values were written and read back correctly.",
+    "Difficulty is seven tiny tables; 'Mein Leben' uses the same damage value as 'Nightmare' (1.75).",
+    "Edits can grow into zero-filled gaps after each entry; re-packed {compression|compression} is byte-identical to the retail files.",
+    "The encrypted config files are now solved and used to unlock the console in a running game; which archive wins on duplicate names is still unmeasured."
    ]
   },
   "de": {
-   "oneLine": "Eine gemessene Übersicht, was sich in den Archiven von Wolfenstein II modden lässt und was nicht.",
-   "summary": "Diese Seite untersucht alle 24 {archive|Archive} von Wolfenstein II: The New Colossus (TNC) und ordnet, was Modder ändern können. Die meisten Spielwerte stecken in 141 lesbaren Textformaten, und der Parser des Projekts liest 44.140 von 44.374 Textdateien fehlerfrei und bearbeitet sie korrekt. Die Seite nennt die konkreten Stellschrauben für Schwierigkeit, Gegnerleben, Waffenschaden, Startausrüstung, Gore und Perks. Die Spieltexte sind {encryption|verschlüsselt} und nicht erreichbar, und ob Patch-Archive gegen Basis-Archive gewinnen, war noch nicht gemessen.",
+   "oneLine": "Übersicht, was sich in den Spieldateien von Wolfenstein II ändern lässt und was nicht – mit gemessenen Zahlen.",
+   "summary": "Diese Seite untersucht alle 24 Archive von Wolfenstein II: The New Colossus und sortiert die 174 Dateiarten nach leicht, schwerer und unmöglich zu ändern. Die meisten Spielwerte sind Textdefinitionen, die der Parser des Projekts fehlerfrei liest und bearbeitet. Genannt werden die nützlichen Stellschrauben: Schwierigkeit, Gegnerleben, Waffenschaden, Startausrüstung, Gore und Perks. Außerdem erklärt die Seite, wie viel Platz eine Änderung im {archive|Archiv} belegen darf und welche Fragen noch offen sind.",
    "points": [
-    "24 Archive mit 178.077 Einträgen und 174 Ressourcentypen wurden vermessen.",
-    "Teständerungen klappten 1.432 von 1.432 Mal, der Parser stürzte nie ab.",
-    "Die Schwierigkeit steckt in sieben winzigen Tabellen; „Mein Leben“ nutzt denselben Schadensfaktor 1,75 wie „Albtraum“.",
-    "Neu komprimierte Daten sind byte-gleich mit den Originaldateien (401 von 401 Proben).",
-    "Im Spiel selbst wurde nichts getestet, weil das Spiel nicht gestartet wurde."
+    "24 Archive, 178.077 Einträge, 174 Typen; 141 Typen sind Text, 44.140 von 44.374 Textdateien werden mit 0 Fehlern gelesen.",
+    "Bearbeitungstest: 1.432 von 1.432 geänderten Werten wurden korrekt geschrieben und zurückgelesen.",
+    "Die Schwierigkeit steckt in sieben winzigen Tabellen; „Mein Leben“ nutzt denselben Schadenswert wie „Albtraum“ (1,75).",
+    "Änderungen dürfen in mit Nullen gefüllte Lücken hinter jedem Eintrag wachsen; neu gepackte {compression|Kompression} ist byte-identisch zu den Originaldateien.",
+    "Die verschlüsselten Konfigurationsdateien sind gelöst und schalten im laufenden Spiel die Konsole frei; welches Archiv bei doppelten Namen gewinnt, ist noch nicht gemessen."
    ]
   }
  },
@@ -1738,8 +1738,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
-   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
+   "en": "Newer than this page: the wiki's start page now records custom maps as working and measured in The New Colossus – a dlc_0 folder takes over map c2v1, confirmed in game with a relit light layout and a normal mission start. The text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Karten in The New Colossus jetzt als funktionierend und gemessen – ein dlc_0-Ordner übernimmt die Karte c2v1, im Spiel bestätigt mit neu beleuchtetem Licht-Layout und normalem Missionsstart. Der Text unten zeigt noch den früheren Stand."
   }
  },
  "Research-Report-Chunklist": {
@@ -1915,8 +1915,8 @@
    ]
   },
   "update": {
-   "en": "Newer than this page: a custom map has since been loaded and played in The New Colossus – see the screenshot on the start page (27 Sep 2026). The text below still shows the earlier state; the log has not been added to the wiki yet.",
-   "de": "Neuer als diese Seite: Inzwischen wurde eine eigene Karte in The New Colossus geladen und gespielt – siehe Screenshot auf der Startseite (27.09.2026). Der Text unten zeigt noch den früheren Stand; das Log steht noch nicht im Wiki."
+   "en": "Newer than this page: the wiki's start page now records custom maps as working and measured in The New Colossus – a dlc_0 folder takes over map c2v1, confirmed in game with a relit light layout and a normal mission start. The text below still shows the earlier state.",
+   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Karten in The New Colossus jetzt als funktionierend und gemessen – ein dlc_0-Ordner übernimmt die Karte c2v1, im Spiel bestätigt mit neu beleuchtetem Licht-Layout und normalem Missionsstart. Der Text unten zeigt noch den früheren Stand."
   }
  },
  "Research-Report-C2v1-Identity": {
@@ -2245,25 +2245,25 @@
  "Modding-Guide": {
   "status": "reference",
   "en": {
-   "oneLine": "A practical guide to making mods: changing weapons, skins and enemies by editing the game's text definitions.",
-   "summary": "This guide shows, step by step, how to build mods for Wolfenstein: The New Order with the project's tool. Most interesting game data lives in text {decl|definitions}, and a mod is a list of changes to them, either single values or whole files. Examples cover weapon damage and fire rate, weapon skins, and enemy looks, health and weapons. It also explains how mods are layered by priority and common pitfalls, such as inherited values and re-doing backups after a game update.",
+   "oneLine": "Practical guide to writing mods: weapons, skins, enemies, Wolfenstein II console access and load order.",
+   "summary": "This guide shows how to build mods with the project's tool, mostly for Wolfenstein: The New Order. Almost everything interesting lives in {decl|decls}, small text definitions inside the game archives; a mod is a list of changes to them. It walks through changing weapon damage and handling, swapping weapon skins, and changing enemies' looks, health and weapons, plus the proven console unlock for Wolfenstein II: The New Colossus.",
    "points": [
-    "Two kinds of change: 'set' edits single values, 'file' replaces a whole asset; 'set' is usually better.",
-    "A dry run (verify_mods.py) shows every change as a diff before anything is written.",
-    "New 3D models are not possible; 'new' weapons are built by recombining existing parts.",
-    "For weapon skins, the {vt|virtual texture} coordinates (virtualmapping) must be changed along with the texture name.",
-    "When two mods set the same value, the higher priority wins and the conflict is reported."
+    "Prefer surgical 'set' edits that change single values; mods then stay compatible with each other.",
+    "Weapon damage lives in a separate damage decl; a weapon decl like the shotgun's has 169 changeable values.",
+    "A 'new' weapon is a recombination of existing parts, because new 3D models are not possible.",
+    "Enemies are entityDefs (3,182 of them); a game-wide change must cover every chapter variant.",
+    "Mods are applied in priority order (low first); conflicts are reported, not blocked."
    ]
   },
   "de": {
-   "oneLine": "Eine praktische Anleitung zum Modden: Waffen, Skins und Gegner über die Textdefinitionen des Spiels ändern.",
-   "summary": "Diese Anleitung zeigt Schritt für Schritt, wie du mit dem Tool des Projekts Mods für Wolfenstein: The New Order baust. Die meisten interessanten Spieldaten liegen in Text-{decl|Definitionen}, und ein Mod ist eine Liste von Änderungen daran, entweder einzelne Werte oder ganze Dateien. Beispiele zeigen Waffenschaden und Feuerrate, Waffen-Skins sowie Aussehen, Gesundheit und Bewaffnung von Gegnern. Außerdem erklärt sie, wie Mods nach Priorität übereinandergelegt werden, und nennt typische Stolperfallen wie geerbte Werte und neue Backups nach einem Spiel-Update.",
+   "oneLine": "Praktische Anleitung zum Mod-Bau: Waffen, Skins, Gegner, Konsolenzugang in Wolfenstein II und Ladereihenfolge.",
+   "summary": "Diese Anleitung zeigt, wie du mit dem Werkzeug des Projekts Mods baust, vor allem für Wolfenstein: The New Order. Fast alles Interessante steckt in {decl|Decls}, kleinen Textdefinitionen in den Spielarchiven; eine Mod ist eine Liste von Änderungen daran. Sie erklärt, wie du Waffenschaden und Handhabung änderst, Waffen-Skins tauschst und Aussehen, Leben und Waffen von Gegnern anpasst, dazu die bewiesene Konsolen-Freischaltung für Wolfenstein II: The New Colossus.",
    "points": [
-    "Zwei Arten von Änderungen: 'set' ändert einzelne Werte, 'file' ersetzt ein ganzes Asset; 'set' ist meist besser.",
-    "Ein Probelauf (verify_mods.py) zeigt jede Änderung als Diff, bevor etwas geschrieben wird.",
-    "Neue 3D-Modelle sind nicht möglich; 'neue' Waffen entstehen durch Kombination vorhandener Teile.",
-    "Bei Waffen-Skins müssen die {vt|Virtual-Texture}-Koordinaten (virtualmapping) zusammen mit dem Texturnamen geändert werden.",
-    "Setzen zwei Mods denselben Wert, gewinnt die höhere Priorität, und der Konflikt wird gemeldet."
+    "Bevorzuge gezielte „set“-Änderungen einzelner Werte; dann bleiben Mods untereinander verträglich.",
+    "Waffenschaden steckt in einer eigenen damage-Decl; eine Waffen-Decl wie die der Schrotflinte hat 169 änderbare Werte.",
+    "Eine „neue“ Waffe entsteht durch Neukombination vorhandener Teile, weil neue 3D-Modelle nicht möglich sind.",
+    "Gegner sind entityDefs (3.182 Stück); eine spielweite Änderung muss jede Kapitelvariante erfassen.",
+    "Mods werden nach Priorität angewendet (niedrige zuerst); Konflikte werden gemeldet, nicht blockiert."
    ]
   }
  },
@@ -2514,6 +2514,875 @@
     "Neubau mit unverändertem, längerem und kürzerem Namen ist byte-genau.",
     "Gegentests erkennen falsche Längen, auch wenn die Datei-Hashes gültig aussehen.",
     ".verify-Dateien blieben unverändert; die Annahme im laufenden Spiel ist noch nicht getestet."
+   ]
+  }
+ },
+ "TNC-Console-Unlock": {
+  "status": "solved",
+  "en": {
+   "oneLine": "How Wolfenstein II's locked console is opened without patching the game, proven in a real save game.",
+   "summary": "The retail console of Wolfenstein II: The New Colossus only lets you use 34 of 234 commands and 304 of 3,256 settings. Research found that this lock is a single on/off number in the {engine|engine}, and that the built-in command resourceExec turns the lock off while it runs a file. The mod loader puts cheat lines into an unused, encrypted config file and runs it with resourceExec; this was confirmed in the running game, where God mode, Notarget and infinite ammo really worked.",
+   "points": [
+    "Typing 'resourceExec snapdemo.cfg -s' in the normal console runs the file's lines without the restriction; proven in game on 2026-10-01.",
+    "God mode and infinite ammo were confirmed by play; Notarget ran but did not stop enemies already in a fight.",
+    "Cheats given as startup arguments (+com_allowConsole and others) are rejected as 'Unknown command', also confirmed in game.",
+    "give, spawn, noclip, lowercase god and SpawnAI do not exist in the retail game at all, under any route.",
+    "Still open: why the DevGUI debug menu did not appear on screen, whether killMonsters works, and the map-script route (only proven by reading code)."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie die gesperrte Konsole von Wolfenstein II ohne Spiel-Patch geöffnet wird, bewiesen in einem echten Spielstand.",
+   "summary": "Die Konsole der Verkaufsversion von Wolfenstein II: The New Colossus lässt nur 34 von 234 Befehlen und 304 von 3.256 Einstellungen zu. Die Forschung hat gezeigt, dass diese Sperre eine einzige Ein/Aus-Zahl in der {engine|Engine} ist und dass der eingebaute Befehl resourceExec die Sperre aufhebt, solange er eine Datei ausführt. Der Mod-Loader legt Cheat-Zeilen in eine ungenutzte, verschlüsselte Konfigurationsdatei und startet sie mit resourceExec; im laufenden Spiel wurde bestätigt, dass Gott-Modus, Notarget und unendliche Munition wirklich funktionieren.",
+   "points": [
+    "„resourceExec snapdemo.cfg -s“ in der normalen Konsole führt die Zeilen der Datei ohne Sperre aus; im Spiel bewiesen am 01.10.2026.",
+    "Gott-Modus und unendliche Munition wurden im Spiel bestätigt; Notarget lief, stoppte aber Gegner nicht, die schon kämpften.",
+    "Cheats als Startargumente (+com_allowConsole und andere) werden als „Unknown command“ abgelehnt, ebenfalls im Spiel bestätigt.",
+    "give, spawn, noclip, kleingeschriebenes god und SpawnAI gibt es in der Verkaufsversion überhaupt nicht, auf keinem Weg.",
+    "Noch offen: warum das DevGUI-Debugmenü nicht auf dem Bildschirm erschien, ob killMonsters wirkt, und der Weg über Kartenskripte (nur durch Codelesen belegt)."
+   ]
+  }
+ },
+ "Research-Report-R4-Console-Commands": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Code-reading study of Wolfenstein II's console lock and which hidden commands can be reached without a patch.",
+   "summary": "This report studied, by reading the {binary|program code} of Wolfenstein II: The New Colossus, why its console only accepts 34 commands. It found that one shared number decides whether the short or the full list (234 commands, 3,256 settings) is searched, and that resourceExec lowers this lock while running a file. Everything here is {static|static analysis}; the game was not run for this report (the in-game proof came later on a separate page).",
+   "points": [
+    "The lock is one number: 0 means all commands are reachable, 1 means only the 34 exposed ones.",
+    "Six entry points (console typing, startup arguments, exec, and others) set the lock to 1 briefly and always restore it.",
+    "Hidden commands like map, devmap, teleport, killMonsters and God are registered and reachable through resourceExec.",
+    "Correction: SpawnAI, like give, spawn, noclip and lowercase god, does not exist in this retail build.",
+    "The DevGUI debug menu offers 41 working hidden buttons once switched on; 18 of its buttons point to commands that do not exist."
+   ]
+  },
+  "de": {
+   "oneLine": "Code-Analyse der Konsolensperre in Wolfenstein II und welche versteckten Befehle ohne Patch erreichbar sind.",
+   "summary": "Dieser Bericht hat durch Lesen des {binary|Programmcodes} von Wolfenstein II: The New Colossus untersucht, warum die Konsole nur 34 Befehle annimmt. Ergebnis: Eine gemeinsame Zahl entscheidet, ob die kurze oder die volle Liste (234 Befehle, 3.256 Einstellungen) durchsucht wird, und resourceExec senkt diese Sperre, während es eine Datei ausführt. Alles hier ist {static|statische Analyse}; für diesen Bericht lief das Spiel nicht (der Beweis im Spiel kam später auf einer eigenen Seite).",
+   "points": [
+    "Die Sperre ist eine einzige Zahl: 0 heißt, alle Befehle sind erreichbar, 1 heißt, nur die 34 freigegebenen.",
+    "Sechs Einstiegspunkte (Konsoleneingabe, Startargumente, exec und andere) setzen die Sperre kurz auf 1 und stellen sie immer wieder her.",
+    "Versteckte Befehle wie map, devmap, teleport, killMonsters und God sind registriert und über resourceExec erreichbar.",
+    "Korrektur: SpawnAI gibt es in dieser Verkaufsversion ebenso wenig wie give, spawn, noclip und kleingeschriebenes god.",
+    "Das DevGUI-Debugmenü bietet nach dem Einschalten 41 funktionierende versteckte Schaltflächen; 18 seiner Schaltflächen verweisen auf nicht vorhandene Befehle."
+   ]
+  }
+ },
+ "Research-Report-R4-Strings": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How Wolfenstein II's text tables are stored and hashed, with an offline round trip that adds a new text entry.",
+   "summary": "This report decoded how Wolfenstein II: The New Colossus stores its on-screen texts (strings/*.lang) and how a text key is turned into the number the game looks up. The files are plain text inside the already-solved {encryption|encryption} container, and the key number is an FNV-1a {hash|hash} with two subtle details found in the code. A test changed one existing text and added a brand-new one in a copy of a real archive, and both read back exactly; whether the new text shows up in the running game was not tested.",
+   "points": [
+    "All 50 shipped .lang files are UTF-8 text inside encrypted cfile entries.",
+    "The key hash ignores upper/lower case, treats bytes 0x80 and above as signed, and turns a result of 0 into 1.",
+    "No key collisions in the 23,224-key English file or in any of the 50 files.",
+    "Round trip: one edited and one new key read back byte-for-byte; the other 23,223 keys were unchanged.",
+    "New text must go into the base archive or patches, not a DLC chunk, because the table is built at startup."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie die Texttabellen von Wolfenstein II gespeichert und gehasht werden, mit Offline-Test für einen neuen Texteintrag.",
+   "summary": "Dieser Bericht hat entschlüsselt, wie Wolfenstein II: The New Colossus seine Bildschirmtexte (strings/*.lang) speichert und wie ein Textschlüssel in die Nummer umgerechnet wird, nach der das Spiel sucht. Die Dateien sind einfacher Text im bereits gelösten {encryption|Verschlüsselungs}-Container, und die Schlüsselnummer ist ein FNV-1a-{hash|Hash} mit zwei subtilen Details aus dem Code. Ein Test änderte einen vorhandenen Text und fügte einen ganz neuen in die Kopie eines echten Archivs ein, beide ließen sich exakt zurücklesen; ob der neue Text im laufenden Spiel erscheint, wurde nicht getestet.",
+   "points": [
+    "Alle 50 mitgelieferten .lang-Dateien sind UTF-8-Text in verschlüsselten cfile-Einträgen.",
+    "Der Schlüssel-Hash ignoriert Groß-/Kleinschreibung, behandelt Bytes ab 0x80 vorzeichenbehaftet und macht aus dem Ergebnis 0 eine 1.",
+    "Keine Schlüsselkollisionen in der englischen Datei mit 23.224 Schlüsseln und in keiner der 50 Dateien.",
+    "Round Trip: ein geänderter und ein neuer Schlüssel wurden Byte für Byte zurückgelesen; die übrigen 23.223 blieben unverändert.",
+    "Neuer Text muss ins Basisarchiv oder die Patches, nicht in einen DLC-Chunk, weil die Tabelle beim Start gebaut wird."
+   ]
+  }
+ },
+ "Research-Report-R2-Ainav": {
+  "status": "partial",
+  "en": {
+   "oneLine": "What makes enemies spawn and fight in a custom Wolfenstein II map, and why navigation meshes can only be reused.",
+   "summary": "This report studied how enemies are set up in Wolfenstein II: The New Colossus maps: five separate layers of {entity|entities} (enemy body, spawner, spawn point, group manager, alarm) linked by name, on top of a pre-built walking map for the AI (the {navmesh|navmesh}). No tool, in this project or in the game, can create or rebuild a navmesh, so new map geometry must sit on top of an existing map's walkable area. The current custom kit map places 9 enemies that stand on valid floor, but whether they move or fight has never been tested in game.",
+   "points": [
+    "Enemy setups chain: trigger, script, spawner, spawn point, enemy, group, alarm.",
+    "There is only a navmesh reader, no encoder; a missing navmesh only causes a warning, and the game never builds one.",
+    "Gotcha: swapping an enemy's body can silently drop its group name; copy it by hand.",
+    "The kit map has 9 visible enemies but zero spawners, groups or cover points, so it proves 'stands there', not 'fights'.",
+    "Safer route: keep a retail room's spawn/combat setup and only swap the enemy bodies."
+   ]
+  },
+  "de": {
+   "oneLine": "Was Gegner in einer eigenen Wolfenstein-II-Karte spawnen und kämpfen lässt, und warum Navmeshes nur wiederverwendbar sind.",
+   "summary": "Dieser Bericht untersucht, wie Gegner in Karten von Wolfenstein II: The New Colossus aufgebaut sind: fünf getrennte Schichten von {entity|Entitäten} (Gegnerkörper, Spawner, Spawnpunkt, Gruppenverwaltung, Alarm), die über Namen verbunden sind, auf einer vorgebauten Laufkarte für die KI (dem {navmesh|Navmesh}). Kein Werkzeug, weder im Projekt noch im Spiel, kann ein Navmesh erzeugen oder neu bauen; neue Kartengeometrie muss daher auf der begehbaren Fläche einer vorhandenen Karte liegen. Die eigene Baukasten-Karte setzt 9 Gegner, die auf gültigem Boden stehen, aber ob sie sich bewegen oder kämpfen, wurde im Spiel nie getestet.",
+   "points": [
+    "Gegner-Aufbau als Kette: Auslöser, Skript, Spawner, Spawnpunkt, Gegner, Gruppe, Alarm.",
+    "Es gibt nur einen Navmesh-Leser, keinen Encoder; ein fehlendes Navmesh erzeugt nur eine Warnung, und das Spiel baut nie eins.",
+    "Falle: Beim Austausch eines Gegnerkörpers kann der Gruppenname still verloren gehen; kopiere ihn von Hand.",
+    "Die Baukasten-Karte hat 9 sichtbare Gegner, aber keine Spawner, Gruppen oder Deckungspunkte; sie beweist „steht da“, nicht „kämpft“.",
+    "Sichererer Weg: den Spawn- und Kampfaufbau eines Originalraums behalten und nur die Gegnerkörper tauschen."
+   ]
+  }
+ },
+ "Research-Report-R4-Tno-Custom-Maps": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How The New Order loads maps, why it has no DLC-folder override, and a small in-place enemy-swap mod.",
+   "summary": "This report decoded how Wolfenstein: The New Order loads its maps and checked whether it has a folder-override route like the one that works for custom maps in Wolfenstein II. It does not: the game has no such mechanism, confirmed by reading the files directly. The only working route is editing a map inside its own {chunk|chunk} in place, and a small test mod that swaps one enemy type passed all 12 offline checks but has not been tried in the running game.",
+   "points": [
+    "A map is chosen through 18 chapter decls; there is no separate DLC or menu decl type among TNO's 105 types.",
+    "12 of 37 mapInfo entries have no map file at all: they are cut content, not a hidden way to add maps.",
+    "Only 10 of 25 maps have enough real room for a same-length edit without rebuilding the chunk.",
+    "Test mod supersoldaten_c15 swaps 6 firetroopers for supersoldiers on map c05_07_09; 12/12 offline checks pass.",
+    "Adding a 15th archive pair or using TNO's dlc/info.txt route remains unproven and blocked."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie The New Order Karten lädt, warum es keinen DLC-Ordner-Override gibt, und eine kleine Gegnertausch-Mod.",
+   "summary": "Dieser Bericht hat entschlüsselt, wie Wolfenstein: The New Order seine Karten lädt, und geprüft, ob es einen Ordner-Override-Weg wie den gibt, der in Wolfenstein II für eigene Karten funktioniert. Den gibt es nicht; das wurde durch direktes Lesen der Dateien bestätigt. Der einzige funktionierende Weg ist, eine Karte direkt in ihrem eigenen {chunk|Chunk} zu bearbeiten; eine kleine Test-Mod, die einen Gegnertyp tauscht, bestand alle 12 Offline-Prüfungen, wurde aber noch nicht im laufenden Spiel ausprobiert.",
+   "points": [
+    "Karten werden über 18 chapter-Decls gewählt; unter den 105 Decl-Typen von TNO gibt es keinen eigenen DLC- oder Menü-Typ.",
+    "12 von 37 mapInfo-Einträgen haben gar keine Kartendatei: Das sind gestrichene Inhalte, kein versteckter Weg für neue Karten.",
+    "Nur 10 von 25 Karten haben genug echten Platz für eine längengleiche Änderung ohne Chunk-Neubau.",
+    "Die Test-Mod supersoldaten_c15 tauscht auf Karte c05_07_09 6 Feuersoldaten gegen Supersoldaten; 12/12 Offline-Prüfungen bestanden.",
+    "Ein 15. Archivpaar oder der dlc/info.txt-Weg von TNO bleiben unbewiesen und blockiert."
+   ]
+  }
+ },
+ "Research-Report-R2-Videoreplace": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Where cutscene and loading videos live in both games and how they could be replaced or retargeted.",
+   "summary": "This report looked at the Bink cutscene and loading videos in Wolfenstein: The New Order and Wolfenstein II: The New Colossus. All 209 videos are {loose|loose files} on disk, not inside archives, and no size or integrity check was found. A test with the game's own video library played a swapped-in video correctly at its own different size and length, and four kinds of {decl|decls} that name video paths can be retargeted cleanly; a replacement playing inside the running game is still untested.",
+   "points": [
+    "All 209 .bk2/.bik videos are loose files under base/bink; none is in an archive.",
+    "The game's own video decoder accepted a video with a different resolution and frame count under another file's name.",
+    "Four decl types name videos, for example map info with loading videos for 63 of 70 maps.",
+    "9 of 75 decl video paths (Chronicles clips) only match a file after a fixed suffix is added.",
+    "In Wolfenstein II, video sound comes from separate Wwise audio events named play_<video name>."
+   ]
+  },
+  "de": {
+   "oneLine": "Wo Zwischensequenz- und Ladevideos in beiden Spielen liegen und wie man sie ersetzen oder umleiten kann.",
+   "summary": "Dieser Bericht untersucht die Bink-Videos für Zwischensequenzen und Ladebildschirme in Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Alle 209 Videos liegen als {loose|lose Dateien} auf der Festplatte, nicht in Archiven, und es wurde keine Größen- oder Integritätsprüfung gefunden. Ein Test mit der Videobibliothek des Spiels spielte ein untergeschobenes Video korrekt in seiner eigenen, anderen Größe und Länge ab, und vier Arten von {decl|Decls}, die Videopfade nennen, lassen sich sauber umleiten; dass ein Ersatz im laufenden Spiel abgespielt wird, ist noch ungetestet.",
+   "points": [
+    "Alle 209 .bk2/.bik-Videos sind lose Dateien unter base/bink; keines liegt in einem Archiv.",
+    "Der Videodecoder des Spiels akzeptierte ein Video mit anderer Auflösung und Bildanzahl unter dem Namen einer anderen Datei.",
+    "Vier Decl-Typen nennen Videos, zum Beispiel die Karteninfo mit Ladevideos bei 63 von 70 Karten.",
+    "9 von 75 Videopfaden in Decls (Chronicles-Clips) passen erst zu einer Datei, wenn ein festes Suffix angehängt wird.",
+    "In Wolfenstein II kommt der Videoton aus separaten Wwise-Audioereignissen namens play_<Videoname>."
+   ]
+  }
+ },
+ "Research-Report-R2-Md6anim": {
+  "status": "open",
+  "en": {
+   "oneLine": "Ongoing decoding of the skeleton and animation file formats for character and weapon models.",
+   "summary": "This report continues decoding the skeleton (.md6skl) and animation (.md6anim) files used by posed character and weapon models in the id Tech games studied here. The skeleton format is decoded and posing a flat weapon rig like a pistol works, but for a soldier most joints do not come out right with any tested method. The compressed per-frame animation data is still not decoded, so posing an animation frame is not possible yet; all of this is offline format research.",
+   "points": [
+    "The skeleton format is verified across almost all shipped skeletons; one broken file is correctly rejected.",
+    "Correction: the per-joint rotation table stores the same rotation as the matrix, not its inverse (checked on over 24,000 joints).",
+    "For the soldier rig, 45 of 71 non-root joints get implausible bone lengths under the tested method.",
+    "The animation header is decoded one field further; about 23% of sampled animations name a base animation they build on.",
+    "The search for the frame decoder is narrowed to a cluster of about 51 functions (about 20 KB) in the game code."
+   ]
+  },
+  "de": {
+   "oneLine": "Laufende Entschlüsselung der Skelett- und Animationsformate für Charakter- und Waffenmodelle.",
+   "summary": "Dieser Bericht setzt die Entschlüsselung der Skelett- (.md6skl) und Animationsdateien (.md6anim) fort, die posierte Charakter- und Waffenmodelle in den untersuchten id-Tech-Spielen nutzen. Das Skelettformat ist entschlüsselt, und ein flaches Waffen-Rig wie eine Pistole lässt sich korrekt posieren; bei einem Soldaten kommen aber die meisten Gelenke mit keiner getesteten Methode richtig heraus. Die komprimierten Einzelbild-Daten der Animation sind noch nicht entschlüsselt, daher lässt sich noch kein Animationsbild posieren; alles ist reine Offline-Formatforschung.",
+   "points": [
+    "Das Skelettformat ist an fast allen mitgelieferten Skeletten geprüft; eine defekte Datei wird korrekt abgelehnt.",
+    "Korrektur: Die Rotationstabelle pro Gelenk speichert dieselbe Rotation wie die Matrix, nicht deren Umkehrung (geprüft an über 24.000 Gelenken).",
+    "Beim Soldaten-Rig ergeben 45 von 71 Gelenken außer der Wurzel mit der getesteten Methode unplausible Knochenlängen.",
+    "Der Animations-Header ist ein Feld weiter entschlüsselt; etwa 23 % der Stichprobe nennen eine Basisanimation, auf der sie aufbauen.",
+    "Die Suche nach dem Einzelbild-Decoder ist auf eine Gruppe von etwa 51 Funktionen (rund 20 KB) im Spielcode eingegrenzt."
+   ]
+  }
+ },
+ "Research-Report-R3-Newassetsv": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Independent re-check that brand-new entries can be appended to Wolfenstein II archives, plus a 7-part test weapon.",
+   "summary": "This report re-checked from raw bytes an earlier claim that new entries can be appended to a copied Wolfenstein II: The New Colossus {archive|archive}. The claim holds: 52 field-level checks pass, entry order does not matter, and the game code builds a case-insensitive name index when it loads an archive. A complete new weapon made of 7 cloned decls was built and verified offline, but nothing in this report was tested in the running game yet.",
+   "points": [
+    "52 independent field-level checks pass for both original test cases.",
+    "The game looks up entry names without caring about case, so two names that differ only by case will collide.",
+    "Correction: changing the entry count without updating the two integrity {checksum|checksums} makes the archive fail to load.",
+    "A 7-decl weapon chain (pickup, item, weapon, ammo, projectile and more) was cloned from the pistol and verified offline.",
+    "Limit: kill stats and the weapon-wheel flash slot must reuse existing values; new ones cannot be created from data."
+   ]
+  },
+  "de": {
+   "oneLine": "Unabhängige Nachprüfung, dass neue Einträge an Wolfenstein-II-Archive angehängt werden können, plus 7-teilige Testwaffe.",
+   "summary": "Dieser Bericht hat eine frühere Behauptung Byte für Byte nachgeprüft: dass sich neue Einträge an ein kopiertes {archive|Archiv} von Wolfenstein II: The New Colossus anhängen lassen. Die Behauptung hält: 52 Prüfungen auf Feldebene bestehen, die Reihenfolge der Einträge ist egal, und der Spielcode baut beim Laden eines Archivs einen Namensindex, der Groß-/Kleinschreibung ignoriert. Eine komplette neue Waffe aus 7 geklonten Decls wurde offline gebaut und geprüft, aber nichts aus diesem Bericht wurde bisher im laufenden Spiel getestet.",
+   "points": [
+    "52 unabhängige Prüfungen auf Feldebene bestehen für beide ursprünglichen Testfälle.",
+    "Das Spiel sucht Eintragsnamen ohne Rücksicht auf Groß-/Kleinschreibung; zwei Namen, die sich nur darin unterscheiden, kollidieren.",
+    "Korrektur: Wer die Eintragsanzahl ändert, ohne die beiden {checksum|Prüfsummen} anzupassen, bekommt ein Archiv, das nicht lädt.",
+    "Eine Waffenkette aus 7 Decls (Pickup, Gegenstand, Waffe, Munition, Projektil und mehr) wurde von der Pistole geklont und offline geprüft.",
+    "Grenze: Kill-Statistik und Aufleucht-Platz im Waffenrad müssen vorhandene Werte nutzen; neue lassen sich nicht aus Daten erzeugen."
+   ]
+  }
+ },
+ "Research-Report-R3-Missionsetter": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Why a custom mission's HUD objective banner was missing in Wolfenstein II, and a small fix for the mission tool.",
+   "summary": "In a custom Wolfenstein II: The New Colossus mission, the HUD objective banner ('Enter the offices') did not appear when the mission was started out of story order, for example via chapter select. The research found this is a deliberate rule (only one main-story objective is tracked at a time), not a bug, and a shipped developer test script solves the same case by also calling SetActiveObjective. The resulting fix to the project's mission-building tool passes the tool's full offline check pipeline, but has not been confirmed in the running game.",
+   "points": [
+    "The gate reads a copy of the mission's TYPE_MAIN flag; no code anywhere in the 92 MB program writes the field it checks.",
+    "Only 4 of 2,408 retail mission scripts use SetActiveObjective; one developer test script does exactly this fix.",
+    "The fix adds a SetActiveObjective call with showNotification='false' right after ObjectiveStart.",
+    "'false' is chosen because 'true' risks a double banner; the flag is only cosmetic.",
+    "In-game test: rebuild the mission, start the episode fresh and check whether the banner appears."
+   ]
+  },
+  "de": {
+   "oneLine": "Warum das HUD-Missionsbanner einer eigenen Mission in Wolfenstein II fehlte, und ein kleiner Fix fürs Missionswerkzeug.",
+   "summary": "In einer eigenen Mission für Wolfenstein II: The New Colossus erschien das HUD-Zielbanner („Enter the offices“) nicht, wenn die Mission außerhalb der Story-Reihenfolge gestartet wurde, etwa über die Kapitelauswahl. Die Forschung zeigt: Das ist eine bewusste Regel (es wird immer nur ein Hauptziel verfolgt), kein Fehler, und ein mitgeliefertes Entwickler-Testskript löst genau diesen Fall, indem es zusätzlich SetActiveObjective aufruft. Der daraus abgeleitete Fix für das Missionswerkzeug des Projekts besteht alle Offline-Prüfungen des Werkzeugs, ist aber im laufenden Spiel noch nicht bestätigt.",
+   "points": [
+    "Die Sperre liest eine Kopie des TYPE_MAIN-Flags der Mission; nirgends im 92-MB-Programm wird das geprüfte Feld geschrieben.",
+    "Nur 4 von 2.408 Original-Missionsskripten nutzen SetActiveObjective; ein Entwickler-Testskript macht genau diesen Fix.",
+    "Der Fix ergänzt direkt nach ObjectiveStart einen Aufruf von SetActiveObjective mit showNotification=„false“.",
+    "„false“ wurde gewählt, weil „true“ ein doppeltes Banner riskiert; das Flag ist nur kosmetisch.",
+    "Test im Spiel: Mission neu bauen, Episode frisch starten und prüfen, ob das Banner erscheint."
+   ]
+  }
+ },
+ "Research-Report-R3-Swfui": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Wolfenstein II's Flash-like menu and HUD files: their format, menu entries, and what can be restyled.",
+   "summary": "This report studied the menu and HUD system of Wolfenstein II: The New Colossus, which is built on id Software's own Flash-like binary format (idSWF). It redid an earlier pass that had looked at the wrong game's files by mistake, and found that 17 of the 18 UI files are {compression|compressed}. Plain HUD icon textures can be swapped with the already-proven texture route, but the artwork packed inside the UI files themselves cannot be edited yet; all of this is static analysis, and whether a new menu entry appears needs an in-game test.",
+   "points": [
+    "TNC has 18 .bswf UI files (format version 31); reading them without decompressing gives convincing-looking garbage.",
+    "Chapter and DLC menu content is ordinary, patchable decl data; the UI files only provide named containers.",
+    "About 1,700 HUD/GUI images are normal textures; none of 1,430 sampled uses virtual texturing.",
+    "The art atlas embedded in each UI file is blocked: there is no reader or writer for its format.",
+    "The dev menu file debugmenu.txt does not exist in any of the 24 TNC archives."
+   ]
+  },
+  "de": {
+   "oneLine": "Die Flash-ähnlichen Menü- und HUD-Dateien von Wolfenstein II: Format, Menüeinträge und was sich umgestalten lässt.",
+   "summary": "Dieser Bericht untersucht das Menü- und HUD-System von Wolfenstein II: The New Colossus, das auf id Softwares eigenem Flash-ähnlichen Binärformat (idSWF) beruht. Er wiederholt einen früheren Durchlauf, der versehentlich die Dateien des falschen Spiels untersucht hatte, und stellt fest, dass 17 der 18 UI-Dateien {compression|komprimiert} sind. Einfache HUD-Icon-Texturen lassen sich über den bereits bewiesenen Texturweg tauschen, die in den UI-Dateien selbst verpackten Grafiken aber noch nicht; alles ist statische Analyse, und ob ein neuer Menüeintrag erscheint, braucht einen Test im Spiel.",
+   "points": [
+    "TNC hat 18 .bswf-UI-Dateien (Formatversion 31); liest man sie ohne Entpacken, erhält man überzeugend aussehenden Datenmüll.",
+    "Kapitel- und DLC-Menüinhalte sind normale, patchbare Decl-Daten; die UI-Dateien liefern nur benannte Container.",
+    "Etwa 1.700 HUD/GUI-Bilder sind normale Texturen; keines von 1.430 geprüften nutzt Virtual Texturing.",
+    "Der in jede UI-Datei eingebettete Grafik-Atlas ist blockiert: Für sein Format gibt es weder Leser noch Schreiber.",
+    "Die Dev-Menü-Datei debugmenu.txt existiert in keinem der 24 TNC-Archive."
+   ]
+  }
+ },
+ "Research-Report-R3-Animdecode": {
+  "status": "open",
+  "en": {
+   "oneLine": "Animation decoding in Wolfenstein II uncovers a separate 'Geist' animation system behind the soldier pose puzzle.",
+   "summary": "This report continues the effort to decode Wolfenstein II: The New Colossus's compressed .md6anim animations and to explain why the soldier's skeleton does not pose correctly while a pistol's does. It found that two suspected decoder functions belong to a separate animation system called Geist, identified from the game's own debug text. The soldier has a Geist identity file and no weapon does, which may explain the mismatch, but this is inferred, and a full animation decode is still not achieved; everything is {static|static} research.",
+   "points": [
+    "Rotation compression ('smallest three' quaternions) is solved and round-trips 86/86 samples.",
+    "Geist is large: 2,818 .geistanim and 66 .geistidentity files, including one for the soldier, none for weapons.",
+    "The md6anim and Geist code never call each other, apart from two shared rotation helpers.",
+    "The 10-number pose record after the animation header is decoded: position, rotation and scale.",
+    "Nothing new for modders yet: new animations still cannot be made or decoded."
+   ]
+  },
+  "de": {
+   "oneLine": "Animations-Entschlüsselung in Wolfenstein II deckt ein separates „Geist“-System hinter dem Soldaten-Posenrätsel auf.",
+   "summary": "Dieser Bericht setzt die Entschlüsselung der komprimierten .md6anim-Animationen von Wolfenstein II: The New Colossus fort und sucht nach dem Grund, warum das Skelett des Soldaten nicht korrekt posiert, das einer Pistole aber schon. Er fand heraus, dass zwei verdächtige Decoder-Funktionen zu einem eigenen Animationssystem namens Geist gehören, erkannt an den eigenen Debug-Texten des Spiels. Der Soldat hat eine Geist-Identitätsdatei, keine Waffe hat eine, was die Abweichung erklären könnte; das ist aber nur gefolgert, und eine vollständige Entschlüsselung der Animationen gelingt noch nicht. Alles ist {static|statische} Forschung.",
+   "points": [
+    "Die Rotationskompression („Smallest Three“-Quaternionen) ist gelöst und übersteht 86/86 Proben im Round Trip.",
+    "Geist ist groß: 2.818 .geistanim- und 66 .geistidentity-Dateien, darunter eine für den Soldaten, keine für Waffen.",
+    "Der md6anim- und der Geist-Code rufen sich nie gegenseitig auf, außer zwei gemeinsamen Rotations-Hilfsfunktionen.",
+    "Der 10-Zahlen-Posendatensatz nach dem Animations-Header ist entschlüsselt: Position, Rotation und Skalierung.",
+    "Für Modder noch nichts Neues: Neue Animationen lassen sich weiterhin weder erstellen noch entschlüsseln."
+   ]
+  }
+ },
+ "Research-Report-R4-Materials": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How Wolfenstein II materials encode effects like glow or two-sidedness, and adding a brand-new material.",
+   "summary": "This round studied the {material|material} definitions of Wolfenstein II, which tell the engine how a surface looks. There are no on/off switches for effects like glowing or two-sided surfaces; instead each material picks one of 429 fixed, pre-built shader programs whose name carries the effect. A brand-new material with its own self-made texture was built and added to a copy of a real game archive, and it passed every structural check. It has not been tested in the running game, so it is not yet known whether it actually renders.",
+   "points": [
+    "11,469 retail materials use 201 different keys; none is a simple two-sided/translucent/emissive switch.",
+    "Effects are chosen by picking one of 429 compiled shader programs by name.",
+    "53 of 57 materials on the custom kit map have a matching shader variant; 4 glass/additive ones do not, and their in-game effect is unknown.",
+    "A new image plus material passed the {roundtrip|round trip}, both header checks, a missing-reference check and 3 of 3 negative controls.",
+    "Nothing was tested in game; the new material must also be referenced by a model to appear at all."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie Materialien in Wolfenstein II Effekte wie Leuchten kodieren, und das Hinzufügen eines ganz neuen Materials.",
+   "summary": "Diese Runde untersuchte die {material|Material}-Definitionen von Wolfenstein II, die der Engine sagen, wie eine Oberfläche aussieht. Es gibt keine Ein/Aus-Schalter für Effekte wie Leuchten oder beidseitige Flächen; stattdessen wählt jedes Material eines von 429 fest vorgebauten Shader-Programmen, in dessen Namen der Effekt steckt. Ein ganz neues Material mit selbst erstellter Textur wurde gebaut, in eine Kopie eines echten Spielarchivs eingefügt und bestand jede strukturelle Prüfung. Im laufenden Spiel wurde es nicht getestet, ob es wirklich angezeigt wird, ist also noch offen.",
+   "points": [
+    "11.469 Original-Materialien nutzen 201 verschiedene Schlüssel; keiner ist ein einfacher Schalter für beidseitig, durchscheinend oder leuchtend.",
+    "Effekte entstehen durch die Wahl eines von 429 kompilierten Shader-Programmen über dessen Namen.",
+    "53 von 57 Materialien der eigenen Baukasten-Karte haben eine passende Shader-Variante; bei 4 Glas-/Additiv-Materialien fehlt sie, die Wirkung im Spiel ist unbekannt.",
+    "Ein neues Bild plus Material bestand den {roundtrip|Round-Trip}, beide Header-Prüfungen, eine Prüfung auf fehlende Verweise und 3 von 3 Gegenproben.",
+    "Nichts wurde im Spiel getestet; das neue Material muss außerdem von einem Modell verwendet werden, um überhaupt sichtbar zu sein."
+   ]
+  }
+ },
+ "Research-Report-R4-Ai-Decls": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Where enemy AI tuning lives in Wolfenstein II and the smallest edit to make enemies tougher or weaker.",
+   "summary": "This report looked through 340 enemy and NPC definitions in Wolfenstein II to find where health, accuracy, perception and hostility are set. Each enemy's tuning sits in one {decl|definition}, and one shared 'soldier base' covers 125 of them, so changing three health numbers there affects most soldiers at once. There is no 'aggression' setting at all; who fights whom comes from factions. The field names were checked against the game program and the edit was checked offline, but this specific health change was not tested in the running game.",
+   "points": [
+    "340 AI definitions descend from 12 base types; the soldier base alone covers 125 (68% of real combat types).",
+    "Example mod: set the soldier base's health to 300 (tougher) or 5 (near one-hit kills); the diff changes only those 3 values.",
+    "'Aggression' does not exist anywhere; hostility comes only from faction attitudes.",
+    "Real difficulty scaling is global settings, not per-enemy tables; the per-enemy difficulty hook ships empty.",
+    "15 field names were confirmed in the game program; the edit method works in game, but this health field was not launch-tested."
+   ]
+  },
+  "de": {
+   "oneLine": "Wo die Gegner-KI in Wolfenstein II eingestellt wird und die kleinste Änderung für stärkere oder schwächere Gegner.",
+   "summary": "Dieser Bericht durchsuchte 340 Gegner- und NPC-Definitionen in Wolfenstein II, um Leben, Treffsicherheit, Wahrnehmung und Feindseligkeit zu finden. Die Werte jedes Gegners stehen in einer {decl|Definition}, und eine gemeinsame „Soldaten-Basis“ deckt 125 davon ab – drei Lebenswerte dort ändern also die meisten Soldaten auf einmal. Eine Einstellung für „Aggression“ gibt es gar nicht; wer gegen wen kämpft, regeln Fraktionen. Die Feldnamen wurden im Spielprogramm nachgeprüft und die Änderung offline geprüft, aber genau diese Lebensänderung wurde nicht im laufenden Spiel getestet.",
+   "points": [
+    "340 KI-Definitionen stammen von 12 Grundtypen ab; die Soldaten-Basis allein deckt 125 ab (68 % der echten Kampftypen).",
+    "Beispiel-Mod: Leben der Soldaten-Basis auf 300 (zäher) oder 5 (fast ein Treffer) setzen; der Vergleich zeigt nur diese 3 geänderten Werte.",
+    "„Aggression“ existiert nirgends; Feindseligkeit kommt nur aus den Fraktionsbeziehungen.",
+    "Die echte Schwierigkeitsskalierung sind globale Einstellungen, keine Tabellen pro Gegner; der Haken pro Gegner ist im Original leer.",
+    "15 Feldnamen wurden im Spielprogramm bestätigt; die Änderungsmethode funktioniert im Spiel, dieses Lebensfeld wurde aber nicht im Spiel getestet."
+   ]
+  }
+ },
+ "Research-Report-R5-Kiscule-Command": {
+  "status": "partial",
+  "en": {
+   "oneLine": "A mission-script 'Command' node in Wolfenstein II can run locked console commands without the console.",
+   "summary": "Wolfenstein II hides most of its 234 console commands; only 34 can be typed normally. This report read the game's machine code and found that the 'Command' node in mission scripts ({kiscule|Kiscule}) puts its text into a queue that the engine runs against the full, unlocked list twice every frame. So a trigger in a custom map could in principle switch on God mode or infinite ammo with no console at all. This is proven only by reading the code; it has not yet been tried with a real script node in the running game.",
+   "points": [
+    "234 commands exist, only 34 are open to the normal console.",
+    "The Command node only queues text and never calls the restricted dispatcher itself.",
+    "The engine's per-frame function runs the unrestricted queue against the full catalog twice per frame.",
+    "None of the 7 Command nodes in the original game needs this unlocked path, so there is no shipped example.",
+    "The related resourceExec route is confirmed in game (God mode, infinite ammo); the Command-node route is untested."
+   ]
+  },
+  "de": {
+   "oneLine": "Ein „Command“-Knoten in Missionsskripten von Wolfenstein II kann gesperrte Konsolenbefehle ohne Konsole ausführen.",
+   "summary": "Wolfenstein II versteckt die meisten seiner 234 Konsolenbefehle; nur 34 lassen sich normal eintippen. Dieser Bericht hat den Maschinencode des Spiels gelesen: Der „Command“-Knoten in Missionsskripten ({kiscule|Kiscule}) legt seinen Text in eine Warteschlange, die die Engine zweimal pro Bild gegen die volle, freigeschaltete Befehlsliste abarbeitet. Ein Auslöser in einer eigenen Karte könnte also Gottmodus oder unendliche Munition ganz ohne Konsole einschalten. Das ist nur durch Codelesen bewiesen; mit einem echten Skriptknoten im laufenden Spiel wurde es noch nicht ausprobiert.",
+   "points": [
+    "Es gibt 234 Befehle, nur 34 sind in der normalen Konsole erreichbar.",
+    "Der Command-Knoten stellt nur Text in die Warteschlange und ruft den eingeschränkten Befehlsverteiler nie selbst auf.",
+    "Die Bild-für-Bild-Funktion der Engine arbeitet die freie Warteschlange zweimal pro Bild gegen den vollen Katalog ab.",
+    "Keiner der 7 Command-Knoten im Originalspiel braucht diesen freien Weg, es gibt also kein mitgeliefertes Beispiel.",
+    "Der verwandte resourceExec-Weg ist im Spiel bestätigt (Gottmodus, unendliche Munition); der Weg über den Command-Knoten ist ungetestet."
+   ]
+  }
+ },
+ "Research-Report-R2-Wwisereplace": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How to replace a sound in Wolfenstein II's Wwise sound packs, proven on file copies.",
+   "summary": "This report looked at where Wolfenstein II stores its sounds and how to swap one for a new, possibly longer one. The sound packs turn out to be ordinary game archives, so the project's existing archive writer works on them without changes. The replacement should be plain 16-bit PCM audio, because the project cannot encode the game's packed Vorbis format. Two test replacements went through a full rebuild and were read back correctly, but everything happened on copies; nothing was played in the running game.",
+   "points": [
+    "Every sound pack is a normal game {archive|archive}; no sound-specific writer was needed.",
+    "Each sound's size is stored twice and matched in all 131,236 shipped cases (0 mismatches); a replacement must update both.",
+    "Use 16-bit PCM WAVE files; there is no encoder for the game's packed Vorbis audio.",
+    "A loose and a bank-embedded replacement were rebuilt and re-read correctly; 2 negative controls fired as expected.",
+    "The New Order does not use Wwise at all; nothing was tested in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie man einen Sound in den Wwise-Soundpaketen von Wolfenstein II ersetzt, bewiesen an Dateikopien.",
+   "summary": "Dieser Bericht untersuchte, wo Wolfenstein II seine Sounds speichert und wie man einen durch einen neuen, auch längeren ersetzt. Die Soundpakete sind ganz normale Spielarchive, deshalb funktioniert der vorhandene Archiv-Schreiber des Projekts ohne Änderung. Der Ersatz sollte einfaches 16-Bit-PCM-Audio sein, weil das Projekt das gepackte Vorbis-Format des Spiels nicht erzeugen kann. Zwei Test-Ersetzungen liefen durch einen kompletten Neubau und wurden korrekt zurückgelesen, aber alles geschah an Kopien; im laufenden Spiel wurde nichts abgespielt.",
+   "points": [
+    "Jedes Soundpaket ist ein normales Spiel-{archive|Archiv}; ein eigener Sound-Schreiber war nicht nötig.",
+    "Die Größe jedes Sounds steht doppelt drin und stimmt in allen 131.236 Originalfällen überein (0 Abweichungen); ein Ersatz muss beide Stellen anpassen.",
+    "Nutze 16-Bit-PCM-WAVE-Dateien; für das gepackte Vorbis-Audio des Spiels gibt es keinen Encoder.",
+    "Ein loser und ein in eine Bank eingebetteter Ersatz wurden neu gebaut und korrekt zurückgelesen; 2 Gegenproben schlugen wie erwartet an.",
+    "The New Order nutzt gar kein Wwise; im Spiel wurde nichts getestet."
+   ]
+  }
+ },
+ "Research-Report-R4-Sound-Events": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Adding a brand-new sound event to Wolfenstein II and pointing a weapon at it, proven on file copies.",
+   "summary": "Building on sound replacement, this report asks how to add a completely new sound event in Wolfenstein II, for example a new gunshot sound. A sound event's internal number is a {hash|hash} of its lowercased name, and weapons name their shot sound in a plain text field. A full new chain (event, play action, sound, audio data) was added to a copy of a real sound bank without touching anything existing and was found and decoded correctly. The game was never launched, so it is unknown whether the new sound is actually heard.",
+   "points": [
+    "An event's ID is the FNV-1 hash of its lowercased name; this matches real weapon sound names.",
+    "47 projectile definitions have a fireSoundEvent field that a mod can point at a new event.",
+    "In 91.5% of 38,236 retail cases a play action points straight at a sound, so the simple chain is representative.",
+    "The new sound was routed to the verified 'Weapons' mix bus; all existing sounds in the bank still decoded.",
+    "Not tested in game; the real pistol sound uses an extra switch layer that was not decoded."
+   ]
+  },
+  "de": {
+   "oneLine": "Ein ganz neues Sound-Event in Wolfenstein II hinzufügen und eine Waffe darauf zeigen lassen, bewiesen an Dateikopien.",
+   "summary": "Aufbauend auf dem Sound-Ersetzen fragt dieser Bericht, wie man in Wolfenstein II ein ganz neues Sound-Event hinzufügt, etwa einen neuen Schussklang. Die interne Nummer eines Sound-Events ist ein {hash|Hash} seines kleingeschriebenen Namens, und Waffen nennen ihren Schussklang in einem einfachen Textfeld. Eine komplette neue Kette (Event, Abspiel-Aktion, Sound, Audiodaten) wurde in eine Kopie einer echten Soundbank eingefügt, ohne Vorhandenes anzufassen, und wurde korrekt gefunden und dekodiert. Das Spiel wurde nie gestartet, ob der neue Sound wirklich zu hören ist, ist also unbekannt.",
+   "points": [
+    "Die ID eines Events ist der FNV-1-Hash des kleingeschriebenen Namens; das passt zu echten Waffen-Soundnamen.",
+    "47 Projektil-Definitionen haben ein fireSoundEvent-Feld, das ein Mod auf ein neues Event umleiten kann.",
+    "In 91,5 % von 38.236 Originalfällen zeigt eine Abspiel-Aktion direkt auf einen Sound, die einfache Kette ist also typisch.",
+    "Der neue Sound wurde auf den bestätigten Mischkanal „Weapons“ gelegt; alle vorhandenen Sounds der Bank ließen sich weiter dekodieren.",
+    "Nicht im Spiel getestet; der echte Pistolensound nutzt eine zusätzliche Umschalt-Ebene, die nicht entschlüsselt wurde."
+   ]
+  }
+ },
+ "Research-Report-R2-Tnomodels": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Decoding The New Order's 3D model files: static meshes solved, animated mesh geometry now readable.",
+   "summary": "This report covers the 3D model formats of Wolfenstein: The New Order. Static models were already fully decoded; the new result is that the vertex and triangle data of skinned (animated) {mesh|meshes} can now be read exactly. That works exactly on 35 of 150 random samples (23%), including character models with over 5,000 vertices. Everything comes from reading file bytes; nothing was seen rendering, and the skeleton and some header fields are still undecoded.",
+   "points": [
+    "Static models and their textures are fully decoded and in use, error-free on two maps.",
+    "Skinned vertices are 32-byte {endian|big-endian} records followed by a plain triangle index list.",
+    "The layout fits exactly on 35 of 150 random samples, up to 5,323 vertices / 8,645 triangles.",
+    "The old 'mesh count' field is wrong (reads 1 on all 755 samples); the real count's position is not yet found.",
+    "Skeleton: 211 joint and face-control names recovered, but the joint hierarchy is not decoded; estimate 2–3 days to a Studio reader."
+   ]
+  },
+  "de": {
+   "oneLine": "Die 3D-Modelldateien von The New Order entschlüsseln: statische Meshes gelöst, animierte Geometrie jetzt lesbar.",
+   "summary": "Dieser Bericht behandelt die 3D-Modellformate von Wolfenstein: The New Order. Statische Modelle waren schon vollständig entschlüsselt; neu ist, dass sich Eckpunkte und Dreiecke von animierten {mesh|Meshes} jetzt exakt lesen lassen. Das passt bei 35 von 150 Zufallsproben (23 %) genau, auch bei Figurenmodellen mit über 5.000 Eckpunkten. Alles stammt aus dem Lesen der Dateibytes; nichts wurde tatsächlich angezeigt, und das Skelett sowie einige Kopffelder sind noch nicht entschlüsselt.",
+   "points": [
+    "Statische Modelle und ihre Texturen sind vollständig entschlüsselt und im Einsatz, fehlerfrei auf zwei Karten.",
+    "Animierte Eckpunkte sind 32-Byte-Datensätze im {endian|Big-Endian}-Format, gefolgt von einer einfachen Dreiecksliste.",
+    "Das Format passt exakt bei 35 von 150 Zufallsproben, bis zu 5.323 Eckpunkte / 8.645 Dreiecke.",
+    "Das alte Feld „Mesh-Anzahl“ ist falsch (zeigt bei allen 755 Proben 1); die Position der echten Anzahl ist noch nicht gefunden.",
+    "Skelett: 211 Gelenk- und Gesichtsnamen gefunden, die Gelenkhierarchie ist aber nicht entschlüsselt; geschätzt 2–3 Tage bis zum Studio-Leser."
+   ]
+  }
+ },
+ "Research-Report-R2-Newassets": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Adding brand-new entries (not just replacing old ones) to Wolfenstein II archives, proven offline.",
+   "summary": "Until now the project's tools could only replace files that already exist inside a Wolfenstein II {archive|archive}. This report shows that adding a genuinely new entry is a missing tool, not an engine limit: new entries were hand-built, read back correctly and passed every {checksum|hash check}. A new name also avoids the open question of which archive wins when two contain the same name. Whether the running game accepts such an extended archive has not been tested.",
+   "points": [
+    "Adding needs a new 144-byte table row, new name strings and freshly computed hashes; the dependency table stays unchanged.",
+    "Both a new name of an existing type and a completely new type string were added; all original entries stayed byte-identical.",
+    "4 negative controls were caught; a wrong entry count silently hides the entry instead of crashing.",
+    "The engine looks resources up by name across all mounted archives, which is how patch-only and DLC-only files load.",
+    "Inventing a whole new definition type is not possible without patching the game program; nothing was tested in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Ganz neue Einträge (statt nur Ersetzen) in Archive von Wolfenstein II einfügen, offline bewiesen.",
+   "summary": "Bisher konnten die Werkzeuge des Projekts nur Dateien ersetzen, die in einem {archive|Archiv} von Wolfenstein II schon existieren. Dieser Bericht zeigt, dass das Hinzufügen neuer Einträge an einem fehlenden Werkzeug liegt, nicht an einer Grenze der Engine: Neue Einträge wurden von Hand gebaut, korrekt zurückgelesen und bestanden jede {checksum|Prüfsummen-Kontrolle}. Ein neuer Name umgeht auch die offene Frage, welches Archiv gewinnt, wenn zwei denselben Namen enthalten. Ob das laufende Spiel ein so erweitertes Archiv annimmt, wurde nicht getestet.",
+   "points": [
+    "Zum Hinzufügen braucht es eine neue 144-Byte-Tabellenzeile, neue Namenseinträge und neu berechnete Hashes; die Abhängigkeitstabelle bleibt gleich.",
+    "Sowohl ein neuer Name eines vorhandenen Typs als auch ein völlig neuer Typname wurden eingefügt; alle Originaleinträge blieben byte-identisch.",
+    "4 Gegenproben wurden erkannt; eine falsche Eintragsanzahl versteckt den Eintrag still, statt abzustürzen.",
+    "Die Engine sucht Ressourcen per Name in allen eingebundenen Archiven – so laden auch Dateien, die es nur in Patches oder DLCs gibt.",
+    "Einen ganz neuen Definitionstyp zu erfinden geht nicht ohne Patchen des Spielprogramms; im Spiel wurde nichts getestet."
+   ]
+  }
+ },
+ "Research-Report-R2-Tilechain": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Wolfenstein II's tiled 'codec 2' texture format: outer container solved, pixel layout inside still unknown.",
+   "summary": "Large normal maps and similar textures in Wolfenstein II's texture database are often stored as chains of compressed tiles ('codec 2'). The outer container is now fully understood and rebuilds byte-exact across hundreds of blocks, but the pixel arrangement inside a tile is still not decoded, and three natural guesses were ruled out. This does not block modding: the simpler, untiled 'codec 1' is shown to be accepted at any size, so a replacement never needs codec 2. That replacement path still needs a BC4/BC5 encoder and has not been tested in game.",
+   "points": [
+    "Each tile has a 24-byte header plus an {oodle|Oodle} stream; BC4 tiles are always 512x512, BC5 tiles 512x256.",
+    "The container rebuilds byte-exact across hundreds of blocks, including DLC.",
+    "Three layouts for the tile's pixels (raw planes, row-order blocks, Z-order blocks) were tested and rejected.",
+    "The theory that a GPU hardware feature explains codec 2 was refuted; the switch is an ordinary I/O cache setting.",
+    "2% of images ship their largest mip as codec 1 (one even at 4096x4096), so codec 1 works at any size; an encoder is still missing."
+   ]
+  },
+  "de": {
+   "oneLine": "Das gekachelte „Codec 2“-Texturformat von Wolfenstein II: äußerer Container gelöst, Pixelanordnung noch unbekannt.",
+   "summary": "Große Normal-Maps und ähnliche Texturen in der Texturdatenbank von Wolfenstein II liegen oft als Ketten komprimierter Kacheln vor („Codec 2“). Der äußere Container ist jetzt vollständig verstanden und lässt sich über Hunderte Blöcke byte-genau neu bauen, aber die Pixelanordnung innerhalb einer Kachel ist noch nicht entschlüsselt; drei naheliegende Vermutungen wurden widerlegt. Das blockiert das Modden nicht: Der einfachere, ungekachelte „Codec 1“ wird nachweislich in jeder Größe angenommen, ein Ersatz braucht Codec 2 also nie. Dieser Ersatzweg braucht aber noch einen BC4/BC5-Encoder und wurde nicht im Spiel getestet.",
+   "points": [
+    "Jede Kachel hat einen 24-Byte-Kopf plus einen {oodle|Oodle}-Datenstrom; BC4-Kacheln sind immer 512x512, BC5-Kacheln 512x256.",
+    "Der Container lässt sich über Hunderte Blöcke byte-genau neu bauen, auch in DLCs.",
+    "Drei Anordnungen für die Kachelpixel (rohe Ebenen, Blöcke in Zeilenfolge, Blöcke in Z-Reihenfolge) wurden getestet und verworfen.",
+    "Die Theorie, ein GPU-Hardwarefeature erkläre Codec 2, ist widerlegt; der Schalter ist eine gewöhnliche I/O-Cache-Einstellung.",
+    "2 % der Bilder liefern ihre größte Stufe als Codec 1 aus (eines sogar mit 4096x4096), Codec 1 geht also in jeder Größe; ein Encoder fehlt noch."
+   ]
+  }
+ },
+ "Research-Report-R3-Newweapon": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How weapons are built in Wolfenstein II's game data and what a truly new weapon would need.",
+   "summary": "This report takes apart the weapon definitions of Wolfenstein II: firing, projectiles, models, animations, sounds, upgrades, dual wielding and how the player gets weapons. Its key result corrects an earlier belief: the default weapon logic is not limited to instant-hit shots, because the hatchet already throws a real flying projectile with the same setup as the pistol. Every part of a new weapon can be built by reusing game assets, but giving it its own new name needs the not-yet-finished tool for adding archive entries. All of this comes from reading game data; nothing was tested in the running game.",
+   "points": [
+    "All 34 weapon entities use one engine class; 12 optional logic subclasses exist, and the pistol and hatchet use none.",
+    "Hitscan or flying projectile is decided by the projectile definition; 27 of 44 player projectiles already fly.",
+    "Players get weapons via dev loadouts, map pickups or a mission-script node; there is no console 'give' command.",
+    "The weapon wheel is a closed binary format: a new weapon can use an existing slot but not create its own.",
+    "Until new entries can be added, the shippable 'new weapon' is retuning an existing one; the test machine still had an older explosive-pistol mod."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie Waffen in den Spieldaten von Wolfenstein II aufgebaut sind und was eine wirklich neue Waffe bräuchte.",
+   "summary": "Dieser Bericht zerlegt die Waffendefinitionen von Wolfenstein II: Feuern, Projektile, Modelle, Animationen, Sounds, Upgrades, Beidhändigkeit und wie der Spieler an Waffen kommt. Das wichtigste Ergebnis korrigiert eine frühere Annahme: Die Standard-Waffenlogik ist nicht auf Sofort-Treffer beschränkt, denn das Beil wirft mit demselben Aufbau wie die Pistole schon ein echtes fliegendes Projektil. Jeder Teil einer neuen Waffe lässt sich aus vorhandenen Spielinhalten bauen, aber ein eigener neuer Name braucht das noch unfertige Werkzeug zum Hinzufügen von Archiveinträgen. Alles stammt aus dem Lesen der Spieldaten; im laufenden Spiel wurde nichts getestet.",
+   "points": [
+    "Alle 34 Waffen-Entities nutzen eine Engine-Klasse; es gibt 12 optionale Logik-Unterklassen, Pistole und Beil nutzen keine.",
+    "Ob Sofort-Treffer oder fliegendes Projektil, entscheidet die Projektil-Definition; 27 von 44 Spieler-Projektilen fliegen bereits.",
+    "Waffen bekommt man über Entwickler-Ausrüstungen, Pickups auf der Karte oder einen Missionsskript-Knoten; einen Konsolenbefehl „give“ gibt es nicht.",
+    "Das Waffenrad ist ein geschlossenes Binärformat: Eine neue Waffe kann einen vorhandenen Platz nutzen, aber keinen eigenen anlegen.",
+    "Bis neue Einträge möglich sind, ist die auslieferbare „neue Waffe“ eine umgebaute vorhandene; auf dem Testrechner lag noch eine ältere Version des Explosiv-Pistolen-Mods."
+   ]
+  }
+ },
+ "Research-Report-R3-Npcswap": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Reskinning enemies in Wolfenstein II is low-risk; swapping in a different model crosses a skeleton boundary.",
+   "summary": "This report asks whether enemy looks in Wolfenstein II can be changed: either a new skin or head on the same character, or a completely different model. Reskinning works through text definitions alone, and a three-line example mod applied cleanly to the real game data, but has not been checked visually in game. Swapping in a different character is risky: none of the 403 character models shares its skeleton with another distinct model. What the game does with such a swap (adapt, freeze or crash) can only be found out by starting it.",
+   "points": [
+    "A three-line mod switches a placed mini-boss to one of 16 existing head variants; it applies cleanly but is not confirmed in game.",
+    "403 models with their own mesh use 369 distinct skeletons; none is shared between two different meshes.",
+    "Hit zones, mesh variants and ragdoll pose travel with the model; two joint-name fields on the enemy definition must be copied by hand.",
+    "A new 'modelAsset' layer was found, used by 26% of model references; no broken references were found there.",
+    "The cross-species model swap is completely untested in the running game."
+   ]
+  },
+  "de": {
+   "oneLine": "Gegner in Wolfenstein II neu einzufärben ist risikoarm; ein anderes Modell einzusetzen überschreitet eine Skelettgrenze.",
+   "summary": "Dieser Bericht fragt, ob sich das Aussehen von Gegnern in Wolfenstein II ändern lässt: entweder ein neuer Skin oder Kopf für dieselbe Figur oder ein ganz anderes Modell. Neu einfärben geht allein über Textdefinitionen, und ein Beispiel-Mod mit drei Zeilen ließ sich sauber auf die echten Spieldaten anwenden, wurde aber im Spiel noch nicht angeschaut. Eine andere Figur einzusetzen ist riskant: Keines der 403 Figurenmodelle teilt sein Skelett mit einem anderen Modell. Was das Spiel bei so einem Tausch macht (anpassen, erstarren oder abstürzen), lässt sich nur durch Starten herausfinden.",
+   "points": [
+    "Ein Drei-Zeilen-Mod stellt einen platzierten Mini-Boss auf eine von 16 vorhandenen Kopfvarianten um; er lässt sich sauber anwenden, ist aber im Spiel unbestätigt.",
+    "403 Modelle mit eigenem Mesh nutzen 369 verschiedene Skelette; keines wird von zwei verschiedenen Meshes geteilt.",
+    "Trefferzonen, Mesh-Varianten und Ragdoll-Pose wandern mit dem Modell mit; zwei Felder mit Gelenknamen in der Gegnerdefinition muss man von Hand kopieren.",
+    "Eine neue Zwischenebene „modelAsset“ wurde gefunden, genutzt von 26 % der Modellverweise; dort gab es keine kaputten Verweise.",
+    "Der Tausch gegen ein artfremdes Modell ist im laufenden Spiel völlig ungetestet."
+   ]
+  }
+ },
+ "Research-Report-R2-Missionhud": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Why a custom Wolfenstein II objective shows in the journal but not as a HUD banner, and a proposed fix.",
+   "summary": "In a custom Wolfenstein II mission, the objective appeared in the journal but the on-screen banner never showed. By reading the game's machine code, this report found a second way to announce an objective ('SetActiveObjective') that skips the one check suspected of blocking the banner. The proposed fix is to add one such script node per objective, a two-line change in the mission-building tool. This is based only on code reading; the fix has not been tried in the running game.",
+   "points": [
+    "Three blocking checks were known on the normal objective-banner path; the third, a 'tracked mission' pointer, is the suspect.",
+    "The SetActiveObjective path respects the first two checks but never reads the third.",
+    "A search of the whole program found that pointer read in exactly one place, ruling out a second hard-coded setter.",
+    "The original game already uses SetActiveObjective repeatedly when a sibling objective finishes.",
+    "Fix proposed but untested in game; if the banner is still missing, a mission debug setting helps narrow it down."
+   ]
+  },
+  "de": {
+   "oneLine": "Warum ein eigenes Missionsziel in Wolfenstein II im Tagebuch, aber nicht als HUD-Banner erscheint – mit Lösungsvorschlag.",
+   "summary": "In einer eigenen Mission für Wolfenstein II erschien das Ziel im Tagebuch, aber das Banner auf dem Bildschirm kam nie. Durch Lesen des Maschinencodes fand dieser Bericht einen zweiten Weg, ein Ziel anzukündigen („SetActiveObjective“), der genau die Prüfung auslässt, die das Banner vermutlich blockiert. Als Lösung wird pro Ziel ein solcher Skriptknoten ergänzt, eine Zwei-Zeilen-Änderung im Missions-Werkzeug. Das beruht nur auf Codelesen; die Lösung wurde im laufenden Spiel noch nicht ausprobiert.",
+   "points": [
+    "Auf dem normalen Weg zum Ziel-Banner waren drei Sperrprüfungen bekannt; verdächtig ist die dritte, ein Zeiger auf die „verfolgte Mission“.",
+    "Der Weg über SetActiveObjective beachtet die ersten beiden Prüfungen, liest die dritte aber nie.",
+    "Eine Suche im ganzen Programm fand diesen Zeiger an genau einer Lesestelle; eine zweite fest eingebaute Setzstelle ist damit ausgeschlossen.",
+    "Das Originalspiel nutzt SetActiveObjective schon mehrfach, wenn ein Nachbarziel abgeschlossen wird.",
+    "Lösung vorgeschlagen, aber im Spiel ungetestet; fehlt das Banner weiterhin, hilft eine Missions-Debug-Einstellung bei der Eingrenzung."
+   ]
+  }
+ },
+ "Kiscule-Node-Reference": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Catalogue of the 205 script node types Wolfenstein II uses, grouped by what modders build with them.",
+   "summary": "Wolfenstein II: The New Colossus scripts its missions with a node graph system called {kiscule|Kiscule}. This page groups all 205 node types used in the game by purpose: spawning enemies, trigger zones, objectives, doors, dialogue, music, saving and more, with real usage counts from all 2,408 game scripts. All numbers come from reading the game files; the game was not started, and behavior is mostly inferred from names and wiring. It helps modders wire the logic of a custom map.",
+   "points": [
+    "Built from 2,408 scripts, 70,274 node instances and 178,559 wire ends, cross-checked with the game's own class list.",
+    "There is no Door node in use; doors are built from movement and constraint nodes.",
+    "Enemy waves are normally spawned by map entities, not by script nodes (ActionAISpawn appears only once).",
+    "102 more node classes exist in the game but are used nowhere; whether they work is untested.",
+    "The Command node can run console commands from a script without opening the console."
+   ]
+  },
+  "de": {
+   "oneLine": "Katalog der 205 Skript-Knotentypen in Wolfenstein II, sortiert danach, was Modder damit bauen.",
+   "summary": "Wolfenstein II: The New Colossus steuert seine Missionen mit einem Knoten-Graph-System namens {kiscule|Kiscule}. Diese Seite ordnet alle 205 im Spiel genutzten Knotentypen nach Zweck: Gegner spawnen, Auslösezonen, Missionsziele, Türen, Dialoge, Musik, Speichern und mehr, mit echten Nutzungszahlen aus allen 2.408 Spielskripten. Alle Zahlen stammen aus dem Lesen der Spieldateien; das Spiel wurde nicht gestartet, und das Verhalten ist meist aus Namen und Verdrahtung abgeleitet. Das hilft Moddern, die Logik einer eigenen Karte zu verdrahten.",
+   "points": [
+    "Gebaut aus 2.408 Skripten, 70.274 Knoten-Instanzen und 178.559 Verbindungsenden, abgeglichen mit der Klassenliste des Spiels.",
+    "Es wird kein Tür-Knoten benutzt; Türen entstehen aus Bewegungs- und Constraint-Knoten.",
+    "Gegnerwellen werden normalerweise von Karten-Entities gespawnt, nicht von Skriptknoten (ActionAISpawn kommt nur einmal vor).",
+    "102 weitere Knotenklassen existieren im Spiel, werden aber nirgends benutzt; ob sie funktionieren, ist ungetestet.",
+    "Der Command-Knoten kann Konsolenbefehle aus einem Skript ausführen, ohne die Konsole zu öffnen."
+   ]
+  }
+ },
+ "Research-Report-R4-Integrity": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Map of every data check in Wolfenstein II: which ones block loading, crash the game, or do nothing.",
+   "summary": "This report collects every integrity check the project has found in Wolfenstein II: The New Colossus: archive hashes, texture files, game definitions, save signatures, DLC ownership and self-checks of the game program. For each it states when it runs and what happens if data is wrong. Almost everything was found by reading the code, not by running the game, apart from a few cited in-game observations. The key result for modders: only the {archive|archive} header hashes and, for sound, a valid sound spec file really stop a mod from loading.",
+   "points": [
+    "Archive header hashes must be recomputed after any edit, or the archive is refused; per-file data hashes are off by default.",
+    "A wrong save signature does not block loading; it only marks the save as dev mode. A wrong length is what causes File Corrupt.",
+    "An {inherit|inherit} edit that points at a definition loaded later silently yields empty defaults, with no warning.",
+    "DLC ownership is checked only in menu code, not when files are loaded; an unowned DLC folder was mounted in the running game.",
+    "No sign was found that the game checks its own program bytes, but this is no evidence found, not proven absent."
+   ]
+  },
+  "de": {
+   "oneLine": "Übersicht aller Datenprüfungen in Wolfenstein II: welche das Laden blockieren, abstürzen lassen oder nichts tun.",
+   "summary": "Dieser Bericht sammelt alle Integritätsprüfungen, die das Projekt in Wolfenstein II: The New Colossus gefunden hat: Archiv-Hashes, Texturdateien, Spieldefinitionen, Spielstand-Signaturen, DLC-Besitz und Selbstprüfungen des Spielprogramms. Für jede steht, wann sie läuft und was bei falschen Daten passiert. Fast alles wurde durch Lesen des Codes gefunden, nicht durch Spielen, bis auf einige zitierte Beobachtungen im Spiel. Das Wichtigste für Modder: Nur die Header-Hashes der {archive|Archive} und beim Sound eine gültige Sound-Spec-Datei verhindern wirklich, dass eine Mod lädt.",
+   "points": [
+    "Die Header-Hashes eines Archivs müssen nach jeder Änderung neu berechnet werden, sonst wird es abgelehnt; Daten-Hashes pro Datei sind standardmäßig aus.",
+    "Eine falsche Spielstand-Signatur blockiert das Laden nicht; sie markiert den Stand nur als Dev-Modus. File Corrupt entsteht durch eine falsche Länge.",
+    "Ein {inherit|inherit}-Edit, der auf eine später geladene Definition zeigt, liefert still leere Standardwerte, ohne Warnung.",
+    "DLC-Besitz wird nur im Menücode geprüft, nicht beim Laden der Dateien; ein nicht gekaufter DLC-Ordner wurde im laufenden Spiel eingebunden.",
+    "Es wurde kein Hinweis gefunden, dass das Spiel seine eigenen Programmbytes prüft, aber das heißt nur nichts gefunden, nicht bewiesen abwesend."
+   ]
+  }
+ },
+ "Research-Report-R4-Savegame": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How Wolfenstein II saves store chapter and inventory, and why editing definitions beats editing saves.",
+   "summary": "This report studied Wolfenstein II: The New Colossus save files: how they name the chapter, where the inventory sits, and which checksums protect them. The main finding is that save editing is the wrong tool. The game has a plain-text chapter system that already picks map, spawn point, player character and starting weapons, and that can be edited like other game definitions. Everything was read from real files; nothing was tested in the running game.",
+   "points": [
+    "105 chapter entries choose the map, a named spawn point and a player variant; only 66 of them pair with a loadout by name.",
+    "The weapon block in a save is decoded byte-exact (13 slots x 3 values), but what the values mean is still a guess.",
+    "The checksum field in game.details is now solved and matches 26 of 26 real files.",
+    "Recipe for a sandbox map with chosen spawn and weapons: edit the chapter and loadout definitions, start via the Challenges menu, no save edit. Not yet tested in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie Spielstände in Wolfenstein II Kapitel und Inventar speichern und warum Definitionen statt Saves bearbeiten.",
+   "summary": "Dieser Bericht untersuchte Spielstände von Wolfenstein II: The New Colossus: wie sie das Kapitel benennen, wo das Inventar liegt und welche Prüfsummen sie schützen. Die Haupterkenntnis: Spielstände zu bearbeiten ist das falsche Werkzeug. Das Spiel hat ein Kapitelsystem im Klartext, das bereits Karte, Spawnpunkt, Spielfigur und Startwaffen festlegt und sich wie andere Spieldefinitionen bearbeiten lässt. Alles wurde aus echten Dateien gelesen; nichts wurde im laufenden Spiel getestet.",
+   "points": [
+    "105 Kapiteleinträge wählen Karte, einen benannten Spawnpunkt und eine Spielfigur-Variante; nur 66 davon passen per Namen zu einer Ausrüstung.",
+    "Der Waffenblock im Spielstand ist byte-genau entschlüsselt (13 Plätze x 3 Werte), aber die Bedeutung der Werte ist noch eine Vermutung.",
+    "Das Prüfsummenfeld in game.details ist jetzt gelöst und stimmt bei 26 von 26 echten Dateien.",
+    "Rezept für eine Sandbox-Karte mit gewähltem Spawn und Waffen: Kapitel- und Ausrüstungsdefinitionen ändern, über das Challenges-Menü starten, ohne Spielstand-Edit. Im Spiel noch nicht getestet."
+   ]
+  }
+ },
+ "Research-Report-R4-Model-Import": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Converting OBJ/GLB 3D models into Wolfenstein II's model and collision formats, proven offline only.",
+   "summary": "This report asked whether a 3D model made in a normal art tool (OBJ or GLB file) can be turned into Wolfenstein II: The New Colossus model and collision files. A new importer converts a simple cube and a real game crate, and the results pass all of the project's format and {checksum|hash} checks. A writer for animated character meshes also rebuilds all 450 game files byte-identically. Nothing was started in the game, so whether the models look and collide correctly is still unknown.",
+   "points": [
+    "A hand-made cube survives a full {roundtrip|round trip} byte-identically and passes all geometry and archive hash checks.",
+    "A real crate with 3,543 vertices was exported and re-imported with exact positions, UVs and normals.",
+    "New finding: the game's tools also correct normals on static models, not only on animated ones.",
+    "The character mesh writer handles 450 of 450 game files; the old parser silently lost data in 99 of them.",
+    "Adding a model under a brand-new name is not yet possible, because the archive writer cannot add new entries."
+   ]
+  },
+  "de": {
+   "oneLine": "OBJ/GLB-3D-Modelle in Wolfenstein IIs Modell- und Kollisionsformat umwandeln, nur offline bewiesen.",
+   "summary": "Dieser Bericht fragte, ob ein 3D-Modell aus einem normalen Grafikprogramm (OBJ- oder GLB-Datei) in Modell- und Kollisionsdateien von Wolfenstein II: The New Colossus umgewandelt werden kann. Ein neuer Importer wandelt einen einfachen Würfel und eine echte Kiste aus dem Spiel um, und die Ergebnisse bestehen alle Format- und {checksum|Hash}-Prüfungen des Projekts. Ein Writer für animierte Figuren-Meshes baut außerdem alle 450 Spieldateien byte-identisch nach. Im Spiel wurde nichts gestartet, ob die Modelle richtig aussehen und kollidieren, ist also noch offen.",
+   "points": [
+    "Ein selbst gebauter Würfel übersteht einen vollen {roundtrip|Roundtrip} byte-identisch und besteht alle Geometrie- und Archiv-Hash-Prüfungen.",
+    "Eine echte Kiste mit 3.543 Vertices wurde exportiert und mit exakten Positionen, UVs und Normalen wieder importiert.",
+    "Neue Erkenntnis: Die Werkzeuge des Spiels korrigieren Normalen auch bei statischen Modellen, nicht nur bei animierten.",
+    "Der Figuren-Mesh-Writer schafft 450 von 450 Spieldateien; der alte Parser verlor in 99 davon still Daten.",
+    "Ein Modell unter einem ganz neuen Namen hinzuzufügen geht noch nicht, weil der Archiv-Writer keine neuen Einträge anlegen kann."
+   ]
+  }
+ },
+ "Research-Report-R4-Ai-Spawn-Waves": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How Wolfenstein II links trigger zones to enemy spawners and waves, with a recipe for the custom map.",
+   "summary": "This report looks at how Wolfenstein II: The New Colossus makes enemies appear when the player walks into a zone, and how multi-wave fights are built. Almost all triggers go through mission scripts, but a few rare ones link the zone straight to the spawner with no script at all. That simple route is the recommended recipe for the project's custom kit map. Everything is read from game files; nothing was built and tested in the running game.",
+   "points": [
+    "99.4% of 3,884 triggers use script nodes; only 2 retail triggers link to a spawner with no script at all.",
+    "maxActiveAIs limits how many enemies one spawner keeps alive at once; it is set on 51% of spawners.",
+    "The game builds multiple waves with one separate spawner per wave, never by re-firing the same one.",
+    "Recipe A for the kit map needs one trigger box, one spawner and hidden enemies, and no new archive names.",
+    "Whether a brand-new script entry would load (needed for Recipe B) is still open."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie Wolfenstein II Auslösezonen mit Gegner-Spawnern und Wellen verbindet, mit Rezept für die eigene Karte.",
+   "summary": "Dieser Bericht untersucht, wie Wolfenstein II: The New Colossus Gegner erscheinen lässt, wenn der Spieler eine Zone betritt, und wie Kämpfe mit mehreren Wellen gebaut sind. Fast alle Auslöser laufen über Missionsskripte, aber ein paar seltene verbinden die Zone direkt mit dem Spawner, ganz ohne Skript. Dieser einfache Weg ist das empfohlene Rezept für die eigene Kit-Karte des Projekts. Alles wurde aus Spieldateien gelesen; nichts wurde gebaut und im laufenden Spiel getestet.",
+   "points": [
+    "99,4 % von 3.884 Auslösern nutzen Skriptknoten; nur 2 Auslöser im Spiel verbinden ganz ohne Skript mit einem Spawner.",
+    "maxActiveAIs begrenzt, wie viele Gegner ein Spawner gleichzeitig am Leben hält; es ist bei 51 % der Spawner gesetzt.",
+    "Das Spiel baut mehrere Wellen mit einem eigenen Spawner pro Welle, nie durch erneutes Auslösen desselben.",
+    "Rezept A für die Kit-Karte braucht eine Auslösebox, einen Spawner und versteckte Gegner, aber keine neuen Archivnamen.",
+    "Ob ein ganz neuer Skripteintrag geladen würde (nötig für Rezept B), ist noch offen."
+   ]
+  }
+ },
+ "Research-Report-R2-Maplightstairs": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Fixing dark new geometry and unwalkable stairs on Wolfenstein II's custom kit map, built but untested.",
+   "summary": "New objects on the custom kit map for Wolfenstein II: The New Colossus had two problems: no baked lighting, and stairs the player could not walk up. For light, each new piece borrows one pixel from the baked lightmap of a similar real object, the same trick the game uses for many small objects. For stairs, the game never lets players walk the stepped mesh; an invisible ramp covers every real stair, so the fix adds one box-shaped ramp per flight. Both fixes are built into one file but checked only offline, never in the running game.",
+   "points": [
+    "Every static object always uses the lightmap shader; only three hard-coded model names can skip it.",
+    "Each new piece gets a lightmap entry pointing at one texel of a same-sized real donor object.",
+    "Real stairs have 18 steps that are too steep to walk; retail always lays an invisible ramp over them.",
+    "With the added box ramp, the simulated slope drops to at most 28 degrees with no spikes or gaps.",
+    "Open: whether the borrowed texel is lit or shadowed, so pieces may look dim."
+   ]
+  },
+  "de": {
+   "oneLine": "Dunkle neue Geometrie und unbegehbare Treppen auf der Kit-Karte von Wolfenstein II beheben, gebaut, ungetestet.",
+   "summary": "Neue Objekte auf der eigenen Kit-Karte für Wolfenstein II: The New Colossus hatten zwei Probleme: keine vorberechnete Beleuchtung und Treppen, die der Spieler nicht hochlaufen konnte. Für das Licht leiht sich jedes neue Teil einen Pixel aus der Lightmap eines ähnlichen echten Objekts, derselbe Trick, den das Spiel für viele kleine Objekte nutzt. Bei Treppen lässt das Spiel den Spieler nie auf dem Stufen-Mesh laufen; eine unsichtbare Rampe liegt über jeder echten Treppe, also fügt der Fix pro Treppenlauf eine Rampe in Boxform hinzu. Beide Fixes sind in einer Datei gebaut, aber nur offline geprüft, nie im laufenden Spiel.",
+   "points": [
+    "Jedes statische Objekt nutzt immer den Lightmap-Shader; nur drei fest eingebaute Modellnamen können ihn umgehen.",
+    "Jedes neue Teil bekommt einen Lightmap-Eintrag, der auf einen Texel eines gleich großen echten Spenderobjekts zeigt.",
+    "Echte Treppen haben 18 Stufen, die zum Laufen zu steil sind; das Spiel legt immer eine unsichtbare Rampe darüber.",
+    "Mit der zusätzlichen Box-Rampe sinkt die simulierte Steigung auf höchstens 28 Grad, ohne Spitzen oder Lücken.",
+    "Offen: ob der geliehene Texel beleuchtet oder verschattet ist, Teile könnten also dunkel wirken."
+   ]
+  }
+ },
+ "Research-Report-R4-Pickups": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How Wolfenstein II places pickups and starting weapons, and the smallest edit to start with all weapons.",
+   "summary": "This report scanned every single-player and DLC map of Wolfenstein II: The New Colossus to see how weapons, ammo, health and armor are placed or given to the player. All 6,931 world pickups use the same generic object type, driven by its game definition. Starting gear comes from three separate definition-based sources, not from the spawn point. The smallest way to start the kit map with all 9 weapon families is one field change, but this was found by reading files and is not yet tested in the game.",
+   "points": [
+    "6,931 of 6,931 pickups use one generic prop class; eleven pickup-like classes are placed zero times.",
+    "Player start points carry no inventory; gear comes from a map loadout field, the global player and script nodes.",
+    "Route A: point the map's devmapInvLoadout field at the built-in default loadout to get all 9 weapon families.",
+    "Open: whether that field works with the normal map load or only with the devmap command."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie Wolfenstein II Pickups und Startwaffen platziert, und der kleinste Edit für alle Waffen beim Start.",
+   "summary": "Dieser Bericht durchsuchte jede Einzelspieler- und DLC-Karte von Wolfenstein II: The New Colossus danach, wie Waffen, Munition, Gesundheit und Rüstung platziert oder dem Spieler gegeben werden. Alle 6.931 Pickups in der Welt nutzen denselben allgemeinen Objekttyp, gesteuert über seine Spieldefinition. Die Startausrüstung kommt aus drei getrennten, definitionsbasierten Quellen, nicht vom Spawnpunkt. Der kleinste Weg, die Kit-Karte mit allen 9 Waffenfamilien zu starten, ist eine einzige Feldänderung, aber das wurde durch Lesen der Dateien gefunden und ist im Spiel noch nicht getestet.",
+   "points": [
+    "6.931 von 6.931 Pickups nutzen eine allgemeine Prop-Klasse; elf pickup-artige Klassen werden nirgends platziert.",
+    "Spieler-Startpunkte tragen kein Inventar; die Ausrüstung kommt aus einem Loadout-Feld der Karte, dem globalen Spieler und Skriptknoten.",
+    "Weg A: Das Feld devmapInvLoadout der Karte auf das eingebaute Standard-Loadout zeigen lassen, um alle 9 Waffenfamilien zu bekommen.",
+    "Offen: ob das Feld beim normalen Kartenladen wirkt oder nur mit dem Befehl devmap."
+   ]
+  }
+ },
+ "Research-Report-R2-Mapnodlc": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Can a Wolfenstein II custom map work without owning DLC? Routes ranked, mostly by code reading.",
+   "summary": "The project's working custom map for Wolfenstein II: The New Colossus borrows a Freedom Chronicles DLC map slot, so it needs that DLC. This report asks how to avoid that. Reading the code shows a {dlc|DLC} folder can never take over a base campaign map, because the base game is always checked first. The recommended DLC-free route is to edit a base map's own archive directly with already-proven techniques; the routes are ranked by code reading and are not yet tested in the game.",
+   "points": [
+    "The base map list is always checked first, so none of the 31 base map names can be taken over by a DLC folder.",
+    "Route 1: edit a base map chunk in place; many small edits fit into the existing padding without a rebuild.",
+    "Chapter entries are normal editable definitions, and the game itself ships one new entry only in a patch file.",
+    "Several older ideas failed: save edits gave File Corrupt, and loading maps from the menu console failed.",
+    "Open: whether the chapter-select menu shows a newly appended chapter variation."
+   ]
+  },
+  "de": {
+   "oneLine": "Geht eine eigene Karte für Wolfenstein II ohne DLC-Besitz? Wege nach Rang, meist per Code-Lesen.",
+   "summary": "Die funktionierende eigene Karte des Projekts für Wolfenstein II: The New Colossus leiht sich einen Kartenplatz aus dem DLC Freedom Chronicles und braucht deshalb diesen DLC. Dieser Bericht fragt, wie man das vermeidet. Das Lesen des Codes zeigt, dass ein {dlc|DLC}-Ordner nie eine Karte der Hauptkampagne übernehmen kann, weil das Hauptspiel immer zuerst geprüft wird. Der empfohlene Weg ohne DLC ist, das Archiv einer Basis-Karte direkt mit bereits bewährten Techniken zu bearbeiten; die Wege sind per Code-Lesen eingestuft und im Spiel noch nicht getestet.",
+   "points": [
+    "Die Kartenliste des Hauptspiels wird immer zuerst geprüft, keiner der 31 Basis-Kartennamen kann also von einem DLC-Ordner übernommen werden.",
+    "Weg 1: einen Chunk einer Basis-Karte direkt bearbeiten; viele kleine Änderungen passen ohne Neuaufbau in den vorhandenen Leerraum.",
+    "Kapiteleinträge sind normale, bearbeitbare Definitionen, und das Spiel selbst liefert einen neuen Eintrag nur in einer Patch-Datei aus.",
+    "Mehrere ältere Ideen sind gescheitert: Spielstand-Edits ergaben File Corrupt, und Karten über die Menü-Konsole zu laden schlug fehl.",
+    "Offen: ob das Kapitelauswahl-Menü eine neu angehängte Kapitelvariante anzeigt."
+   ]
+  }
+ },
+ "Research-Report-R3-Mapselfcontained": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Which side files a DLC-free Wolfenstein II custom map really needs, and the DLC ownership check.",
+   "summary": "This report checks which extra files a DLC-style map folder for Wolfenstein II: The New Colossus really needs: texture cache, intro video, virtual texture pages and sound. Texture cache and video can be skipped or rerouted, virtual textures only if you avoid them in every material, and sound is mandatory because a bad sound spec crashes the game. The Steam ownership check sits only in chapter-menu code, not in the map loading code. Apart from the texture cache, these findings come from code reading and are not yet tested in the game.",
+   "points": [
+    "The texture cache file is proven unneeded in the running game: without it, no error appeared.",
+    "The loading video is just one definition field; all 47 playable maps set it, so it can be omitted or pointed at an existing video.",
+    "7,308 of 7,309 static objects on the target map use {vt|virtual textures}, so avoiding them means making your own materials.",
+    "A sound setup is required; a near-empty sound pack shipped by the game is a likely minimal template, untested.",
+    "The only Steam ownership check is reached from the chapter-select menu, not from the map loading code."
+   ]
+  },
+  "de": {
+   "oneLine": "Welche Zusatzdateien eine DLC-freie Wolfenstein-II-Karte wirklich braucht, und die DLC-Besitzprüfung.",
+   "summary": "Dieser Bericht prüft, welche Zusatzdateien ein DLC-artiger Kartenordner für Wolfenstein II: The New Colossus wirklich braucht: Textur-Cache, Intro-Video, virtuelle Texturseiten und Sound. Textur-Cache und Video lassen sich weglassen oder umleiten, virtuelle Texturen nur, wenn du sie in jedem Material vermeidest, und Sound ist Pflicht, weil eine fehlerhafte Sound-Spec das Spiel abstürzen lässt. Die Steam-Besitzprüfung sitzt nur im Code des Kapitelmenüs, nicht im Code, der Karten lädt. Bis auf den Textur-Cache stammen diese Ergebnisse aus dem Lesen des Codes und sind im Spiel noch nicht getestet.",
+   "points": [
+    "Die Textur-Cache-Datei ist im laufenden Spiel als unnötig bewiesen: Ohne sie trat kein Fehler auf.",
+    "Das Ladevideo ist nur ein Definitionsfeld; alle 47 spielbaren Karten setzen es, man kann es also weglassen oder auf ein vorhandenes Video zeigen lassen.",
+    "7.308 von 7.309 statischen Objekten der Zielkarte nutzen {vt|virtuelle Texturen}, sie zu vermeiden heißt also, eigene Materialien zu bauen.",
+    "Ein Sound-Setup ist Pflicht; ein fast leeres Soundpaket aus dem Spiel ist eine wahrscheinliche Minimalvorlage, ungetestet.",
+    "Die einzige Steam-Besitzprüfung wird vom Kapitelauswahl-Menü aus erreicht, nicht vom Code, der Karten lädt."
+   ]
+  }
+ },
+ "Research-Report-R3-Navdata": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Wolfenstein II's enemy navigation data decoded, plus switchable blocked regions for mission scripts.",
+   "summary": "This report decodes the {navmesh|navigation mesh} files that tell enemies in Wolfenstein II: The New Colossus where they can walk. All 55 navmesh files in the game now decode with zero failures. It also found named regions that mission scripts can block or unblock while playing, without changing the mesh. This is file and code analysis only; whether enemies path correctly on the project's reused custom-map navmesh still needs an in-game test.",
+   "points": [
+    "All 55 navmesh files decode: a list of region names, then a standard Havok data block.",
+    "Region names match the placed region entities in 38 of 39 maps; scripts toggle them 310 times in 216 scripts.",
+    "Wolfenstein II has none of the older cover classes used in The New Order; the system was replaced by Havok navmeshes.",
+    "A new navmesh cannot be built from scratch; the custom map reuses a donor map's navmesh, with about 3 square meters left uncovered.",
+    "Toggling regions can only open or close existing walkable area, never add new area."
+   ]
+  },
+  "de": {
+   "oneLine": "Die Gegner-Navigationsdaten von Wolfenstein II entschlüsselt, plus umschaltbare Sperrbereiche für Skripte.",
+   "summary": "Dieser Bericht entschlüsselt die {navmesh|Navigationsnetz}-Dateien, die Gegnern in Wolfenstein II: The New Colossus sagen, wo sie laufen können. Alle 55 Navmesh-Dateien im Spiel lassen sich jetzt fehlerfrei lesen. Außerdem wurden benannte Bereiche gefunden, die Missionsskripte während des Spiels sperren oder freigeben können, ohne das Netz zu ändern. Das ist reine Datei- und Code-Analyse; ob Gegner auf dem wiederverwendeten Navmesh der eigenen Karte richtig laufen, braucht noch einen Test im Spiel.",
+   "points": [
+    "Alle 55 Navmesh-Dateien lassen sich lesen: eine Liste von Bereichsnamen, dann ein normaler Havok-Datenblock.",
+    "Die Bereichsnamen passen in 38 von 39 Karten zu den platzierten Bereichs-Entities; Skripte schalten sie 310-mal in 216 Skripten um.",
+    "Wolfenstein II hat keine der älteren Deckungsklassen aus The New Order; das System wurde durch Havok-Navmeshes ersetzt.",
+    "Ein neues Navmesh lässt sich nicht von Grund auf bauen; die eigene Karte nutzt das Navmesh einer Spenderkarte, etwa 3 Quadratmeter bleiben ohne Abdeckung.",
+    "Das Umschalten von Bereichen kann vorhandene begehbare Fläche nur öffnen oder schließen, nie neue hinzufügen."
+   ]
+  }
+ },
+ "Research-Report-R3-Tileinner": {
+  "status": "open",
+  "en": {
+   "oneLine": "The inner pixel layout of Wolfenstein II's codec 2 texture tiles is still unsolved after 9 rejected ideas.",
+   "summary": "Wolfenstein II: The New Colossus stores large normal-map textures in an undocumented format called codec 2. This pass tested four more ideas for how its pixels are arranged, and all four failed against scrambled control tests. The useful new fact is that each tile has a short, busy head followed by a long, nearly flat tail. For modders nothing changes: replacement textures can use the simpler, understood codec 1 format at any size.",
+   "points": [
+    "9 layout guesses have now been rejected across two research passes, all with control tests.",
+    "Every tile has a short head of about 3 to 6 percent with more varied data, then a long flat tail.",
+    "The tail's most common byte is 0x7F in all 16 checked tiles, the neutral value for a normal map.",
+    "All four code spots that read the codec value only do bookkeeping; none decodes pixels.",
+    "Workaround stays valid: ship replacement textures as codec 1."
+   ]
+  },
+  "de": {
+   "oneLine": "Das innere Pixellayout der Codec-2-Texturkacheln von Wolfenstein II ist nach 9 verworfenen Ideen ungelöst.",
+   "summary": "Wolfenstein II: The New Colossus speichert große Normal-Map-Texturen in einem undokumentierten Format namens Codec 2. Dieser Durchgang testete vier weitere Ideen, wie die Pixel darin angeordnet sind, und alle vier scheiterten an verwürfelten Kontrolltests. Die nützliche neue Erkenntnis: Jede Kachel hat einen kurzen, unruhigen Kopf und danach einen langen, fast flachen Schwanz. Für Modder ändert sich nichts: Ersatztexturen können das einfachere, verstandene Codec-1-Format in jeder Größe nutzen.",
+   "points": [
+    "9 Layout-Vermutungen sind inzwischen über zwei Forschungsdurchgänge verworfen, alle mit Kontrolltests.",
+    "Jede Kachel hat einen kurzen Kopf von etwa 3 bis 6 Prozent mit vielfältigeren Daten, danach einen langen flachen Schwanz.",
+    "Das häufigste Byte im Schwanz ist in allen 16 geprüften Kacheln 0x7F, der neutrale Wert für eine Normal-Map.",
+    "Alle vier Codestellen, die den Codec-Wert lesen, machen nur Verwaltung; keine dekodiert Pixel.",
+    "Der Workaround bleibt gültig: Ersatztexturen als Codec 1 ausliefern."
+   ]
+  }
+ },
+ "Research-Report-R3-Kisculeref": {
+  "status": "reference",
+  "en": {
+   "oneLine": "How the Wolfenstein II script node catalogue was built from all 2,408 retail mission scripts.",
+   "summary": "This report built a complete, machine-readable list of the 205 {kiscule|Kiscule} script node types used in Wolfenstein II: The New Colossus missions. It scanned all 2,408 game scripts with 70,274 nodes and matched every type against the game's own class list, with none missing. It also found that one input can take several wires and gave a first reading of three unexplained flag bits. All of this is from reading game data; no node behavior was tested in the running game.",
+   "points": [
+    "205 node types used in the game, all found by name in the game's class list.",
+    "One input port can take several wires, for example up to eight entity links on a kill listener.",
+    "Flag bit 0x20 marks ports that are never wired in any game script (1,817 cases, 0 wired).",
+    "No Door node is used anywhere; doors are built from movement and switch nodes.",
+    "105 node classes exist but are unused; 13 look useful for custom maps but are untested."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie der Katalog der Skriptknoten von Wolfenstein II aus allen 2.408 Missionsskripten gebaut wurde.",
+   "summary": "Dieser Bericht erstellte eine vollständige, maschinenlesbare Liste der 205 {kiscule|Kiscule}-Skriptknotentypen, die in den Missionen von Wolfenstein II: The New Colossus genutzt werden. Er durchsuchte alle 2.408 Spielskripte mit 70.274 Knoten und glich jeden Typ mit der Klassenliste des Spiels ab, ohne dass einer fehlte. Außerdem zeigte er, dass ein Eingang mehrere Verbindungen annehmen kann, und deutete drei unerklärte Flag-Bits erstmals. Alles stammt aus dem Lesen der Spieldaten; kein Knotenverhalten wurde im laufenden Spiel getestet.",
+   "points": [
+    "205 im Spiel genutzte Knotentypen, alle per Namen in der Klassenliste des Spiels gefunden.",
+    "Ein Eingangsport kann mehrere Verbindungen annehmen, zum Beispiel bis zu acht Entity-Links an einem Kill-Listener.",
+    "Flag-Bit 0x20 markiert Ports, die in keinem Spielskript verbunden sind (1.817 Fälle, 0 verbunden).",
+    "Kein Tür-Knoten wird irgendwo benutzt; Türen entstehen aus Bewegungs- und Schaltknoten.",
+    "105 Knotenklassen existieren, sind aber ungenutzt; 13 wirken nützlich für eigene Karten, sind aber ungetestet."
+   ]
+  }
+ },
+ "Research-Report-R3-Tnoskinned": {
+  "status": "partial",
+  "en": {
+   "oneLine": "A reader for The New Order's animated character meshes that decodes 96% of all 755 files byte-exact.",
+   "summary": "This report decodes the file format of animated character models in Wolfenstein: The New Order, including which header field really gives the number of meshes in a file. The new reader decodes 725 of 755 models exactly to the end of the file, and a second, separately written decoder confirms the result. It also corrects an earlier claim that another count field is always 1. This is offline format research only; the reader is not yet built into the project's model viewer.",
+   "points": [
+    "One hidden count field gives the true mesh count in 755 of 755 files.",
+    "The other count field is not always 1, as claimed before; it differs on 51 files (6.8%).",
+    "725 of 755 models (96%) decode byte-exact; 600 randomly damaged test files were all correctly rejected.",
+    "A 12-byte part of each vertex is likely the joint weight index, but that is not yet proven."
+   ]
+  },
+  "de": {
+   "oneLine": "Ein Leser für die animierten Figurenmodelle von The New Order, der 96 % aller 755 Dateien byte-genau liest.",
+   "summary": "Dieser Bericht entschlüsselt das Dateiformat animierter Figurenmodelle in Wolfenstein: The New Order, auch welches Header-Feld wirklich die Zahl der Meshes in einer Datei angibt. Der neue Leser dekodiert 725 von 755 Modellen exakt bis zum Dateiende, und ein zweiter, getrennt geschriebener Decoder bestätigt das Ergebnis. Außerdem korrigiert er eine frühere Behauptung, dass ein anderes Zählfeld immer 1 ist. Das ist reine Offline-Formatforschung; der Leser ist noch nicht in den Modellbetrachter des Projekts eingebaut.",
+   "points": [
+    "Ein verstecktes Zählfeld gibt in 755 von 755 Dateien die wahre Mesh-Anzahl an.",
+    "Das andere Zählfeld ist nicht immer 1, wie früher behauptet; es weicht in 51 Dateien (6,8 %) ab.",
+    "725 von 755 Modellen (96 %) werden byte-genau gelesen; 600 zufällig beschädigte Testdateien wurden alle korrekt abgelehnt.",
+    "Ein 12-Byte-Teil jedes Vertex ist wahrscheinlich der Index für die Gelenk-Gewichte, aber das ist noch nicht bewiesen."
    ]
   }
  }

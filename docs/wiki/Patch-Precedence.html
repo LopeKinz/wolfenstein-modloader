@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>The question determines the cost of a mod for <em>Wolfenstein II</em>. If the Patch copy wins, only a small custom archive is needed. If it does not win, every change requires rebuilding <code>gameresources.resources</code> (670 MiB) and a backup of 3.4 GiB.</p>
-<p>All findings here are extracted <strong>read-only</strong> from the unmodified Retail installation at <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus</code>. Reproducible with:</p>
+<p>All findings here are extracted <strong>read-only</strong> from the unmodified Retail installation at <code>&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus</code>. Reproducible with:</p>
 <pre><code class="language-bash">python tools/probe_patchprec.py --spec         # packagemapspec.json, base + dlc
 python tools/probe_patchprec.py --dupes        # the 1 701 duplicated pairs
 python tools/probe_patchprec.py --diff 10      # byte-wise comparison examples

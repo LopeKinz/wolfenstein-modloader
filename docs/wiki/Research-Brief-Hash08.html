@@ -49,7 +49,7 @@
 <li>The header at <code>+0x20</code> is a FarmHash64 of the metadata area <code>[0x78 : subsequent IDCL incl.]</code> and was resolved in the build.</li>
 <li>The header at <code>+0x08</code> is validated by the Engine Loader. In a small custom container, <code>6e9d625602ddbc9e</code> was accepted; previously, the log showed: <code>hash: 6e9d625602ddbc9e, wants 3533df45c7f9b1d2</code>.</li>
 <li>Standard probes (unseeded Farm/City/XXH/MD5/SHA over obvious ranges) failed.</li>
-<li><strong>Tools:</strong> <code>tools/probe_tnc_hash.py</code>, Parser <code>wolfsdk/idcl.py</code>; Retail archives located in <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\base</code>.</li>
+<li><strong>Tools:</strong> <code>tools/probe_tnc_hash.py</code>, Parser <code>wolfsdk/idcl.py</code>; Retail archives located in <code>&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus\base</code>.</li>
 </ul>
 <p><strong>Investigate:</strong> Clean candidates: FarmHash/CityHash variants/Seeds, Hash over normalized header/metadata ranges, CRC mixtures, or IDCL-related structures. Do not modify existing files. If a helper script is required, create it only under <code>re_probes/hash08_scratch/</code>.</p>
 <p><strong>Acceptance Criteria:</strong></p>

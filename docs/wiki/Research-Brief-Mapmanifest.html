@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker w-mapmanifest-a1; task mapmanifest; research.
-Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Read .agent-cache/WORKER.md. Bus: python "%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
 Parallel: w-meshfmt-a1, w-cmfmt-a1, w-entitypipe-a1, w-matpipe-a1.
 You own the layer that decides what a map even consists of.</p>
 <h1 id="objective">Objective</h1>
@@ -93,7 +93,7 @@ the other workers where the walls are.</p>
   map_selection}.md</code>.</li>
 <li><code>tools/streamed.py</code>, <code>tools/dlcinfo.py</code>, <code>tools/dlcmod.py</code> - read-only.</li>
 <li>Retail corpus READ ONLY:
-  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+  <Steam library>/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
 <li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps</li>
 </ul>
 <h1 id="ownership">Ownership</h1>
@@ -102,7 +102,7 @@ re_probes/agent_reports/mapmanifest.md (new).
 Everything else read-only.</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
 <p>No game launch, no process attach, no writes under the Steam install or
-"C:/Users/‹user›/Saved Games". Do not edit wolfsdk/<em>, docs/</em>, config.json, or any
+"%USERPROFILE%/Saved Games". Do not edit wolfsdk/<em>, docs/</em>, config.json, or any
 other worker's file. No pip install.</p>
 <h1 id="hard-constraints">Hard constraints</h1>
 <p>Python 3.11, stdlib plus vendored capstone. Reproducible from the command line.</p>

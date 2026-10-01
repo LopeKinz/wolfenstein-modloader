@@ -48,7 +48,7 @@
 <ul>
 <li><code>dlc_4</code> with the primary Mapspec for <code>game/wolf/c02/c02p0</code>, <code>chunkid: 26</code>, <code>refchunks: [1]</code> is detected.</li>
 <li><code>+map</code>, <code>+exec</code>, and <code>+loadGame</code> were not executed prior to the Menu via direct EXE start.</li>
-<li>Existing Save: <code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein II The New Colossus\base\savegame.user\‹steam-id›\SLOT2\GAME-AUTOSAVE0</code>, which reports <code>c02p0</code> in its <code>game.details</code>.</li>
+<li>Existing Save: <code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein II The New Colossus\base\savegame.user\&lt;SteamID&gt;\SLOT2\GAME-AUTOSAVE0</code>, which reports <code>c02p0</code> in its <code>game.details</code>.</li>
 </ul>
 <p><strong>Scope:</strong> Read-only or isolated work within Workspace files. Do not modify any further game installation and do not start the game process. Investigate configuration files, <code>d01_*.txt</code>, logs, EXE command strings, and existing documentation for correct syntax/sequence (<code>loadGame</code>, Savegame UI, startup command queue, map launch).</p>
 <p><strong>Acceptance:</strong> Exact, documented start/load procedure or clear negative finding; at least one counter-check against an obvious but incorrect syntax. Report exclusively to <code>re_probes/agent_reports/save_load_route.md</code>.</p></article></section>

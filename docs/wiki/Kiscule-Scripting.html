@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Kiscule is what drives the missions in Part 2: triggers, enemy waves, intermission sequences, doors, and audio. It is the id-tech-6 equivalent to the <code>.script</code> files from Part 1 — but not a text interpreter, rather a <strong>node graph</strong>, as drawn by an editor.</p>
-<p><strong>All numbers here are measured</strong> from the unmodified Retail installation under <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\base\</code> (read-only only). Reproducible with:</p>
+<p><strong>All numbers here are measured</strong> from the unmodified Retail installation under <code>&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus\base\</code> (read-only only). Reproducible with:</p>
 <pre><code class="language-bash">python tools/kiscule.py --dump        # Unpack 2408 scripts into cache
 python tools/kiscule.py --roundtrip   # Write back bit-exactly, all 2408
 python tools/kiscule.py --verify      # Counter-tests plus negative tests
@@ -677,7 +677,7 @@ The game was not started. Bit-exactness here means: identical bytes to Retail �
 <li><strong>The 113 unused node classes.</strong> They exist in the EXE. Whether a script can load them: untested.</li>
 <li><strong><code>g_kisculeRuntimeTypeChecks</code></strong> ("If 1, Kiscule will log all its runtime check verification", WINDOWS/DEBUG only) would be the direct way to let the engine talk about its own scripts via them. Not used — the game was not started.</li>
 </ul></article></section>
-<nav class="pager" aria-label="Pages"><a class="prev" href="Save-Games-and-Profiles.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Save Games and Profiles for Both Wolfenstein Titles</a><a class="next" href="Ghidra-Analysis.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Ghidra: What to Extract from the EXEs — and What Not</a></nav>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Save-Games-and-Profiles.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Save Games and Profiles for Both Wolfenstein Titles</a><a class="next" href="Kiscule-Node-Reference.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Kiscule Node Reference</a></nav>
 </div></div>
 </main>
 <footer>

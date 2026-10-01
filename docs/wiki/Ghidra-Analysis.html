@@ -71,7 +71,7 @@
 <p>Ghidra's own RTTI analyzer delivered <strong>zero</strong> of these — why, see below under "What Ghidra Contributed". The class hierarchy comes from a direct parser over the MSVC-RTTI structures in <code>.data</code>/<code>.rdata</code>.</p>
 <h2 id="setup">Setup</h2>
 <p>Ghidra and a JDK as ZIP files only; no installer, no privilege escalation, nothing added to PATH or Registry:</p>
-<pre><code class="language-powershell">$root = &quot;C:\Users\‹user›\tools&quot;; mkdir -Force $root\_download | Out-Null
+<pre><code class="language-powershell">$root = &quot;%USERPROFILE%\tools&quot;; mkdir -Force $root\_download | Out-Null
 # curl.exe has been part of Windows since Win10 and can resume interrupted downloads.
 curl.exe -L -C - --fail -o $root\_download\ghidra.zip `
   https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/ghidra_12.1.4_PUBLIC_20260921.zip
@@ -89,7 +89,7 @@ python -m venv $root\pyghidra-venv
 &amp; $root\pyghidra-venv\Scripts\python.exe -m pip install --no-index `
   --find-links &quot;$root\ghidra_12.1.4_PUBLIC\Ghidra\Features\PyGhidra\pypkg\dist&quot; pyghidra
 </code></pre>
-<p><code>ghidra_map.py</code> reads <code>C:\Users\‹user›\tools\pfade.json</code>, sets <code>JAVA_HOME</code> and <code>GHIDRA_INSTALL_DIR</code> per invocation, and restarts itself for the Ghidra mode within the PyGhidra venv. Nothing is changed globally.</p>
+<p><code>ghidra_map.py</code> reads <code>%USERPROFILE%\tools\pfade.json</code>, sets <code>JAVA_HOME</code> and <code>GHIDRA_INSTALL_DIR</code> per invocation, and restarts itself for the Ghidra mode within the PyGhidra venv. Nothing is changed globally.</p>
 <h3 id="pitfalls-this-setup-has-hit">Pitfalls this Setup Has Hit</h3>
 <ul>
 <li><strong><code>Invoke-WebRequest</code> cannot resume downloads.</strong> An interrupted 543-MB download leaves a ruin that a "already exists" check will skip on the next run. <code>curl.exe -C -</code> can do it.</li>
@@ -352,7 +352,7 @@ idInventoryItem (: idEventReceiver : idClass)
 <li>everything that the execution of <code>.text</code> presupposes.</li>
 </ul>
 <p>For these questions, a debugger running on the game is the only way — then <code>.text</code> is decrypted in memory, and the vtable addresses from this document are exactly the entry point for that. This is a separate task and was explicitly not part of this work.</p></article></section>
-<nav class="pager" aria-label="Pages"><a class="prev" href="Kiscule-Scripting.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Kiscule — The Script Layer of Wolfenstein II</a></nav>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Kiscule-Node-Reference.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Kiscule Node Reference</a></nav>
 </div></div>
 </main>
 <footer>

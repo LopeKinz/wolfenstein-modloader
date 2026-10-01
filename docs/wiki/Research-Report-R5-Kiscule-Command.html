@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiscule Command Nodes Run Through the Same Unrestricted Path as `resourceExec` – Wolfenstein Modloader</title>
+<meta name="description" content="A mission-script &#x27;Command&#x27; node in Wolfenstein II can run locked console commands without the console.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Kiscule Command Nodes Run Through the Same Unrestricted Path as <code>resourceExec</code></h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R5-Kiscule-Command"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#background-the-234-command-catalog-and-the-restriction-level">Background: the 234-command catalog and the restriction level</a></li><li><a href="#the-exec-handler-queues-text-never-dispatches-directly">The Exec handler: queues text, never dispatches directly</a></li><li><a href="#the-drain-idcommonlocalframe-twice-a-frame">The drain: idCommonLocal::Frame(), twice a frame</a></li><li><a href="#a-caveat-found-along-the-way">A caveat found along the way</a></li><li><a href="#proven">PROVEN</a></li><li><a href="#inferred">INFERRED</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein II hides most of its 234 console commands; only 34 can be typed normally. This report read the game&#x27;s machine code and found that the &#x27;Command&#x27; node in mission scripts (<span class="t" data-t="kiscule">Kiscule</span>) puts its text into a queue that the engine runs against the full, unlocked list twice every frame. So a trigger in a custom map could in principle switch on God mode or infinite ammo with no console at all. This is proven only by reading the code; it has not yet been tried with a real script node in the running game.</p><ul><li>234 commands exist, only 34 are open to the normal console.</li><li>The Command node only queues text and never calls the restricted dispatcher itself.</li><li>The engine&#x27;s per-frame function runs the unrestricted queue against the full catalog twice per frame.</li><li>None of the 7 Command nodes in the original game needs this unlocked path, so there is no shipped example.</li><li>The related resourceExec route is confirmed in game (God mode, infinite ammo); the Command-node route is untested.</li></ul></div><div class="de"><p class="lede">Wolfenstein II versteckt die meisten seiner 234 Konsolenbefehle; nur 34 lassen sich normal eintippen. Dieser Bericht hat den Maschinencode des Spiels gelesen: Der „Command“-Knoten in Missionsskripten (<span class="t" data-t="kiscule">Kiscule</span>) legt seinen Text in eine Warteschlange, die die Engine zweimal pro Bild gegen die volle, freigeschaltete Befehlsliste abarbeitet. Ein Auslöser in einer eigenen Karte könnte also Gottmodus oder unendliche Munition ganz ohne Konsole einschalten. Das ist nur durch Codelesen bewiesen; mit einem echten Skriptknoten im laufenden Spiel wurde es noch nicht ausprobiert.</p><ul><li>Es gibt 234 Befehle, nur 34 sind in der normalen Konsole erreichbar.</li><li>Der Command-Knoten stellt nur Text in die Warteschlange und ruft den eingeschränkten Befehlsverteiler nie selbst auf.</li><li>Die Bild-für-Bild-Funktion der Engine arbeitet die freie Warteschlange zweimal pro Bild gegen den vollen Katalog ab.</li><li>Keiner der 7 Command-Knoten im Originalspiel braucht diesen freien Weg, es gibt also kein mitgeliefertes Beispiel.</li><li>Der verwandte resourceExec-Weg ist im Spiel bestätigt (Gottmodus, unendliche Munition); der Weg über den Command-Knoten ist ungetestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Follow-up question to the project's console-restriction research: a mission script (<code>kiscule</code>) can contain an <code>idKisculeNodeCommand</code> node that runs a raw command string (e.g. <code>"r_dof 0"</code>, <code>"triggernextmap"</code>) when triggered. Does that node call the restricted console dispatcher the same way typing a command does, or does it reach the same unrestricted path <code>resourceExec</code> is already known to use? <strong>Found by direct disassembly: the unrestricted path.</strong> The node's handler never calls the dispatcher itself — it queues the command text into one of the engine's two command buffers, selected by whatever the restriction level happens to be at that instant, and that level sits at the unrestricted value for essentially the entire session. This closes the single open question the earlier console-restriction research flagged as its top priority. <strong>The code path is proven by disassembly end to end; using it from an actual kiscule node in a running game has not been tested.</strong> It should behave the same as the already-proven <code>resourceExec</code> route, which the project <em>has</em> confirmed live: Godmode and <code>g_infiniteAmmo</code> both took effect in game, while <code>Notarget</code> printed as set but enemies already engaged in combat kept attacking — the unlock reaches the command/cvar, not necessarily every AI behavior that reads it.</p>
+<h2 id="background-the-234-command-catalog-and-the-restriction-level">Background: the 234-command catalog and the restriction level</h2>
+<p>The engine registers 234 commands total, of which only 34 are exposed to the normal console — commands like <code>map</code>, <code>devmap</code>, <code>God</code>, <code>killMonsters</code>, <code>teleport</code> are registered but not on the exposed list, so typing them normally returns "Unknown command". A single global integer (not a CVar) decides which list the dispatcher searches: level 0 searches all 234, level 1 searches only the 34 exposed ones. <code>resourceExec</code> is one of the 34 exposed commands, and it deliberately sets the level to 0 for the duration of the script it runs — already proven and already confirmed live for Godmode/<code>g_infiniteAmmo</code>. <strong>This report does not re-derive that mechanism; it asks whether a kiscule Command node reaches the same unrestricted window.</strong></p>
+<p>Note for anyone cross-checking older notes: <code>SpawnAI</code>, <code>give</code>, <code>spawn</code>, and <code>noclip</code> are <strong>not</strong> among the 234 registered commands in the retail build at all — they fail identically at any restriction level, exposed or not. They are not part of this report's chain.</p>
+<h2 id="the-exec-handler-queues-text-never-dispatches-directly">The Exec handler: queues text, never dispatches directly</h2>
+<p>Found via the class's RTTI vtable (two slots unique to <code>idKisculeNodeCommand</code> among five sibling node types checked): the registered Exec callback reads the <code>command</code> parameter, appends a trailing newline, and calls <code>idCmdSystemLocal::AppendCommandText</code> — <strong>not</strong> the command dispatcher. Condensed from the disassembly:</p>
+<pre><code>read &quot;command&quot; parameter, append '\n'
+rax = singleton's current vtable pointer
+cmp rax, &lt;the real, un-hooked vtable&gt;       ; defensive check, always true in retail
+je  &lt;call directly into the selected buffer&gt;
+  cmp [restriction_level], 0
+  cmovne rcx, &lt;restricted buffer&gt;            ; level != 0 -&gt; restricted buffer
+                                              ; level == 0 (default) -&gt; unrestricted buffer
+  append(buffer, text)
+jne &lt;call through the vtable instead — same destination, defensive fallback only&gt;
+</code></pre>
+<p>No call to the dispatcher and no write to the restriction-level global appears anywhere in this function. A Command node's Exec pulse only ever queues text; it neither executes immediately nor changes the ambient level itself.</p>
+<h2 id="the-drain-idcommonlocalframe-twice-a-frame">The drain: <code>idCommonLocal::Frame()</code>, twice a frame</h2>
+<p>The generic buffer-drain helper (already known to run once at startup for <code>default.cfg</code>/<code>package.cfg</code>) turns out to have a <strong>second</strong> call site: the engine's own main per-frame function (identified by its own embedded assert string and independently cross-checked against its position in the class's vtable). It drains <strong>both</strong> command buffers, <strong>twice every single frame</strong>:</p>
+<pre><code>drain(level=0)   ; unrestricted buffer against the full 234-command/3256-cvar catalog
+drain(level=1)   ; restricted buffer against the 34/304 exposed ones
+</code></pre>
+<p>— twice, in two separate places inside the same function. So: whatever a Command node queues while the ambient restriction level sits at 0 (true for essentially the whole session, per the prior research's exhaustive save/restore trace) is executed against the full, unrestricted catalog on the very next frame, with no patch, no <code>resourceExec</code>, and no DevGUI needed. A second confirmation that this is a general engine idiom, not a one-off for kiscule: a key-binding deserialization routine builds command strings (<code>"unbindall\n"</code>, <code>"bindset %d\n"</code>) and appends them into the exact same unrestricted buffer using the identical pattern.</p>
+<h2 id="a-caveat-found-along-the-way">A caveat found along the way</h2>
+<p>The task behind this research suggested that a retail Command node using a non-exposed command name would itself be evidence for the level-0 path. <strong>That does not hold for the actual retail data</strong>, reported honestly rather than cherry-picked: of the 7 retail <code>idKisculeNodeCommand</code> instances that exist, <code>r_dof</code> and <code>print</code> (6 of the 7 uses) are both already exposed commands that would work at either restriction level, and the 7th (<code>triggernextmap</code>) is not a registered command under any name or case at all — it would fail with "Unknown command" regardless of level. The yes/no verdict in this report rests entirely on the <strong>code-path proof</strong> above, not on an empirical retail example.</p>
+<h2 id="proven">PROVEN</h2>
+<ul>
+<li>The Command node's Exec handler (found via RTTI vtable) calls the devirtualized inline of <code>AppendCommandText</code>, never the dispatcher, confirmed via raw disassembly of both the common and the defensive-fallback branch.</li>
+<li>The buffer-select logic matches the already-known <code>resourceExec</code> addresses exactly.</li>
+<li>The per-frame drain function is <code>idCommonLocal::Frame()</code> (confirmed by its own embedded assert string and independently by its vtable slot position), and it drains the unrestricted buffer at level 0 then the restricted buffer at level 1, twice per frame.</li>
+<li>None of the 7 retail Command-node instances actually needs the level-0 path to work (6 are already-exposed commands, 1 isn't a valid command at all).</li>
+</ul>
+<h2 id="inferred">INFERRED</h2>
+<ul>
+<li>That the per-frame drain function is reached every simulated frame during actual gameplay — not independently traced from the top-level message loop, but the standard, unambiguous meaning of an engine's own <code>Frame()</code>-named function that runs this exact "drain both command buffers" pair, matching the universal idTech-family pattern.</li>
+<li>That a trigger firing a Command node during gameplay is never synchronous with the brief window where a console keystroke/<code>exec</code>/<code>resourceExec</code> holds the level at 1 — not formally proven impossible, just never documented or plausible as a reachable interaction. The one theoretical edge case would instead land in the restricted buffer and execute at level 1 on the same frame's second drain.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>In a test map, wire a trigger volume directly to a Command node with <code>command = "God 1"</code> (capitalized — the lowercase <code>god</code> is not registered at all). Enter the trigger volume, then take damage from an enemy without touching the console. If no damage is taken, <code>God 1</code> reached the dispatcher through the full, level-0 catalog — it is not among the 34 exposed commands and cannot be reached through the normal console (level 1) at all. As a falsifiable control, run a second instance with <code>command = "triggernextmap"</code> in parallel: since that name is not a registered command under any case, nothing should happen regardless of level; if it does have an effect, the chain documented here is wrong or incomplete. A sharper, damage-test-free variant: use the non-exposed cvar <code>g_infiniteAmmo 1</code> instead and fire without reloading — matches the project's already-confirmed-live <code>resourceExec</code> result for the same cvar.</p>
+<p>Related: <a href="Research-Report-Cmdtable.html">Research Report: Cmdtable</a> (the 234/34 command catalog this builds on), <a href="Research-Report-Execcarrier.html">Research Report: Execcarrier</a> (the <code>resourceExec</code> carrier route, confirmed live), <a href="Developer-Mode.html">Developer Mode</a>, <a href="Kiscule-Scripting.html">Kiscule Scripting</a>, <a href="Mission-Kiscule-Scripting.html">Mission Kiscule Scripting</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Tno-Custom-Maps.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Custom Maps: How Maps Load, and Why There Is No <code>dlc_0</code>-Style Route</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

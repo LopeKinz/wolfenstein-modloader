@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Model Formats: Static Solved, Skinned Vertex/Index Block Now Decoded – Wolfenstein Modloader</title>
+<meta name="description" content="Decoding The New Order&#x27;s 3D model files: static meshes solved, animated mesh geometry now readable.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Model Formats: Static Solved, Skinned Vertex/Index Block Now Decoded</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Tnomodels"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#why-the-studio-shows-nothing">Why the Studio shows nothing</a></li><li><a href="#static-meshes--unchanged-fully-solved">Static meshes — unchanged, fully solved</a></li><li><a href="#skinned-vertexindex-block-new-this-pass-the-main-result">Skinned vertex/index block (new this pass, the main result)</a></li><li><a href="#whole-model-header-mesh-count-field-corrected">Whole-model header: mesh-count field corrected</a></li><li><a href="#skeleton--first-partial-step">Skeleton — first, partial step</a></li><li><a href="#other-findings">Other findings</a></li><li><a href="#effort-estimate-for-a-studio-reader">Effort estimate for a Studio reader</a></li><li><a href="#open-questions">Open questions</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report covers the 3D model formats of Wolfenstein: The New Order. Static models were already fully decoded; the new result is that the vertex and triangle data of skinned (animated) <span class="t" data-t="mesh">meshes</span> can now be read exactly. That works exactly on 35 of 150 random samples (23%), including character models with over 5,000 vertices. Everything comes from reading file bytes; nothing was seen rendering, and the skeleton and some header fields are still undecoded.</p><ul><li>Static models and their textures are fully decoded and in use, error-free on two maps.</li><li>Skinned vertices are 32-byte <span class="t" data-t="endian">big-endian</span> records followed by a plain triangle index list.</li><li>The layout fits exactly on 35 of 150 random samples, up to 5,323 vertices / 8,645 triangles.</li><li>The old &#x27;mesh count&#x27; field is wrong (reads 1 on all 755 samples); the real count&#x27;s position is not yet found.</li><li>Skeleton: 211 joint and face-control names recovered, but the joint hierarchy is not decoded; estimate 2–3 days to a Studio reader.</li></ul></div><div class="de"><p class="lede">Dieser Bericht behandelt die 3D-Modellformate von Wolfenstein: The New Order. Statische Modelle waren schon vollständig entschlüsselt; neu ist, dass sich Eckpunkte und Dreiecke von animierten <span class="t" data-t="mesh">Meshes</span> jetzt exakt lesen lassen. Das passt bei 35 von 150 Zufallsproben (23 %) genau, auch bei Figurenmodellen mit über 5.000 Eckpunkten. Alles stammt aus dem Lesen der Dateibytes; nichts wurde tatsächlich angezeigt, und das Skelett sowie einige Kopffelder sind noch nicht entschlüsselt.</p><ul><li>Statische Modelle und ihre Texturen sind vollständig entschlüsselt und im Einsatz, fehlerfrei auf zwei Karten.</li><li>Animierte Eckpunkte sind 32-Byte-Datensätze im <span class="t" data-t="endian">Big-Endian</span>-Format, gefolgt von einer einfachen Dreiecksliste.</li><li>Das Format passt exakt bei 35 von 150 Zufallsproben, bis zu 5.323 Eckpunkte / 8.645 Dreiecke.</li><li>Das alte Feld „Mesh-Anzahl“ ist falsch (zeigt bei allen 755 Proben 1); die Position der echten Anzahl ist noch nicht gefunden.</li><li>Skelett: 211 Gelenk- und Gesichtsnamen gefunden, die Gelenkhierarchie ist aber nicht entschlüsselt; geschätzt 2–3 Tage bis zum Studio-Leser.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Why the Studio asset browser shows no models for <em>The New Order</em>, and how far a reader can get on the skinned mesh format. Static TNO meshes and their material→texture resolution are fully decoded and already in production use, confirmed error-free on two independently checked maps. The Studio shows no skinned/animated models because that code path deliberately raises "unsupported" — a documented stub, not a bug. This pass's main result: the skinned vertex-and-index block, previously the admitted hard, unsolved core, is now decoded exactly and shown to generalize to roughly a quarter of a broad random sample, including multi-thousand-vertex character meshes. A prior "mesh count" header field is shown to be unreliable, and a first, partial step is made on the skeleton format (joint names only). Everything here is static analysis of archive bytes and executable string tables — TNO's code is encrypted and unreadable by any disassembler available to this project — so nothing was observed actually rendering.</p>
+<h2 id="why-the-studio-shows-nothing">Why the Studio shows nothing</h2>
+<p>The TNO model-loading function in the project's own codebase raises "unsupported" on purpose.</p>
+<h2 id="static-meshes--unchanged-fully-solved">Static meshes — unchanged, fully solved</h2>
+<p>Static TNO meshes and material→texture resolution are fully decoded and wired end-to-end in production code, re-confirmed error-free on a second map this pass did not originally use.</p>
+<h2 id="skinned-vertexindex-block-new-this-pass-the-main-result">Skinned vertex/index block (new this pass, the main result)</h2>
+<p>Format: a plain, <strong>big-endian</strong>, 32-byte interleaved vertex record —</p>
+<pre><code>f32 pos[3]   -- position
+f32 uv[2]    -- texture coordinate
+12 bytes     -- not yet decoded (very likely normal/tangent/colour, by exact
+                analogy with the already-solved STATIC mesh vertex, which
+                uses the identical stride and leading layout)
+</code></pre>
+<p>— followed directly by a bare list of big-endian <code>u16</code> triangle indices, with <strong>no length prefix of its own</strong>.</p>
+<p>Proven <strong>exactly</strong> (zero free parameters) on three structurally different single-mesh samples — a 1,001-vertex weapon, a 38-vertex static prop, a 14-vertex non-rendering collision volume — by decoding vertices until one fails a sanity check (finite, non-subnormal, inside the mesh's own bounding box) to get a vertex count, then independently finding the exact byte offset where the mesh's own material name string recurs later in the file (a plain substring search, nothing to do with vertex/index counting) to get the index block's exact byte length with no further free parameter. Little-endian and the other game's own 48-byte vertex stride both fail immediately as negative controls.</p>
+<p>A broad, unselective random sample of 150 further entries, decoded the same zero-free-parameter way, fits <strong>exactly on 35 (23%)</strong> — spanning weapons, vehicle parts, world props, and character meshes up to <strong>5,323 vertices / 8,645 triangles</strong>.</p>
+<p>Each single-mesh asset's trailing structure: a whole-file (not per-mesh) materials list — one byte count, then that many length-prefixed names — followed by a constant 20-byte tail.</p>
+<h2 id="whole-model-header-mesh-count-field-corrected">Whole-model header: mesh-count field corrected</h2>
+<p>The field previously read as "mesh count" reads exactly <strong>1</strong> on every one of 755 sampled model entries and is most likely a different, real field by its RTTI name ("number of meshes before splitting by material"), not the true count. A real counter-example: one model reads 1 there but has 7 real sub-meshes, found by an unbiased full-file string scan. A <strong>second</strong> field further in the header <em>is</em> the true mesh count and is correct on every sample reached — but the exact byte-width rule that locates that second field corpus-wide is still unsolved (a simple fixed-6-byte-gap guess only works on 270 of 755 entries; two further concrete guesses were tried and explicitly rejected).</p>
+<p><strong>Multi-mesh packing</strong> (assets with more than one sub-mesh): the per-mesh materials footer found above does not repeat between meshes — consecutive meshes sit back-to-back with a short gap whose exact width is not yet reconciled (one data point requires an odd-byte gap, another fits a clean 4 bytes).</p>
+<h2 id="skeleton--first-partial-step">Skeleton — first, partial step</h2>
+<p>The same brute-force string-scanning technique used for mesh names/materials, applied to a character skeleton, recovers its full joint and facial-control name list for free: 211 plausible names on one sample — a complete, sane body-joint hierarchy down to individual finger phalanges, plus roughly 140 further facial/blend-shape control names. The binary header itself — true joint count, parent-index hierarchy, bind-pose transforms, and which of the 211 names are real skinning joints versus animation-only controls — is <strong>not decoded</strong>.</p>
+<h2 id="other-findings">Other findings</h2>
+<p>A field that sits next to the model types in the type table and looked like it might be more mesh-format work turns out to be plain JSON text, not a binary container. Several other asset types (glass/foliage/particle models, animation, joint-conversion data) each open with a short text-like tag, not decoded further. Megatexture-bound models are not a separate format at all: identical geometry/UV/material decode to any other static mesh — only the <em>pixel</em> data behind the material is unavailable, a separate, pre-existing limitation.</p>
+<h2 id="effort-estimate-for-a-studio-reader">Effort estimate for a Studio reader</h2>
+<ul>
+<li><strong>Static models:</strong> half a day to a day — almost entirely integration, since the parser, material resolver, and validation discipline already exist and are proven on two maps.</li>
+<li><strong>Skinned models:</strong> materially de-risked this pass but not finished. Roughly one more focused session for the mesh-count/gap bookkeeping, a further short session for the skeleton header (joint names are already free), plus half a day to wire into the Studio — call it <strong>2–3 days total</strong>, down from a prior estimate of about a work-week, since the single biggest unknown (the vertex/index layout) is now resolved.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>The exact corpus-wide rule that locates the true mesh-count field (two concrete guesses tried and rejected).</li>
+<li>The exact multi-mesh inter-mesh gap width (4 bytes fits one sample, an odd count is structurally required for another).</li>
+<li>Why roughly a third of the random sample does not fit the simple vertex/index template exactly — plausibly genuine per-vertex skin-weight data for true multi-joint meshes, but not confirmed.</li>
+<li>The 12 unknown vertex bytes' and the per-mesh preamble's field-by-field meaning.</li>
+<li>The skeleton's binary joint hierarchy (parent indices, bind-pose transforms).</li>
+</ul>
+<p>No in-game test applies yet — the milestone that would need one (an animated model rendering plausibly in the Studio or map viewer) depends on finishing the mesh-count/gap bookkeeping above first.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R2-Tilechain.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Texture Database Codec 2: Tile Chains for Large BC4/BC5 Mips</a><a class="next" href="Research-Report-R2-Videoreplace.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Cutscene and Loading Video (.bk2) Replacement</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

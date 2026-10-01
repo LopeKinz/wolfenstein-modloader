@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom Objective Shows in Journal but Not in the HUD Banner – Wolfenstein Modloader</title>
+<meta name="description" content="Why a custom Wolfenstein II objective shows in the journal but not as a HUD banner, and a proposed fix.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Custom Objective Shows in Journal but Not in the HUD Banner</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Missionhud"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#missionhud-dispatch-addresses-modulebin">Mission/HUD dispatch (addresses, module.bin)</a></li><li><a href="#new-this-pass-setactiveobjectives-own-dispatch-chain">New this pass: SetActiveObjective&#x27;s own dispatch chain</a></li><li><a href="#recipe">Recipe</a></li><li><a href="#dead-end">Dead end</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">In a custom Wolfenstein II mission, the objective appeared in the journal but the on-screen banner never showed. By reading the game&#x27;s machine code, this report found a second way to announce an objective (&#x27;SetActiveObjective&#x27;) that skips the one check suspected of blocking the banner. The proposed fix is to add one such script node per objective, a two-line change in the mission-building tool. This is based only on code reading; the fix has not been tried in the running game.</p><ul><li>Three blocking checks were known on the normal objective-banner path; the third, a &#x27;tracked mission&#x27; pointer, is the suspect.</li><li>The SetActiveObjective path respects the first two checks but never reads the third.</li><li>A search of the whole program found that pointer read in exactly one place, ruling out a second hard-coded setter.</li><li>The original game already uses SetActiveObjective repeatedly when a sibling objective finishes.</li><li>Fix proposed but untested in game; if the banner is still missing, a mission debug setting helps narrow it down.</li></ul></div><div class="de"><p class="lede">In einer eigenen Mission für Wolfenstein II erschien das Ziel im Tagebuch, aber das Banner auf dem Bildschirm kam nie. Durch Lesen des Maschinencodes fand dieser Bericht einen zweiten Weg, ein Ziel anzukündigen („SetActiveObjective“), der genau die Prüfung auslässt, die das Banner vermutlich blockiert. Als Lösung wird pro Ziel ein solcher Skriptknoten ergänzt, eine Zwei-Zeilen-Änderung im Missions-Werkzeug. Das beruht nur auf Codelesen; die Lösung wurde im laufenden Spiel noch nicht ausprobiert.</p><ul><li>Auf dem normalen Weg zum Ziel-Banner waren drei Sperrprüfungen bekannt; verdächtig ist die dritte, ein Zeiger auf die „verfolgte Mission“.</li><li>Der Weg über SetActiveObjective beachtet die ersten beiden Prüfungen, liest die dritte aber nie.</li><li>Eine Suche im ganzen Programm fand diesen Zeiger an genau einer Lesestelle; eine zweite fest eingebaute Setzstelle ist damit ausgeschlossen.</li><li>Das Originalspiel nutzt SetActiveObjective schon mehrfach, wenn ein Nachbarziel abgeschlossen wird.</li><li>Lösung vorgeschlagen, aber im Spiel ungetestet; fehlt das Banner weiterhin, hilft eine Missions-Debug-Einstellung bei der Eingrenzung.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>This note continues an earlier investigation into why a custom mission's objective entry appears correctly in the in-game journal but never triggers the HUD "banner" notification, while the same wiring works for retail missions. The earlier pass found three candidate blocking conditions ("gates") on the engine's <code>ObjectiveStart</code> HUD-notify path. This pass fully disassembles a second, independent dispatch path — <code>ActionMission.SetActiveObjective</code> — and finds it shares two of the three gates but never reads the one gate suspected of actually blocking the banner, a per-player "currently tracked mission" pointer. A whole-binary search confirms that field is read in exactly one place in the entire executable, ruling out a second hidden setter. Everything here is static disassembly of the shipped executable and decl data; it has not been confirmed by running the game.</p>
+<h2 id="missionhud-dispatch-addresses-modulebin">Mission/HUD dispatch (addresses, <code>module.bin</code>)</h2>
+<p><code>ActionMission</code> port table at <code>0x988ff5</code>:</p>
+<pre><code>MissionStart          0x989200
+MissionComplete       0x989330
+MissionEnd            0x989450
+ObjectiveStart         0x989690
+ObjectiveComplete      0x9894e0
+ObjectiveEnd           0x9897a0
+SetActiveObjective     0x989890
+</code></pre>
+<p>Known gates on the <code>ObjectiveStart</code> → HUD path (prior round, unchanged):</p>
+<ol>
+<li><strong>Gate 1</strong> — controller-index filter in the per-player loop.</li>
+<li><strong>Gate 2</strong> — a global suppression byte at <code>object+0x5a98d</code>.</li>
+<li><strong>Gate 3</strong> — a per-player "currently tracked mission" pointer at <code>player+0xbf58</code>, read only inside <code>ObjectiveStart</code>'s own notify chain (<code>0xF6EA20</code> → <code>0xFACCA0</code>).</li>
+</ol>
+<h2 id="new-this-pass-setactiveobjectives-own-dispatch-chain">New this pass: <code>SetActiveObjective</code>'s own dispatch chain</h2>
+<p>Disassembled instruction-by-instruction: <code>0x989890</code> (validates mission/objectives, fetches <code>showNotification</code>) → <code>0xF6ECE0</code> (per-player loop, 12 slots) → <code>0xFAD020</code> (notifier). It respects gate 1 and gate 2 (the <code>0x5a98d</code> check is present inside <code>0xFAD020</code> at <code>0xfad1b1</code>) but contains <strong>zero</strong> references to offset <code>0xbf58</code> anywhere in any of the three functions. A whole-<code>.text</code> exact-displacement search for <code>0xbf58</code> across the entire mapped image finds <strong>exactly one</strong> occurrence total — the already-known <code>ObjectiveStart</code>-side read — which rules out a second, hard-coded setter elsewhere in the binary (it does not rule out a setter reached through the engine's generic reflected-field mechanism, which resolves offsets at runtime from a field-name string and is invisible to this kind of search).</p>
+<p><code>SetActiveObjective</code>'s handler only ever fetches <code>m_mission</code>, <code>m_objectives</code> (a single-item list matching the firing objective's own <code>ObjectiveStart</code> node), and <code>m_showNotification</code> — never <code>completeHides</code>/<code>keepMissionInJournal</code> — so a new node can safely reuse the existing mission-node builder helper unchanged.</p>
+<p><strong>Retail precedent:</strong> one retail script node receives <code>SetActiveObjective</code> from two different sibling objectives' <code>ObjectiveComplete</code> outputs — "re-point the tracker when a sibling finishes," used repeatedly, not a one-shot pairing.</p>
+<h2 id="recipe">Recipe</h2>
+<p>Add one <code>ActionMission.SetActiveObjective</code> node per objective in the chain, wired from the same <code>Received</code> trigger as that objective's own <code>ObjectiveStart</code>, reusing the existing mission-node helper unchanged — a two-line diff inside the per-objective loop of the mission-building tool. Because the full dispatch chain above contains no reference to gate 3 at all, this fix is structurally immune to the one concrete blocking mechanism found in two rounds of disassembly, regardless of whether gate 3 was the actual cause in any specific failing run.</p>
+<h2 id="dead-end">Dead end</h2>
+<p>The project's own Ghidra RTTI/vtable field data has no per-member offset table for the player class (class hierarchy and vtable addresses only) — this avenue for naming the <code>+0xbf58</code> field by RTTI is a confirmed dead end, not merely untried.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Who/what writes <code>player+0xbf58</code> and a related mission-side flag bit, and whether it was actually pointing at a conflicting mission at the moment a real HUD failure was observed — not resolvable statically; would need a live memory read during a session, or tracing the reflected-field dispatch table itself.</li>
+<li>Whether the drawing logic past both gates (icon/material lookups) has further conditions that could themselves no-op — not reached in either round.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Apply the <code>SetActiveObjective</code> node change, rebuild the custom mission, and replay it to the point where the HUD banner should appear.</p>
+<ul>
+<li><strong>Banner appears:</strong> fix confirmed.</li>
+<li><strong>Still missing:</strong> enable the mission debug cvar, replay to the same point, and check the console log for the line that marks <code>SetActiveObjective</code>'s own call path firing. If that line is present but no banner shows, the problem is in the notifier's drawing logic itself, past both known gates — a new disassembly pass starting there is needed. If the line is absent, the node wiring itself needs re-checking.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R2-Md6anim.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Skeleton (<code>.md6skl</code>) and Animation (<code>.md6anim</code>) Format</a><a class="next" href="Research-Report-R2-Newassets.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Adding Brand-New Decl Entries (Not Just Replacing) in TNC</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

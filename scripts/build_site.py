@@ -39,15 +39,18 @@ CATEGORIES = [
     ("tnc", "The New Colossus", "The New Colossus",
      "Part 2 (2017, id Tech 6): settings, encryption, DLC and the developer mode.", "Teil 2 (2017, id Tech 6): Einstellungen, Verschlüsselung, DLC und der Entwicklermodus.",
      ["TNC-Modding-Surface", "TNC-Verified-Findings-2026-09-23", "TNC-CVar-Validation", "TNC-CVar-Catalog",
-      "TNC-Texture-Database", "Developer-Mode", "Cfile-Encryption", "DLC-Overrides"]),
+      "TNC-Console-Unlock", "TNC-Texture-Database", "Developer-Mode", "Cfile-Encryption", "DLC-Overrides"]),
     ("systems", "Game systems", "Spielsysteme",
      "How sound, loading, save games and scripts work in both games.", "Wie Ton, Laden, Spielstände und Skripte in beiden Spielen funktionieren.",
      ["Audio", "Streamed-Audio-Containers", "Asset-Loading-Paths", "Patch-Precedence", "Save-Games-and-Profiles",
-      "Kiscule-Scripting", "Ghidra-Analysis"]),
+      "Kiscule-Scripting", "Kiscule-Node-Reference", "Ghidra-Analysis"]),
     ("maps", "Custom maps and missions", "Eigene Karten und Missionen",
      "The work towards a new playable level in Part 2.", "Die Arbeit an einem neuen spielbaren Level in Teil 2.",
      ["TNC-Custom-Map-Status", "TNC-C3V1-Custom-Map-Prototype", "TNC-DLC-C02-Runtime-Test", "Kitmap-Kit-Survey",
       "Kitmap-Map-Skeleton", "Kitmap-Design-Report", "Mission-Anatomy", "Mission-Kiscule-Scripting", "Mission-Text"]),
+    ("rounds", "Latest research rounds", "Neueste Forschungsrunden",
+     "Rounds 2 to 5 (late September and October 2026): new assets, AI, sound, missions, the console and more.",
+     "Runden 2 bis 5 (Ende September und Oktober 2026): neue Assets, KI, Ton, Missionen, die Konsole und mehr.", []),
     ("reports", "Research reports", "Forschungsberichte",
      "Detailed results of single investigations.", "Ausführliche Ergebnisse einzelner Untersuchungen.", []),
     ("briefs", "Research briefs", "Forschungsaufträge",
@@ -154,6 +157,7 @@ def redact(text: str) -> str:
     text = USER_PATH.sub(r"\1‹user›", text)
     for name in USER_NAMES:
         text = re.sub(r"\b" + re.escape(name) + r"(?=\b|[A-Z])[A-Za-z0-9]*", "‹user›", text, flags=re.I)
+    text = re.sub(r"\b[A-Z][A-Z0-9-]*(?:WINDOWS|-PC|DESKTOP-[A-Z0-9]+)\b", "‹machine›", text)  # computer names
     text = re.sub(r"\b7656119\d{10}\b", "‹steam-id›", text)
     text = re.sub(r"(userdata[\\/]+)\d+", r"\1‹account-id›", text)
     text = re.sub(r"\bSTEAM_\d:\d:\d+\b", "‹steam-id›", text)
@@ -294,7 +298,12 @@ def build(wiki: str, out: str, summaries_path: str) -> int:
             cat_of[n] = key
     for n in names:
         if n not in cat_of:
-            cat_of[n] = "briefs" if n.startswith("Research-Brief-") else "reports"
+            if n.startswith("Research-Brief-"):
+                cat_of[n] = "briefs"
+            elif re.match(r"Research-Report-R\d-", n):
+                cat_of[n] = "rounds"
+            else:
+                cat_of[n] = "reports"
 
     sources = {}
     for n in names:

@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker <code>w-savestructure-a1</code>; task <code>savestructure</code>; research/implement.
-Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
+Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
 Parallel: <code>w-texdbkey-a1</code>, <code>w-cvartable-a1</code>, <code>w-idclwriter-a1</code>. The other master (<code>codex/Astra</code>) owned the earlier save work and is at its host session limit.</p>
 <h1 id="objective">Objective</h1>
 <p>Find, offline, why an edited Wolfenstein II savegame is rejected as "File Corrupt" - and fix the candidate so it is structurally correct.</p>
@@ -72,7 +72,7 @@ Parallel: <code>w-texdbkey-a1</code>, <code>w-cvartable-a1</code>, <code>w-idclw
 <p>tools/probe_save_structure.py (new), <code>re_probes/save_structure/</code> (new dir, your corrected candidate goes here as a full copy), <code>re_probes/agent_reports/savestructure.md</code>.</p>
 <p><strong>Do NOT modify</strong> <code>re_probes/custom_save_candidates/</code> or <code>re_probes/save_backups/</code> - they belong to the other master and the backups are the user's only copy of their real saves. Read them, write your own copy.</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
-<p><strong>Never write to "C:/Users/‹user›/Saved Games"</strong> or the Steam install. No game
+<p><strong>Never write to "%USERPROFILE%/Saved Games"</strong> or the Steam install. No game
 launch, no process attach. Do not touch tools/build_custom_save_candidate.py,
 tools/probe_details_checksum.py, tools/verify_custom_save_candidate.py,
 tools/probe_saveverify.py, tools/savehash.py, or any other worker's files;
