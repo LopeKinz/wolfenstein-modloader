@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Decls: Render-Program &quot;Flags&quot; and Adding a New Material – Wolfenstein Modloader</title>
+<meta name="description" content="How Wolfenstein II materials encode effects like glow or two-sidedness, and adding a brand-new material.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Material Decls: Render-Program &quot;Flags&quot; and Adding a New Material</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Materials"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-format">1. Format</a></li><li><a href="#2-flags-are-program-names-not-booleans">2. &quot;Flags&quot; are program names, not booleans</a></li><li><a href="#3-which-programs-are-safe-on-static-instances-kit-map-specific">3. Which programs are safe on static instances (kit-map specific)</a></li><li><a href="#4-adding-a-new-material--own-texture">4. Adding a new material + own texture</a></li><li><a href="#proven">PROVEN</a></li><li><a href="#inferred">INFERRED</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This round studied the <span class="t" data-t="material">material</span> definitions of Wolfenstein II, which tell the engine how a surface looks. There are no on/off switches for effects like glowing or two-sided surfaces; instead each material picks one of 429 fixed, pre-built shader programs whose name carries the effect. A brand-new material with its own self-made texture was built and added to a copy of a real game archive, and it passed every structural check. It has not been tested in the running game, so it is not yet known whether it actually renders.</p><ul><li>11,469 retail materials use 201 different keys; none is a simple two-sided/translucent/emissive switch.</li><li>Effects are chosen by picking one of 429 compiled shader programs by name.</li><li>53 of 57 materials on the custom kit map have a matching shader variant; 4 glass/additive ones do not, and their in-game effect is unknown.</li><li>A new image plus material passed the <span class="t" data-t="roundtrip">round trip</span>, both header checks, a missing-reference check and 3 of 3 negative controls.</li><li>Nothing was tested in game; the new material must also be referenced by a model to appear at all.</li></ul></div><div class="de"><p class="lede">Diese Runde untersuchte die <span class="t" data-t="material">Material</span>-Definitionen von Wolfenstein II, die der Engine sagen, wie eine Oberfläche aussieht. Es gibt keine Ein/Aus-Schalter für Effekte wie Leuchten oder beidseitige Flächen; stattdessen wählt jedes Material eines von 429 fest vorgebauten Shader-Programmen, in dessen Namen der Effekt steckt. Ein ganz neues Material mit selbst erstellter Textur wurde gebaut, in eine Kopie eines echten Spielarchivs eingefügt und bestand jede strukturelle Prüfung. Im laufenden Spiel wurde es nicht getestet, ob es wirklich angezeigt wird, ist also noch offen.</p><ul><li>11.469 Original-Materialien nutzen 201 verschiedene Schlüssel; keiner ist ein einfacher Schalter für beidseitig, durchscheinend oder leuchtend.</li><li>Effekte entstehen durch die Wahl eines von 429 kompilierten Shader-Programmen über dessen Namen.</li><li>53 von 57 Materialien der eigenen Baukasten-Karte haben eine passende Shader-Variante; bei 4 Glas-/Additiv-Materialien fehlt sie, die Wirkung im Spiel ist unbekannt.</li><li>Ein neues Bild plus Material bestand den <span class="t" data-t="roundtrip">Round-Trip</span>, beide Header-Prüfungen, eine Prüfung auf fehlende Verweise und 3 von 3 Gegenproben.</li><li>Nichts wurde im Spiel getestet; das neue Material muss außerdem von einem Modell verwendet werden, um überhaupt sichtbar zu sein.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-4 research pass on the <code>material</code> decl type: what the format looks like, what the two-sided/translucent/emissive/disintegrate/wound "flags" the engine is believed to have actually are, which of those are safe to use on a static-instance kit-map piece, and whether a brand-new material that references a brand-new, self-authored texture can be appended to a real retail container. All of it is static analysis plus offline round-trip builds against copies of real archives — <strong>nothing was tested in a running game</strong>. The headline finding: there are no boolean flags on a material at all; "two-sided"/"emissive"/etc. are baked into <em>which</em> of a fixed catalog of 429 compiled shader programs a material names. A from-scratch material + texture pair was built, appended to a copy of a populated retail container, and passed every structural check this project has (round-trip, both header hashes, a dangling-reference check, pixel decode) plus three negative controls — confirmed structurally sound, not confirmed to render in game.</p>
+<h2 id="1-format">1. Format</h2>
+<p>A <code>material</code> decl is UTF-8 text: <code>{\n</code>, then one <code>key\tvalue\n</code> line per property (engine-written order is alphabetical), <code>}\n</code>. Keys are <code>renderParm</code> names — <code>renderParm</code> is itself a decl type (1,661 entries) whose payload just declares a type/default/scope, e.g.:</p>
+<pre><code>renderParm ambientprogram   { Program 0 surface }
+renderParm emissive         { Vec 0.00 surface }
+renderParm lightmapscalebias{ Vec { 1, 1, 0, 0 } }   # no scope keyword -&gt; instance-scoped
+</code></pre>
+<p>Across 11,469 retail materials (28 archives, <code>dlc_0</code>/<code>dlc_4</code> excluded as known non-retail copies), <strong>201 distinct keys</strong> occur. The ten most common: the 8 <code>loose*</code> PBR slots (~7,938 each, the ordinary textured-surface case), <code>specularmap</code>/<code>powermap</code>/<code>bumpmap</code> (legacy mirrors), <code>surfacetype</code> (7,731 — a numeric index into something not traced this round, plausibly a physics/decal table), <code>stageprogram</code> (2,559), <code>ambientprogram</code> (1,060), the 4 decal-atlas slots (651/457/383 each), <code>shadowprogram</code> (469), <code>zprepassprogram</code> (374).</p>
+<h2 id="2-flags-are-program-names-not-booleans">2. "Flags" are program names, not booleans</h2>
+<p>No material in the 11,469-entry corpus sets a separate <code>twosided</code>/<code>translucent</code>/<code>emissive</code>/<code>decal</code> boolean. Instead, <code>ambientprogram</code>/<code>stageprogram</code>/<code>shadowprogram</code>/<code>zprepassprogram</code>/<code>blendprogram</code> each pick one of a closed catalog of <strong>429 distinct <code>renderProgResource</code> names</strong> (case-insensitive) — compiled, binary shader bytecode + a reflection table, not authorable as text. The property is encoded in the program name itself:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>key</th>
+<th>distinct values</th>
+<th>example names carrying the "flag"</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ambientprogram</code></td>
+<td>15</td>
+<td><code>outsidetwosided</code>(76), <code>outsideemissive</code>(184), <code>outsidedisintegrate</code>(168), <code>outsidewound</code>(111), <code>outsideunique</code>(39)</td>
+</tr>
+<tr>
+<td><code>stageprogram</code></td>
+<td>86</td>
+<td><code>glassrefractiontwosided</code>, <code>basicemissive</code>, <code>basicemissivedisintegrate</code></td>
+</tr>
+<tr>
+<td><code>shadowprogram</code></td>
+<td>8</td>
+<td><code>shadowdisintegratetranstwosided</code>, <code>shadowvmtrtransunique</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>A literal <code>emissive</code> key does exist (86 occurrences, a Vec4 color+intensity) but is a different mechanism — additive glow color on particle-FX materials, not the <code>outsideEmissive</code> <em>program</em> self-lit architecture uses. <code>decalallowed</code> (default <code>0</code>) is never set by any shipped material; decal reception is resolved elsewhere, most likely through <code>surfacetype</code> — not settled this round.</p>
+<p>Corroborated in the disassembly, not just inferred from data: <code>ambientProgram</code>/<code>stageProgram</code> are real string literals in <code>.rdata</code> (RVA <code>0x2635db0</code>/<code>0x2658ef0</code>), and <code>ambientProgram</code> is read by compiled code at RVA <code>0x5B1D61</code>–<code>0x5B1D8D</code> — consistent with this being the default-resolution fallback for the 6,878 loose materials that never set the key explicitly (read from raw bytes, not a full decompile).</p>
+<h2 id="3-which-programs-are-safe-on-static-instances-kit-map-specific">3. Which programs are safe on static instances (kit-map specific)</h2>
+<p>Every <code>idStaticInstanceEntity</code> in a kind-2 world has its program's "Unique" (lightmapped) bit forced to 1 unconditionally — an existing finding this round narrows to concrete materials. The kit map's 160 pieces use 57 distinct materials, all resolved (100%):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>group</th>
+<th>count</th>
+<th>has a compiled "Unique" program?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>implicit default (no override)</td>
+<td>50</td>
+<td>yes — <code>outsideUnique</code> + 8 permutations</td>
+</tr>
+<tr>
+<td><code>ambientprogram=outsideemissive</code></td>
+<td>3</td>
+<td>yes — <code>outsideUniqueEmissive</code></td>
+</tr>
+<tr>
+<td>glass (<code>stageprogram=glass</code>/<code>blendprogram=glasstransmittance</code>)</td>
+<td>2</td>
+<td><strong>no</strong> — 0 of 429 names combine "glass" and "unique"</td>
+</tr>
+<tr>
+<td><code>stageprogram=glassrefraction</code></td>
+<td>1</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td><code>stageprogram=basicadd</code></td>
+<td>1</td>
+<td><strong>no</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>53/57 (93%) are evidenced-safe.</strong> The 4 glass/<code>basicadd</code> pieces either render through a path that never consults the forced Unique bit (plausible — they look like forward/transparency-pass materials, not the deferred G-buffer pass the Unique mechanism gates) or would hit a missing compiled-program combination — not settled either way (no shader-bytecode decompiler exists in this toolkit). Also flagged for any future kit piece: <code>outsidedisintegrate</code>, <code>outsidewound</code>, and the specific combination <code>outsidetranstwosided</code> likewise have <strong>no</strong> compiled Unique counterpart, even though some of their individual components do.</p>
+<h2 id="4-adding-a-new-material--own-texture">4. Adding a new material + own texture</h2>
+<p>Proven this round by building and verifying one: appending a from-scratch-authored <code>material</code> and a brand-new <code>image</code> onto a <em>copy of an existing, already-populated</em> retail container (not just an empty freshly-built one, and not a clone-and-swap of an existing material).</p>
+<p><strong>Recipe:</strong></p>
+<ol>
+<li>Build a flat-color image with the project's existing <code>author_flat()</code> helper. Keep the edge ≤32px so it stays fully inline (no <code>.texdb</code> row needed) — sidesteps an open <code>+0x60</code> policy question entirely.</li>
+<li>Append it as a new <code>image</code> entry (existing append-entry tooling, unmodified).</li>
+<li>Author the material text by hand: the 8 <code>loose*</code> slots + <code>diffusemap</code> + <code>surfacetype</code>, alphabetical order. <code>loosealbedo</code> = <code>lower(diffusemap) + "$mtlkind=albedo$streamed"</code>. <strong>For every other slot, copy a whole retail value verbatim</strong> rather than composing a syntactically-plausible new one — see the corrected assumption below.</li>
+<li>Omit <code>ambientprogram</code>/<code>stageprogram</code>/etc. entirely unless you need an explicit override; the implicit default is the evidenced-safe choice for a static-instance kit piece.</li>
+<li>Append the material text as a new <code>material</code> entry, chained onto the same container.</li>
+<li>Verify with all four checks, not just hashes: the project's data-hash and header-hash tools, <code>stale_data_hashes()</code>, and a dangling-reference check (a material can pass both hashes while pointing at an image name nothing provides — see negative control below).</li>
+<li>To actually be rendered, the new material's name still has to be referenced from a model's surface list or an entity — building the decl pair alone places nothing.</li>
+</ol>
+<p><strong>Verified result:</strong> image and material round-trip byte-exact, 0 self-contradictions, both header hashes OK, 0 dangling references, the stored pixel data decodes to exactly the authored color. Three negative controls, all caught: a corrupted image header (caught by the bitmap self-check), a material pointing at a nonexistent image name (caught only by the dedicated dangling-reference check — the hash checks alone report OK, since hash validity and reference validity are different things), and a single flipped payload byte (caught by the stale-hash check).</p>
+<p><strong>Corrected assumption:</strong> a first attempt invented a plausible-looking <code>loosesmoothness</code> value (<code>.../grey_md.tga$mtlkind=smoothness$smoothnessnormal=.../flat_normal$streamed</code>) — it parses and passes both header hashes but resolves to no real image anywhere in the corpus, because that slot's identity is the literal name of a specific baked image, and retail only ever bakes specific combinations, not every syntactically valid one. Fixed by copying an exact retail-precedented string instead.</p>
+<h2 id="proven">PROVEN</h2>
+<ul>
+<li>Material format, round-trip, the <code>loosealbedo</code> derivation rule — cross-validated again this round (11,469/11,469 parse, 0 failures).</li>
+<li>201 distinct material keys exist; none is a literal two-sided/translucent/decal boolean — those properties are which of 429 compiled program names a material picks.</li>
+<li>All 57 kit-map materials resolved; 53/57 have a confirmed compiled "Unique" program variant, 4/57 (2 glass, 1 glassrefraction, 1 basicadd) do not.</li>
+<li>A brand-new <code>image</code>+<code>material</code> pair appends cleanly onto a copy of an existing populated retail container and passes every structural check this project owns, plus 3/3 negative controls.</li>
+</ul>
+<h2 id="inferred">INFERRED</h2>
+<ul>
+<li>The code at RVA <code>0x5B1D61</code>–<code>0x5B1D8D</code> is the default-program-resolution fallback — plausible from the branch shape and the census, not from a full decompile.</li>
+<li>Whether the 4 glass/<code>basicadd</code> kit materials are excluded from, or silently broken by, the forced static-instance Unique bit.</li>
+<li><code>surfacetype</code>'s numeric code plausibly indexes a global physics/decal/sound table — not traced.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether a <em>streamed</em> new image (edge &gt;32px, needing a real <code>.texdb</code> row) works the same way — deliberately sidestepped this round by staying inline.</li>
+<li>What <code>surfacetype</code> and the <code>table</code> decl type it plausibly indexes actually encode.</li>
+<li>Whether <code>unknown_0x72</code> on the 5 near-duplicate copies each <code>renderProgResource</code> name ships with is a platform/quality-tier selector.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Apply the built material/image pair on top of the already-proven magazine-size-edit technique in the same small container, and redirect one existing, visible material's <code>loosealbedo</code> to the new texture's name. If the targeted surface renders flat green after loading, the new, retail-nonexistent image entry was found and textured — the one thing this round could not settle at a desk. Separately, if either glass kit piece is ever placed as a static instance and renders black, mislit, or crashes, that is the first concrete evidence for the open Unique-bit question in §3.</p>
+<p>Related: <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>, <a href="TNC-Texture-Database.html">TNC Texture Database</a>, <a href="File-Formats.html">File Formats</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Integrity.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Where TNC Verifies Data: A Map of Every Integrity Check</a><a class="next" href="Research-Report-R4-Model-Import.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>R4 Research Report: Importing OBJ/GLB Models into TNC</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

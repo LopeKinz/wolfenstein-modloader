@@ -215,7 +215,7 @@
 <p>Plus <code>base/chunk_22.texdb</code> (existing), <code>base/packagemapspec.json</code>, and <code>dlcinfo.json</code>. <code>textures.cache</code> is located in dlc_2 under the map path and is missing in dlc_0; the test at 18:44 ran without error messages, so whether the file is used remains open -- link for parity. Soundbanks are DLC-wide, <code>MountDlc</code> mounts <code>dlc_N/base</code>. Machine-readable in <code>re_probes/dlc4_override/manifest.json</code> (<code>side_files_from_dlc_2</code>, <code>in_dlc_0</code>).</p>
 <h2 id="install-master">Install (Master)</h2>
 <p>Delete first, then copy -- never write via a hardlink in dlc_2:</p>
-<pre><code>$G=&quot;D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus&quot;
+<pre><code>$G=&quot;&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus&quot;
 Remove-Item &quot;$G\dlc\dlc_0\base\chunk_22.resources&quot;
 Copy-Item re_probes\dlc4_override\chunk_22.resources &quot;$G\dlc\dlc_0\base\&quot;
 </code></pre>

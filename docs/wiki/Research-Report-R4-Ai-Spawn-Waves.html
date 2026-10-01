@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Spawn Waves: Trigger → Spawner → Wave – Wolfenstein Modloader</title>
+<meta name="description" content="How Wolfenstein II links trigger zones to enemy spawners and waves, with a recipe for the custom map.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>AI Spawn Waves: Trigger → Spawner → Wave</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Ai-Spawn-Waves"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-two-wiring-routes-corpus-wide">The two wiring routes, corpus-wide</a></li><li><a href="#what-the-gating-fields-do">What the gating fields do</a></li><li><a href="#minimal-recipe-for-the-kit-map">Minimal recipe for the kit map</a></li><li><a href="#failed--corrected">Failed / corrected</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report looks at how Wolfenstein II: The New Colossus makes enemies appear when the player walks into a zone, and how multi-wave fights are built. Almost all triggers go through mission scripts, but a few rare ones link the zone straight to the spawner with no script at all. That simple route is the recommended recipe for the project&#x27;s custom kit map. Everything is read from game files; nothing was built and tested in the running game.</p><ul><li>99.4% of 3,884 triggers use script nodes; only 2 retail triggers link to a spawner with no script at all.</li><li>maxActiveAIs limits how many enemies one spawner keeps alive at once; it is set on 51% of spawners.</li><li>The game builds multiple waves with one separate spawner per wave, never by re-firing the same one.</li><li>Recipe A for the kit map needs one trigger box, one spawner and hidden enemies, and no new archive names.</li><li>Whether a brand-new script entry would load (needed for Recipe B) is still open.</li></ul></div><div class="de"><p class="lede">Dieser Bericht untersucht, wie Wolfenstein II: The New Colossus Gegner erscheinen lässt, wenn der Spieler eine Zone betritt, und wie Kämpfe mit mehreren Wellen gebaut sind. Fast alle Auslöser laufen über Missionsskripte, aber ein paar seltene verbinden die Zone direkt mit dem Spawner, ganz ohne Skript. Dieser einfache Weg ist das empfohlene Rezept für die eigene Kit-Karte des Projekts. Alles wurde aus Spieldateien gelesen; nichts wurde gebaut und im laufenden Spiel getestet.</p><ul><li>99,4 % von 3.884 Auslösern nutzen Skriptknoten; nur 2 Auslöser im Spiel verbinden ganz ohne Skript mit einem Spawner.</li><li>maxActiveAIs begrenzt, wie viele Gegner ein Spawner gleichzeitig am Leben hält; es ist bei 51 % der Spawner gesetzt.</li><li>Das Spiel baut mehrere Wellen mit einem eigenen Spawner pro Welle, nie durch erneutes Auslösen desselben.</li><li>Rezept A für die Kit-Karte braucht eine Auslösebox, einen Spawner und versteckte Gegner, aber keine neuen Archivnamen.</li><li>Ob ein ganz neuer Skripteintrag geladen würde (nötig für Rezept B), ist noch offen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Research pass asking how a trigger volume reaches an AI spawner, what <code>maxActiveAIs</code>/respawn/reinforcement fields actually gate, how multi-wave encounters are built, and what the minimal AI-wave setup for the custom kit map would be. Everything below is read directly from the retail text corpus (a 29-map/84-archive census) or derived from already-proven writers — <strong>the game was never launched; nothing here has been built and tested live.</strong> Two real wiring routes exist in retail, one almost exclusively used (kiscule-mediated) and one rare but genuinely present without any kiscule involvement at all; the minimal, lowest-risk kit-map recipe uses only the rare, kiscule-free route, because the kit map currently has no kiscule entity left to attach a script-based version to.</p>
+<h2 id="the-two-wiring-routes-corpus-wide">The two wiring routes, corpus-wide</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Share</th>
+<th>Mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Kiscule-mediated</strong></td>
+<td>99.4% (3,862/3,884 triggers)</td>
+<td>The <code>idTrigger</code> entity carries no <code>targets</code> field at all; a kiscule <code>TriggerNotification</code> node fires <code>ActionTrigger.Activate</code>, which holds an <code>EntityReference</code> to the spawner.</td>
+</tr>
+<tr>
+<td><strong>Direct entity-layer</strong></td>
+<td>0.6% (20/3,884 raw instances, 9 distinct trigger entities)</td>
+<td>The <code>idTrigger</code>'s own <code>edit.targets</code> list names the <code>idTarget_AISpawn</code> directly — no kiscule involved in the chain at all, <em>or</em> dual-wired (kiscule also independently references the same trigger, belt-and-suspenders).</td>
+</tr>
+</tbody>
+</table></div>
+<p>Of the 9 distinct direct-entity-layer triggers, <strong>7 are dual-wired</strong> and only <strong>2 are genuinely kiscule-free</strong>, confirmed two independent ways (a typed kiscule-graph reference scan, and a raw full-text substring search across every script either host map loads — zero hits in both):</p>
+<pre><code>c02p0_combat_triggers_trigger_12              -&gt; c02p0_combat_target_ai_spawn_10   (1-AI wave)
+c1v3_venus_combat_trigger_before_boss_spawn    -&gt; c1v3_venus_combat_target_ai_spawn_1 (4-AI wave, no maxActiveAIs)
+</code></pre>
+<p>These two are the retail precedent a kiscule-free kit-map trigger should be modeled on.</p>
+<h2 id="what-the-gating-fields-do">What the gating fields do</h2>
+<ul>
+<li><strong><code>maxActiveAIs</code></strong> (on <code>idTarget_AISpawn</code>, set on 504/983 = 51% of all spawners corpus-wide): throttles how many of <em>that spawner's own</em> targets may be alive simultaneously. <code>-1</code> = unlimited (83 uses); small integers 2–15 are typical (mode 12). It does <strong>not</strong> gate a shared pool across spawners — <code>idEncounterGroupMgr</code> (independently re-verified by reading a real retail block) carries no member list, only a name/alarm-system pointer, so cross-spawner limits are not visible in the data at all.</li>
+<li><strong><code>idScenePoint_Spawn.reuseDelay</code></strong> (2,764 scene points corpus-wide, mean 4.49 s, range 0–20 s): lets the <em>same world position</em> hand out another AI from its template list after a cooldown, gated by the owning spawner's <code>maxActiveAIs</code>. This is the respawn-point mechanic.</li>
+<li><strong><code>idAlarmSystem.alarmSpawner</code></strong> (present on 195/196 = 99.5% of all alarm systems): the reinforcement mechanic. Retail always keeps a <em>separate, otherwise-idle</em> spawner dedicated to reinforcements — it never reuses a combat spawner that triggers already feed.</li>
+<li><strong>Observed pattern, not proven mechanically:</strong> retail's proven multi-wave pattern is <strong>one dedicated spawner per wave</strong>, never re-triggering the same spawner twice. A kiscule <code>AiKilledNotification</code> → <code>Counter</code> → <code>Delay</code> → <code>ActionTrigger</code> chain fires the <em>next</em> wave's separate spawner. This exact pattern is not just inferred — it has already been built and structurally verified (37/37 checks) as a working two-wave container elsewhere in this project.</li>
+<li>Whether a single spawner honors <code>maxActiveAIs</code> as a live gate on <em>repeated</em> firing (true re-trigger/respawn of the same spawner) versus being one-shot per name was not settled by disassembly — the field is read through the engine's generic reflection-table binding, not a single named code site, so a targeted disassembly attempt hit a wall. The practical answer is the data pattern itself: retail never does this, so a mod shouldn't rely on unverified re-trigger semantics either.</li>
+</ul>
+<h2 id="minimal-recipe-for-the-kit-map">Minimal recipe for the kit map</h2>
+<p>The kit map today has <strong>zero</strong> triggers, spawners, alarms, scene points, or kiscule entities — the skeleton-reduction rules that build it strip <code>idKisculeEntity</code>, all AI classes, and all trigger/logic entities outright. This makes a kiscule-free recipe the natural, lower-risk fit:</p>
+<p><strong>Recipe A — entity-layer only, no kiscule (recommended):</strong></p>
+<ol>
+<li>One new <code>.cm</code> collision box for the trigger volume (existing round-trip writer).</li>
+<li>One new <code>idTrigger</code> entity: <code>inherit="triggers/trigger"</code>, <code>class="idTrigger"</code>, <code>renderModelInfo.model=NULL</code>, <code>clipModelInfo.clipModelName</code> = the new box, <code>edit.targets={num=1; item[0]="&lt;spawner&gt;"}</code>.</li>
+<li>One new <code>idTarget_AISpawn</code> entity, modeled on the <code>c1v3_venus...</code> retail precedent above: <code>edit.targets</code> naming N new hidden AI (corpus-typical wave size 3–8, mean 5.28), <code>maxActiveAIs</code> optional.</li>
+<li>N new <code>idAI2</code> entities, <code>flags.hide=true</code>, reusing an AI definition already mounted for the kit map, placed on its already-validated navmesh-backed area.</li>
+<li>No kiscule entity, no <code>idEncounterGroupMgr</code>/<code>idAlarmSystem</code>/<code>idScenePoint_*</code> needed — all proven optional by the retail precedent above.</li>
+</ol>
+<p>This adds <strong>zero new decl/archive-entry names</strong> — only a <code>.entities</code> text edit (existing byte-exact round-trip proof) and one new <code>.cm</code> entry (existing round-trip proof) — which is why it is lower-risk, not merely shorter.</p>
+<p><strong>Recipe B — kiscule multi-wave (more faithful, higher risk):</strong> reuses the already-built-and-verified kill-counter → delay → next-wave pattern verbatim, but every kiscule write this project has ever proven <strong>appends to the payload of a kiscule entry a retail container already has</strong>. The kit map has no <code>idKisculeEntity</code> left to append to, so Recipe B needs either restoring one retail kiscule entity wholesale and stripping it down (untried), or authoring a genuinely new kiscule archive entry under a name no shipped container has — a step the project's tools can technically perform but which <strong>no report has actually exercised</strong>. This is the single open question that would decide whether Recipe B is viable at all.</p>
+<h2 id="failed--corrected">Failed / corrected</h2>
+<ul>
+<li>An earlier pass's two cited "kiscule-free" retail precedents (<code>commanderarea_secondfloor</code>/<code>thirdfloor</code>) are actually dual-wired — kiscule <em>also</em> independently reaches them. The two retail precedents used above (<code>c02p0_combat_triggers_trigger_12</code>, <code>c1v3_venus_combat_trigger_before_boss_spawn</code>) are the corrected, confirmed-bare pair.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether a brand-new kiscule archive entry (Recipe B) is structurally acceptable to the loader at all.</li>
+<li><code>reuseDelay</code>/<code>maxActiveAIs</code> omission-default semantics (does omitting <code>maxActiveAIs</code> mean unlimited, or <code>targets.num</code>?) — unresolved, needs disassembly support not yet available.</li>
+<li>A small residual (~17%) of sampled kiscule-only triggers whose name a reference scan could not find referenced anywhere — most likely a method gap (a reference mechanism the scan doesn't model) rather than more undiscovered kiscule-free triggers, but not conclusively ruled out.</li>
+<li>Everything here is data/structure only: no AI spawn, wave, or alarm has been observed in a running game in this project yet.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Install a kit-map variant containing Recipe A's new trigger + spawner + hidden AI, start the game with developer mode enabled, load the test map, and walk into the trigger volume. If the previously-invisible AI appears exactly on crossing the trigger box and engages, that is the first runtime evidence for the pure entity-layer spawn route in this project — until then it rests only on retail precedent, never built or started.</p>
+<p>Related: <a href="Mission-Anatomy.html">Mission Anatomy</a>, <a href="Mission-Kiscule-Scripting.html">Mission Kiscule Scripting</a>, <a href="Kiscule-Scripting.html">Kiscule Scripting</a>, <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Ai-Decls.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>R4 Research Report: AI Decl Hierarchy and Difficulty (TNC)</a><a class="next" href="Research-Report-R4-Console-Commands.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>R4 Research Report: The Console Command Gate (TNC)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

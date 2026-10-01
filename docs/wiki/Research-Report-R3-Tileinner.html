@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Texture Codec 2 Tile Chains: Inner Pixel Layout (Still Unsolved) – Wolfenstein Modloader</title>
+<meta name="description" content="The inner pixel layout of Wolfenstein II&#x27;s codec 2 texture tiles is still unsolved after 9 rejected ideas.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Texture Codec 2 Tile Chains: Inner Pixel Layout (Still Unsolved)</h1>
+<p class="meta"><span class="stamp s-open"><span class="en">Open</span><span class="de">Offen</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R3-Tileinner"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#what-was-ruled-out-this-round">What was ruled out this round</a></li><li><a href="#the-real-structural-finding">The real structural finding</a></li><li><a href="#engine-code-trace">Engine code trace</a></li><li><a href="#for-modders">For modders</a></li><li><a href="#open-questions">Open questions</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein II: The New Colossus stores large normal-map textures in an undocumented format called codec 2. This pass tested four more ideas for how its pixels are arranged, and all four failed against scrambled control tests. The useful new fact is that each tile has a short, busy head followed by a long, nearly flat tail. For modders nothing changes: replacement textures can use the simpler, understood codec 1 format at any size.</p><ul><li>9 layout guesses have now been rejected across two research passes, all with control tests.</li><li>Every tile has a short head of about 3 to 6 percent with more varied data, then a long flat tail.</li><li>The tail&#x27;s most common byte is 0x7F in all 16 checked tiles, the neutral value for a normal map.</li><li>All four code spots that read the codec value only do bookkeeping; none decodes pixels.</li><li>Workaround stays valid: ship replacement textures as codec 1.</li></ul></div><div class="de"><p class="lede">Wolfenstein II: The New Colossus speichert große Normal-Map-Texturen in einem undokumentierten Format namens Codec 2. Dieser Durchgang testete vier weitere Ideen, wie die Pixel darin angeordnet sind, und alle vier scheiterten an verwürfelten Kontrolltests. Die nützliche neue Erkenntnis: Jede Kachel hat einen kurzen, unruhigen Kopf und danach einen langen, fast flachen Schwanz. Für Modder ändert sich nichts: Ersatztexturen können das einfachere, verstandene Codec-1-Format in jeder Größe nutzen.</p><ul><li>9 Layout-Vermutungen sind inzwischen über zwei Forschungsdurchgänge verworfen, alle mit Kontrolltests.</li><li>Jede Kachel hat einen kurzen Kopf von etwa 3 bis 6 Prozent mit vielfältigeren Daten, danach einen langen flachen Schwanz.</li><li>Das häufigste Byte im Schwanz ist in allen 16 geprüften Kacheln 0x7F, der neutrale Wert für eine Normal-Map.</li><li>Alle vier Codestellen, die den Codec-Wert lesen, machen nur Verwaltung; keine dekodiert Pixel.</li><li>Der Workaround bleibt gültig: Ersatztexturen als Codec 1 ausliefern.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>TNC stores large normal-map mips using an undocumented "codec 2" tile-chain format whose inner pixel layout earlier research could not decode, having already ruled out raw planes, simple raster BC4/BC5 blocks, and a GPU-dispatcher explanation. This pass tested four more concrete layout hypotheses — two BC5-specific geometric splits, a BC4 bit-plane split, and "the high-entropy region is just top-anchored raster data" — and every one was rejected using the same derangement-plus-correlation negative-control discipline as earlier work. The most useful new result is structural, not a solved layout: every codec-2 tile has a short, higher-entropy "head" region followed by a long, nearly flat "tail" dominated by a single constant byte, a real and reproducible pattern that no tested hypothesis explains yet. This is pure static byte-level and disassembly research with no game launch; the practical modding workaround (write replacement textures using the simpler, understood "codec 1" format at any size) is unaffected either way.</p>
+<h2 id="what-was-ruled-out-this-round">What was ruled out this round</h2>
+<p>All four tested with real negative controls (a scrambled/derangement version of each hypothesis, which should score the same as the real hypothesis if the hypothesis is wrong — and did, every time):</p>
+<ul>
+<li>BC5 as two GPU-hardware-standard sparse tiles placed side by side (a genuinely new geometric idea, distinct from the already-rejected whole-tile raster reading).</li>
+<li>BC5 stored as two separate channel planes (all X-channel blocks, then all Y-channel blocks) instead of the normal interleaved format.</li>
+<li>BC4 stored as a structure-of-arrays split (all endpoint pairs, then all index data) instead of interleaved per block.</li>
+<li>The short high-entropy "head" region read as plain top-anchored raster BC4.</li>
+</ul>
+<p>This brings the running total to 9 rejected pixel-layout/mechanism hypotheses across two research passes, all tested the same rigorous way.</p>
+<h2 id="the-real-structural-finding">The real structural finding</h2>
+<p>A byte-statistics scan (independent of any pixel-decoding assumption) shows every codec-2 tile has two clearly distinct regions: a short "head" (roughly the first 3–6% of the buffer, varying per tile rather than sitting at a fixed offset) at meaningfully higher entropy, followed by a long, nearly flat "tail" at very low entropy. The tail's single most common byte value is <strong>0x7F</strong> in every one of 16 spot-checked tiles (42–95% share) — the tangent-space-neutral value for a normal-map channel, consistent with (not proof of) genuine but heavily redundant normal-map content. A follow-up test found a real but modest statistical link between how long the head region is and how much real visual detail the corresponding reference image has (weak positive correlation, stronger for BC5 than BC4) — consistent with a content-driven, variable-length payload rather than a fixed container field, though the effect is too small to use as a hard layout boundary by itself.</p>
+<p>Two more candidate explanations for the head region were tested and rejected: it is not a second, nested compressed stream (a random-byte control "detected" a fake compressed stream more often than the real head bytes did), and it does not correspond to id Software's older, now-abandoned virtual-texture ("MegaTexture") format — an independent check of public community documentation confirmed TNC specifically dropped that older system in favor of the simpler streaming format this project already fully understands (unlike a contemporaneous sibling game on the same engine generation, which kept it) — a genuine engineering difference between the two games, not a property of the shared engine family.</p>
+<h2 id="engine-code-trace">Engine code trace</h2>
+<p>Disassembly of every place in the executable that reads the per-tile "codec" byte (four sites total now, up from two in earlier work) found every one of them to be bookkeeping — a logging/telemetry call, a lock-free queue push, and a flat struct copy forwarding the tile's metadata into what looks like a render-thread command buffer. <strong>None of the four branches on the codec value to do anything pixel-shaped.</strong> One newly found site (a large, only partially examined function that forwards the tile record toward a render-backend command buffer) is the single most promising remaining lead for static analysis, but has not yet been walked to its actual consumer.</p>
+<h2 id="for-modders">For modders</h2>
+<p>Nothing changes the practical recommendation from earlier work: ship replacement textures/mips using the simpler, already-understood "codec 1" format, which the engine accepts at any size — codec 2 itself still has no known encoder and isn't needed for ordinary texture replacement.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>What the head region actually contains.</li>
+<li>Whether the tail's near-constant content is genuine (if redundant) texture data or allocation padding — one cheap, still-untested check: compare tail bytes byte-for-byte across two unrelated, genuinely flat textures.</li>
+<li>Where the render-command buffer found this pass is ultimately consumed, and whether that code ever branches on the codec byte.</li>
+<li>A GPU-level trace (e.g. with a graphics debugger during an actual texture upload) remains the only lead that isn't more static guesswork, and was out of scope for this read-only track.</li>
+</ul></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R3-Swfui.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>The SWF-Based UI: Format, Menu Entries, and HUD Restyling</a><a class="next" href="Research-Report-R3-Tnoskinned.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Skinned Models: Mesh-Count Rule and a Corpus-Proven Reader</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

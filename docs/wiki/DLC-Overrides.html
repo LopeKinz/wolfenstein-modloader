@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p><em>Wolfenstein II</em> ships with three released DLCs. Each registers via its own <code>packagemapspec.json</code> and brings its own <code>chunk_&lt;id&gt;.resources</code>. If such a chunk can overwrite an <strong>existing</strong> asset, then the entire patch machinery for Part 2 becomes optional: a mod would then be a folder you drop in and take out — without backup, without journaling, without rollback, without a single write operation to the 40-GB installation.</p>
-<p>All of this is lifted <strong>read-only</strong> from the unmodified Retail installation at <code>D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus</code> and <code>…\Wolfenstein.The.New.Order</code>. Reproducible with:</p>
+<p>All of this is lifted <strong>read-only</strong> from the unmodified Retail installation at <code>&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus</code> and <code>…\Wolfenstein.The.New.Order</code>. Reproducible with:</p>
 <pre><code class="language-bash">python tools/dlcmod.py messung      # the decisive measurement
 python tools/dlcmod.py felder       # packagemapspec fields, with prediction tests
 python tools/dlcmod.py selbsttest   # the archiver builder

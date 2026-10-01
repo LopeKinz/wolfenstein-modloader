@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where TNC Verifies Data: A Map of Every Integrity Check – Wolfenstein Modloader</title>
+<meta name="description" content="Map of every data check in Wolfenstein II: which ones block loading, crash the game, or do nothing.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Where TNC Verifies Data: A Map of Every Integrity Check</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Integrity"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-archive-integrity-idcl">1. Archive integrity (IDCL)</a></li><li><a href="#2-texdb--texturescache">2. texdb / textures.cache</a></li><li><a href="#3-decl-validation">3. Decl validation</a></li><li><a href="#4-save-signatures">4. Save signatures</a></li><li><a href="#5-dlc-entitlementownership">5. DLC entitlement/ownership</a></li><li><a href="#6-anti-tamper-of-the-executable-nothing-found">6. Anti-tamper of the executable: nothing found</a></li><li><a href="#summary-table">Summary table</a></li><li><a href="#failed-hypotheses-explicitly-so-they-are-not-re-tried">FAILED HYPOTHESES (explicitly, so they are not re-tried)</a></li><li><a href="#open-questions">Open questions</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report collects every integrity check the project has found in Wolfenstein II: The New Colossus: archive hashes, texture files, game definitions, save signatures, DLC ownership and self-checks of the game program. For each it states when it runs and what happens if data is wrong. Almost everything was found by reading the code, not by running the game, apart from a few cited in-game observations. The key result for modders: only the <span class="t" data-t="archive">archive</span> header hashes and, for sound, a valid sound spec file really stop a mod from loading.</p><ul><li>Archive header hashes must be recomputed after any edit, or the archive is refused; per-file data hashes are off by default.</li><li>A wrong save signature does not block loading; it only marks the save as dev mode. A wrong length is what causes File Corrupt.</li><li>An <span class="t" data-t="inherit">inherit</span> edit that points at a definition loaded later silently yields empty defaults, with no warning.</li><li>DLC ownership is checked only in menu code, not when files are loaded; an unowned DLC folder was mounted in the running game.</li><li>No sign was found that the game checks its own program bytes, but this is no evidence found, not proven absent.</li></ul></div><div class="de"><p class="lede">Dieser Bericht sammelt alle Integritätsprüfungen, die das Projekt in Wolfenstein II: The New Colossus gefunden hat: Archiv-Hashes, Texturdateien, Spieldefinitionen, Spielstand-Signaturen, DLC-Besitz und Selbstprüfungen des Spielprogramms. Für jede steht, wann sie läuft und was bei falschen Daten passiert. Fast alles wurde durch Lesen des Codes gefunden, nicht durch Spielen, bis auf einige zitierte Beobachtungen im Spiel. Das Wichtigste für Modder: Nur die Header-Hashes der <span class="t" data-t="archive">Archive</span> und beim Sound eine gültige Sound-Spec-Datei verhindern wirklich, dass eine Mod lädt.</p><ul><li>Die Header-Hashes eines Archivs müssen nach jeder Änderung neu berechnet werden, sonst wird es abgelehnt; Daten-Hashes pro Datei sind standardmäßig aus.</li><li>Eine falsche Spielstand-Signatur blockiert das Laden nicht; sie markiert den Stand nur als Dev-Modus. File Corrupt entsteht durch eine falsche Länge.</li><li>Ein <span class="t" data-t="inherit">inherit</span>-Edit, der auf eine später geladene Definition zeigt, liefert still leere Standardwerte, ohne Warnung.</li><li>DLC-Besitz wird nur im Menücode geprüft, nicht beim Laden der Dateien; ein nicht gekaufter DLC-Ordner wurde im laufenden Spiel eingebunden.</li><li>Es wurde kein Hinweis gefunden, dass das Spiel seine eigenen Programmbytes prüft, aber das heißt nur nichts gefunden, nicht bewiesen abwesend.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>A synthesis pass pulling together every data-integrity check this project has found in The New Colossus — archive header/entry hashes, texdb/cache checks, decl validation, save signatures, DLC entitlement, and whether the executable checks its own bytes — into one map with address, trigger condition, and consequence for each. Most individual checks were already found and disassembled by earlier passes; this report's own new contribution is the last one (§7): a direct scan proving no evidence exists that the engine hashes or checksums its own executable bytes at runtime. <strong>All findings are static (disassembly plus spot-checks against a decrypted runtime memory capture) except where a specific runtime observation is cited; the game was not launched for this pass.</strong> The practical takeaway for a modder: only two things are load-bearing in the sense of "wrong → refused load or crash" — the IDCL archive <strong>header</strong> hashes after any edit, and (for sound) a syntactically valid <code>prodspec.json</code>. Nearly everything else is either unchecked, checked but non-fatal, or checked only behind a CVar that is off by default in retail.</p>
+<h2 id="1-archive-integrity-idcl">1. Archive integrity (IDCL)</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Condition</th>
+<th>Consequence on mismatch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Magic <code>IDCL</code>, version</td>
+<td>always</td>
+<td>mount refused</td>
+</tr>
+<tr>
+<td>Header hash <code>+0x08</code></td>
+<td>always, every mount</td>
+<td>mount refused (not a crash)</td>
+</tr>
+<tr>
+<td><strong>Metadata end marker</strong></td>
+<td>always</td>
+<td><strong>hard crash</strong> (<code>FatalError</code>+<code>int3</code>) — the one fatal header-level check</td>
+</tr>
+<tr>
+<td>Metadata hash <code>+0x20</code></td>
+<td>always (v12)</td>
+<td>mount refused</td>
+</tr>
+<tr>
+<td>Entry <code>data_hash</code> (<code>+0x50</code>)</td>
+<td>only if <code>resourceStorage_checkDataCheckSum</code> CVar ≠ 0 — <strong>retail default is 0</strong>, measured live</td>
+<td>hard crash if it does run, but by default it never does</td>
+</tr>
+<tr>
+<td>Entry <code>hash_0x60</code> ("default hash")</td>
+<td><strong>never</strong> recomputed from content by any reader — every comparison site checks it against another <em>stored</em> field</td>
+<td>a builder is free to set it to anything self-consistent</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Practical reading:</strong> the header hash chain (<code>+0x20</code> then <code>+0x08</code>, in that order) is the only part of the format that must be freshly computed after <em>any</em> edit, or the container is refused at mount — independent of the CVar. The entry-level <code>data_hash</code>/<code>hash_0x60</code> fields only matter at all if someone flips that CVar on, which retail does not do, and even then only <code>data_hash</code> is actually recomputed from content. The project's own archive writer reproduces the full chain and round-trips real archives byte-identically, including a live repair of a broken custom container.</p>
+<h2 id="2-texdb--texturescache">2. texdb / textures.cache</h2>
+<p>Magic-only checks, no content hash anywhere in the chain:</p>
+<ul>
+<li><code>.texdb</code> magic (8 bytes) is checked on mount; the 16-byte "build ID" header field is copied into the runtime object and <strong>never compared</strong> — a custom <code>.texdb</code> can carry arbitrary bytes there.</li>
+<li>The <code>.texdb</code> format itself carries <strong>no length field</strong> for the texture block — the read length comes entirely from the paired <code>.bimage</code>'s own mip table. A mismatch between the two reads the wrong byte count (Oodle decode failure or garbage pixels), not caught by any texdb-side check.</li>
+<li><code>textures.cache</code> is magic-only if present, and <strong>fully optional</strong> — a missing file falls through silently to the ordinary <code>.texdb</code> path, runtime-confirmed with no error logged.</li>
+</ul>
+<p>The only thing actually standing between "load the right texture" and "load garbage" is the IDCL entry <code>data_hash</code> governing the paired <code>.bimage</code> entry — and that one is off by default (§1).</p>
+<h2 id="3-decl-validation">3. Decl validation</h2>
+<p>One hard check, one silent gap, both in the <code>inherit</code> parser:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parent currently mid-load (true circular inheritance)</td>
+<td><code>FatalError</code> — hard crash</td>
+</tr>
+<tr>
+<td>Parent <strong>not yet loaded</strong> (exists, but later in the block-load manifest order)</td>
+<td><strong>nothing</strong> — copies the unloaded parent's empty class defaults, no warning, no error, no log line</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is a real, measured modding trap: it is the confirmed root cause of a previously-diagnosed broken mod, where an <code>inherit</code> edit silently produced class defaults because the new target decl loads <em>after</em> the one being edited in the manifest. A companion edit in the same patch that only touched the child's own <code>edit</code> block (no <code>inherit</code> change) worked fine, because that has no ordering dependency. <strong>Forward references by name</strong> (fields like <code>projectileDecl</code>/<code>valueDecl</code>, as opposed to <code>inherit</code> itself) are unaffected — retail has working forward-pointing cases of its own.</p>
+<p>Decl <em>text</em> parsing itself was not seen to reject anything in any corpus read in this project (thousands of decls, all 29 <code>.entities</code> maps parse clean). The closest measured precedent for what the engine's own parser does with malformed data (a related JSON validator for DLC sound) is an unconditional hard crash, not a graceful skip — offered as a style precedent, not a measurement of the decl parser itself.</p>
+<h2 id="4-save-signatures">4. Save signatures</h2>
+<p><code>.verify</code> is a strong cryptographic tag that, surprisingly, <strong>does not gate loading</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Condition</th>
+<th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.verify</code> HMAC-SHA256 tag matches</td>
+<td>every load, except <code>profile.bin</code> (explicitly exempted by name)</td>
+<td><strong>mismatch does not stop loading.</strong> It only sets a flag; the save is permanently marked dev-mode/cheat, and the game later prints "Loading Dev Mode or corrupted save game."</td>
+</tr>
+<tr>
+<td>Payload length matches declared length</td>
+<td>every load</td>
+<td>mismatch → the actual <code>SAVEGAME_E_CORRUPTED</code> flag — this, not <code>.verify</code>, is the real source of a "File Corrupt" rejection</td>
+</tr>
+<tr>
+<td>4-byte MD5-fold header</td>
+<td>same gate</td>
+<td>same <code>SAVEGAME_E_CORRUPTED</code> flag</td>
+</tr>
+</tbody>
+</table></div>
+<p>Algorithm: <code>verify = nonce(8) || HMAC_SHA256(key, entire file)</code>, where <code>key = SHA256(nonce || a runtime-only heap value || a fixed 11-byte secret || basename(file))</code>. The runtime-only component has no static occurrence anywhere in a 36 MB memory capture and no readable setter — <strong>offline forgery of a valid <code>.verify</code> tag is not currently possible</strong> from this project's evidence, but per the table above, that is also irrelevant to whether a save loads, only to whether it loads quietly instead of flagged.</p>
+<h2 id="5-dlc-entitlementownership">5. DLC entitlement/ownership</h2>
+<p>Exists as a named subsystem, but <strong>not on the file-mounting path at all</strong>:</p>
+<ul>
+<li>A map name is looked up in the base game's own map spec <strong>first, unconditionally</strong>. If found, base wins outright and the DLC list is never even consulted — this is name <em>precedence</em>, not ownership, and is the actual reason a DLC folder can never take over an existing base map.</li>
+<li>DLC folder discovery has no call to the entitlement check anywhere in or near it.</li>
+<li>The real Steam-ownership check (<code>idEntitlements::Get</code>) exists, with exactly <strong>2 callers in the entire binary</strong>, both inside chapter-select/menu construction code for one narrow UI object type — nowhere near the resource-mounting engine code that actually decides what loads.</li>
+</ul>
+<p><strong>Runtime-confirmed consequence:</strong> an unowned DLC folder carrying a non-owned dlc-id was discovered, mounted, and its map spec entry won a direct name collision against the real, owned DLC content — producing visibly different content with zero entitlement-related log output. This is the mechanism the project's proven custom-map route (loading a modified map through <code>dlc/dlc_0</code> folder precedence) actually relies on, and it is why that route works at all.</p>
+<h2 id="6-anti-tamper-of-the-executable-nothing-found">6. Anti-tamper of the executable: nothing found</h2>
+<p>Both game executables have their code section SteamStub-encrypted (entropy 8.000, indistinguishable from random) — this is pre-execution DRM against static analysis, not a runtime self-check, and the project's whole reverse-engineering corpus already works around it via a one-time decrypted memory capture.</p>
+<p>Whether the engine <em>itself</em> checks its own on-disk/in-memory bytes at runtime was the one sub-question not yet measured. A direct scan of every call site (40 total) to the three generic hash primitives this project has fully solved found <strong>zero</strong> call sites that pass a length operand anywhere near the size of the whole module or the whole code section — every one of the 40 is already accounted for by the checks in §§1–4, or by a hot-reload content-diff pattern (comparing two freshly-computed hashes against each other, not against a stored "known good" value). A targeted search of this project's entire corpus for debugger-detection or self-checksum indicators also returns zero hits. <strong>Honest limit:</strong> this rules out a hard-coded-length self-hash through these three specific primitives; it does not rule out a runtime-computed length, a fourth unidentified hash primitive, or a WinAPI crypto-based check. The honest claim is "no evidence found," not "proven absent."</p>
+<h2 id="summary-table">Summary table</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Thing</th>
+<th>Consequence if wrong</th>
+<th>Retail default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IDCL header hashes</td>
+<td>mount refused</td>
+<td>always checked</td>
+</tr>
+<tr>
+<td>IDCL metadata end marker</td>
+<td>hard crash</td>
+<td>always checked</td>
+</tr>
+<tr>
+<td>IDCL entry <code>data_hash</code></td>
+<td>hard crash, but only reachable with a CVar flipped on</td>
+<td>never checked</td>
+</tr>
+<tr>
+<td>IDCL entry <code>hash_0x60</code></td>
+<td>never recomputed — free to set</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td><code>.texdb</code> / <code>.bimage</code> block length match</td>
+<td>not checked anywhere — garbage pixels or decode failure</td>
+<td>never checked</td>
+</tr>
+<tr>
+<td><code>textures.cache</code></td>
+<td>fully optional</td>
+<td>magic-only if present</td>
+</tr>
+<tr>
+<td>decl <code>inherit</code>, circular parent</td>
+<td>hard crash</td>
+<td>always checked</td>
+</tr>
+<tr>
+<td>decl <code>inherit</code>, not-yet-loaded parent</td>
+<td>silently wrong, no warning</td>
+<td>never checked</td>
+</tr>
+<tr>
+<td>save <code>.verify</code></td>
+<td>cosmetic — flags dev-mode, doesn't block loading</td>
+<td>always computed, never gates loading</td>
+</tr>
+<tr>
+<td>save payload length / header fold</td>
+<td>this is what "File Corrupt" means</td>
+<td>always checked</td>
+</tr>
+<tr>
+<td>DLC ownership</td>
+<td>irrelevant to whether files mount</td>
+<td>effectively unenforced on the load path</td>
+</tr>
+<tr>
+<td>exe's own bytes</td>
+<td>nothing found that checks this</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="failed-hypotheses-explicitly-so-they-are-not-re-tried">FAILED HYPOTHESES (explicitly, so they are not re-tried)</h2>
+<ul>
+<li>"<code>hash_0x60</code> is the texdb key directly." Refuted — the real key formula masks it and combines it with a mip-level field.</li>
+<li>"A wrong <code>.verify</code> blocks save loading." Refuted — it only flags dev mode.</li>
+<li>"The DLC enumerated later wins a name collision" (plain last-write-wins). Falsified by the actual runtime collision result.</li>
+<li>"TNC has no visible DLC ownership check at all" (an earlier project note). Superseded — the check exists, it is just nowhere near the file-mounting path.</li>
+<li>"The exe checksums itself using the same primitives it uses for save/archive hashes." This pass's own negative control — not excluded for mechanisms outside the three checked.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li><code>SAVEGAME_E_DLC_NOT_FOUND</code>'s setter site was never pinned to an address in this corpus — string-level evidence only. This is the one DLC-related bit flag that could still mean a save-load-time ownership check exists, separate from the menu-time one that was fully traced.</li>
+<li>The exact type-identity constants gating the one <code>idEntitlements::Get</code> call site are read as "plausibly only one specific chapter-type is ever checked," from RTTI-style code shape — not resolved to a named class.</li>
+</ul>
+<p>Related: <a href="Modding-Limits.html">Modding Limits</a>, <a href="TNC-Texture-Database.html">TNC Texture Database</a>, <a href="Save-Games-and-Profiles.html">Save Games and Profiles</a>, <a href="TNC-Custom-Map-Status.html">TNC Custom-Map Status</a>, <a href="Research-Report-Datahash.html">Research Report: Datahash</a>, <a href="Research-Report-Idclhash.html">Research Report: Idclhash</a>, <a href="Research-Report-Saveverify.html">Research Report: Saveverify</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Console-Commands.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>R4 Research Report: The Console Command Gate (TNC)</a><a class="next" href="Research-Report-R4-Materials.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Material Decls: Render-Program &quot;Flags&quot; and Adding a New Material</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

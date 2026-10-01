@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kit Map Quality: Lighting New Geometry, and Walkable Stairs – Wolfenstein Modloader</title>
+<meta name="description" content="Fixing dark new geometry and unwalkable stairs on Wolfenstein II&#x27;s custom kit map, built but untested.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Kit Map Quality: Lighting New Geometry, and Walkable Stairs</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Maplightstairs"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#lighting-new-static-geometry">Lighting new static geometry</a></li><li><a href="#walkable-stairs">Walkable stairs</a></li><li><a href="#dead-ends">Dead ends</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">New objects on the custom kit map for Wolfenstein II: The New Colossus had two problems: no baked lighting, and stairs the player could not walk up. For light, each new piece borrows one pixel from the baked lightmap of a similar real object, the same trick the game uses for many small objects. For stairs, the game never lets players walk the stepped mesh; an invisible ramp covers every real stair, so the fix adds one box-shaped ramp per flight. Both fixes are built into one file but checked only offline, never in the running game.</p><ul><li>Every static object always uses the lightmap shader; only three hard-coded model names can skip it.</li><li>Each new piece gets a lightmap entry pointing at one texel of a same-sized real donor object.</li><li>Real stairs have 18 steps that are too steep to walk; retail always lays an invisible ramp over them.</li><li>With the added box ramp, the simulated slope drops to at most 28 degrees with no spikes or gaps.</li><li>Open: whether the borrowed texel is lit or shadowed, so pieces may look dim.</li></ul></div><div class="de"><p class="lede">Neue Objekte auf der eigenen Kit-Karte für Wolfenstein II: The New Colossus hatten zwei Probleme: keine vorberechnete Beleuchtung und Treppen, die der Spieler nicht hochlaufen konnte. Für das Licht leiht sich jedes neue Teil einen Pixel aus der Lightmap eines ähnlichen echten Objekts, derselbe Trick, den das Spiel für viele kleine Objekte nutzt. Bei Treppen lässt das Spiel den Spieler nie auf dem Stufen-Mesh laufen; eine unsichtbare Rampe liegt über jeder echten Treppe, also fügt der Fix pro Treppenlauf eine Rampe in Boxform hinzu. Beide Fixes sind in einer Datei gebaut, aber nur offline geprüft, nie im laufenden Spiel.</p><ul><li>Jedes statische Objekt nutzt immer den Lightmap-Shader; nur drei fest eingebaute Modellnamen können ihn umgehen.</li><li>Jedes neue Teil bekommt einen Lightmap-Eintrag, der auf einen Texel eines gleich großen echten Spenderobjekts zeigt.</li><li>Echte Treppen haben 18 Stufen, die zum Laufen zu steil sind; das Spiel legt immer eine unsichtbare Rampe darüber.</li><li>Mit der zusätzlichen Box-Rampe sinkt die simulierte Steigung auf höchstens 28 Grad, ohne Spitzen oder Lücken.</li><li>Offen: ob der geliehene Texel beleuchtet oder verschattet ist, Teile könnten also dunkel wirken.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>A from-scratch "kit" level built inside an existing map's envelope has two cosmetic/functional problems: new static geometry has no baked lighting, and new stair geometry is not walkable. Both now have a structurally complete fix, combined in one container that has never been loaded in the game. For lighting, the fix reuses retail's own single-texel lightmap-atlas encoding — the same technique retail itself uses for thousands of small/flat objects — by pointing each new piece's lightmap record at one texel inside a same-or-similar donor model's real, retail-baked rect. For stairs, retail is shown to never let the player walk the raw stepped collision mesh at all; a separate, invisible ramp-shaped clip volume carries the player over every real stair in the game, so the fix adds one such box-shaped clip ramp per new stair flight, built procedurally with no new mesh format needed. Everything here is static/offline verification — disassembly, archive content, and a geometric slope simulation against the real collision mesh; nothing has been confirmed visually or physically in a running game.</p>
+<h2 id="lighting-new-static-geometry">Lighting new static geometry</h2>
+<p><strong>Mechanism:</strong> every static-instance entity in this kind of world gets the lightmapped shader program unconditionally. A miss in the per-map lightmap-rect table just samples the whole atlas with a neutral scale/bias — not a flat/unlit fallback. A path to skip the lightmap program entirely <em>does</em> exist, but only for <strong>three hard-coded model-name string compares</strong> behind a global flag — a literal name comparison baked into the executable, unreachable for a new model name without binary-patching the game. The shader-program-key bit that selects the lightmapped variant is forced on for every static instance in this kind of world regardless of whether a lightmap rect was found — there is no reachable code path that drops a static instance to a non-lightmap program for new content.</p>
+<p><strong>Recipe:</strong> for each new static piece, append a lightmap-rect record to the map's per-map lightmap table (a plain text format, hash-looked-up by entity name) whose bias points at one texel inside a real retail donor model's own baked lightmap rect — chosen for same-or-matching model size, not a random placeholder — and whose scale is a single texel (retail's own standard encoding for a small/flat object, used on tens of thousands of retail objects; the exact tiny-scale value is not a single universal constant across the game, but any sufficiently small fixed value is safe, since the largest "tiny" scale measured anywhere in the game is still far below any plausible atlas texel footprint). This never falls back to a context-free placeholder — every new piece in the built fix has a real retail donor of matching size.</p>
+<p><strong>Other alternatives, checked and ruled out:</strong> a non-lightmap "vertex lighting" path is not reachable (see above — the program-key bit is forced regardless). Retail's separate per-instance "vertex paint" baked-color channel exists as a mechanism but is not used by any retail instance of the kit's own model family, so its absence from the fix is not a gap for this specific content.</p>
+<h2 id="walkable-stairs">Walkable stairs</h2>
+<p><strong>Mechanism:</strong> retail's stair collision mesh is a plain stepped mesh (measured directly: 18 treads 0.125 m apart, 0.25 m deep, risers roughly 0.10 m each) that is <strong>never walked directly</strong>. Every real stair flight of this model in retail is covered by a separate, invisible, smooth ramp-shaped player-clip volume — one continuous mesh spanning the whole building, not a per-flight patch to the stair's own collision. A geometric slope simulation (rolling a player-capsule-radius sphere along the measured collision surface) confirms: the raw stair mesh produces repeated steep slope spikes well above anything a player capsule can climb, for <strong>both</strong> retail's and the kit's own copy of the identical stair model. <strong>The per-step climb allowance cvar does not explain retail's walkability at all</strong> — it is unrelated to the actual mechanism.</p>
+<p><strong>Recipe:</strong></p>
+<ol>
+<li>Give the stair flight's existing render-model collision player/monster-clip contents too (otherwise the player falls through the geometry entirely).</li>
+<li>For each flight, add one new clip-only entity shaped as a box, sized and rotated to lie exactly on the flight's ramp line, pointed at the standard clip-only material. A box clip model needs <strong>no mesh file at all</strong> — it is built procedurally from a size value at load, and its slope comes for free from the entity's own rotation.</li>
+<li>Add one preload-list row for the clip material.</li>
+</ol>
+<p>A geometric re-check after adding the ramp shows the same slope profile as retail's real ramps — the maximum contact slope drops from spiking well above the walkable threshold to a smooth ≤28°, with zero spikes and zero gaps.</p>
+<p><strong>Why an overlay box, not a re-authored stair mesh:</strong> the stair model's own collision is a single shared payload reused by every real flight of that model in the map — editing it in place would silently reshape collision under untouched retail flights too, and this project has no general wedge/convex collision-mesh writer, only a box writer, which is exactly what the ramp recipe needs anyway.</p>
+<p><strong>Side-access check:</strong> the kit's stair flights already have railings at both long edges carrying the same player/monster-clip fix, so a player cannot reach an exposed raw-stair edge from the side — the ramp box only needs to (and does) cover the one open approach axis, bottom to top.</p>
+<h2 id="dead-ends">Dead ends</h2>
+<ul>
+<li>A material/program flag to disable the lightmap for a static instance — only the three hard-coded model names, unreachable for new content without a binary patch.</li>
+<li>A flag that supposedly also fixes albedo/virtual-texture sampling fixing the lighting too — disproven: that flag and the lightmap-program bit are set by unrelated code paths.</li>
+<li>The per-step climb-allowance cvar explaining stair walkability — checked against the live cvar value and a geometric simulation; it is not the mechanism.</li>
+<li>A from-scratch non-lightmapped dynamic-entity version of the kit instead of per-piece lightmap records — technically reachable and genuinely cheaper per piece, but retail never uses that entity class for anything wall/floor/room-scale (0 of 328 sampled retail instances of that class are architecture-scale), so it has no retail visual-quality precedent and is not recommended.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether each new piece's chosen donor texel lands on a <em>lit</em> rather than shadowed part of its donor's rect — the design only guarantees "inside the rect," not "well-lit." If a kit piece looks plausible but dim in game, this is the first place to check.</li>
+<li>How the lightmapped shader program combines a per-vertex baked color channel with the sampled lightmap texel — not relevant to the current recipe since none of the kit's own models use vertex paint in retail, but would matter for a future piece drawn from a vertex-painted model family.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Swap the combined fix container into the proven override slot, start the map, and check two things at the kit building: whether the new furniture/walls/floors look plausibly lit (no solid black, no magenta/grey blotches), and whether the new stairs can be walked up normally without getting stuck or needing to jump.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R2-Ainav.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>AI and Navigation for a Custom TNC Map</a><a class="next" href="Research-Report-R2-Mapnodlc.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Custom TNC Maps Without Owning Any DLC</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

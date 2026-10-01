@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sound Replacement Write Path (TNC Wwise Audio) – Wolfenstein Modloader</title>
+<meta name="description" content="How to replace a sound in Wolfenstein II&#x27;s Wwise sound packs, proven on file copies.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Sound Replacement Write Path (TNC Wwise Audio)</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Wwisereplace"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#storage--proven">Storage — PROVEN</a></li><li><a href="#the-load-bearing-duplicate-size-invariant">The load-bearing duplicate-size invariant</a></li><li><a href="#container-level-checks--proven-pre-existing-project-findings-re-applied-here">Container-level checks — PROVEN (pre-existing project findings, re-applied here)</a></li><li><a href="#growthappend-rule-proven-round-tripped">Growth/append rule (PROVEN, round-tripped)</a></li><li><a href="#what-a-replacement-must-be--proven-by-elimination">What a replacement must be — PROVEN by elimination</a></li><li><a href="#loose-file-loading--does-not-exist-for-shipped-data">Loose-file loading — does not exist for shipped data</a></li><li><a href="#full-structural-round-trip--proven">Full structural round trip — PROVEN</a></li><li><a href="#recipe">Recipe</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report looked at where Wolfenstein II stores its sounds and how to swap one for a new, possibly longer one. The sound packs turn out to be ordinary game archives, so the project&#x27;s existing archive writer works on them without changes. The replacement should be plain 16-bit PCM audio, because the project cannot encode the game&#x27;s packed Vorbis format. Two test replacements went through a full rebuild and were read back correctly, but everything happened on copies; nothing was played in the running game.</p><ul><li>Every sound pack is a normal game <span class="t" data-t="archive">archive</span>; no sound-specific writer was needed.</li><li>Each sound&#x27;s size is stored twice and matched in all 131,236 shipped cases (0 mismatches); a replacement must update both.</li><li>Use 16-bit PCM WAVE files; there is no encoder for the game&#x27;s packed Vorbis audio.</li><li>A loose and a bank-embedded replacement were rebuilt and re-read correctly; 2 negative controls fired as expected.</li><li>The New Order does not use Wwise at all; nothing was tested in game.</li></ul></div><div class="de"><p class="lede">Dieser Bericht untersuchte, wo Wolfenstein II seine Sounds speichert und wie man einen durch einen neuen, auch längeren ersetzt. Die Soundpakete sind ganz normale Spielarchive, deshalb funktioniert der vorhandene Archiv-Schreiber des Projekts ohne Änderung. Der Ersatz sollte einfaches 16-Bit-PCM-Audio sein, weil das Projekt das gepackte Vorbis-Format des Spiels nicht erzeugen kann. Zwei Test-Ersetzungen liefen durch einen kompletten Neubau und wurden korrekt zurückgelesen, aber alles geschah an Kopien; im laufenden Spiel wurde nichts abgespielt.</p><ul><li>Jedes Soundpaket ist ein normales Spiel-<span class="t" data-t="archive">Archiv</span>; ein eigener Sound-Schreiber war nicht nötig.</li><li>Die Größe jedes Sounds steht doppelt drin und stimmt in allen 131.236 Originalfällen überein (0 Abweichungen); ein Ersatz muss beide Stellen anpassen.</li><li>Nutze 16-Bit-PCM-WAVE-Dateien; für das gepackte Vorbis-Audio des Spiels gibt es keinen Encoder.</li><li>Ein loser und ein in eine Bank eingebetteter Ersatz wurden neu gebaut und korrekt zurückgelesen; 2 Gegenproben schlugen wie erwartet an.</li><li>The New Order nutzt gar kein Wwise; im Spiel wurde nichts getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Where <code>.wem</code>/<code>.bnk</code> sound media live in <em>The New Colossus</em>, whether the engine checks sizes or hashes on them, and how a bigger replacement would be appended. TNC uses Wwise audio banks; TNO does not use Wwise at all (an exhaustive file search across the whole TNO install finds zero <code>.wem</code>/<code>.bnk</code>/Wwise-named files of any kind — its audio is raw Ogg Vorbis in two monolithic containers, a separate, already-documented system). Every TNC sound pack turns out to be an <strong>ordinary archive container</strong>, the exact same format already used for textures and decls, so the project's existing generic archive writer applies unmodified — no sound-specific writer had to be built. A full structural round trip (replacing a loose sound and a bank-embedded sound, both forced through a full archive rebuild, plus two negative controls) succeeds end to end and re-reads correctly through the project's own unmodified readers. Everything here was built and torn down on disposable temporary copies; nothing was run in a live game.</p>
+<h2 id="storage--proven">Storage — PROVEN</h2>
+<p>Every sound pack (<code>base/sound/soundbanks/pc/*.pack</code>, and per-DLC equivalents) is an ordinary archive container — same format as the main game archives, entry type "file", compression 0 (stored throughout). <strong>The generic archive writer this project already uses for textures/decls/entity definitions applies to sound packs unmodified.</strong></p>
+<p>Two kinds of entry inside a pack:</p>
+<ul>
+<li>a loose top-level <code>&lt;id&gt;.wem</code> entry — the payload <em>is</em> the whole RIFF/WAVE file;</li>
+<li>a <code>.bnk</code> entry — itself a small container: <code>BKHD</code> (header), <code>DIDX</code> (index: <code>u32 media id, u32 offset, u32 size</code>, 12 bytes/slot), <code>DATA</code> (the WEM slices back to back), <code>HIRC</code> (objects: events, actions, Sound nodes).</li>
+</ul>
+<p>No language-id field exists in <code>DIDX</code> itself — language is the <em>pack/folder</em>, not a per-row field.</p>
+<h2 id="the-load-bearing-duplicate-size-invariant">The load-bearing duplicate-size invariant</h2>
+<p>Every <code>HIRC</code> <strong>Sound</strong> object carries its <strong>own</strong> duplicate <code>u32 size</code> field (byte offset 9 of the object body). Across <strong>all 131,236</strong> Sound objects in the full retail+DLC install, wherever the referenced media also has a local <code>DIDX</code> row in the same bank, that row's size and the Sound object's own size field are equal — <strong>0 mismatches</strong>. <strong>A replacement must patch both</strong> the <code>DIDX</code> row's size and the matching <code>HIRC</code> Sound object's own size field, or it reintroduces exactly the inconsistency that never occurs in 131k shipped rows (plausible rejection risk; the actual runtime check itself was not disassembled, no disassembler was available in this research environment).</p>
+<h2 id="container-level-checks--proven-pre-existing-project-findings-re-applied-here">Container-level checks — PROVEN (pre-existing project findings, re-applied here)</h2>
+<p>The function every pack/archive file goes through to be mounted unconditionally checks magic, version, the header hash, and the metadata hash on every open. Both hashes are FarmHash64-derived and fully recomputable with the project's existing hash-finalizer — already the production write path for every other asset type this project patches. An optional, <strong>off-by-default</strong> per-entry payload hash is the same mechanism, nothing Wwise-specific layered on top.</p>
+<h2 id="growthappend-rule-proven-round-tripped">Growth/append rule (PROVEN, round-tripped)</h2>
+<p>A stored (uncompressed) entry has exactly three outcomes when its payload length changes (measured against a real entry with a real trailing gap):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>New length</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>same as old</td>
+<td>in-place rewrite, nothing else moves</td>
+</tr>
+<tr>
+<td>bigger, fits the trailing gap</td>
+<td>in-place (same mechanics as the already-proven texture-database append trick)</td>
+</tr>
+<tr>
+<td>bigger, doesn't fit the gap</td>
+<td>full archive <strong>rebuild</strong> — every later entry's offset shifts</td>
+</tr>
+<tr>
+<td>smaller, by even 1 byte</td>
+<td>full <strong>rebuild</strong> — a stored entry's in-place path requires an exact length match</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="what-a-replacement-must-be--proven-by-elimination">What a replacement must be — PROVEN by elimination</h2>
+<p>Two codecs occur in retail: Wwise's packed Vorbis, and PCM. The project can <strong>decode</strong> packed Wwise Vorbis (strip the custom bit-packing back to stock Ogg Vorbis, using a codebook library extracted from the game executable) but has <strong>no encoder</strong> — producing a new, correctly packed Vorbis stream would mean writing a full Vorbis encoder constrained to reuse the shipped codebook library bit-for-bit, out of scope for this project. <strong>The practical replacement codec is 16-bit PCM</strong>: the project's own acceptance rule is a dozen ordinary WAVE-format fields (<code>16-bit, block align = 2×channels, 1–8 channels, 1000–192000 Hz</code>) — a plain RIFF/WAVE file any standard library can build from scratch.</p>
+<h2 id="loose-file-loading--does-not-exist-for-shipped-data">Loose-file loading — does not exist for shipped data</h2>
+<p>Zero <code>.wem</code> files exist outside a pack anywhere in the install. The decompiled string constants support the same conclusion: the entry-name format strings read as archive-internal names (<code>&lt;lang&gt;/&lt;id&gt;.&lt;ext&gt;</code>), not filesystem paths, and the only related error string is specifically about failing to open a <strong>pack file</strong>.</p>
+<h2 id="full-structural-round-trip--proven">Full structural round trip — PROVEN</h2>
+<p>Both a loose top-level <code>.wem</code> replacement and a bank-embedded (<code>DIDX</code>+<code>HIRC</code>) replacement were built, forced through the expensive rebuild path (both replacements were larger than any available in-place gap), and re-read successfully with the project's own unmodified readers — the re-reader was not told in advance where the new bytes were, finding them the same way a fresh game process would. Two negative controls both correctly fired: leaving the <code>HIRC</code> duplicate-size field stale is caught by the size-mismatch check; flipping one header-hash byte is caught by independent hash re-derivation.</p>
+<h2 id="recipe">Recipe</h2>
+<ol>
+<li>Open the pack, find the target entry (<code>&lt;id&gt;.wem</code> directly, or the owning <code>.bnk</code> + that id's <code>DIDX</code> row).</li>
+<li>Build the replacement as a 16-bit PCM WAVE file — sidesteps the missing Vorbis encoder entirely.</li>
+<li>Loose entry: rewrite its bytes in place through the archive writer. Bank entry: split the <code>.bnk</code> into its four sections, append the new WEM to <code>DATA</code>, rewrite that id's <code>DIDX</code> row, patch the matching <code>HIRC</code> Sound object's own size field, rejoin, and write the rewritten bank back.</li>
+<li>Always finish with the project's header-hash finalizer — the same step the existing write path already performs for every other asset type.</li>
+<li>Re-verify every slot in the touched bank (not just the changed one) before touching the real install — the regression control that would catch an off-by-one section-length mistake.</li>
+</ol>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether the engine actually <em>enforces</em> the HIRC/DIDX size match at load time, or it just always happens to hold in shipped data — needs either a disassembler or an in-game test.</li>
+<li>Whether the sound-pack open function goes through the same container-mount hash check as every other archive type — consistent with the identical file format measured, not confirmed by disassembly.</li>
+<li>TNO's own audio append path (appending a replacement past its current slot in the flat, offset-addressed container) was not round-tripped this pass — structurally analogous to the growth-to-rebuild path proven here, but not yet built or tested.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Replace one unobtrusive menu sound effect with a 16-bit PCM replacement built as above (keep the original backed up). Start the game, trigger the sound, and confirm the new audio plays with no "corrupt header" message and no crash. Restore the original and re-trigger to confirm only that one file was affected.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R2-Videoreplace.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Cutscene and Loading Video (.bk2) Replacement</a><a class="next" href="Research-Report-R3-Animdecode.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Animation Decode: the Geist System Behind the Bind-Pose Puzzle</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

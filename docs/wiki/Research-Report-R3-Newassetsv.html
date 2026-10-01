@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Appending Brand-New Decl Entries: Independent Re-Verification – Wolfenstein Modloader</title>
+<meta name="description" content="Independent re-check that brand-new entries can be appended to Wolfenstein II archives, plus a 7-part test weapon.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Appending Brand-New Decl Entries: Independent Re-Verification</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R3-Newassetsv"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#whats-confirmed-about-appending-new-entries">What&#x27;s confirmed about appending new entries</a></li><li><a href="#a-complete-new-weapon-structurally">A complete new weapon, structurally</a></li><li><a href="#what-this-still-needs-to-become-a-real-equippable-weapon">What this still needs to become a real, equippable weapon</a></li><li><a href="#in-game-test-two-steps-from-cheapest-to-most-complete">In-game test (two steps, from cheapest to most complete)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report re-checked from raw bytes an earlier claim that new entries can be appended to a copied Wolfenstein II: The New Colossus <span class="t" data-t="archive">archive</span>. The claim holds: 52 field-level checks pass, entry order does not matter, and the game code builds a case-insensitive name index when it loads an archive. A complete new weapon made of 7 cloned decls was built and verified offline, but nothing in this report was tested in the running game yet.</p><ul><li>52 independent field-level checks pass for both original test cases.</li><li>The game looks up entry names without caring about case, so two names that differ only by case will collide.</li><li>Correction: changing the entry count without updating the two integrity <span class="t" data-t="checksum">checksums</span> makes the archive fail to load.</li><li>A 7-decl weapon chain (pickup, item, weapon, ammo, projectile and more) was cloned from the pistol and verified offline.</li><li>Limit: kill stats and the weapon-wheel flash slot must reuse existing values; new ones cannot be created from data.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat eine frühere Behauptung Byte für Byte nachgeprüft: dass sich neue Einträge an ein kopiertes <span class="t" data-t="archive">Archiv</span> von Wolfenstein II: The New Colossus anhängen lassen. Die Behauptung hält: 52 Prüfungen auf Feldebene bestehen, die Reihenfolge der Einträge ist egal, und der Spielcode baut beim Laden eines Archivs einen Namensindex, der Groß-/Kleinschreibung ignoriert. Eine komplette neue Waffe aus 7 geklonten Decls wurde offline gebaut und geprüft, aber nichts aus diesem Bericht wurde bisher im laufenden Spiel getestet.</p><ul><li>52 unabhängige Prüfungen auf Feldebene bestehen für beide ursprünglichen Testfälle.</li><li>Das Spiel sucht Eintragsnamen ohne Rücksicht auf Groß-/Kleinschreibung; zwei Namen, die sich nur darin unterscheiden, kollidieren.</li><li>Korrektur: Wer die Eintragsanzahl ändert, ohne die beiden <span class="t" data-t="checksum">Prüfsummen</span> anzupassen, bekommt ein Archiv, das nicht lädt.</li><li>Eine Waffenkette aus 7 Decls (Pickup, Gegenstand, Waffe, Munition, Projektil und mehr) wurde von der Pistole geklont und offline geprüft.</li><li>Grenze: Kill-Statistik und Aufleucht-Platz im Waffenrad müssen vorhandene Werte nutzen; neue lassen sich nicht aus Daten erzeugen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>An earlier report claimed that appending a brand-new <code>(type, name)</code> entry to a copied archive is structurally sound, but its own verification step never actually ran. This pass independently re-derives and re-checks every one of that claim's field-level details from raw bytes (not just trusting pass/fail output), tries four new ways to break the technique, and goes further by building a complete, cross-referencing 7-decl new weapon from scratch. The original claim holds up, and new disassembly of the game's own archive-mounting code found a previously-undocumented in-memory name-lookup index the engine builds at mount time — good news for the technique, since nothing about it cares about entry order. One earlier claim in this same track (that corrupting the entry count alone would be silently tolerated by the real engine) was wrong and is corrected below; everything else in this report is static/structural verification only, with a concrete in-game test proposed at the end.</p>
+<h2 id="whats-confirmed-about-appending-new-entries">What's confirmed about appending new entries</h2>
+<ul>
+<li>52 independent field-level checks (byte ranges re-derived from scratch, not through the existing reader library) pass for both of the original report's test cases.</li>
+<li><strong>Entry table order does not matter.</strong> A new entry's row was moved to table position 0 while its payload stayed physically at the end of the file; it still parses, still resolves by name, and both archive-integrity hashes still validate. "Table order = file offset order" is a writer convenience, not a format or engine requirement.</li>
+<li><strong>String-table order does not matter either.</strong> None of the 24 retail archives checked have alphabetically sorted string tables — there's no sort convention to accidentally violate.</li>
+<li><strong>The archive-mounting code builds a real, in-memory, case-insensitive hash index over entry names at mount time</strong> (new disassembly this pass, <code>.text</code> region <code>0xACC15C</code>–<code>0xACC2CB</code>) — a classic chained hash table keyed by a lowercased, multiplicative hash of each entry's name. Its loop bound is exactly the header's entry-count field, which the append technique already keeps correct. A located consumer of this same index (a second disassembled function) confirms the lookup is case-insensitive end to end, not just at the hashing step — meaning <strong>two asset names differing only by case will collide and are not safely distinguishable</strong>, a real naming hazard for new content.</li>
+<li><strong>Correction to an earlier claim in this track:</strong> simply editing the entry-count field without recomputing the archive's two integrity hashes is <strong>not</strong> silently tolerated by the real engine — both hashes are checked before the engine ever reaches the lookup-index code, and a mismatch is a hard mount failure. The project's own writer tooling already always keeps the count and both hashes consistent, so this correction doesn't change how new content should be built — it only corrects what an <em>intentionally</em> mismatched file would do.</li>
+<li>A field that is never read by this project's own reader (<code>num_strings</code>) still can't be corrupted "for free" — any byte in an entry row is covered by the mandatory integrity-hash check regardless of whether anything downstream actually uses that field.</li>
+</ul>
+<h2 id="a-complete-new-weapon-structurally">A complete new weapon, structurally</h2>
+<p>A 7-decl chain (two <code>weapon</code> entries, <code>ammo</code>, <code>projectile</code>, <code>propItem</code>, two <code>entityDef</code> entries) was cloned from the retail pistol's own reference graph, appended to a copied archive with every cross-reference renamed and checked, and passes all of the above verification. This traces, with concrete field names, the full donor chain a weapon pickup needs:</p>
+<pre><code>entityDef (pickup prop) → propItem (grants inventory item) → weapon (visual/handling)
+    → entityDef (world-held weapon entity) and weapon_nomesh (stats: fire rate, upgrades, slot)
+    → ammo → projectile → damage
+</code></pre>
+<p><strong>One genuine ceiling found this pass:</strong> three weapon fields — <code>progIndex</code>, <code>killStat</code>, <code>weaponSlotFlash</code> — are drawn from small, closed value sets (8–12 distinct values across ~68 retail weapons) that also exist as literal strings baked into the executable itself, unlike every other cross-reference field checked (which are free text). A brand-new weapon decl can be <em>appended</em> with a new name, but its kill-stat tracking and HUD weapon-wheel flash slot must alias one of the existing values — there is no way to invent a new one purely from decl data.</p>
+<h2 id="what-this-still-needs-to-become-a-real-equippable-weapon">What this still needs to become a real, equippable weapon</h2>
+<p>Per a related report on weapon anatomy: an entity placed in a map whose class is the new pickup <code>entityDef</code> (an already-proven technique: retarget an existing pickup entity's reference, rather than inserting a brand-new entity block, which nobody has built yet), and reusing one of the existing weapon-wheel slots (there is no 9th slot to invent without touching the unwritable UI binary).</p>
+<h2 id="in-game-test-two-steps-from-cheapest-to-most-complete">In-game test (two steps, from cheapest to most complete)</h2>
+<ol>
+<li><strong>Decl chain only:</strong> append a new <code>ammo</code> entry under a name that doesn't exist in retail, with a distinctive <code>clipSize</code>, and point the existing pistol at it via the usual decl-edit mechanism. Load the custom map, pick up the pistol, read the magazine size off the HUD. A changed number confirms a genuinely new archive entry was found and loaded at mount time — the one thing that can't be settled from a desk.</li>
+<li><strong>Full new weapon:</strong> build the 7-entry weapon-set container, retarget one of the custom map's already-proven pickup entities to point at the new pickup <code>entityDef</code>, load the map, pick up the item, and confirm it's selectable, fires, and shows the expected ammo count.</li>
+</ol></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R3-Navdata.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Navigation Data in TNC Maps: Format, Toggleable Regions, and the Kit Map</a><a class="next" href="Research-Report-R3-Newweapon.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Weapon Decl Anatomy and Building a New Weapon End to End</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

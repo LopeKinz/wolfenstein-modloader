@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker <code>w-vtrest-a2</code>; task <code>vtrest</code> (retry, attempt 3 of 3 - the previous two attempts ended when their host session died, not on technical grounds).
-Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
+Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
 Four other workers run on the TNC custom-map front. Your lane is Virtual Textures and touches none of theirs.</p>
 <h1 id="objective">Objective</h1>
 <p>Finish the virtual-texture page decoder for Wolfenstein: The New Order. Two things are open, and they are the last ones:</p>
@@ -59,7 +59,7 @@ It is a careful document: it records which hypotheses died and on what numbers, 
 Per 9.1 a compiled <code>jxrlib</code> is already available locally and per 9.2 it is calibrated against WIC - use it as the oracle instead of reimplementing.
 Existing tools, yours to use: <code>tools/vtplanes.py</code> (has a <code>seam</code> mode - the seam statistic is the honest quality measure here, not eyeballing), <code>tools/vtdecode.py</code>, <code>tools/vtpixel.py</code> (yours to edit), <code>docs/virtualtextures.md</code>.
 Game data, READ ONLY:
-<code>D:/SteamLibrary/steamapps/common/Wolfenstein.The.New.Order</code></p>
+<code>&lt;Steam library&gt;/steamapps/common/Wolfenstein.The.New.Order</code></p>
 <h1 id="ownership">Ownership</h1>
 <p><code>tools/vtpixel.py</code> and <code>docs/vt-planes.md</code> (both pre-existing - extend them, keep what is already established, do not rewrite the document's history of failed hypotheses away). Scratch artifacts under <code>re_probes/vtrest/</code> if you need them.</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>

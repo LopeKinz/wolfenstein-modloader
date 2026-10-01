@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Texture Database Codec 2: Tile Chains for Large BC4/BC5 Mips – Wolfenstein Modloader</title>
+<meta name="description" content="Wolfenstein II&#x27;s tiled &#x27;codec 2&#x27; texture format: outer container solved, pixel layout inside still unknown.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Texture Database Codec 2: Tile Chains for Large BC4/BC5 Mips</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Tilechain"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#container-format-solved-proven-at-scale">Container format (solved, PROVEN at scale)</a></li><li><a href="#inner-tile-layout--still-unsolved-three-hypotheses-rejected">Inner tile layout — still unsolved, three hypotheses rejected</a></li><li><a href="#practical-recipe-for-writing-a-replacement-does-not-need-codec-2">Practical recipe for writing a replacement (does not need codec 2)</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Large normal maps and similar textures in Wolfenstein II&#x27;s texture database are often stored as chains of compressed tiles (&#x27;codec 2&#x27;). The outer container is now fully understood and rebuilds byte-exact across hundreds of blocks, but the pixel arrangement inside a tile is still not decoded, and three natural guesses were ruled out. This does not block modding: the simpler, untiled &#x27;codec 1&#x27; is shown to be accepted at any size, so a replacement never needs codec 2. That replacement path still needs a BC4/BC5 encoder and has not been tested in game.</p><ul><li>Each tile has a 24-byte header plus an <span class="t" data-t="oodle">Oodle</span> stream; BC4 tiles are always 512x512, BC5 tiles 512x256.</li><li>The container rebuilds byte-exact across hundreds of blocks, including DLC.</li><li>Three layouts for the tile&#x27;s pixels (raw planes, row-order blocks, Z-order blocks) were tested and rejected.</li><li>The theory that a GPU hardware feature explains codec 2 was refuted; the switch is an ordinary I/O cache setting.</li><li>2% of images ship their largest mip as codec 1 (one even at 4096x4096), so codec 1 works at any size; an encoder is still missing.</li></ul></div><div class="de"><p class="lede">Große Normal-Maps und ähnliche Texturen in der Texturdatenbank von Wolfenstein II liegen oft als Ketten komprimierter Kacheln vor („Codec 2“). Der äußere Container ist jetzt vollständig verstanden und lässt sich über Hunderte Blöcke byte-genau neu bauen, aber die Pixelanordnung innerhalb einer Kachel ist noch nicht entschlüsselt; drei naheliegende Vermutungen wurden widerlegt. Das blockiert das Modden nicht: Der einfachere, ungekachelte „Codec 1“ wird nachweislich in jeder Größe angenommen, ein Ersatz braucht Codec 2 also nie. Dieser Ersatzweg braucht aber noch einen BC4/BC5-Encoder und wurde nicht im Spiel getestet.</p><ul><li>Jede Kachel hat einen 24-Byte-Kopf plus einen <span class="t" data-t="oodle">Oodle</span>-Datenstrom; BC4-Kacheln sind immer 512x512, BC5-Kacheln 512x256.</li><li>Der Container lässt sich über Hunderte Blöcke byte-genau neu bauen, auch in DLCs.</li><li>Drei Anordnungen für die Kachelpixel (rohe Ebenen, Blöcke in Zeilenfolge, Blöcke in Z-Reihenfolge) wurden getestet und verworfen.</li><li>Die Theorie, ein GPU-Hardwarefeature erkläre Codec 2, ist widerlegt; der Schalter ist eine gewöhnliche I/O-Cache-Einstellung.</li><li>2 % der Bilder liefern ihre größte Stufe als Codec 1 aus (eines sogar mit 4096x4096), Codec 1 geht also in jeder Größe; ein Encoder fehlt noch.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Most large (≥512 px) BC4/BC5 texture mips — normal maps, roughness, terrain — ship under a tiled "codec 2" container that was previously left undecoded. The outer container format is now fully solved and round-trips byte-exact at scale. The <strong>inner pixel layout</strong> of a decompressed tile is still not decoded: three natural hypotheses (raw 8-bit planes, standard raster-order BC-compressed blocks, Morton/Z-order BC blocks) were all tested with real position-derangement negative controls and correlation metrics, and all three are <strong>rejected</strong>. A plausible "GPU sparse-residency hardware feature" explanation for <em>why</em> codec 2 resists decoding was independently disassembled and <strong>refuted</strong> — the dispatcher's gating flag is an ordinary I/O-cache cvar, not a GPU capability switch. None of this blocks modding in practice: codec 1 (a plain, untiled BC stream) is proven accepted by the engine at any mip size, so a replacement never needs to produce a codec-2 tile at all.</p>
+<h2 id="container-format-solved-proven-at-scale">Container format (solved, PROVEN at scale)</h2>
+<p>Per tile, a 24-byte header followed by an Oodle/Kraken stream:</p>
+<pre><code>u32 comp     -- compressed length of this tile
+u32 raw      -- decompressed length of this tile
+u32 where    -- (row &lt;&lt; 24) | x, both in texels
+u16 w, u16 h -- tile size: BC4 tiles are always 512x512/274,624 B raw,
+                BC5 tiles always 512x256/280,960 B raw — a fixed
+                per-format invariant, zero exceptions across thousands
+                of sampled tiles
+u8[8] unknown -- constant within one mip's chain; byte 0 is a format
+                 tag (0x18 = BC4, 0x19 = BC5)
+u8[comp] body -- Oodle/Kraken stream
+</code></pre>
+<p>A chain ends exactly at the end of its database block (no trailing bytes, no gap). Round-tripped byte-exact by reserializing every parsed field (not copying bytes verbatim) across hundreds of blocks spanning most archives in the game, including DLC. The <code>raw</code> length field is load-bearing — corrupting it reliably breaks decompression.</p>
+<h2 id="inner-tile-layout--still-unsolved-three-hypotheses-rejected">Inner tile layout — still unsolved, three hypotheses rejected</h2>
+<p>Each rejection used a genuine derangement negative control (swapping which tile's/block's decoded bytes land in which position, same content, only position scrambled) plus a correlation metric against an independently-decoded reference mip of the same texture, not just mean-error (which cannot distinguish "spatially correct" from "both landed near the same flat average" — an early false-positive on a nearly-flat normal map demonstrated exactly this trap).</p>
+<ol>
+<li><strong>Two raw 8-bit planes (X, then Y), row-major, split at <code>tile_w*tile_h</code> bytes.</strong> Rejected: correct-vs-deranged placement produces statistically indistinguishable error on a 24-image corpus with real spatial detail.</li>
+<li><strong>Standard row-major BC4/BC5-compressed blocks.</strong> Rejected: mean correlation ≈ 0 for both correct and deranged block placement (n=24).</li>
+<li><strong>The same blocks in Morton/Z-order</strong> (the standard GPU tiling swizzle). Rejected the same way (n=20).</li>
+</ol>
+<p><strong>Why codec 2 resists decoding — the GPU-sparse-residency lead is refuted, not just unconfirmed.</strong> The dispatcher that picks between two bookkeeping-record layouts for a per-mip-batch gather is gated by the engine's ordinary <code>is_cachedIO</code> cvar (an I/O streaming-cache toggle), not a GPU capability flag; neither of the two consumer functions contains anything Vulkan/driver-specific — both are the same container/array bookkeeping pattern, differing only in record size. A string that looked like corroborating evidence for a GPU-sparse explanation has zero code cross-references anywhere in the binary.</p>
+<h2 id="practical-recipe-for-writing-a-replacement-does-not-need-codec-2">Practical recipe for writing a replacement (does not need codec 2)</h2>
+<p>Retail ships plenty of large BC4/BC5 mips as <strong>codec 1</strong> — a single Oodle stream of plain, un-tiled BC-compressed blocks — the identical technique already proven for the BC1 weapon-skin pipeline:</p>
+<ol>
+<li>Encode the new pixels as plain BC4 (single-channel) or BC5 (dual-channel) blocks. <strong>Not yet implemented</strong> in the project's own BC encoder (which currently only has BC1); extending it is mechanical, since the BC4/BC5 <em>decoders</em> already exist and the quantization math has no remaining unknowns.</li>
+<li>Oodle/Kraken-compress the plain block stream (already implemented).</li>
+<li>Write the mip-table record with <code>codec = 1</code>, <code>raw_size</code> = block count × 8 (BC4) or × 16 (BC5), and the compressed length.</li>
+<li>Write the texture-database row at the already-solved key formula (hash-derived key, shifted and OR'd with the mip level) — the same mechanism already proven for the weapon-skin pipeline.</li>
+</ol>
+<p>No tile header, no 24-byte records, no sparse-residency guesswork anywhere in this path — reading a codec-2 tile is still unsolved, but <em>producing</em> a replacement never needs to.</p>
+<p>Codec choice is size-tiered, not a free per-asset pick: across 200 mixed-codec images, 98% follow a strict "largest mip = codec 2, middle band = codec 1, smallest = codec 0" rule by level. The 2% that invert this — shipping their <em>largest</em> mip as codec 1 — are the proof codec 1 is accepted at any size; one named example ships its full 4096×4096 BC5 mip as codec 1 with codec 2 only in the middle of the chain.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>The exact inner byte layout of a codec-2 tile — three natural hypotheses rejected, no further lead from static analysis of the shipped executable. The remaining path is a dynamic GPU/Vulkan trace of an actual texture upload while the game runs.</li>
+<li>What the unexplained ~143–150 KB "tail" per BC4 tile (beyond the block-sized region tested) actually is — not yet checked for its own internal structure.</li>
+<li>Why retail chooses codec 2 for most large mips but codec 1 for a consistent ~2% minority — not needed for the practical recipe, but would explain the original asset pipeline's own logic.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Once a BC4/BC5 encoder exists: replace a normal map's largest mip (any model texture above 512 px) using <code>codec = 1</code> as above, get close enough in-game that this mip level loads, and confirm it renders correctly — the same already-verified path as the BC1 weapon skin, extended to BC4/BC5.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R2-Newassets.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Adding Brand-New Decl Entries (Not Just Replacing) in TNC</a><a class="next" href="Research-Report-R2-Tnomodels.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Model Formats: Static Solved, Skinned Vertex/Index Block Now Decoded</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

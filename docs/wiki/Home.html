@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Documentation — Getting Started – Wolfenstein Modloader</title>
-<meta name="description" content="Start page: what is known about modding both Wolfenstein games and which page answers which question.">
+<meta name="description" content="Start page: how proof is graded, which page answers which question, and what works in both games.">
 <meta name="theme-color" content="#2d3134">
 <link rel="icon" href="../assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,13 +40,13 @@
 <div class="wrap docgrid">
 <aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-most-important-rule-measured--speculated">The Most Important Rule: Measured ≠ Speculated</a></li><li><a href="#which-document-answers-which-question">Which Document Answers Which Question</a></li><li><a href="#what-works-what-doesnt-what-is-unverified">What Works, What Doesn&#x27;t, What Is Unverified</a></li><li><a href="#before-you-believe-anything-stated-here">Before you believe anything stated here</a></li><li><a href="#recalculate-evidence">Recalculate Evidence</a></li></ol></aside>
 <div>
-<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This is the entry page of the wiki for Wolfenstein: The New Order (id Tech 5) and Wolfenstein II: The New Colossus (id Tech 6). It explains the three levels of proof used everywhere: measured in the running game, inferred from the program file, or only speculated from a text string. It then lists what works, what does not and what is unverified for each game. In short, The New Order can be read, patched and loaded with mods, while for Wolfenstein II the tool could only read files and not yet write mods at the time.</p><ul><li>Three proof levels: measured, inferred, speculated; a text in the program file alone proves nothing.</li><li>TNO: 14/14 rebuilt archives loaded in the game, 48 minutes of play with 0 errors in the log.</li><li>TNO: new 3D geometry, particle changes and patching the program file do not work.</li><li>TNC: developer console works; writing mods was not possible yet (no write path).</li><li>The documents contradicted each other in 20 places; 17 were fixed, 3 remain open.</li></ul></div><div class="de"><p class="lede">Das ist die Einstiegsseite des Wikis zu Wolfenstein: The New Order (id Tech 5) und Wolfenstein II: The New Colossus (id Tech 6). Sie erklärt die drei Beweisstufen, die überall gelten: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur aus einem Textstring vermutet. Danach listet sie für jedes Spiel, was funktioniert, was nicht und was ungeprüft ist. Kurz gesagt: The New Order kann gelesen, gepatcht und mit Mods geladen werden, bei Wolfenstein II konnte das Werkzeug damals nur Dateien lesen, aber noch keine Mods schreiben.</p><ul><li>Drei Beweisstufen: gemessen, abgeleitet, vermutet; ein Text in der Programmdatei allein beweist nichts.</li><li>TNO: 14/14 neu gebaute Archive im Spiel geladen, 48 Minuten Spielzeit mit 0 Fehlern im Log.</li><li>TNO: neue 3D-Geometrie, Partikeländerungen und das Patchen der Programmdatei funktionieren nicht.</li><li>TNC: Entwicklerkonsole funktioniert; Mods schreiben war noch nicht möglich (kein Schreibpfad).</li><li>Die Dokumente widersprachen sich an 20 Stellen; 17 wurden behoben, 3 sind offen.</li></ul></div></section>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game. It also links to the detailed pages and to read-only tools that recompute the evidence.</p><ul><li>Strict rule: a text found in the game program does not prove the feature exists; only 222 of 2,231 harvested setting names in Wolfenstein II were real.</li><li>The New Order: patched archives load in game (14/14 rebuilt files, 48 minutes of play, 0 errors); the <span class="t" data-t="console">console</span> stays locked.</li><li>Wolfenstein II: value edits (pistol magazine 10 to 30), a custom weapon skin and a custom map are confirmed in a running game.</li><li>Wolfenstein II: the encrypted config files were cracked and used to run God mode and infinite ammo in a real save.</li><li>Still not working or unverified: The New Order&#x27;s new 3D models and megatexture pixels, Wolfenstein II&#x27;s megatexture pixels and loose files.</li></ul></div><div class="de"><p class="lede">Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie erklärt drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur als Text in der Datei gefunden. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist. Dazu kommen Links zu den Detailseiten und zu Werkzeugen, die die Belege nur lesend nachrechnen.</p><ul><li>Strenge Regel: Ein Text im Spielprogramm beweist nicht, dass die Funktion existiert; von 2.231 gesammelten Einstellungsnamen in Wolfenstein II waren nur 222 echt.</li><li>The New Order: gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); die <span class="t" data-t="console">Konsole</span> bleibt gesperrt.</li><li>Wolfenstein II: Wertänderungen (Pistolenmagazin 10 auf 30), ein eigener Waffenskin und eine eigene Karte sind im laufenden Spiel bestätigt.</li><li>Wolfenstein II: Die verschlüsselten Konfigurationsdateien wurden geknackt und damit Gottmodus und unendliche Munition in einem echten Spielstand ausgelöst.</li><li>Noch nicht möglich oder unbestätigt: neue 3D-Modelle und Megatextur-Pixel in The New Order, Megatextur-Pixel und lose Dateien in Wolfenstein II.</li></ul></div></section>
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>This directory describes two games and a tool:</p>
 <ul>
 <li><strong>Wolfenstein: The New Order</strong> (id Tech 5, <code>WolfNewOrder_x64.exe</code>) — the SDK reads, patches, and launches this game.</li>
-<li><strong>Wolfenstein II: The New Colossus</strong> (id Tech 6, <code>NewColossus_x64vk.exe</code>) — the SDK locates and launches it, passing Cvars; <strong>Archives are not written there</strong> (<code>wolfsdk/game.py</code>, <code>TITLES["tnc"].mods = False</code>).</li>
+<li><strong>Wolfenstein II: The New Colossus</strong> (id Tech 6, <code>NewColossus_x64vk.exe</code>) — the SDK locates and launches it, passing Cvars, and <strong>now writes its archives too</strong>: <code>wolfsdk/tncpatch.py</code> patches its IDCL containers directly (<code>wolfsdk/game.py</code>, <code>TITLES["tnc"].mods = True</code> for both titles). Decl value edits, a BC1 weapon skin, and a full <code>dlc_0</code>-precedence custom map have all been confirmed working in a real, running game — see the table below and <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>.</li>
 </ul>
 <p>The tool itself is described in <code>../README.md</code>. This section contains what has been discovered about the games.</p>
 <hr />
@@ -149,6 +149,14 @@
 <tr>
 <td>What has happened since the last session, what is open?</td>
 <td><a href="Research-Status-2026-09-21.html"><code>Research-Status-2026-09-21.md</code></a></td>
+</tr>
+<tr>
+<td>How does Part 2's console/Cvar restriction work, and which commands reach the game without a patch?</td>
+<td><a href="TNC-Console-Unlock.html"><code>TNC-Console-Unlock.md</code></a></td>
+</tr>
+<tr>
+<td>What do Kiscule's 205 script node types do, grouped by purpose?</td>
+<td><a href="Kiscule-Node-Reference.html"><code>Kiscule-Node-Reference.md</code></a></td>
 </tr>
 </tbody>
 </table></div>
@@ -316,8 +324,8 @@
 </tr>
 <tr>
 <td>Apply mods / write archives</td>
-<td><strong>does not work</strong> — <code>mods=False</code>, no write path</td>
-<td><code>wolfsdk/game.py</code></td>
+<td><strong>works, measured</strong> — <code>wolfsdk/tncpatch.py</code> writes IDCL containers directly; decl value edits (pistol magazine 10→30) confirmed in game</td>
+<td><code>wolfsdk/game.py</code> (<code>mods=True</code>), <code>tnc-decl-edits</code> session notes</td>
 </tr>
 <tr>
 <td>Change audio</td>
@@ -325,8 +333,13 @@
 <td><code>Audio.md</code> §7</td>
 </tr>
 <tr>
-<td>Replace textures</td>
-<td><strong>does not work</strong> — Key-to-asset name mapping missing, tile content undeciphered, every size change rewrites the entire (up to 8 GB) file</td>
+<td>Replace textures (weapon skin, single material)</td>
+<td><strong>works, measured</strong> — a custom BC1 pistol skin (<code>.bimage</code>+<code>.texdb</code> blocks re-encoded and appended, all 40 <code>textures.cache</code> copies patched) shows on the first-person model in a running game</td>
+<td>session notes, 2026-09-25</td>
+</tr>
+<tr>
+<td>Replace textures (Virtual-Texture/Megatexture pixel plane)</td>
+<td><strong>does not work</strong> — Key-to-asset name mapping missing, tile content undeciphered, every size change rewrites the entire (up to 8 GB) file; unaffected by the weapon-skin finding above, which is a different, smaller container</td>
 <td><code>TNC-Texture-Database.md</code> §6</td>
 </tr>
 <tr>
@@ -340,14 +353,24 @@
 <td><code>Asset-Loading-Paths.md</code>, E5/E6</td>
 </tr>
 <tr>
-<td>Custom DLC (<code>dlc/dlc_4/dlcinfo.json</code>)</td>
-<td><strong>unverified</strong> — no visible possession check, this is the most promising path</td>
-<td><code>Asset-Loading-Paths.md</code>, E8</td>
+<td>Custom DLC / custom map (<code>dlc/&lt;name&gt;/…</code>, <code>dlc_0</code> precedence)</td>
+<td><strong>works, measured</strong> — the engine mounts the first <code>dlc/*</code> folder (alphabetical) whose <code>packagemapspec.json</code> lists the map; a <code>dlc_0</code> folder beats retail <code>dlc_2</code> for map <code>c2v1</code>, confirmed in game with a relit custom light layout and a normal mission start</td>
+<td><a href="TNC-Custom-Map-Status.html"><code>TNC-Custom-Map-Status.md</code></a>, <a href="Research-Report-Tnc-Custom-Maps.html">Research-Report-Tnc-Custom-Maps</a></td>
+</tr>
+<tr>
+<td><code>cfile</code> entries (encrypted configs/localization under <code>.resources</code>)</td>
+<td><strong>works, measured</strong> — the AES-128-CBC/HMAC-SHA256 key is derived (<code>"swapTeam\n\x00"</code> + salt + resource name), round-trip byte-exact on 67/67 retail payloads; the loader builds new, game-accepted payloads under existing names (<code>wolfsdk/tnccrypt.py</code>), used to unlock the restricted console below</td>
+<td><a href="Research-Report-Cfilekey2.html">Research-Report-Cfilekey2</a></td>
+</tr>
+<tr>
+<td>Console/Cvar restriction (34/304 exposed vs. 234/3,256 total)</td>
+<td><strong>works, measured</strong> — <code>resourceExec &lt;loader-replaced cfile&gt; -s</code> drops the restriction for the file; <code>God</code>, <code>Notarget</code>, <code>g_infiniteAmmo 1</code> confirmed executing in a real save game</td>
+<td><a href="TNC-Console-Unlock.html"><code>TNC-Console-Unlock.md</code></a></td>
 </tr>
 <tr>
 <td><code>+devMode_</code> prefix, <code>devMode_enable</code></td>
-<td><strong>unverified</strong> — present in binary, effect not observed</td>
-<td><code>Save-Games-and-Profiles.md</code> §5</td>
+<td><strong>partially confirmed</strong> — <code>devMode_enable</code> is a real, exposed, retail-settable Cvar (observed live at value <code>1</code> on a running process), but it gates only one dispatcher branch that no proven entry point reaches — not load-bearing for the console unlock above</td>
+<td><a href="TNC-Console-Unlock.html"><code>TNC-Console-Unlock.md</code></a> §1, <code>Save-Games-and-Profiles.md</code> §5</td>
 </tr>
 </tbody>
 </table></div>

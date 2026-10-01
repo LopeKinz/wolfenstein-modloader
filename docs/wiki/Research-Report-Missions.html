@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Status 2026-09-25. Tool <code>tools/build_mission.py</code>, demo in <code>re_probes/missions/demo/</code>.
-The game was not started; only read from <code>D:/SteamLibrary</code>.</p>
+The game was not started; only read from <code>&lt;Steam library&gt;</code>.</p>
 <pre><code>python tools/build_mission.py re_probes/missions/demo/demo.json    # ~1:45 min, 37 probes, exit 1 on FAIL
 </code></pre>
 <h2 id="summary">Summary</h2>
@@ -222,7 +222,7 @@ objectives    [{id, decl, title, complete: {enter: Location} | {use: Location} |
 </ul>
 <h2 id="6-runbook-5-lines-powershell">6. Runbook (5 lines, PowerShell)</h2>
 <ol>
-<li><strong>Install:</strong> <code>$d="D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_0\base\chunk_22.resources"; Remove-Item $d; Copy-Item "C:\Users\‹user›\Documents\wolfenstein modloader\re_probes\missions\demo\chunk_22.resources" $d</code></li>
+<li><strong>Install:</strong> <code>$d="&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_0\base\chunk_22.resources"; Remove-Item $d; Copy-Item "%USERPROFILE%\Documents\wolfenstein modloader\re_probes\missions\demo\chunk_22.resources" $d</code></li>
 <li><strong>Start:</strong> Launch the game normally and restart the episode "Gestapo Office" (Agent Silent Death) <strong>fresh</strong>. Do not continue an old c2v1 save state, otherwise its mission progress will apply.</li>
 <li><strong>What you see:</strong><ol>
 <li>You start in the red lobby.</li>
@@ -240,7 +240,7 @@ objectives    [{id, decl, title, complete: {enter: Location} | {use: Location} |
 <li>If markers and use are missing, the shifted exit does not trigger.</li>
 </ul>
 </li>
-<li><strong>Undo:</strong> <code>Remove-Item "D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_0\base\chunk_22.resources"; Copy-Item "C:\Users\‹user›\Documents\wolfenstein modloader\re_probes\dlc4_override\chunk_22.resources" "D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_0\base\chunk_22.resources"</code>. This is the file installed today, sha256 <code>cadfbfce…</code>.</li>
+<li><strong>Undo:</strong> <code>Remove-Item "&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_0\base\chunk_22.resources"; Copy-Item "%USERPROFILE%\Documents\wolfenstein modloader\re_probes\dlc4_override\chunk_22.resources" "&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_0\base\chunk_22.resources"</code>. This is the file installed today, sha256 <code>cadfbfce…</code>.</li>
 </ol>
 <h2 id="7-risks-and-open-runtime">7. Risks and Open (Runtime)</h2>
 <ul>

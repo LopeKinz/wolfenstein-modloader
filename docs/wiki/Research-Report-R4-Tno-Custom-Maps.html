@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Custom Maps: How Maps Load, and Why There Is No `dlc_0`-Style Route – Wolfenstein Modloader</title>
+<meta name="description" content="How The New Order loads maps, why it has no DLC-folder override, and a small in-place enemy-swap mod.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Custom Maps: How Maps Load, and Why There Is No <code>dlc_0</code>-Style Route</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R4-Tno-Custom-Maps"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#how-tno-loads-a-map">How TNO loads a map</a></li><li><a href="#why-there-is-no-folder-precedence-route">Why there is no folder-precedence route</a></li><li><a href="#the-only-working-route-edit-an-existing-maps-own-chunk-in-place">The only working route: edit an existing map&#x27;s own chunk in place</a></li><li><a href="#failed-hypotheses">Failed hypotheses</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report decoded how Wolfenstein: The New Order loads its maps and checked whether it has a folder-override route like the one that works for custom maps in Wolfenstein II. It does not: the game has no such mechanism, confirmed by reading the files directly. The only working route is editing a map inside its own <span class="t" data-t="chunk">chunk</span> in place, and a small test mod that swaps one enemy type passed all 12 offline checks but has not been tried in the running game.</p><ul><li>A map is chosen through 18 chapter decls; there is no separate DLC or menu decl type among TNO&#x27;s 105 types.</li><li>12 of 37 mapInfo entries have no map file at all: they are cut content, not a hidden way to add maps.</li><li>Only 10 of 25 maps have enough real room for a same-length edit without rebuilding the chunk.</li><li>Test mod supersoldaten_c15 swaps 6 firetroopers for supersoldiers on map c05_07_09; 12/12 offline checks pass.</li><li>Adding a 15th archive pair or using TNO&#x27;s dlc/info.txt route remains unproven and blocked.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat entschlüsselt, wie Wolfenstein: The New Order seine Karten lädt, und geprüft, ob es einen Ordner-Override-Weg wie den gibt, der in Wolfenstein II für eigene Karten funktioniert. Den gibt es nicht; das wurde durch direktes Lesen der Dateien bestätigt. Der einzige funktionierende Weg ist, eine Karte direkt in ihrem eigenen <span class="t" data-t="chunk">Chunk</span> zu bearbeiten; eine kleine Test-Mod, die einen Gegnertyp tauscht, bestand alle 12 Offline-Prüfungen, wurde aber noch nicht im laufenden Spiel ausprobiert.</p><ul><li>Karten werden über 18 chapter-Decls gewählt; unter den 105 Decl-Typen von TNO gibt es keinen eigenen DLC- oder Menü-Typ.</li><li>12 von 37 mapInfo-Einträgen haben gar keine Kartendatei: Das sind gestrichene Inhalte, kein versteckter Weg für neue Karten.</li><li>Nur 10 von 25 Karten haben genug echten Platz für eine längengleiche Änderung ohne Chunk-Neubau.</li><li>Die Test-Mod supersoldaten_c15 tauscht auf Karte c05_07_09 6 Feuersoldaten gegen Supersoldaten; 12/12 Offline-Prüfungen bestanden.</li><li>Ein 15. Archivpaar oder der dlc/info.txt-Weg von TNO bleiben unbewiesen und blockiert.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Research pass asking whether The New Order has anything like The New Colossus's <code>dlc_0</code> folder-precedence route for custom maps, how TNO's map system is actually built, and what the smallest feasible custom-map edit is. Map loading itself is fully decoded by direct, read-only inspection of the retail install and is not in question. <strong>A <code>dlc_0</code>-style precedence route does not exist for TNO</strong> — confirmed by direct read, not inferred. The smallest proven-feasible map edit (<code>mods/supersoldaten_c15</code>, a length-neutral enemy-type swap) has been built and verified against the real archive write path (12 checks including 4 negative controls, all passing) — <strong>this is a static/offline write-path proof only; it has not been tried in a running game.</strong></p>
+<h2 id="how-tno-loads-a-map">How TNO loads a map</h2>
+<ul>
+<li>One <code>base/master.index</code> names exactly 14 <code>chunkN.index</code>/<code>chunkN.resources</code> pairs. No DLC indirection at this layer at all.</li>
+<li>A map is a <code>file:maps/&lt;id&gt;.entities</code> text decl. The <code>mapInfo:&lt;id&gt;</code> decl (lives in <code>chunk0</code>) names the one chunk that physically holds that map via <code>vmtrChunkNumber</code> — confirmed live, e.g. <code>c01p1</code>→chunk1, <code>c02p0</code>→chunk3.</li>
+<li><strong><code>chapter</code> decls (18 total, in <code>chunk0</code>) carry the map list directly</strong> — each chapter's <code>variations.item[].parts.item[].map</code> field names the <code>.entities</code> id that variation plays. No separate <code>chaptervariation</code>/<code>devmenuoption</code>/<code>dlc</code> decl type exists anywhere among TNO's 105 distinct decl types (0 instances found in a full type census) — <code>chapter</code> is the entire mechanism, there is no separate family to open.</li>
+<li>Collision is a separate <code>cm</code> asset per map; a writer for it round-trips exactly (8,661/8,661 byte-identical).</li>
+<li><code>virtualtextures/&lt;id&gt;.pages</code> (megatexture ground) is a confirmed, non-decodable dependency.</li>
+<li>All 25 maps' <code>.entities</code> parse error-free, 69,951 blocks total.</li>
+</ul>
+<p><strong>12 of TNO's 37 <code>mapInfo</code> decls have no matching <code>.entities</code> anywhere</strong> — cut 2013-demo maps, a cut chapter-17 sibling trio (<code>xa01</code>/<code>xa02</code>/<code>xa03</code>), 2 cut campaign-map parts (<code>c02p2</code>, <code>c10p2</code>), a named-but-unshippable mini-level (<code>lkw</code>), and 3 non-map placeholders. None of the 12 is referenced by any of the 18 <code>chapter</code> decls' <code>map=</code> lists either — genuinely cut content at both levels, not a missed append point.</p>
+<h2 id="why-there-is-no-folder-precedence-route">Why there is no folder-precedence route</h2>
+<ul>
+<li><code>(type, name)</code> is never duplicated across TNO's 14 chunks for <code>file:*.entities</code>, <code>mapInfo</code>, or <code>chapter</code> (0 of 76,364 unique keys) — there is nothing for a second folder to win a collision against.</li>
+<li><code>mapspec</code> (TNC's own per-DLC map-claiming mechanism) is a 0-hit string in <code>WolfNewOrder_x64.exe</code>.</li>
+<li>TNO's EXE does carry a distinct <code>dlc\&lt;name&gt;\info.txt</code> mount path — real, isolated, Steam-ownership-gated — but its dialect is unsolved, and even solved there is nothing like <code>packagemapspec</code> for it to claim a map name with. The project's only working decompiler indexes TNC's own runtime image, not TNO's — confirmed directly (a query for TNO's own field name <code>dlcID</code> returns 0 hits against it) rather than assumed from a README — so this path remains genuinely blocked, not merely unexplored.</li>
+<li>A self-built 15th <code>master.index</code> chunk pair is accepted trivially by this project's own reader; whether the real engine's reader would accept it is unmeasured and unmeasurable without a TNO runtime capture, which does not exist in this project.</li>
+</ul>
+<h2 id="the-only-working-route-edit-an-existing-maps-own-chunk-in-place">The only working route: edit an existing map's own chunk in place</h2>
+<p>Decompress the map's <code>.entities</code> payload from its own chunk, edit the decl text, recompress with the game's exact deflate dialect, and write back in place — <strong>but only when the real slot-fit check actually succeeds</strong>, not just a naive "compressed length ≤ csize" estimate. The naive check overstates what fits: <code>deflate</code>'s padding mechanism can only extend a stream by ~500 bytes of measured reach, regardless of how much raw headroom the naive upper bound shows.</p>
+<p>Re-measured against the real reach bound, only <strong>10 of 25 maps</strong> are genuinely rebuild-free for a length-neutral swap — not the larger number a purely naive cost estimate suggests:</p>
+<pre><code>genuinely fits:  c01p3, c04p1, c05_07_09, c06p1, c06p2, c08p1_2, c10p1, c11p1, c14p1, c16p2
+looks free but doesn't reach: c01p2, c02p1, c03p2, c04p2_3, c16p1
+</code></pre>
+<p>Where the real budget is exceeded, the fallback is a full chunk rewrite (73–466 MB depending on chunk) — new entities blow every measured budget by 1–2 orders of magnitude, so this route is for retyping/retuning existing content, not adding geometry.</p>
+<p><strong>Smallest proven-feasible experiment:</strong> <code>mods/supersoldaten_c15</code> — on map <code>c05_07_09</code>, <code>ai/tungsten/c15/part_01/firetrooper</code> → <code>ai/tungsten/c15/part_01/supersoldat</code>, 6 occurrences, both names 47 characters (length-neutral), both enemy types already present on the same map so the swap can't reach for missing assets. Run against the real write path: slot fit confirmed exactly (csize hit, with padding comment), structural diff shows exactly the 6 intended swaps and nothing else, manifest check confirms the loader reads the right bytes — <strong>12/12 checks pass, including 4 negative controls</strong> (an over-stuffed payload, a dropped brace, a shifted coordinate, a flipped byte — each independently caught).</p>
+<h2 id="failed-hypotheses">Failed hypotheses</h2>
+<ul>
+<li>"TNO has a <code>packagemapspec</code>-style per-DLC map-claiming table like TNC." <strong>False.</strong></li>
+<li>"<code>c02p1</code>'s apparent headroom (711 B) is usable in-place." <strong>False</strong> — unreachable by the real padding search (gap 706 B vs. reach 511 B). It was the original flagship pick for this experiment; <code>c05_07_09</code> replaces it (gap 385 B inside a 519 B reach, 126 B real margin).</li>
+<li>"The newly-available project decompiler would unblock the <code>info.txt</code>/DLC-enumeration questions." <strong>False</strong> — it indexes the wrong game's binary entirely.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether TNO's real engine accepts a 15th <code>master.index</code> chunk pair — blocked on encrypted <code>.text</code> with no TNO-side decompiler available.</li>
+<li>The exact <code>info.txt</code> dialect and DLC-enumeration mechanism — same block.</li>
+<li>Whether TNO's DLC folder name comes from Steamworks enumeration or a raw folder scan.</li>
+<li>Whether a DLC-mounted archive's <code>(type, name)</code> entry would win or lose against the base chunk's copy — no retail precedent exists to check against.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>Enable <code>mods/supersoldaten_c15</code>, start/restart the game, and advance to map <code>c05_07_09</code>. If the 6 enemies at those positions appear as the larger, tougher type instead of the original, the real engine accepted the in-place write — this project's first real TNO in-game map-edit confirmation. No other change is expected; the swap touches neither geometry, collision, nor paths.</p>
+<p>Related: <a href="TNO-Modding-Surface.html">TNO Modding Surface</a>, <a href="TNO-Maps.html">TNO Maps</a>, <a href="Asset-Loading-Paths.html">Asset Loading Paths</a>, <a href="TNC-Custom-Map-Status.html">TNC Custom-Map Status</a> (the equivalent, working route for Part 2).</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R4-Strings.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>R4 Research Report: TNC String Tables and the Key Hash</a><a class="next" href="Research-Report-R5-Kiscule-Command.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Kiscule Command Nodes Run Through the Same Unrestricted Path as <code>resourceExec</code></a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

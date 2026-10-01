@@ -59,8 +59,8 @@
 <p>Save comparison showed that the available retail save still carries <code>game/dlc/c02/c2v1</code> in <code>checkpoint.dat</code>, <code>checkpoint_mapstart.dat</code>, and <code>game.details</code>. A custom test requires the alias in all three locations; leaving one retail map string is an independent corruption cause.</p>
 <h2 id="reproduction">Reproduction</h2>
 <pre><code class="language-powershell">python tools/check_tnc_map_identity.py `
-  --game D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus `
-  --candidate D:\SteamLibrary\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_4
+  --game &lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus `
+  --candidate &lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc\dlc_4
 </code></pre>
 <p>The check is read-only and confirms the mapspec/IDCL/save hypotheses before a new runtime attempt.</p></article></section>
 <nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-Assetviewer.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Asset Tab for Wolfenstein II (assetviewer)</a><a class="next" href="Research-Report-Cfilekey2.html"><small><span class="en">Next</span><span class="de">Weiter</span></small><code>cfile</code> — Key derivation found, corpus decrypted, round-trip byte-exact</a></nav>

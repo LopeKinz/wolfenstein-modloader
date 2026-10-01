@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker <code>w-matpipe-a1</code>; task <code>matpipe</code>; research/implement.
-Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
+Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
 Parallel: <code>w-meshfmt-a1</code>, <code>w-cmfmt-a1</code>, <code>w-entitypipe-a1</code>, <code>w-mapmanifest-a1</code>.
 You own surfaces: material -&gt; image -&gt; texdb, end to end.</p>
 <h1 id="objective">Objective</h1>
@@ -71,7 +71,7 @@ You own surfaces: material -&gt; image -&gt; texdb, end to end.</p>
 <li><code>re_probes/runtime_87400/module.bin</code> - read-only capture of the RUNNING, unpacked executable (file offset == RVA, sections in manifest.json). The image/material loaders are in there; today's five wins all came from reading loaders rather than sweeping data.</li>
 <li><code>docs/texdb.md</code>, <code>docs/virtualtextures.md</code>, <code>docs/ui-assets.md</code> (part 1 image replacement already works there, <code>image-export</code>/<code>image-import</code>).</li>
 <li>Retail corpus READ ONLY:
-  D:/SteamLibrary/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
+  <Steam library>/steamapps/common/Wolfenstein.II.The.New.Colossus</li>
 <li>capstone 5.0.7 vendored: PYTHONPATH=re_probes/python_deps</li>
 </ul>
 <h1 id="ownership">Ownership</h1>
@@ -79,7 +79,7 @@ You own surfaces: material -&gt; image -&gt; texdb, end to end.</p>
 re_probes/agent_reports/matpipe.md (new).
 Everything else read-only, including other workers' tools and dirs.</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
-<p>No game launch, no process attach, no writes under the Steam install or "C:/Users/‹user›/Saved Games". Do not edit wolfsdk/<em>, docs/</em>, config.json, tools/probe_texdbkey.py or any other worker's file. No pip install.</p>
+<p>No game launch, no process attach, no writes under the Steam install or "%USERPROFILE%/Saved Games". Do not edit wolfsdk/<em>, docs/</em>, config.json, tools/probe_texdbkey.py or any other worker's file. No pip install.</p>
 <h1 id="hard-constraints">Hard constraints</h1>
 <p>Python 3.11, stdlib only (plus vendored capstone for disassembly). Reuse <code>wolfsdk/oodle.py</code>. No new image library - if a block-compressed format needs an encoder we do not have, say so rather than adding a dependency.</p>
 <h1 id="acceptance-criteria">Acceptance criteria</h1>

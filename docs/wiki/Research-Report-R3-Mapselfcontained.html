@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Custom TNC Map That Needs No DLC at All – Wolfenstein Modloader</title>
+<meta name="description" content="Which side files a DLC-free Wolfenstein II custom map really needs, and the DLC ownership check.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>A Custom TNC Map That Needs No DLC at All</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R3-Mapselfcontained"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#side-files-ranked-by-how-avoidable-they-are">Side files, ranked by how avoidable they are</a></li><li><a href="#a-new-map-name-and-the-entitlement-check">A new map name and the entitlement check</a></li><li><a href="#whats-proven-vs-what-needs-a-game-launch">What&#x27;s proven vs. what needs a game launch</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report checks which extra files a DLC-style map folder for Wolfenstein II: The New Colossus really needs: texture cache, intro video, virtual texture pages and sound. Texture cache and video can be skipped or rerouted, virtual textures only if you avoid them in every material, and sound is mandatory because a bad sound spec crashes the game. The Steam ownership check sits only in chapter-menu code, not in the map loading code. Apart from the texture cache, these findings come from code reading and are not yet tested in the game.</p><ul><li>The texture cache file is proven unneeded in the running game: without it, no error appeared.</li><li>The loading video is just one definition field; all 47 playable maps set it, so it can be omitted or pointed at an existing video.</li><li>7,308 of 7,309 static objects on the target map use <span class="t" data-t="vt">virtual textures</span>, so avoiding them means making your own materials.</li><li>A sound setup is required; a near-empty sound pack shipped by the game is a likely minimal template, untested.</li><li>The only Steam ownership check is reached from the chapter-select menu, not from the map loading code.</li></ul></div><div class="de"><p class="lede">Dieser Bericht prüft, welche Zusatzdateien ein DLC-artiger Kartenordner für Wolfenstein II: The New Colossus wirklich braucht: Textur-Cache, Intro-Video, virtuelle Texturseiten und Sound. Textur-Cache und Video lassen sich weglassen oder umleiten, virtuelle Texturen nur, wenn du sie in jedem Material vermeidest, und Sound ist Pflicht, weil eine fehlerhafte Sound-Spec das Spiel abstürzen lässt. Die Steam-Besitzprüfung sitzt nur im Code des Kapitelmenüs, nicht im Code, der Karten lädt. Bis auf den Textur-Cache stammen diese Ergebnisse aus dem Lesen des Codes und sind im Spiel noch nicht getestet.</p><ul><li>Die Textur-Cache-Datei ist im laufenden Spiel als unnötig bewiesen: Ohne sie trat kein Fehler auf.</li><li>Das Ladevideo ist nur ein Definitionsfeld; alle 47 spielbaren Karten setzen es, man kann es also weglassen oder auf ein vorhandenes Video zeigen lassen.</li><li>7.308 von 7.309 statischen Objekten der Zielkarte nutzen <span class="t" data-t="vt">virtuelle Texturen</span>, sie zu vermeiden heißt also, eigene Materialien zu bauen.</li><li>Ein Sound-Setup ist Pflicht; ein fast leeres Soundpaket aus dem Spiel ist eine wahrscheinliche Minimalvorlage, ungetestet.</li><li>Die einzige Steam-Besitzprüfung wird vom Kapitelauswahl-Menü aus erreicht, nicht vom Code, der Karten lädt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>This research asked two questions about building a TNC custom map that needs no DLC ownership at all: which of the side files a DLC-style map folder normally carries (sound banks, intro video, virtual-texture pages, texture cache) are actually required, and whether a brand-new map name can be reached from the chapter-select menu without triggering a Steam ownership check. The side-file question is now settled for three of four files — texture cache and the intro video are provably avoidable or reroutable through existing patchable fields, while sound is the one file that's genuinely mandatory, though its content can likely be minimized. The entitlement question got real new evidence this pass: a full call-graph trace shows the one Steam-ownership check function in the executable is wired into the chapter-select menu's own UI code, nowhere near the map-mounting engine code — but this is static analysis, not yet confirmed by starting the game, and is flagged as such throughout.</p>
+<h2 id="side-files-ranked-by-how-avoidable-they-are">Side files, ranked by how avoidable they are</h2>
+<ol>
+<li><strong><code>textures.cache</code></strong> — already runtime-proven unnecessary. A DLC-style folder was run in-game with it absent and produced no error. It's a pure in-memory texture-streaming performance shortcut: the loader checks only an 8-byte magic, and if the file is missing, every texture mip simply loads from the ordinary <code>.texdb</code> path instead.</li>
+<li><strong>Intro/loading video (<code>.bk2</code>)</strong> — not a special DLC asset at all. It's the value of one ordinary decl field, <code>mapInfo.edit.layerLoadingVideos</code>. A corpus check of every real, playable map's <code>mapInfo</code> decl found the field present with 1–16 entries in all 47 of them and explicitly <code>num=0</code> in <strong>none</strong> — only non-gameplay stub/dev decls omit it. Recommendation: omit the field entirely (the retail stub-decl shape) rather than setting <code>num=0</code>, or point it at any of the 100+ <code>.bk2</code> files the base game already ships.</li>
+<li><strong>Virtual-texture pages (<code>.pages</code>)</strong> — avoidable by design choice, not by a smaller file. A <code>.pages</code> file is only needed if a material actually sets <code>usevirtualmapping</code>/<code>megatexturedModel=true</code>. A direct count of the target map's own retail entity data found 7,308 of 7,309 static-instance entities use it — almost no real retail art avoids virtual texturing, so building entirely from ordinary (non-VT) materials means authoring your own materials for every surface, not reusing retail content. The cvar that could make a <em>missing</em> <code>.pages</code> file harmless if a material still references it (<code>vt_genMissingPages</code>) is off by default and <strong>cannot be turned on in a retail build</strong> — there is no safety net, so avoiding VT materials entirely is the only safe route.</li>
+<li><strong>Sound (<code>prodspec.json</code> + sound packs)</strong> — the one side file that is <strong>not</strong> optional. Disassembly of the DLC sound-mount function shows its <code>prodspec.json</code> validation failure path is an unconditional engine fatal error (a crash), not a silent skip. What <em>is</em> minimizable is the content: retail itself ships a working, near-empty precedent (a 132-byte, structurally valid, empty sound pack as a patch-layer file) — building a <code>prodspec.json</code> with an empty bank list plus a matching empty pack is the untested-but-structurally-plausible minimal setup. A DLC's sound path fully replaces the base game's for the duration of its own map; the base game's existing banks cannot be used as a fallback.</li>
+</ol>
+<p><strong>Simplest answer overall:</strong> editing an existing base map's own archive chunk in place (no DLC folder at all) sidesteps every one of these four concerns, because there's no second copy of anything to maintain — at the cost of adding content to an existing map name rather than a genuinely new one.</p>
+<h2 id="a-new-map-name-and-the-entitlement-check">A new map name and the entitlement check</h2>
+<p>A brand-new <code>chaptervariation</code> decl entry can be added to the chapter-select data with no special trick (retail itself ships one such patch-only entry). The open question was always whether the Steam ownership check for the DLC chapters would also apply to it. New static evidence this pass: the one function in the executable that logs the DLC-ownership check (<code>idEntitlements::Get</code>) has exactly one direct call site, reached through a thunk with exactly two callers. One of those two is fully traced back to the function that builds the chapter-select/main-menu shell screen — nowhere near the map-mounting code, a completely different part of the binary. The call site itself is additionally gated by two nested "is this object of a specific type" checks whose exact type constants could not be resolved from static analysis, but are consistent with "only Chronicle-DLC-type chapter entries are ever checked" — meaning a variation appended under an <strong>already-shown, ordinary campaign chapter</strong> (not a new DLC-style chapter) would plausibly never reach the entitlement check at all. The second of the two call sites is reached only through an indirect (vtable) call whose actual caller could not be traced by any static method used here — a genuine blind spot, though it doesn't change the recommendation below.</p>
+<p><strong>Recommended route, in order:</strong></p>
+<ol>
+<li>Edit an existing base map's own chunk (no DLC folder, no side-file questions).</li>
+<li>If a genuinely new map name is wanted, build the DLC-style folder with no <code>.pages</code>, no <code>textures.cache</code>, an omitted <code>layerLoadingVideos</code> field, and a minimal <code>prodspec.json</code>/empty sound pack.</li>
+<li>To make that new name reachable from the menu without ownership: append the entry under an already-shown, ordinary campaign chapter, not a new Chronicle-style chapter.</li>
+</ol>
+<h2 id="whats-proven-vs-what-needs-a-game-launch">What's proven vs. what needs a game launch</h2>
+<p><strong>Runtime-proven already:</strong> <code>textures.cache</code> can be absent with no error; an unowned DLC folder's reference to an <em>existing</em> base map name was accepted by the file-mounting code with no ownership-rejection log line.</p>
+<p><strong>New this pass, static only:</strong> the sound-mount crash-on-failure path; the <code>mapInfo.layerLoadingVideos</code> corpus numbers; the full entitlement call-graph trace and its two-type-constant gate.</p>
+<p><strong>Still needs an in-game test:</strong> whether the minimal empty sound-pack shape is actually accepted at load; whether an appended <code>chaptervariation</code> entry under an ordinary chapter is both shown by the chapter-select UI and skips the entitlement check in practice.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R3-Kisculeref.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Kiscule Node Reference for Modders</a><a class="next" href="Research-Report-R3-Missionsetter.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Fixing the Missing HUD Objective Banner for Out-of-Order Missions</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

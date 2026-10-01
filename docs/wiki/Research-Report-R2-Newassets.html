@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding Brand-New Decl Entries (Not Just Replacing) in TNC – Wolfenstein Modloader</title>
+<meta name="description" content="Adding brand-new entries (not just replacing old ones) to Wolfenstein II archives, proven offline.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Adding Brand-New Decl Entries (Not Just Replacing) in TNC</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R2-Newassets"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#what-changes-by-layer">What changes, by layer</a></li><li><a href="#structural-proof">Structural proof</a></li><li><a href="#registration--visibility-from-code-not-assumed">Registration / visibility (from code, not assumed)</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-not-yet-run">In-game test (not yet run)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Until now the project&#x27;s tools could only replace files that already exist inside a Wolfenstein II <span class="t" data-t="archive">archive</span>. This report shows that adding a genuinely new entry is a missing tool, not an engine limit: new entries were hand-built, read back correctly and passed every <span class="t" data-t="checksum">hash check</span>. A new name also avoids the open question of which archive wins when two contain the same name. Whether the running game accepts such an extended archive has not been tested.</p><ul><li>Adding needs a new 144-byte table row, new name strings and freshly computed hashes; the dependency table stays unchanged.</li><li>Both a new name of an existing type and a completely new type string were added; all original entries stayed byte-identical.</li><li>4 negative controls were caught; a wrong entry count silently hides the entry instead of crashing.</li><li>The engine looks resources up by name across all mounted archives, which is how patch-only and DLC-only files load.</li><li>Inventing a whole new definition type is not possible without patching the game program; nothing was tested in game.</li></ul></div><div class="de"><p class="lede">Bisher konnten die Werkzeuge des Projekts nur Dateien ersetzen, die in einem <span class="t" data-t="archive">Archiv</span> von Wolfenstein II schon existieren. Dieser Bericht zeigt, dass das Hinzufügen neuer Einträge an einem fehlenden Werkzeug liegt, nicht an einer Grenze der Engine: Neue Einträge wurden von Hand gebaut, korrekt zurückgelesen und bestanden jede <span class="t" data-t="checksum">Prüfsummen-Kontrolle</span>. Ein neuer Name umgeht auch die offene Frage, welches Archiv gewinnt, wenn zwei denselben Namen enthalten. Ob das laufende Spiel ein so erweitertes Archiv annimmt, wurde nicht getestet.</p><ul><li>Zum Hinzufügen braucht es eine neue 144-Byte-Tabellenzeile, neue Namenseinträge und neu berechnete Hashes; die Abhängigkeitstabelle bleibt gleich.</li><li>Sowohl ein neuer Name eines vorhandenen Typs als auch ein völlig neuer Typname wurden eingefügt; alle Originaleinträge blieben byte-identisch.</li><li>4 Gegenproben wurden erkannt; eine falsche Eintragsanzahl versteckt den Eintrag still, statt abzustürzen.</li><li>Die Engine sucht Ressourcen per Name in allen eingebundenen Archiven – so laden auch Dateien, die es nur in Patches oder DLCs gibt.</li><li>Einen ganz neuen Definitionstyp zu erfinden geht nicht ohne Patchen des Spielprogramms; im Spiel wurde nichts getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Every existing writer in this project replaces the payload of an entry that <strong>already exists</strong> in an archive's entry table; none of them change the entry count, string table, or dependency table — a previously-flagged open gap. This note asks whether adding a genuinely new <code>(type, name)</code> entry is a hard engine limitation or just a missing tool, and shows structurally that <strong>it is the latter</strong>. A new entry — reusing an existing type string, or introducing a brand-new type string to a container — was hand-built and round-tripped end to end, re-read correctly by the project's own reader, and passed every independent hash check with real negative controls. Critically, adding a new <em>name</em> sidesteps the still-unresolved question of which of two containers wins when they both claim the <strong>same</strong> name — a brand-new name has nothing to collide with. Everything here is a structural proof against the file format and the project's own readers; whether the live game engine accepts an appended container at mount time is the one remaining untested gap.</p>
+<h2 id="what-changes-by-layer">What changes, by layer</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Must change for an add?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Entry table</td>
+<td><strong>Yes</strong> — one new 144-byte row, entry count +1</td>
+</tr>
+<tr>
+<td>String table</td>
+<td><strong>Yes</strong> — +1 row for a new name, or +2 if the type string is also new to the container</td>
+</tr>
+<tr>
+<td>String-index pool</td>
+<td><strong>Yes</strong> — +2 index values for the new entry's (type, name) pair</td>
+</tr>
+<tr>
+<td>Entry hashes</td>
+<td><strong>Yes</strong>, computed from the already-solved formulas (not copied)</td>
+</tr>
+<tr>
+<td>Header hashes</td>
+<td><strong>Yes</strong>, computed in order — metadata hash first, then the header hash that covers it</td>
+</tr>
+<tr>
+<td>Dependency table</td>
+<td><strong>No</strong>, if nothing yet references the new entry</td>
+</tr>
+<tr>
+<td>Map preload list</td>
+<td><strong>Optional</strong> — an unlisted resource is created and loaded on first reference; a preload line is retail convention (100% coverage) and a performance pre-cache, not a requirement</td>
+</tr>
+<tr>
+<td>Container identity</td>
+<td><strong>No restriction found</strong> — a new entry can live in any mounted container, including a small, purpose-built add-on, exactly like over a thousand real retail <code>(type, name)</code> pairs that exist only in a patch archive</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="structural-proof">Structural proof</h2>
+<p>Two cases were built and verified from the same unmodified source archive: (1) an existing type string, new name; (2) a brand-new type string the archive had never carried at all. Both:</p>
+<ul>
+<li>left every original entry <strong>byte-identical</strong> (same hash, same offset, same payload);</li>
+<li>used uncompressed payloads for the new entry (no compression dependency);</li>
+<li>fit inside the source archive's existing metadata slack, so <strong>no existing payload offset moved</strong>. (The code path for when metadata growth would <em>not</em> fit that slack — shifting the data-start address and every later payload offset — is the same relocation math the project's existing archive-rebuild function already performs for a replace; it was not separately implemented here, the tool raises rather than guess.)</li>
+</ul>
+<p><strong>Checks:</strong> the project's reader finds the new entry by (type, name) with exactly 1 hit; an exhaustive per-entry data-hash check passes on all entries including the new one; both header hashes pass; the dependency-staleness check correctly reports nothing stale (nothing references the new entry yet).</p>
+<p><strong>Negative controls</strong>, each caught:</p>
+<ul>
+<li>Flipping one payload byte of the new entry → the data-hash check flags exactly that entry.</li>
+<li>Corrupting the header's entry count → <strong>does not crash the reader</strong>. The string/dependency table addresses are independent header fields, so the file parses fine and the new entry is simply hidden (a useful correction: a wrong count silently omits, it does not corrupt).</li>
+<li>Pointing the new entry's string-index at an existing entry's name instead of its own → no crash either; it silently creates a duplicate-name alias, the same hazard the project's own reader already documents for several hundred genuine duplicate-name pairs that exist in retail data.</li>
+<li>Corrupting only the metadata hash → both the metadata hash <em>and</em> the header hash are correctly flagged as bad (the header hash covers the range containing the metadata hash, a documented build-order dependency).</li>
+</ul>
+<h2 id="registration--visibility-from-code-not-assumed">Registration / visibility (from code, not assumed)</h2>
+<p>Name resolution for a decl/resource is <strong>not</strong> a fixed, compiled-in list. The resource-load function searches by name and, if not already known, creates and loads it fresh — across every currently-mounted container. This is literally how an unlisted resource still loads on first reference, and the same mechanism that lets patch- and DLC-only assets exist at all in retail data.</p>
+<p>Fresh disassembly this pass: a registry address previously named by other work belongs to a function with 9 call sites across 6 functions, one of them inside the already-known inherit-parser for weapon/ammo-type decls, called immediately after loading the parent decl. This reads as runtime dependency/hot-reload bookkeeping (recording what the parent decl pointer is), not the name→resource binding itself — inferred from call-site shape, not a full decompile.</p>
+<p><strong>Important distinction:</strong> inventing a brand-new decl <strong>type</strong> (not just a new name within an existing type) is a much bigger undertaking — each type is a compiled-in parser class reached by RTTI/vtable dispatch, and nothing in the traced data-driven path creates a new one. Not attempted; no evidence here supports it being possible without binary-patching the executable.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Metadata growth beyond a given archive's existing slack — a known, bounded extension of the existing rebuild math, just not separately implemented in this proof; check large archives individually before relying on in-place growth.</li>
+<li>Whether the <em>live</em> engine's mount-time check accepts an appended container beyond what the already-measured hash checks require.</li>
+</ul>
+<h2 id="in-game-test-not-yet-run">In-game test (not yet run)</h2>
+<p>In a custom-map container, append a new ammo decl under a name that does not exist in retail, with a distinctive clip size. Retarget the already-proven pistol-decl-edit technique to point the pistol at that new ammo name instead of the real one. Install, load the custom map, pick up the pistol, and read the HUD magazine count: the distinctive new value appearing confirms the newly-added, retail-absent decl name was found and loaded by the live engine — the one gap that cannot be proven at a desk.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R2-Missionhud.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Custom Objective Shows in Journal but Not in the HUD Banner</a><a class="next" href="Research-Report-R2-Tilechain.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Texture Database Codec 2: Tile Chains for Large BC4/BC5 Mips</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

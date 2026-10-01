@@ -157,6 +157,7 @@ def redact(text: str) -> str:
     text = USER_PATH.sub(r"\1‹user›", text)
     for name in USER_NAMES:
         text = re.sub(r"\b" + re.escape(name) + r"(?=\b|[A-Z])[A-Za-z0-9]*", "‹user›", text, flags=re.I)
+    text = re.sub(r"\b[A-Z][A-Z0-9-]*(?:WINDOWS|-PC|DESKTOP-[A-Z0-9]+)\b", "‹machine›", text)  # computer names
     text = re.sub(r"\b7656119\d{10}\b", "‹steam-id›", text)
     text = re.sub(r"(userdata[\\/]+)\d+", r"\1‹account-id›", text)
     text = re.sub(r"\bSTEAM_\d:\d:\d+\b", "‹steam-id›", text)

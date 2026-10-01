@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker w-saveverify-a1; task saveverify; research (read-only RE).
-Read .agent-cache/WORKER.md. Bus: python "C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
+Read .agent-cache/WORKER.md. Bus: python "%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"
 Parallel workers: astra-save-v3 works the STRUCTURAL side of the same problem
 (save serialization, length prefixes, dictionary checksum) on another host. You
 work the CRYPTO/CODE side only. Do not touch its files. Its findings and yours
@@ -86,7 +86,7 @@ like a per-write nonce followed by 32 bytes of ciphertext.</p>
 <li>Corpus, READ ONLY: re_probes/save_backups/SLOT0_before_c2custom and
   SLOT2_before_c2custom (14 files each, originals), the quarantined set
   re_probes/verify_quarantine_SLOT0_FC2, and the live tree under
-  "C:/Users/‹user›/Saved Games/MachineGames/Wolfenstein II The New Colossus" -
+  "%USERPROFILE%/Saved Games/MachineGames/Wolfenstein II The New Colossus" -
   READ ONLY, never write there.</li>
 <li>Prior work, read-only: re_probes/agent_reports/custom_save_registration.md,
   docs/spielstaende.md, tools/savehash.py (the DAT MD5-fold header).</li>
@@ -95,7 +95,7 @@ like a per-write nonce followed by 32 bytes of ciphertext.</p>
 <p>tools/probe_saveverify.py (new), re_probes/saveverify/ (new dir),
 re_probes/agent_reports/saveverify.md (new).</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
-<p>Never write to "C:/Users/‹user›/Saved Games" or the Steam install. No game launch,
+<p>Never write to "%USERPROFILE%/Saved Games" or the Steam install. No game launch,
 no process attach. Do not touch files owned by others: tools/build_custom_save_candidate.py,
 tools/probe_details_checksum.py, tools/verify_custom_save_candidate.py,
 re_probes/custom_save_candidates/, tools/probe_cmdtable.py, re_probes/cmdtable/,

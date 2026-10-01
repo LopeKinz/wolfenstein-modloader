@@ -44,7 +44,7 @@
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Worker <code>w-cfilekey2-a1</code>; task <code>cfilekey2</code>; research (read-only RE).
-Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"C:/Users/‹user›/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
+Read <code>.agent-cache/WORKER.md</code>. Bus: python <code>"%USERPROFILE%/.claude/skills/agent-cache-orchestrator/scripts/acbus.py"</code>
 Parallel: <code>w-idclwriter-a1</code> (container writer), <code>w-savestructure-a1</code>.</p>
 <h1 id="objective">Objective</h1>
 <p>Recover the <code>cfile</code> key derivation for Wolfenstein II. This is now the single item on the critical path to loading a custom map.</p>
@@ -77,7 +77,7 @@ Parallel: <code>w-idclwriter-a1</code> (container writer), <code>w-savestructure
 <code>re_probes/agent_reports/cfilekey2.md</code> (new).</p>
 <h1 id="forbidden--do-not-touch">Forbidden / do not touch</h1>
 <p>No game launch, no process attach, no writes under the Steam install or
-"C:/Users/‹user›/Saved Games". Do not edit tools/cfile.py, wolfsdk/<em>, docs/</em>,
+"%USERPROFILE%/Saved Games". Do not edit tools/cfile.py, wolfsdk/<em>, docs/</em>,
 config.json, or any other worker's files (tools/probe_idclhash.py,
 probe_datahash.py, probe_cmdtable.py, probe_saveverify.py, probe_texdbkey.py,
 probe_cvartable.py, probe_save_structure.py, wolfsdk/idclwrite.py,
