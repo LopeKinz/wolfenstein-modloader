@@ -170,12 +170,12 @@
     <div class="wrap">
       <div class="rail">
         <h2 id="h-start"><span class="en">The whole wiki, explained</span><span class="de">Das ganze Wiki, erklärt</span></h2>
-        <p><span class="en">All 100 pages, on this site.</span><span class="de">Alle 100 Seiten, hier auf der Website.</span></p>
+        <p><span class="en">All 142 pages, on this site.</span><span class="de">Alle 142 Seiten, hier auf der Website.</span></p>
       </div>
       <div class="body">
         <p class="en">Every page of the research wiki is here too. Each one starts with a short summary in plain words, then shows the full technical text with hints for the difficult words.</p>
         <p class="de">Jede Seite des Forschungs-Wikis gibt es auch hier. Jede beginnt mit einer kurzen Zusammenfassung in einfachen Worten und zeigt danach den vollständigen technischen Text mit Hinweisen zu schweren Begriffen.</p>
-        <p style="margin:1.4rem 0 2rem"><a class="btn solid" href="wiki/index.html"><span class="en">Browse all 100 pages</span><span class="de">Alle 100 Seiten ansehen</span></a></p>
+        <p style="margin:1.4rem 0 2rem"><a class="btn solid" href="wiki/index.html"><span class="en">Browse all 142 pages</span><span class="de">Alle 142 Seiten ansehen</span></a></p>
         <h3 class="subhead"><span class="en">Good first reads</span><span class="de">Gut zum Einstieg</span></h3>
         <ul class="reads" id="reads"></ul>
       </div>
@@ -221,6 +221,12 @@ const ROADMAP = [
   ["done", "TNC", "TNC-Console-Unlock", ["The full console, without patching the game", "Die volle Konsole, ohne das Spiel zu patchen"],
     ["The shop version normally hides most console commands. A file run through the loader gets all of them, so god mode and infinite ammo work.", "Die Kaufversion versteckt normalerweise die meisten Konsolenbefehle. Eine Datei, die über den Loader läuft, bekommt alle – God-Mode und unendliche Munition funktionieren."],
     ["resourceExec with a loader-replaced cfile and -s lifts the restriction from 34 of 234 commands and 304 of 3,256 {cvar|CVars}. God, Notarget and g_infiniteAmmo were confirmed in a real save game on 1 October 2026.", "resourceExec mit einer vom Loader ersetzten cfile und -s hebt die Sperre von 34 der 234 Befehle und 304 der 3.256 {cvar|CVars} auf. God, Notarget und g_infiniteAmmo wurden am 1. Oktober 2026 in einem echten Spielstand bestätigt."]],
+  ["done", "TNC", "TNC-CVar-Catalog", ["A reliable list of every setting in Part 2", "Eine verlässliche Liste aller Einstellungen in Teil 2"],
+    ["Every setting of Part 2, with the developers' own description and default value, read straight from the game instead of guessed.", "Jede Einstellung von Teil 2, mit der Originalbeschreibung der Entwickler und dem Standardwert, direkt aus dem Spiel gelesen statt geraten."],
+    ["The {cvar|CVar} catalogue comes from the engine's own registry: 3,116 settable CVars, 304 of them open to the retail console; the rest work through resourceExec.", "Der {cvar|CVar}-Katalog stammt aus dem eigenen Verzeichnis der Engine: 3.116 setzbare CVars, 304 davon für die Konsole der Kaufversion offen; der Rest geht über resourceExec."]],
+  ["done", "TNO", "TNO-CVar-Catalog", ["A reliable list of every setting in Part 1", "Eine verlässliche Liste aller Einstellungen in Teil 1"],
+    ["Every setting of Part 1 and whether the game treats it as a cheat, read straight from the game.", "Jede Einstellung von Teil 1 und ob das Spiel sie als Cheat behandelt, direkt aus dem Spiel gelesen."],
+    ["3,194 {cvar|CVars} from the engine's own registry, 2,865 of them flagged as cheats; the loader now sets cheat CVars with toggle on the launch line, which is not yet tested in the game.", "3.194 {cvar|CVars} aus dem eigenen Verzeichnis der Engine, 2.865 davon als Cheat markiert; der Loader setzt Cheat-CVars jetzt mit toggle in der Startzeile, im Spiel ist das noch nicht getestet."]],
   ["done", "TNC", "Research-Report-Cfilekey2", ["Encrypted game files opened and rewritten", "Verschlüsselte Spieldateien geöffnet und neu geschrieben"],
     ["Some Part 2 files are locked. They can now be opened, changed and saved again in a form the game accepts.", "Einige Dateien in Teil 2 sind verschlossen. Sie lassen sich jetzt öffnen, ändern und so speichern, dass das Spiel sie annimmt."],
     ["The {key|key} derivation for the cfile {encryption|encryption} was found; 67 of 67 files decrypt and re-encrypt byte for byte, and new payloads built by the loader are accepted by the game.", "Die Ableitung des {key|Schlüssels} für die cfile-{encryption|Verschlüsselung} wurde gefunden; 67 von 67 Dateien ent- und verschlüsseln bytegenau, und vom Loader gebaute neue Inhalte nimmt das Spiel an."]],
@@ -276,9 +282,6 @@ const ROADMAP = [
   ["wip", "TNC", "Research-Report-R4-Savegame", ["Choosing start map, spawn point and weapons", "Startkarte, Startpunkt und Waffen wählen"],
     ["Instead of editing save files, the plain-text chapter and loadout definitions decide where you start and what you carry.", "Statt Spielstände zu bearbeiten, entscheiden die Kapitel- und Ausrüstungs-Definitionen im Klartext, wo du startest und was du trägst."],
     ["The mapping is read from the game data; nothing was tested in the game yet. The game.details {checksum|checksum} is solved (26 of 26 files).", "Die Zuordnung stammt aus den Spieldaten; im Spiel wurde noch nichts getestet. Die {checksum|Prüfsumme} von game.details ist gelöst (26 von 26 Dateien)."]],
-  ["wip", "TNC", "TNC-CVar-Validation", ["A reliable list of hidden settings", "Eine verlässliche Liste versteckter Einstellungen"],
-    ["We collect which settings really exist, straight from the game instead of guessing from its program file.", "Wir sammeln, welche Einstellungen wirklich existieren – direkt aus dem Spiel statt geraten aus der Programmdatei."],
-    ["The {cvar|CVar} catalogue is rebuilt from the engine's own listCvars output; the console unlock shows 3,256 CVars in total.", "Der {cvar|CVar}-Katalog wird aus der echten listCvars-Ausgabe der Engine neu aufgebaut; die Konsolen-Freischaltung zeigt insgesamt 3.256 CVars."]],
   ["wip", "TNO", "Modding-Limits", ["Replacing menu and HUD pictures in Part 1", "Menü- und HUD-Bilder in Teil 1 ersetzen"],
     ["Custom pictures load without errors. Whether they look right in the game is still being checked.", "Eigene Bilder laden fehlerfrei. Ob sie im Spiel richtig aussehen, wird noch geprüft."],
     ["Self-built {bim|BIM images} loaded without a single error line; the visual result is not yet verified.", "Selbst gebaute {bim|BIM-Bilder} luden ohne eine Fehlerzeile; das Ergebnis im Bild ist noch nicht geprüft."]],

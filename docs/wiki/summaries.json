@@ -2,25 +2,25 @@
  "TNC-CVar-Catalog": {
   "status": "reference",
   "en": {
-   "oneLine": "Raw list of 2,231 setting-like names pulled from the Wolfenstein II program file, only a pool of candidates.",
-   "summary": "This page lists 2,231 names that look like engine settings ({cvar|cvars}), scraped as text from the Wolfenstein II: The New Colossus program file. The page itself warns that it is not a real catalog: only about 10 % of the names are genuine registered settings, and the running game reports just 304. The descriptions were matched to names by shared words, not read from the game code, so many are wrong. For modding, use the validated catalog first and treat this page only as a place to search for names.",
+   "oneLine": "All 3,116 changeable settings of Wolfenstein II, with description and default value, straight from the game's own list.",
+   "summary": "Console variables ({cvar|cvars}) are the named settings of the game engine, such as field of view or HUD on/off. This page is the start of the full catalogue for Wolfenstein II: The New Colossus. The list was read from the game's own registry in a memory snapshot of the running game, so every name is real and every description is the developers' own text. It also explains how to change a setting: only 304 settings are open to the normal console and launch options; the rest needs a small file that the mod loader runs. The cvars themselves are split over three pages.",
    "points": [
-    "2,231 candidate names, sorted by prefix such as r_ (828), s_ (369) and g_ (284).",
-    "Hit rate is about 10 %; the engine itself lists 304 cvars, 82 of them missing here.",
-    "1,374 names have a description, but these were guessed by word overlap, not confirmed.",
-    "Default values are missing entirely.",
-    "Part 1 settings such as com_allowConsole and pm_noBob do not exist in Wolfenstein II."
+    "The engine registers 3,256 cvars; 3,116 can be changed and are listed. The other 140 are read-only, start-up-only or nameless.",
+    "Only 304 are 'exposed': the normal {console|console} and launch options accept just these. All others answer 'Unknown command'.",
+    "The others work from a file run with resourceExec; infinite ammo was confirmed that way in a real save game.",
+    "In a mod you simply list cvars in mod.json; the loader picks the right route for each one. The automatic start-up route is not yet confirmed in the game.",
+    "This page replaces an old list of 2,231 names guessed from the program file, which was wrong in both directions."
    ]
   },
   "de": {
-   "oneLine": "Rohliste von 2.231 einstellungsähnlichen Namen aus der Programmdatei von Wolfenstein II, nur ein Kandidaten-Pool.",
-   "summary": "Diese Seite listet 2.231 Namen, die wie Engine-Einstellungen ({cvar|Cvars}) aussehen und als Text aus der Programmdatei von Wolfenstein II: The New Colossus gezogen wurden. Die Seite warnt selbst, dass sie kein echter Katalog ist: Nur etwa 10 % der Namen sind wirklich registrierte Einstellungen, und das laufende Spiel meldet nur 304. Die Beschreibungen wurden den Namen über gemeinsame Wörter zugeordnet, nicht aus dem Spielcode gelesen, und sind daher oft falsch. Fürs Modding solltest du zuerst den geprüften Katalog nutzen und diese Seite nur zum Suchen von Namen verwenden.",
+   "oneLine": "Alle 3.116 änderbaren Einstellungen von Wolfenstein II, mit Beschreibung und Standardwert, direkt aus der Liste des Spiels.",
+   "summary": "Konsolenvariablen ({cvar|Cvars}) sind die benannten Einstellungen der Spiel-Engine, etwa Sichtfeld oder HUD an/aus. Diese Seite ist der Einstieg in den vollständigen Katalog für Wolfenstein II: The New Colossus. Die Liste wurde aus dem eigenen Verzeichnis des Spiels in einem Speicherabbild des laufenden Spiels gelesen – jeder Name ist also echt, und jede Beschreibung ist der Originaltext der Entwickler. Die Seite erklärt auch, wie man eine Einstellung ändert: Nur 304 Einstellungen sind für die normale Konsole und die Startoptionen offen, der Rest braucht eine kleine Datei, die der Mod-Loader ausführt. Die Cvars selbst sind auf drei Seiten verteilt.",
    "points": [
-    "2.231 Kandidatennamen, sortiert nach Präfix, z. B. r_ (828), s_ (369) und g_ (284).",
-    "Trefferquote etwa 10 %; die Engine selbst kennt 304 Cvars, 82 davon fehlen hier.",
-    "1.374 Namen haben eine Beschreibung, die aber nur über Wortüberlappung geraten ist.",
-    "Standardwerte fehlen komplett.",
-    "Einstellungen aus Teil 1 wie com_allowConsole und pm_noBob gibt es in Wolfenstein II nicht."
+    "Die Engine kennt 3.256 Cvars; 3.116 lassen sich ändern und stehen hier. Die übrigen 140 sind schreibgeschützt, nur beim Start setzbar oder namenlos.",
+    "Nur 304 sind „freigegeben“: Die normale {console|Konsole} und die Startoptionen nehmen nur diese an. Alle anderen melden „Unknown command“.",
+    "Die übrigen funktionieren aus einer Datei, die mit resourceExec läuft; unendliche Munition wurde so in einem echten Spielstand bestätigt.",
+    "In einer Mod trägst du Cvars einfach in mod.json ein; der Loader wählt für jede den richtigen Weg. Der automatische Weg beim Spielstart ist im Spiel noch nicht bestätigt.",
+    "Die Seite ersetzt eine alte, aus der Programmdatei geratene Liste mit 2.231 Namen, die in beide Richtungen falsch war."
    ]
   }
  },
@@ -80,7 +80,7 @@
    "oneLine": "Start page: how proof is graded, which page answers which question, and what works in both games.",
    "summary": "The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game. It also links to the detailed pages and to read-only tools that recompute the evidence.",
    "points": [
-    "Strict rule: a text found in the game program does not prove the feature exists; only 222 of 2,231 harvested setting names in Wolfenstein II were real.",
+    "Strict rule: a text found in the game program does not prove the feature exists; of 2,231 harvested setting names in Wolfenstein II, 409 were not settings at all.",
     "The New Order: patched archives load in game (14/14 rebuilt files, 48 minutes of play, 0 errors); the {console|console} stays locked.",
     "Wolfenstein II: value edits (pistol magazine 10 to 30), a custom weapon skin and a custom map are confirmed in a running game.",
     "Wolfenstein II: the encrypted config files were cracked and used to run God mode and infinite ammo in a real save.",
@@ -91,7 +91,7 @@
    "oneLine": "Startseite: wie Beweise bewertet werden, welche Seite welche Frage beantwortet und was in beiden Spielen geht.",
    "summary": "Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie erklärt drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur als Text in der Datei gefunden. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist. Dazu kommen Links zu den Detailseiten und zu Werkzeugen, die die Belege nur lesend nachrechnen.",
    "points": [
-    "Strenge Regel: Ein Text im Spielprogramm beweist nicht, dass die Funktion existiert; von 2.231 gesammelten Einstellungsnamen in Wolfenstein II waren nur 222 echt.",
+    "Strenge Regel: Ein Text im Spielprogramm beweist nicht, dass die Funktion existiert; von 2.231 gesammelten Einstellungsnamen in Wolfenstein II waren 409 gar keine Einstellungen.",
     "The New Order: gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); die {console|Konsole} bleibt gesperrt.",
     "Wolfenstein II: Wertänderungen (Pistolenmagazin 10 auf 30), ein eigener Waffenskin und eine eigene Karte sind im laufenden Spiel bestätigt.",
     "Wolfenstein II: Die verschlüsselten Konfigurationsdateien wurden geknackt und damit Gottmodus und unendliche Munition in einem echten Spielstand ausgelöst.",
@@ -1144,10 +1144,10 @@
   "status": "reference",
   "en": {
    "oneLine": "Comparing a list of Wolfenstein II settings guessed from the program file with what the running game reports.",
-   "summary": "This page checks a catalog of Wolfenstein II: The New Colossus {cvar|console settings} that was built by scanning text in the game program. It compares that list with the game's own output, which reports 304 real settings. Only 10% of the 2,231 scanned names are real settings, and about 83% of the checkable guessed descriptions were correct. For modders, it shows that the scanned list is unreliable and that the engine's own output should be trusted.",
+   "summary": "This page checks a catalog of Wolfenstein II: The New Colossus {cvar|console settings} that was built by scanning text in the game program. It compares that list with the game's own console output, which shows 304 settings. Only 10% of the 2,231 scanned names are among those 304, and about 83% of the checkable guessed descriptions were correct. For modders, it shows that the scanned list is unreliable and that the engine's own output should be trusted.",
    "points": [
-    "The running game reports 304 settings in total.",
-    "Of 2,231 scanned names, only 222 (10.0%) are real registered settings; 82 real ones were missing from the scan.",
+    "The restricted console of the running game shows 304 settings.",
+    "Of 2,231 scanned names, only 222 (10.0%) are among those 304; 82 of the 304 were missing from the scan.",
     "Of 149 checkable descriptions, 124 match the game word for word (83.2%) and 25 are wrong.",
     "7 settings have no help text in the game itself, and one (r_SSR) has not yet appeared in any help output.",
     "All values come from a single menu session; settings registered later (in a level, developer mode or multiplayer) may still be missing."
@@ -1155,14 +1155,18 @@
   },
   "de": {
    "oneLine": "Aus der Programmdatei geratene Wolfenstein-II-Einstellungen im Vergleich mit der Ausgabe des Spiels.",
-   "summary": "Diese Seite prüft einen Katalog von {cvar|Konsoleneinstellungen} für Wolfenstein II: The New Colossus, der durch Durchsuchen von Texten im Spielprogramm entstand. Sie vergleicht die Liste mit der eigenen Ausgabe des Spiels, das 304 echte Einstellungen meldet. Nur 10 % der 2.231 gefundenen Namen sind echte Einstellungen, und etwa 83 % der prüfbaren geratenen Beschreibungen stimmten. Für Modder heißt das: Die gescannte Liste ist unzuverlässig, der Ausgabe der Engine selbst solltest du vertrauen.",
+   "summary": "Diese Seite prüft einen Katalog von {cvar|Konsoleneinstellungen} für Wolfenstein II: The New Colossus, der durch Durchsuchen von Texten im Spielprogramm entstand. Sie vergleicht die Liste mit der Konsolenausgabe des Spiels, die 304 Einstellungen zeigt. Nur 10 % der 2.231 gefundenen Namen gehören zu diesen 304, und etwa 83 % der prüfbaren geratenen Beschreibungen stimmten. Für Modder heißt das: Die gescannte Liste ist unzuverlässig, der Ausgabe der Engine selbst solltest du vertrauen.",
    "points": [
-    "Das laufende Spiel meldet insgesamt 304 Einstellungen.",
-    "Von 2.231 gescannten Namen sind nur 222 (10,0 %) echte, registrierte Einstellungen; 82 echte fehlten im Scan.",
+    "Die eingeschränkte Konsole des laufenden Spiels zeigt 304 Einstellungen.",
+    "Von 2.231 gescannten Namen gehören nur 222 (10,0 %) zu diesen 304; 82 der 304 fehlten im Scan.",
     "Von 149 prüfbaren Beschreibungen stimmen 124 wörtlich mit dem Spiel überein (83,2 %), 25 sind falsch.",
     "7 Einstellungen haben im Spiel selbst keinen Hilfetext, und eine (r_SSR) ist noch in keiner Hilfeausgabe aufgetaucht.",
     "Alle Werte stammen aus einer einzigen Menü-Sitzung; später registrierte Einstellungen (im Level, im Entwicklermodus oder im Mehrspieler) könnten noch fehlen."
    ]
+  },
+  "update": {
+   "en": "This is now a historical comparison. The 304 settings here are only the ones the restricted console shows; the game registers 3,256. Against that full list, 1,822 of the 2,231 scanned names are real and 409 are not. The complete list is the new cvar catalogue.",
+   "de": "Das ist jetzt ein historischer Vergleich. Die 304 Einstellungen hier sind nur die, die die eingeschränkte Konsole zeigt; das Spiel kennt 3.256. Gemessen an dieser vollständigen Liste sind 1.822 der 2.231 gescannten Namen echt und 409 nicht. Die vollständige Liste ist der neue Cvar-Katalog."
   }
  },
  "Research-Report-Meshfmt": {
@@ -3383,6 +3387,169 @@
     "Das andere Zählfeld ist nicht immer 1, wie früher behauptet; es weicht in 51 Dateien (6,8 %) ab.",
     "725 von 755 Modellen (96 %) werden byte-genau gelesen; 600 zufällig beschädigte Testdateien wurden alle korrekt abgelehnt.",
     "Ein 12-Byte-Teil jedes Vertex ist wahrscheinlich der Index für die Gelenk-Gewichte, aber das ist noch nicht bewiesen."
+   ]
+  }
+ },
+ "TNC-CVar-Catalog-Gameplay": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Wolfenstein II settings for the player, movement, AI, camera and HUD, with description and default value.",
+   "summary": "This page lists 804 of Wolfenstein II's {cvar|cvars} that deal with gameplay: game rules (g_), player movement (pm_), the HUD, the view and camera, points of interest and enemy AI. Each row shows the type, the default value, whether the normal console accepts it, and the developers' own description. How to change a setting is explained on the catalogue's start page.",
+   "points": [
+    "804 cvars, grouped by name prefix: g_ (286), pm_ (88), hud_ (86), view_ (85), poi_ (54), ai_ (42) and more.",
+    "Only 14 of them are open to the normal console, among them g_fov, g_showHud, hud_disableAll and pm_togglesprint.",
+    "Cheats like g_infiniteAmmo are here too; they need the resourceExec route described on the start page.",
+    "Descriptions are the game's own help texts, not guesses."
+   ]
+  },
+  "de": {
+   "oneLine": "Einstellungen von Wolfenstein II für Spieler, Bewegung, KI, Kamera und HUD, mit Beschreibung und Standardwert.",
+   "summary": "Diese Seite listet 804 {cvar|Cvars} von Wolfenstein II, die mit dem Spielablauf zu tun haben: Spielregeln (g_), Bewegung des Spielers (pm_), das HUD, Sicht und Kamera, Interessenpunkte und die Gegner-KI. Jede Zeile zeigt Typ, Standardwert, ob die normale Konsole sie annimmt, und die Originalbeschreibung der Entwickler. Wie man eine Einstellung ändert, steht auf der Startseite des Katalogs.",
+   "points": [
+    "804 Cvars, nach Namenspräfix gruppiert: g_ (286), pm_ (88), hud_ (86), view_ (85), poi_ (54), ai_ (42) und weitere.",
+    "Nur 14 davon sind für die normale Konsole offen, darunter g_fov, g_showHud, hud_disableAll und pm_togglesprint.",
+    "Auch Cheats wie g_infiniteAmmo stehen hier; sie brauchen den resourceExec-Weg, der auf der Startseite beschrieben ist.",
+    "Die Beschreibungen sind die Hilfetexte des Spiels selbst, nicht geraten."
+   ]
+  }
+ },
+ "TNC-CVar-Catalog-Rendering": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Wolfenstein II's graphics settings: renderer, textures and video, with description and default value.",
+   "summary": "This page lists 953 of Wolfenstein II's {cvar|cvars} for graphics: the renderer (r_), the texture streaming (vt_), images and video playback. Each row shows the type, the default value, whether the normal console accepts it, and the developers' own description. Many are debug switches for the developers; 127 are open to the normal console.",
+   "points": [
+    "953 cvars: r_ (794), vt_ (114), image_ (15) and a few smaller groups.",
+    "127 are open to the normal console and launch options, for example r_fullscreen and r_swapInterval (vsync).",
+    "The rest can only be set from a file run with resourceExec, as explained on the catalogue's start page.",
+    "Default values are the ones built into the program, not values from one play session."
+   ]
+  },
+  "de": {
+   "oneLine": "Die Grafik-Einstellungen von Wolfenstein II: Renderer, Texturen und Video, mit Beschreibung und Standardwert.",
+   "summary": "Diese Seite listet 953 {cvar|Cvars} von Wolfenstein II für die Grafik: den Renderer (r_), das Nachladen der Texturen (vt_), Bilder und Videowiedergabe. Jede Zeile zeigt Typ, Standardwert, ob die normale Konsole sie annimmt, und die Originalbeschreibung der Entwickler. Viele sind Debug-Schalter der Entwickler; 127 sind für die normale Konsole offen.",
+   "points": [
+    "953 Cvars: r_ (794), vt_ (114), image_ (15) und einige kleinere Gruppen.",
+    "127 sind für die normale Konsole und die Startoptionen offen, zum Beispiel r_fullscreen und r_swapInterval (VSync).",
+    "Der Rest lässt sich nur aus einer Datei setzen, die mit resourceExec läuft – erklärt auf der Startseite des Katalogs.",
+    "Die Standardwerte sind die im Programm eingebauten, keine Werte aus einer einzelnen Spielsitzung."
+   ]
+  }
+ },
+ "TNC-CVar-Catalog-Other": {
+  "status": "reference",
+  "en": {
+   "oneLine": "All remaining Wolfenstein II settings: engine, sound, network, input, menus and the SnapMap editor.",
+   "summary": "This page lists the remaining 1,359 of Wolfenstein II's {cvar|cvars}: the engine core (com_), sound (s_), network (net_), input, menus and UI (swf_, menu_), resource loading and the leftover SnapMap editor settings (snapedit_). Each row shows the type, the default value, whether the normal console accepts it, and the developers' own description.",
+   "points": [
+    "1,359 cvars, the largest groups being snapedit_ (185), net_ (130), com_ (107), swf_ (70) and resource_ (56).",
+    "142 are open to the normal console and launch options, for example the volume settings s_volume and s_volume_music.",
+    "Prefixes with fewer than 10 cvars share one table at the end of the page.",
+    "How to change the others is explained on the catalogue's start page."
+   ]
+  },
+  "de": {
+   "oneLine": "Alle übrigen Einstellungen von Wolfenstein II: Engine, Ton, Netzwerk, Eingabe, Menüs und der SnapMap-Editor.",
+   "summary": "Diese Seite listet die übrigen 1.359 {cvar|Cvars} von Wolfenstein II: den Engine-Kern (com_), Ton (s_), Netzwerk (net_), Eingabe, Menüs und Oberfläche (swf_, menu_), das Laden von Ressourcen und die übrig gebliebenen Einstellungen des SnapMap-Editors (snapedit_). Jede Zeile zeigt Typ, Standardwert, ob die normale Konsole sie annimmt, und die Originalbeschreibung der Entwickler.",
+   "points": [
+    "1.359 Cvars; die größten Gruppen sind snapedit_ (185), net_ (130), com_ (107), swf_ (70) und resource_ (56).",
+    "142 sind für die normale Konsole und die Startoptionen offen, zum Beispiel die Lautstärken s_volume und s_volume_music.",
+    "Präfixe mit weniger als 10 Cvars teilen sich eine Tabelle am Ende der Seite.",
+    "Wie man die übrigen ändert, steht auf der Startseite des Katalogs."
+   ]
+  }
+ },
+ "TNO-CVar-Catalog": {
+  "status": "reference",
+  "en": {
+   "oneLine": "All 3,194 settings of Wolfenstein: The New Order, which ones count as cheats, and how to set them.",
+   "summary": "Console variables ({cvar|cvars}) are the named settings of the game engine, such as field of view or HUD on/off. This page is the start of the full catalogue for Wolfenstein: The New Order, read from the game's own list in a memory snapshot of the running game. In this game most settings count as cheats: the game quietly resets them at start-up if you set them the normal way. The page explains which route works for which setting, which parts are proven in the game and which are only read from the code, and splits the cvars over three pages.",
+   "points": [
+    "3,194 cvars, all listed, with the developers' own description, the default value and, where the game defines one, the allowed range.",
+    "2,865 count as cheats, because the engine makes every setting a cheat unless it is explicitly marked otherwise. A status column marks cheat, normal, saved, start-up-only and read-only settings.",
+    "A cheat cvar given as a launch option (+name value) is reset at start-up. 'toggle name value value' sets it anyway; the loader now does this, but it is not yet tested in the game.",
+    "Not cheats, so they work directly: g_permaGodMode, g_fov and g_damageScale. g_infiniteAmmo and pm_runspeed are cheats.",
+    "The console opens with Ctrl+^ according to the code (not yet tried); god, noclip, notarget, give and spawn do not exist in this game."
+   ]
+  },
+  "de": {
+   "oneLine": "Alle 3.194 Einstellungen von Wolfenstein: The New Order, welche als Cheat gelten und wie man sie setzt.",
+   "summary": "Konsolenvariablen ({cvar|Cvars}) sind die benannten Einstellungen der Spiel-Engine, etwa Sichtfeld oder HUD an/aus. Diese Seite ist der Einstieg in den vollständigen Katalog für Wolfenstein: The New Order, gelesen aus der eigenen Liste des Spiels in einem Speicherabbild des laufenden Spiels. In diesem Spiel gelten die meisten Einstellungen als Cheat: Das Spiel setzt sie beim Start stillschweigend zurück, wenn man sie auf dem normalen Weg setzt. Die Seite erklärt, welcher Weg für welche Einstellung funktioniert, was im Spiel bewiesen und was nur aus dem Code gelesen ist, und verteilt die Cvars auf drei Seiten.",
+   "points": [
+    "3.194 Cvars, alle aufgelistet, mit der Originalbeschreibung der Entwickler, dem Standardwert und, wo das Spiel einen festlegt, dem erlaubten Bereich.",
+    "2.865 gelten als Cheat, weil die Engine jede Einstellung zum Cheat macht, die nicht ausdrücklich anders markiert ist. Eine Status-Spalte zeigt Cheat, normal, gespeichert, nur beim Start setzbar und schreibgeschützt.",
+    "Ein Cheat-Cvar als Startoption (+name wert) wird beim Start zurückgesetzt. „toggle name wert wert“ setzt ihn trotzdem; der Loader macht das jetzt so, im Spiel getestet ist es aber noch nicht.",
+    "Keine Cheats, wirken also direkt: g_permaGodMode, g_fov und g_damageScale. g_infiniteAmmo und pm_runspeed sind Cheats.",
+    "Die Konsole öffnet sich laut Code mit Strg+^ (noch nicht ausprobiert); god, noclip, notarget, give und spawn gibt es in diesem Spiel nicht."
+   ]
+  }
+ },
+ "TNO-CVar-Catalog-Gameplay": {
+  "status": "reference",
+  "en": {
+   "oneLine": "The New Order's settings for game rules, movement, AI and camera, with cheat flag and allowed range.",
+   "summary": "This page lists 976 of The New Order's {cvar|cvars} that deal with gameplay: game rules (g_), enemy AI (ai_), player movement (pm_), ragdoll physics (af_), animation and the view. Each row shows the type, the default value, its status (cheat, normal, saved, start-up-only or read-only), the allowed range where the game defines one, and the developers' own description.",
+   "points": [
+    "976 cvars: g_ (386), ai_ (221), pm_ (140), af_ (84), anim_ (31), view_ (31) and more.",
+    "950 of them are cheats and need the 'toggle' route from the catalogue's start page.",
+    "Not cheats, so +name value works: g_permaGodMode, g_permaInfiniteAmmo, g_damageScale, g_fov, g_showHud and pm_togglesprint. All but g_fov are 'saved': the game keeps their value in its config file.",
+    "g_fov defaults to 80 and allows 10 to 100."
+   ]
+  },
+  "de": {
+   "oneLine": "Die Einstellungen von The New Order für Spielregeln, Bewegung, KI und Kamera, mit Cheat-Markierung und erlaubtem Bereich.",
+   "summary": "Diese Seite listet 976 {cvar|Cvars} von The New Order, die mit dem Spielablauf zu tun haben: Spielregeln (g_), Gegner-KI (ai_), Bewegung des Spielers (pm_), Ragdoll-Physik (af_), Animation und die Sicht. Jede Zeile zeigt Typ, Standardwert, ihren Status (Cheat, normal, gespeichert, nur beim Start oder schreibgeschützt), den erlaubten Bereich (wo das Spiel einen festlegt) und die Originalbeschreibung der Entwickler.",
+   "points": [
+    "976 Cvars: g_ (386), ai_ (221), pm_ (140), af_ (84), anim_ (31), view_ (31) und weitere.",
+    "950 davon sind Cheats und brauchen den „toggle“-Weg von der Startseite des Katalogs.",
+    "Keine Cheats, +name wert wirkt also: g_permaGodMode, g_permaInfiniteAmmo, g_damageScale, g_fov, g_showHud und pm_togglesprint. Alle außer g_fov sind „gespeichert“: Das Spiel behält ihren Wert in seiner Konfigurationsdatei.",
+    "g_fov steht standardmäßig auf 80 und erlaubt 10 bis 100."
+   ]
+  }
+ },
+ "TNO-CVar-Catalog-Rendering": {
+  "status": "reference",
+  "en": {
+   "oneLine": "The New Order's graphics settings: renderer, megatexture streaming and video, with cheat flag and range.",
+   "summary": "This page lists 550 of The New Order's {cvar|cvars} for graphics: the renderer (r_), the streaming of the giant {vt|megatexture} (vt_), images and video. Each row shows the type, the default value, its status (cheat, normal, saved, start-up-only or read-only), the allowed range where the game defines one, and the developers' own description.",
+   "points": [
+    "550 cvars: r_ (428), vt_ (97) and a few smaller groups such as bink_ and image_.",
+    "419 are cheats; settings the game saves in its config file, such as the graphics options, are not.",
+    "75 have a declared range or a list of allowed values, for example image_filter.",
+    "How to set cheat cvars anyway is explained on the catalogue's start page."
+   ]
+  },
+  "de": {
+   "oneLine": "Die Grafik-Einstellungen von The New Order: Renderer, Megatexture-Streaming und Video, mit Cheat-Markierung und Bereich.",
+   "summary": "Diese Seite listet 550 {cvar|Cvars} von The New Order für die Grafik: den Renderer (r_), das Nachladen der riesigen {vt|Megatexture} (vt_), Bilder und Video. Jede Zeile zeigt Typ, Standardwert, ihren Status (Cheat, normal, gespeichert, nur beim Start oder schreibgeschützt), den erlaubten Bereich (wo das Spiel einen festlegt) und die Originalbeschreibung der Entwickler.",
+   "points": [
+    "550 Cvars: r_ (428), vt_ (97) und einige kleinere Gruppen wie bink_ und image_.",
+    "419 sind Cheats; Einstellungen, die das Spiel in seiner Konfigurationsdatei speichert, etwa die Grafikoptionen, nicht.",
+    "75 haben einen festgelegten Bereich oder eine Liste erlaubter Werte, zum Beispiel image_filter.",
+    "Wie man Cheat-Cvars trotzdem setzt, steht auf der Startseite des Katalogs."
+   ]
+  }
+ },
+ "TNO-CVar-Catalog-Other": {
+  "status": "reference",
+  "en": {
+   "oneLine": "All remaining settings of The New Order: engine, vehicles, sound, network, input and menus.",
+   "summary": "This page lists the remaining 1,668 of The New Order's {cvar|cvars}: vehicles (vehicle_), network (net_), the engine core (com_), sound (s_), menus (swf_), input and many smaller groups. Each row shows the type, the default value, its status (cheat, normal, saved, start-up-only or read-only), the allowed range where the game defines one, and the developers' own description.",
+   "points": [
+    "1,668 cvars; the largest groups are vehicle_ (223), net_ (132), pb_ (125), com_ (79), s_ (73) and swf_ (58).",
+    "1,496 are cheats.",
+    "Read-only and start-up-only settings, such as com_headless or com_multiplayer, are marked in the status column.",
+    "Prefixes with fewer than 10 cvars share one table at the end of the page."
+   ]
+  },
+  "de": {
+   "oneLine": "Alle übrigen Einstellungen von The New Order: Engine, Fahrzeuge, Ton, Netzwerk, Eingabe und Menüs.",
+   "summary": "Diese Seite listet die übrigen 1.668 {cvar|Cvars} von The New Order: Fahrzeuge (vehicle_), Netzwerk (net_), den Engine-Kern (com_), Ton (s_), Menüs (swf_), Eingabe und viele kleinere Gruppen. Jede Zeile zeigt Typ, Standardwert, ihren Status (Cheat, normal, gespeichert, nur beim Start oder schreibgeschützt), den erlaubten Bereich (wo das Spiel einen festlegt) und die Originalbeschreibung der Entwickler.",
+   "points": [
+    "1.668 Cvars; die größten Gruppen sind vehicle_ (223), net_ (132), pb_ (125), com_ (79), s_ (73) und swf_ (58).",
+    "1.496 davon sind Cheats.",
+    "Schreibgeschützte und nur beim Start setzbare Einstellungen wie com_headless oder com_multiplayer sind in der Status-Spalte markiert.",
+    "Präfixe mit weniger als 10 Cvars teilen sich eine Tabelle am Ende der Seite."
    ]
   }
  }

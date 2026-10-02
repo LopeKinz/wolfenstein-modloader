@@ -35,10 +35,12 @@ CATEGORIES = [
      ["Home", "Modding-Guide", "File-Formats", "Modding-Limits", "Engine-Modding-Surface", "Known-Contradictions"]),
     ("tno", "The New Order", "The New Order",
      "Part 1 (2014, id Tech 5): maps, textures and what can be changed.", "Teil 1 (2014, id Tech 5): Karten, Texturen und was sich ändern lässt.",
-     ["TNO-Modding-Surface", "TNO-Maps", "TNO-Virtual-Textures", "Virtual-Texture-Planes", "UI-Assets"]),
+     ["TNO-Modding-Surface", "TNO-CVar-Catalog", "TNO-CVar-Catalog-Gameplay", "TNO-CVar-Catalog-Rendering",
+      "TNO-CVar-Catalog-Other", "TNO-Maps", "TNO-Virtual-Textures", "Virtual-Texture-Planes", "UI-Assets"]),
     ("tnc", "The New Colossus", "The New Colossus",
      "Part 2 (2017, id Tech 6): settings, encryption, DLC and the developer mode.", "Teil 2 (2017, id Tech 6): Einstellungen, Verschlüsselung, DLC und der Entwicklermodus.",
-     ["TNC-Modding-Surface", "TNC-Verified-Findings-2026-09-23", "TNC-CVar-Validation", "TNC-CVar-Catalog",
+     ["TNC-Modding-Surface", "TNC-Verified-Findings-2026-09-23", "TNC-CVar-Catalog", "TNC-CVar-Catalog-Gameplay",
+      "TNC-CVar-Catalog-Rendering", "TNC-CVar-Catalog-Other", "TNC-CVar-Validation",
       "TNC-Console-Unlock", "TNC-Texture-Database", "Developer-Mode", "Cfile-Encryption", "DLC-Overrides"]),
     ("systems", "Game systems", "Spielsysteme",
      "How sound, loading, save games and scripts work in both games.", "Wie Ton, Laden, Spielstände und Skripte in beiden Spielen funktionieren.",
@@ -330,6 +332,10 @@ def build(wiki: str, out: str, summaries_path: str) -> int:
     cat_info = {c[0]: c for c in CATEGORIES}
     for n in names:
         title, body, toc = rendered[n]
+        catalog = "-CVar-Catalog-" in n
+        if catalog:  # long cvar names in the first column may break only after _ and before a camelCase hump
+            body = re.sub(r"(<tr>\s*<td><code>)([^<]+)",
+                          lambda m: m.group(1) + re.sub(r"(_|(?<=[a-z0-9])(?=[A-Z]))", r"\1<wbr>", m.group(2)), body)
         s = summaries.get(n)
         cat = cat_info[cat_of[n]]
         seq = order[cat[0]]
@@ -357,7 +363,7 @@ def build(wiki: str, out: str, summaries_path: str) -> int:
             summary_block(s),
             '<section class="technical"><h2 class="techhead">' + both("Technical details", "Technische Details") + "</h2>",
             '<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>',
-            f'<article class="doc" data-autohint>{body}</article></section>',
+            f'<article class="doc{" catalog" if catalog else ""}" data-autohint>{body}</article></section>',
             f'<nav class="pager" aria-label="Pages">{"".join(nav)}</nav>' if nav else "",
             "</div></div>",
             foot(),
