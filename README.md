@@ -90,6 +90,10 @@ Large generated artifacts from the research workspace are represented by an
 [artifact inventory](https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Artifacts)
 instead of being duplicated in the Wiki repository.
 
+## Support
+
+WolfSDK is free and stays free. If it helps you, you can [buy the developer a coffee](https://buymeacoffee.com/swscc5yr7rs). Nothing is locked behind it.
+
 ## Disclaimer
 
 This is an independent community project. It is not affiliated with or endorsed
