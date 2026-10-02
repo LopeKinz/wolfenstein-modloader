@@ -493,7 +493,7 @@ s_showSounds          s_drawSounds          s_showSoundsFilter   s_soundGroupFil
 s_maxEmitterChannels  s_debugMaxPlay        s_finiteSpeedOfSound s_tinnitusStart
 </code></pre>
 <p><code>s_volume_dB</code> and <code>s_voiceVolume_dB</code> are accessible via the existing Start Argument path (<code>+s_volume_dB 6</code>), completely without an archive patch. <em>Not verified in-game.</em></p>
-<p>TNC, from <code>docs/cvars_tnc.json</code> — these are <strong>Candidates, not Cvars</strong>: of the 2,231 harvested names, only 222 are registered in the Engine (Hit rate 10%, <code>TNC-CVar-Validation.md</code>). The Engine itself reports 304 Cvars. Of the audio-related names below, only those also present in <code>cvars_tnc_echt.json</code> have been checked:</p>
+<p>TNC, from the old scraped candidate list (since replaced by the registry catalogue, <a href="TNC-CVar-Catalog.html">TNC-CVar-Catalog</a>). Checked against the engine registry: <code>s_printLoadedBanks</code>, <code>s_printMapBankReport</code> and <code>s_loadEditorBanks</code> are <strong>not</strong> Cvars; the other nine are registered, and <code>s_volume</code>, <code>s_volume_music</code>, <code>s_volume_vo</code> and <code>s_overridevolume</code> are exposed to the retail console:</p>
 <pre><code>s_volume   s_volume_music   s_volume_vo   s_overridevolume   s_muteSound
 s_muteEnvironments   s_reverbBus   s_skipOcclusion   s_printLoadedBanks
 s_printMapBankReport   s_initForcePreLoadSoundBanks   s_loadEditorBanks

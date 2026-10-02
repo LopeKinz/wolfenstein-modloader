@@ -1,0 +1,5874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Cvars: Gameplay – Wolfenstein Modloader</title>
+<meta name="description" content="Wolfenstein II settings for the player, movement, AI, camera and HUD, with description and default value.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tnc"><span class="en">The New Colossus</span><span class="de">The New Colossus</span></a></p>
+<h1>TNC Cvars: Gameplay</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNC-CVar-Catalog-Gameplay"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#aa_">aa_</a></li><li><a href="#ai_">ai_</a></li><li><a href="#anim_">anim_</a></li><li><a href="#g_">g_</a></li><li><a href="#hud_">hud_</a></li><li><a href="#nav_">nav_</a></li><li><a href="#player_">player_</a></li><li><a href="#pm_">pm_</a></li><li><a href="#poi_">poi_</a></li><li><a href="#springcam_">springcam_</a></li><li><a href="#view_">view_</a></li><li><a href="#smaller-prefixes">Smaller prefixes</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page lists 804 of Wolfenstein II&#x27;s <span class="t" data-t="cvar">cvars</span> that deal with gameplay: game rules (g_), player movement (pm_), the HUD, the view and camera, points of interest and enemy AI. Each row shows the type, the default value, whether the normal console accepts it, and the developers&#x27; own description. How to change a setting is explained on the catalogue&#x27;s start page.</p><ul><li>804 cvars, grouped by name prefix: g_ (286), pm_ (88), hud_ (86), view_ (85), poi_ (54), ai_ (42) and more.</li><li>Only 14 of them are open to the normal console, among them g_fov, g_showHud, hud_disableAll and pm_togglesprint.</li><li>Cheats like g_infiniteAmmo are here too; they need the resourceExec route described on the start page.</li><li>Descriptions are the game&#x27;s own help texts, not guesses.</li></ul></div><div class="de"><p class="lede">Diese Seite listet 804 <span class="t" data-t="cvar">Cvars</span> von Wolfenstein II, die mit dem Spielablauf zu tun haben: Spielregeln (g_), Bewegung des Spielers (pm_), das HUD, Sicht und Kamera, Interessenpunkte und die Gegner-KI. Jede Zeile zeigt Typ, Standardwert, ob die normale Konsole sie annimmt, und die Originalbeschreibung der Entwickler. Wie man eine Einstellung ändert, steht auf der Startseite des Katalogs.</p><ul><li>804 Cvars, nach Namenspräfix gruppiert: g_ (286), pm_ (88), hud_ (86), view_ (85), poi_ (54), ai_ (42) und weitere.</li><li>Nur 14 davon sind für die normale Konsole offen, darunter g_fov, g_showHud, hud_disableAll und pm_togglesprint.</li><li>Auch Cheats wie g_infiniteAmmo stehen hier; sie brauchen den resourceExec-Weg, der auf der Startseite beschrieben ist.</li><li>Die Beschreibungen sind die Hilfetexte des Spiels selbst, nicht geraten.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc catalog" data-autohint><blockquote>
+<p>Generated by <code>tools/build_cvar_wiki.py</code> from the engine's own cvar registry. Edits made here are overwritten by the next run.</p>
+</blockquote>
+<p>804 cvars of Wolfenstein II: The New Colossus — player, movement, AI, weapons, camera and HUD. Grouped by name prefix; prefixes with fewer than 10 cvars share the last table. Part of the <a href="TNC-CVar-Catalog.html">TNC cvar catalogue</a>, which explains how to set a cvar in this game and where the data comes from.</p>
+<p><strong>Exposed</strong> = accepted by the retail console and <code>+name value</code> launch arguments; every other cvar needs the <code>resourceExec</code> route.</p>
+<h2 id="aa_">aa_</h2>
+<p>10 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aa_<wbr>DESIGN_<wbr>Adhesion<wbr>Contribution<wbr>Pct<wbr>Max</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Max Adhesion Contribution Percentage (Value must be in 0..1 range)</td>
+</tr>
+<tr>
+<td><code>aa_<wbr>DESIGN_<wbr>Adhesion<wbr>Contribution<wbr>Pct<wbr>Max<wbr>Zoom</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Max Adhesion Contribution Percentage while in Zoom (Value must be in 0..1 range)</td>
+</tr>
+<tr>
+<td><code>aa_<wbr>DESIGN_<wbr>Adhesion<wbr>Optimal<wbr>Radius</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Optimal Distance for adhesion to take an effect</td>
+</tr>
+<tr>
+<td><code>aa_<wbr>DESIGN_<wbr>Friction<wbr>Multiplier<wbr>Max</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Maximum Friction Scalar - Value must be in 0..1 and larger than corresponding min value</td>
+</tr>
+<tr>
+<td><code>aa_<wbr>DESIGN_<wbr>Friction<wbr>Multiplier<wbr>Max<wbr>Zoom</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Maximum Friction Scalar while in Zoom - Value must be in 0..1 and larger than corresponding min value</td>
+</tr>
+<tr>
+<td><code>aa_<wbr>DESIGN_<wbr>Friction<wbr>Multiplier<wbr>Min</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Minimum Friction Scalar - Value must be in 0..1 and smaller than corresponding max value</td>
+</tr>
+<tr>
+<td><code>aa_<wbr>DESIGN_<wbr>Friction<wbr>Multiplier<wbr>Min<wbr>Zoom</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Minimum Friction Scalar while in Zoom - Value must be in 0..1 and smaller than corresponding max value</td>
+</tr>
+<tr>
+<td><code>aa_<wbr>DESIGN_<wbr>Friction<wbr>Optimal<wbr>Radius</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Optimal Distance for Friction to take an effect</td>
+</tr>
+<tr>
+<td><code>aa_<wbr>target<wbr>Adhesion<wbr>Player<wbr>Look<wbr>Speed<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>Angular Speed Threshold in degrees/sec that determines how fast the player needs to look around before adhesion is allowed to kick in</td>
+</tr>
+<tr>
+<td><code>aa_<wbr>target<wbr>Adhesion<wbr>Player<wbr>Speed<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>10.0</code></td>
+<td>no</td>
+<td>Speed Threshold that determines how fast the player needs to move before adhesion is allowed to kick in</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="ai_">ai_</h2>
+<p>42 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ai_<wbr>combat<wbr>Threshold<wbr>Debug</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>be able to specify in seconds how long the idle timeout threshold is in seconds, overrides the set one in ai if not 0</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>combat<wbr>Timeout<wbr>Debug</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>be able to specify in seconds how long the idle timeout is in seconds, overrides the set one in ai if not 0</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>damage<wbr>Scale</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>forced ai damage scale</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>debug<wbr>Area<wbr>Visibility</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>lifetime for area visibility display</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>debug<wbr>Area<wbr>Visibility_<wbr>Detail</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>lifetime for area visibility display, detailed traces</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>debug<wbr>Visibility</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>draw visibility queries</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>dropped<wbr>Projectile<wbr>Player<wbr>Avoidance<wbr>Angle</code></td>
+<td>float</td>
+<td><code>30</code></td>
+<td>no</td>
+<td>degrees around player dropped projectiles should avoid</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>dropped<wbr>Projectile<wbr>Speed<wbr>Max</code></td>
+<td>float</td>
+<td><code>800</code></td>
+<td>no</td>
+<td>random interval applied to dropped projectiles speed</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>dropped<wbr>Projectile<wbr>Speed<wbr>Min</code></td>
+<td>float</td>
+<td><code>400</code></td>
+<td>no</td>
+<td>random interval applied to dropped projectiles speed</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>dropped<wbr>Projectile<wbr>Z</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>random interval applied to dropped projectiles z component</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>flash<wbr>If<wbr>Lootable</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true the ai flash when lootable like the props</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>force<wbr>Health</code></td>
+<td>float</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>maximum health of all AI, -1 for no change</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>Correction<wbr>Distance</code></td>
+<td>float</td>
+<td><code>250</code></td>
+<td>no</td>
+<td>if where we are and where we think we are supposed to be exceeds this distance, correct</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>Distance</code></td>
+<td>float</td>
+<td><code>55</code></td>
+<td>no</td>
+<td>how far away from the ai</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>FOV</code></td>
+<td>float</td>
+<td><code>80</code></td>
+<td>no</td>
+<td>fov of interaction view</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>keep<wbr>Pitch</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>keep the pitch of the interaction camera on player camera. Note: pitch fails if player starts crouched.</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>Offset<wbr>To<wbr>Player</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>if true we just do between the ai and player, if false, offset in ai look dir.</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>Pitch<wbr>Offset</code></td>
+<td>float</td>
+<td><code>15</code></td>
+<td>no</td>
+<td>how far to offset the pitch of the camera we want when a job is offered</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>Roll<wbr>Offset</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>how far to offset the roll of the camera we want when a job is offered</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>xoffset</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>target offset x</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>Yaw<wbr>Offset</code></td>
+<td>float</td>
+<td><code>-23</code></td>
+<td>no</td>
+<td>how far to offset the yaw of the camera we want when a job is offered</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>yoffset</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>target offset y</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>interaction<wbr>View_<wbr>zoffset</code></td>
+<td>float</td>
+<td><code>-5</code></td>
+<td>no</td>
+<td>target offset z</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>loot<wbr>Delay</code></td>
+<td>float</td>
+<td><code>1.25</code></td>
+<td>no</td>
+<td>delay in seconds before dead AI can be looted</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>max<wbr>Turn<wbr>Rate</code></td>
+<td>float</td>
+<td><code>360</code></td>
+<td>no</td>
+<td>maximum turn rate if turn rate is forced</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>min<wbr>Turn<wbr>Rate</code></td>
+<td>float</td>
+<td><code>15</code></td>
+<td>no</td>
+<td>minimum turn rate if turn rate is forced</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>navdebugtraces</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show traces and regions affected when the nav agents moves</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>navdebugtracesrendertime</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>The amount of time in seconds that each trace will be rendered</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>origin<wbr>Spring<wbr>Extrapolate</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>amount to extrapolate velocity in origin springs (0.1 seems to work)</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>perception<wbr>Radius<wbr>Override</code></td>
+<td>float</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>&gt; 0: overrides AI actor perception radius</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>ragdoll<wbr>Kill<wbr>Limit</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>AI can only kill AI when less than this number of ragdolls are active or syncing</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>rotation<wbr>Tracker<wbr>Swap<wbr>Time_<wbr>Parms</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>time to blend between rotation tracker instances when changing tracker parms</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>rotation<wbr>Tracker<wbr>Swap<wbr>Time_<wbr>Tags</code></td>
+<td>float</td>
+<td><code>0.3</code></td>
+<td>no</td>
+<td>time to blend between rotation tracker instances when changing focus or orientation tags</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>search<wbr>Threshold<wbr>Debug</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>be able to specify in seconds how long the search timeout threshold is in seconds, overrides the set one in ai if not 0</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>search<wbr>Timeout<wbr>Debug</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>be able to specify in seconds how long the search timeout is in seconds, overrides the set one in ai if not 0</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>search<wbr>To<wbr>Stim<wbr>Dist</code></td>
+<td>float</td>
+<td><code>512</code></td>
+<td>no</td>
+<td>how far from a search stimulus AI will first search to that stimulus</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>spawn<wbr>Teleport<wbr>FXBackoff</code></td>
+<td>float</td>
+<td><code>0.8</code></td>
+<td>no</td>
+<td>start teleport enter fx this far from spawn time</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>stuck<wbr>Distance<wbr>Fraction</code></td>
+<td>float</td>
+<td><code>0.9</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>use<wbr>Combat<wbr>Subtitles</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>set to = 1 to show combat subtitles</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>vis<wbr>Area<wbr>Nodes<wbr>Per<wbr>Frame</code></td>
+<td>int</td>
+<td><code>32</code></td>
+<td>no</td>
+<td>max number of vis nodes evaluated per frame</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>vis<wbr>Area<wbr>Traces<wbr>Per<wbr>Frame</code></td>
+<td>int</td>
+<td><code>64</code></td>
+<td>no</td>
+<td>max number of vis area traces per frame</td>
+</tr>
+<tr>
+<td><code>ai_<wbr>visibility<wbr>Sense<wbr>Scale</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>scale of AI visual sensory input</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="anim_">anim_</h2>
+<p>14 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>anim_<wbr>attempt<wbr>Rewrite</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>attempt to rewrite source if out of date (disabled for cooker)</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>debug<wbr>Events</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = show triggered events 2 = also show all events and skipped events 3 = also show event tracking info 4 = verbose spew</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>debug<wbr>Events_<wbr>Name</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>optional animation to debug animevents for</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>debug<wbr>Spawn<wbr>Id</code></td>
+<td>int</td>
+<td><code>-2</code></td>
+<td>no</td>
+<td>if set only show event debugging for the entity with this spawn id, -1 = show output for all webs</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>draw<wbr>Pose</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>draw current animated pose</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>force<wbr>Compression</code></td>
+<td>float</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>If &gt;= 0, force animation compression values to this</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>fx<wbr>Decl<wbr>Name</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td><strong>yes</strong></td>
+<td>fxDecl to use when testing in the model editor</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>generator<wbr>Num<wbr>Threads</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Num threads to use for anim generation (0 = generated inline)</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>mesh<wbr>Kit<wbr>Method</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>output<wbr>Parent<wbr>Mismatchwarning</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If != 0, output parent mismatch warnings</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>show<wbr>Joint<wbr>Trace</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>name of joint to show traces for, filtered by anim_debugSpawnId</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>show<wbr>Joint<wbr>Trace<wbr>Time</code></td>
+<td>time_ms</td>
+<td><code>5000</code></td>
+<td>no</td>
+<td>number of milliseconds to show joint traces for</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>skip<wbr>Additives</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>skip applying all additives on joints</td>
+</tr>
+<tr>
+<td><code>anim_<wbr>skip<wbr>Joint<wbr>Mods</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>skip applying all joint mods</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="g_">g_</h2>
+<p>286 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g_<wbr>ai<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>EASY</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>ai<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>HARD</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>ai<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>MEINLEBEN</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>ai<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>NIGHTMARE</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>ai<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>NORMAL</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>ai<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>VERYEASY</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>ai<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>VERYHARD</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>ai<wbr>Spawn<wbr>Filter</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>if set to an entity name, only AI with the specified name will be spawned. Intended for debugging problem AI in isolation.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>auto<wbr>Equip<wbr>New<wbr>Weapon</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>When a new weapon is picked up, automatically equip it</td>
+</tr>
+<tr>
+<td><code>g_<wbr>automap<wbr>Extended<wbr>Zoom</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Makes it possible to extend zooming. normal = 0, extended = 1</td>
+</tr>
+<tr>
+<td><code>g_<wbr>automap<wbr>Force<wbr>Fog<wbr>Of<wbr>War</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Force fog of war. 0= Normal behaviour. 1 = Opaque fog, 2= Transparent fog, 3= No fog.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>automap<wbr>Mouse<wbr>Pan<wbr>Factor</code></td>
+<td>float</td>
+<td><code>0.07</code></td>
+<td>no</td>
+<td>When panning with the mouse, the raw difference in pixels is multiplied by this</td>
+</tr>
+<tr>
+<td><code>g_<wbr>automap<wbr>Sound<wbr>Pan<wbr>Epsilon</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>Epsilon value for playing pan sounds on the journal map (higher values make the sound stop earlier)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>automap<wbr>Sound<wbr>Zoom<wbr>Epsilon</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>Epsilon value for playing zoom sounds on the journal map (higher values make the sound stop earlier)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>bad<wbr>Spawn<wbr>Damage<wbr>Dealt<wbr>Time</code></td>
+<td>float</td>
+<td><code>2.0</code></td>
+<td>no</td>
+<td>After spawning, if player deals damage under this time. Send bad spawn event.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>bad<wbr>Spawn<wbr>Damage<wbr>Received<wbr>Time</code></td>
+<td>float</td>
+<td><code>2.0</code></td>
+<td>no</td>
+<td>After spawning, if player receives damage under this time. Send bad spawn event.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>bad<wbr>Spawn<wbr>Death<wbr>Time</code></td>
+<td>float</td>
+<td><code>5.0</code></td>
+<td>no</td>
+<td>After spawning, if player dies under this time. Send bad spawn event.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>blood<wbr>Effects</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td><strong>yes</strong></td>
+<td>show blood splats, sprays and gibs</td>
+</tr>
+<tr>
+<td><code>g_<wbr>bonuscheckprint</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show information for the validation of the bonus node</td>
+</tr>
+<tr>
+<td><code>g_<wbr>breakable<wbr>Vaporize<wbr>Multiplier</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Vaporize threshold multiplier. Higher value results in larger pieces vaporized</td>
+</tr>
+<tr>
+<td><code>g_<wbr>cache<wbr>Map<wbr>File</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Don't delete parsed map file from memory after loading it</td>
+</tr>
+<tr>
+<td><code>g_<wbr>camera<wbr>Player<wbr>Hack</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>true = force player 0 for camera</td>
+</tr>
+<tr>
+<td><code>g_<wbr>check<wbr>For<wbr>Client<wbr>Delete<wbr>Verification<wbr>Amount</code></td>
+<td>int</td>
+<td><code>100</code></td>
+<td>no</td>
+<td>When first and last obj id awaiting deletion verification are this far apart, run a check (could just be 2 objects if the numbers are far apart.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>client<wbr>Drop_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if this should show the ribbon</td>
+</tr>
+<tr>
+<td><code>g_<wbr>client<wbr>Drop_<wbr>Dist</code></td>
+<td>float</td>
+<td><code>110</code></td>
+<td>no</td>
+<td>if this should show the ribbon</td>
+</tr>
+<tr>
+<td><code>g_<wbr>client<wbr>Fire_<wbr>check<wbr>Death<wbr>Debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug messages about dead clients doing damage</td>
+</tr>
+<tr>
+<td><code>g_<wbr>client<wbr>Fire_<wbr>check<wbr>Death<wbr>Mode</code></td>
+<td>int</td>
+<td><code>2</code></td>
+<td>no</td>
+<td>0=Always allow hit msgs. Fairest (but still unfair) for HPB but results in more double deaths. 1=Server interpolated time; favors LPBs, less double kills. 2=Server absolute time. Highly favors LPBs, no double kills</td>
+</tr>
+<tr>
+<td><code>g_<wbr>client<wbr>Fire_<wbr>client<wbr>Hit<wbr>Scan<wbr>On<wbr>Death</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true, we will send a hitscan message even if the entity is already dead</td>
+</tr>
+<tr>
+<td><code>g_<wbr>commander<wbr>Clear<wbr>Timer</code></td>
+<td>int</td>
+<td><code>500</code></td>
+<td>no</td>
+<td>How long before we actually set inactive after death, etc.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>commander<wbr>Inactive<wbr>Remove<wbr>Timer</code></td>
+<td>int</td>
+<td><code>2000</code></td>
+<td>no</td>
+<td>How long we wait before considering the commander invalid</td>
+</tr>
+<tr>
+<td><code>g_<wbr>conveyor<wbr>Use<wbr>Rendezvous<wbr>For<wbr>Spawn</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Should we used estimated rendezvous points when choosing a spawn point?</td>
+</tr>
+<tr>
+<td><code>g_<wbr>coop_<wbr>revive<wbr>PCT</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>PCT of health to revive to in coop (player to player)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>damage<wbr>Health<wbr>Limit<wbr>Heavy</code></td>
+<td>float</td>
+<td><code>0.25</code></td>
+<td>no</td>
+<td>health level to start heartbeat</td>
+</tr>
+<tr>
+<td><code>g_<wbr>damage<wbr>Health<wbr>Limit<wbr>Medium</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>health level to start medium breathing</td>
+</tr>
+<tr>
+<td><code>g_<wbr>damage<wbr>Scale</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>scale final damage on player by this factor</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>AISpawn<wbr>Nodes</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = debug AI spawn nodes</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>EBolt</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Event<wbr>Queue</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>prints a message if event queue num exceeds this amount</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Fire<wbr>Manager</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>show fire manager debug visualization</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Gore</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = output results to console, 2 = visualize results</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Layer<wbr>Changes</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>shows info on layer changes</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Lines</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = show debug points as lines</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Missions</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Give debug information when starting, failing, completing missions</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Player</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>Player for debug commands like noclip. If -1, it will use the local player</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Power<wbr>Weapon<wbr>Pickup</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = Log state of spawning/dropping GBF pickups</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Render<wbr>Force<wbr>Depth<wbr>Test</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true, then debug render geometry will always depth test</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Snap<wbr>Map<wbr>Issues</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = debug snapmap issues.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Spawn<wbr>Entities</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>List detailed spawn-entities info when spawning map.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Spawn<wbr>Locations</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Print info for the fracked spawning</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Sphere<wbr>Tree</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>0 dont render, 1 render text on nodes and spheres on leaf nodes, 2 spheres on all nodes, 3 show links</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Sync<wbr>Entity</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>debug sync entities</td>
+</tr>
+<tr>
+<td><code>g_<wbr>debug<wbr>Weapon<wbr>Display<wbr>Duration</code></td>
+<td>int</td>
+<td><code>5000</code></td>
+<td>no</td>
+<td>Duration to display weapon debug visuals</td>
+</tr>
+<tr>
+<td><code>g_<wbr>demo<wbr>Ammo</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true, will fully replenish all weapon ammo in inventory every time player picks up any ammo</td>
+</tr>
+<tr>
+<td><code>g_<wbr>demo<wbr>Dev<wbr>Mode</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>demo mode used for main menu with a dev map list</td>
+</tr>
+<tr>
+<td><code>g_<wbr>demo<wbr>Health</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if set the player should never take enough damage to die</td>
+</tr>
+<tr>
+<td><code>g_<wbr>demo<wbr>Mode</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>demo mode used for main menu</td>
+</tr>
+<tr>
+<td><code>g_<wbr>demo<wbr>Mode<wbr>Single</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>only show a single item inside the demo starts</td>
+</tr>
+<tr>
+<td><code>g_<wbr>destruction<wbr>Collision<wbr>Quality</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Collision quality to use, higher number means more accurate (although slower)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>destruction<wbr>Shape<wbr>Match<wbr>OBB</code></td>
+<td>float</td>
+<td><code>0.85</code></td>
+<td>no</td>
+<td>Collision shape will be attempted to be replaced with an OBB [ 0.0 = Always match, 1.0 = shape must be perfect match ] or -1.0 to disable</td>
+</tr>
+<tr>
+<td><code>g_<wbr>destruction<wbr>Simplification<wbr>Tolerance</code></td>
+<td>float</td>
+<td><code>0.02</code></td>
+<td>no</td>
+<td>Collision shapes will be generated using this simplification tolerance value, negative number disables this feature</td>
+</tr>
+<tr>
+<td><code>g_<wbr>destruction<wbr>Use<wbr>Box<wbr>Shape</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Collision geometry will be replaced with shrinked AABBs that encapsulated the render-/collision-geometry depending on data availability.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>destruction<wbr>Use<wbr>Dynamic</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true, dynamic fracture will generated neccesary information for run-time destruction.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>destruction<wbr>Use<wbr>Pre<wbr>Slice</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>If true, dynamic fracture geometry will be sliced up during generation to generate sub-pieces</td>
+</tr>
+<tr>
+<td><code>g_<wbr>disable<wbr>Particle<wbr>Generated<wbr>Binaries</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true; will not generate and read binary data for particles</td>
+</tr>
+<tr>
+<td><code>g_<wbr>disable<wbr>Press<wbr>Button<wbr>To<wbr>Fade<wbr>In</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>disable the map load fade in button</td>
+</tr>
+<tr>
+<td><code>g_<wbr>disable<wbr>Prop<wbr>Attraction</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true, prevents the attraction component from moving items closer to players that are within range</td>
+</tr>
+<tr>
+<td><code>g_<wbr>domination<wbr>Point<wbr>Min<wbr>Team<wbr>Control</code></td>
+<td>float</td>
+<td><code>0.60</code></td>
+<td>no</td>
+<td>A team controlling a control point that's underdispute needs to still have this much control (out of 1.0) for it to influence spawning</td>
+</tr>
+<tr>
+<td><code>g_<wbr>drag<wbr>Damping</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>set the damping force for g_dragEntity (0 makes object 'snap' to the cursor, 1 makes it more springy)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>drag<wbr>Entity</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>allows dragging physics objects around by placing the crosshair over them and holding the fire button</td>
+</tr>
+<tr>
+<td><code>g_<wbr>drag<wbr>Show<wbr>Selection</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>draw the bounding box of the selected entity</td>
+</tr>
+<tr>
+<td><code>g_<wbr>draw<wbr>DPSFrom<wbr>Player</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Draw the damage per second inflicted by the player</td>
+</tr>
+<tr>
+<td><code>g_<wbr>draw<wbr>DPSFrom<wbr>Player<wbr>Height</code></td>
+<td>float</td>
+<td><code>100</code></td>
+<td>no</td>
+<td>How far above each entity's origin to draw the DPS text</td>
+</tr>
+<tr>
+<td><code>g_<wbr>draw<wbr>DPSFrom<wbr>Player<wbr>Scale</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>How large to draw the DPS text</td>
+</tr>
+<tr>
+<td><code>g_<wbr>draw<wbr>TVSafe</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>draws a tv-save overlay on the HUD</td>
+</tr>
+<tr>
+<td><code>g_<wbr>droppable<wbr>Max<wbr>Range</code></td>
+<td>float</td>
+<td><code>40.0f</code></td>
+<td>no</td>
+<td>max droppable range before they disassemble</td>
+</tr>
+<tr>
+<td><code>g_<wbr>dump<wbr>Active<wbr>Entities</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Dump the names of the active entities to the console</td>
+</tr>
+<tr>
+<td><code>g_<wbr>dump<wbr>Actors</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Dump the names of actors to the console</td>
+</tr>
+<tr>
+<td><code>g_<wbr>dump<wbr>Spawned<wbr>Entities</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Dump the names of spawned entities to the console</td>
+</tr>
+<tr>
+<td><code>g_<wbr>dynamic<wbr>Fracture<wbr>Cooldown</code></td>
+<td>float</td>
+<td><code>3.0</code></td>
+<td>no</td>
+<td>Time it takes for heat to completely disappear</td>
+</tr>
+<tr>
+<td><code>g_<wbr>dynamic<wbr>Fracture<wbr>Heat<wbr>Step</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Amount of heat to apply every shot</td>
+</tr>
+<tr>
+<td><code>g_<wbr>dynamic<wbr>Fracture<wbr>Minimum<wbr>Piece<wbr>Volume</code></td>
+<td>float</td>
+<td><code>-1.0</code></td>
+<td>no</td>
+<td>Pieces smaller than this volume will be removed (disable by setting value to less than zero)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>edit<wbr>Entity<wbr>Clone<wbr>Dist</code></td>
+<td>float</td>
+<td><code>128</code></td>
+<td><strong>yes</strong></td>
+<td>how far from the camera the newly cloned entity is placed, default = 128</td>
+</tr>
+<tr>
+<td><code>g_<wbr>edit<wbr>Entity<wbr>Grid<wbr>Size</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td><strong>yes</strong></td>
+<td>snap to grid for entity dragging, default = 0</td>
+</tr>
+<tr>
+<td><code>g_<wbr>edit<wbr>Entity<wbr>Mode</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>0 = off 1 = lights 2 = sounds 3 = articulated figures 4 = particle systems 5 = monsters 6 = entity names 7 = entity models 8 = fx 9 = entity properties</td>
+</tr>
+<tr>
+<td><code>g_<wbr>edit<wbr>Entity<wbr>Mouse<wbr>Drag</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td><strong>yes</strong></td>
+<td>0 = use bound keys + LMB to drag entity around, 1 = use LMB + drag to move entities</td>
+</tr>
+<tr>
+<td><code>g_<wbr>eject<wbr>Shells</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>eject shells</td>
+</tr>
+<tr>
+<td><code>g_<wbr>enable<wbr>Damage<wbr>Recording</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Enable recording of damage for DPS debugging</td>
+</tr>
+<tr>
+<td><code>g_<wbr>enable<wbr>Game<wbr>Time<wbr>Scaling</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Enables or Disables Scaling of Game Time via the GameTimeManager-Turning this off disables slow motion throughout the game</td>
+</tr>
+<tr>
+<td><code>g_<wbr>enable<wbr>Global<wbr>Glass<wbr>Type</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>0 = Separate entities and models, 1 = Global glass entity with separate models (if possible), 2 = Global glass model (if possible).</td>
+</tr>
+<tr>
+<td><code>g_<wbr>Enable<wbr>Gore</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>0 = only blood particles unless overridden, 1 = gore, 2 = no gore at all</td>
+</tr>
+<tr>
+<td><code>g_<wbr>entity<wbr>Pool<wbr>Enabled</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>If set, entities will spawn through pooling.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>Environment<wbr>Damage<wbr>Debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>used for debugging environmental damage</td>
+</tr>
+<tr>
+<td><code>g_<wbr>explode<wbr>Origin<wbr>Ents</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>spread out all entities at world origin</td>
+</tr>
+<tr>
+<td><code>g_<wbr>export<wbr>Simplified<wbr>Meshes</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true then simplified meshes will be exported to 'generated/cm_simp/'</td>
+</tr>
+<tr>
+<td><code>g_<wbr>fadeinaftermaploadlength</code></td>
+<td>int</td>
+<td><code>1000</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>fake<wbr>Player<wbr>Save<wbr>Version</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>test with a save version and see how we manage it when read again</td>
+</tr>
+<tr>
+<td><code>g_<wbr>flamethrower<wbr>Debug</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show debug info for flamethrowers</td>
+</tr>
+<tr>
+<td><code>g_<wbr>flamethrower<wbr>Update</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Update flamethrower segments</td>
+</tr>
+<tr>
+<td><code>g_<wbr>fov</code></td>
+<td>int</td>
+<td><code>90</code></td>
+<td><strong>yes</strong></td>
+<td>camera field of view</td>
+</tr>
+<tr>
+<td><code>g_<wbr>free<wbr>Cam<wbr>Speed</code></td>
+<td>float</td>
+<td><code>0.015</code></td>
+<td>no</td>
+<td>How fast the free cam moves</td>
+</tr>
+<tr>
+<td><code>g_<wbr>freeze<wbr>Time</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = stop all game time and go into free camera mode</td>
+</tr>
+<tr>
+<td><code>g_<wbr>fuel<wbr>Trail<wbr>Debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>fuel trail debug rendering</td>
+</tr>
+<tr>
+<td><code>g_<wbr>gore<wbr>Clipping<wbr>Spheres</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>Enables debug drawing for the gore index's gore clipping spheres.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>gore<wbr>Damage<wbr>Multiplier</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Increases the damage given to Limbs/Gore Pieces</td>
+</tr>
+<tr>
+<td><code>g_<wbr>gore<wbr>Disintegrate<wbr>Debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug for disintegration</td>
+</tr>
+<tr>
+<td><code>g_<wbr>gore<wbr>Enable<wbr>Wounds<wbr>Implicitly</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Allows wounds to automaticaly enable, rather than waiting for pain reaction</td>
+</tr>
+<tr>
+<td><code>g_<wbr>gore<wbr>Splatter<wbr>Decal<wbr>Time</code></td>
+<td>int</td>
+<td><code>1000</code></td>
+<td>no</td>
+<td>How long before another splatter decal can be spawned.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>gravity</code></td>
+<td>float</td>
+<td><code>9.82</code></td>
+<td>no</td>
+<td>control the force of gravity on physics objects</td>
+</tr>
+<tr>
+<td><code>g_<wbr>havok<wbr>Cloth<wbr>Time<wbr>Step<wbr>Smoothing</code></td>
+<td>float</td>
+<td><code>10</code></td>
+<td>no</td>
+<td>0 = disabled, &gt; 0 = low pass filter on time step</td>
+</tr>
+<tr>
+<td><code>g_<wbr>havok<wbr>Delta<wbr>Hint<wbr>Steps</code></td>
+<td>int</td>
+<td><code>5</code></td>
+<td>no</td>
+<td>how many extra steps we hint havok that we might take next update</td>
+</tr>
+<tr>
+<td><code>g_<wbr>havok<wbr>Simulation<wbr>Rate</code></td>
+<td>int</td>
+<td><code>120</code></td>
+<td>no</td>
+<td>Defines the rate havok physics will tick at (set at map start)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>havok<wbr>Sync<wbr>On<wbr>Same<wbr>Frame</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Sync Havok task on the same frame before render commit</td>
+</tr>
+<tr>
+<td><code>g_<wbr>havok<wbr>Use<wbr>Jobs</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>0 = off, 1 = use parallel jobs for havok</td>
+</tr>
+<tr>
+<td><code>g_<wbr>health<wbr>And<wbr>Ammo<wbr>Scale</code></td>
+<td>float</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>scale all health and armor given to the player by prop health components by this value. if -1 use the tables from the game</td>
+</tr>
+<tr>
+<td><code>g_<wbr>heart<wbr>Beat<wbr>Intervals</code></td>
+<td>int</td>
+<td><code>400</code></td>
+<td>no</td>
+<td>time in MS to wait between player heartbeats</td>
+</tr>
+<tr>
+<td><code>g_<wbr>infinite<wbr>Ammo</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = infinite ammunition for all weapons (player, ai's, mounted turrets), 2 = infinite backpack ammo, but clips are depleted</td>
+</tr>
+<tr>
+<td><code>g_<wbr>infinite<wbr>Energy</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Infinite Energy</td>
+</tr>
+<tr>
+<td><code>g_<wbr>infinite<wbr>Throw<wbr>Items</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = infinite throw items (grenades)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>inhibit<wbr>AI</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>insideloadthrough</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>Is<wbr>Production<wbr>Entity<wbr>Print<wbr>Info</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>print information on what IsProductionEntity removes and changes</td>
+</tr>
+<tr>
+<td><code>g_<wbr>kick<wbr>Amplitude</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>scale how far a damage kick to the view angles moves</td>
+</tr>
+<tr>
+<td><code>g_<wbr>kick<wbr>Barrel<wbr>Projectile<wbr>Lift</code></td>
+<td>float</td>
+<td><code>0.3f</code></td>
+<td>no</td>
+<td>The increase in height when kicking barrel</td>
+</tr>
+<tr>
+<td><code>g_<wbr>kick<wbr>Barrel<wbr>Projectile<wbr>Speed</code></td>
+<td>float</td>
+<td><code>1500.0</code></td>
+<td>no</td>
+<td>The initial speed of the projectile when barrel kicked.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>kick<wbr>Time</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>scale how long a damage kick to the view angles lasts</td>
+</tr>
+<tr>
+<td><code>g_<wbr>kiscule<wbr>Runtime<wbr>Type<wbr>Checks</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>If 1 then typechecking is enabled in kiscule for development executables, retail mode equals this set to 0</td>
+</tr>
+<tr>
+<td><code>g_<wbr>knockback</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>If -1, use knockback value from damage decl. If &gt; -1, this cvar will override the damage decl's knockback value.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>laser<wbr>Sight<wbr>Emitter<wbr>Offset<wbr>X</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>laser sight emitter x offset</td>
+</tr>
+<tr>
+<td><code>g_<wbr>laser<wbr>Sight<wbr>Emitter<wbr>Offset<wbr>Y</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>laser sight emitter y offset</td>
+</tr>
+<tr>
+<td><code>g_<wbr>laser<wbr>Sight<wbr>Emitter<wbr>Offset<wbr>Z</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>laser sight emitter z offset</td>
+</tr>
+<tr>
+<td><code>g_<wbr>laser<wbr>Sight<wbr>Emitter<wbr>Scale<wbr>X</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>laser sight emitter x scale</td>
+</tr>
+<tr>
+<td><code>g_<wbr>laser<wbr>Sight<wbr>Emitter<wbr>Scale<wbr>Y</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>laser sight emitter y scale</td>
+</tr>
+<tr>
+<td><code>g_<wbr>laser<wbr>Sight<wbr>Emitter<wbr>Scale<wbr>Z</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>laser sight emitter z scale</td>
+</tr>
+<tr>
+<td><code>g_<wbr>level<wbr>Up<wbr>Rewards</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>How many hack modules to give players when they level up</td>
+</tr>
+<tr>
+<td><code>g_<wbr>load<wbr>All<wbr>Layers</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = loads all entities in all layers</td>
+</tr>
+<tr>
+<td><code>g_<wbr>loading<wbr>Pacifier</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Show loading Pacifier</td>
+</tr>
+<tr>
+<td><code>g_<wbr>load<wbr>Through<wbr>Start<wbr>First<wbr>Level<wbr>Cmd</code></td>
+<td>string</td>
+<td><code>loadDevMenuOption devmenuoption/maps/game/wolf/c01/c01p1/c01p1_fergus_devstarts 0 1</code></td>
+<td>no</td>
+<td>cmd to start loadthrough loop with</td>
+</tr>
+<tr>
+<td><code>g_<wbr>log<wbr>Referenced<wbr>Defs</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Print list of referenced decls</td>
+</tr>
+<tr>
+<td><code>g_<wbr>marker<wbr>Show<wbr>Hint<wbr>Time</code></td>
+<td>time_ms</td>
+<td><code>1000</code></td>
+<td>no</td>
+<td>Linger duration of marker through the world. After release.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>max<wbr>Effect<wbr>Physics<wbr>Bodies</code></td>
+<td>int</td>
+<td><code>64</code></td>
+<td>no</td>
+<td>Maximum number of active effect physics bodies</td>
+</tr>
+<tr>
+<td><code>g_<wbr>max<wbr>Spawn<wbr>Locations</code></td>
+<td>float</td>
+<td><code>150</code></td>
+<td>no</td>
+<td>Approximate limit to generated spawn locations.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>min<wbr>Load<wbr>Map<wbr>Time<wbr>Ms</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>To test loading screen</td>
+</tr>
+<tr>
+<td><code>g_<wbr>mission_<wbr>ret_<wbr>spawnspot</code></td>
+<td>string</td>
+<td><code>player_start_1</code></td>
+<td>no</td>
+<td>Return spawnspot if nothing is specified or we start directly from console use this</td>
+</tr>
+<tr>
+<td><code>g_<wbr>mission_<wbr>ret_<wbr>var_<wbr>fergus</code></td>
+<td>string</td>
+<td><code>end/campaign_fergus</code></td>
+<td>no</td>
+<td>The returning variation fergus if we dont have one specified when starting from console or testmap</td>
+</tr>
+<tr>
+<td><code>g_<wbr>mission_<wbr>ret_<wbr>var_<wbr>wyatt</code></td>
+<td>string</td>
+<td><code>end/campaign_wyatt</code></td>
+<td>no</td>
+<td>The returning variation wyatt if we dont have one specified when starting from console or testmap</td>
+</tr>
+<tr>
+<td><code>g_<wbr>mission<wbr>Objective<wbr>Indentation</code></td>
+<td>float</td>
+<td><code>20.0</code></td>
+<td>no</td>
+<td>Indentation for the objectives inside journal</td>
+</tr>
+<tr>
+<td><code>g_<wbr>near<wbr>Death<wbr>Max</code></td>
+<td>float</td>
+<td><code>5</code></td>
+<td>no</td>
+<td>Health at which near-death effects are at maximum intensity</td>
+</tr>
+<tr>
+<td><code>g_<wbr>near<wbr>Death<wbr>Period</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Near death state pulse time</td>
+</tr>
+<tr>
+<td><code>g_<wbr>nodemissionsprint</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show information for the mission check unlock, both active and completed.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>no<wbr>Fade<wbr>In</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>online<wbr>Debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Print online debug text.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>parallel<wbr>Animation</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>parallel<wbr>Animation<wbr>Controllers</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>parallel<wbr>FXUpdate</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>parallel<wbr>Gui<wbr>Think</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>parallel<wbr>Max<wbr>Threads</code></td>
+<td>int</td>
+<td><code>4</code></td>
+<td>no</td>
+<td>Maximum of threads to use when running parallel game jobs</td>
+</tr>
+<tr>
+<td><code>g_<wbr>parallel<wbr>Physics</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>parallel<wbr>Post<wbr>Think</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>parallel<wbr>Pre<wbr>Think</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>parallel<wbr>Think</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Health<wbr>And<wbr>Armor<wbr>Scale_<wbr>DIFFICULTY_<wbr>EASY</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Health<wbr>And<wbr>Armor<wbr>Scale_<wbr>DIFFICULTY_<wbr>HARD</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Health<wbr>And<wbr>Armor<wbr>Scale_<wbr>DIFFICULTY_<wbr>MEINLEBEN</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Health<wbr>And<wbr>Armor<wbr>Scale_<wbr>DIFFICULTY_<wbr>NIGHTMARE</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Health<wbr>And<wbr>Armor<wbr>Scale_<wbr>DIFFICULTY_<wbr>NORMAL</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Health<wbr>And<wbr>Armor<wbr>Scale_<wbr>DIFFICULTY_<wbr>VERYEASY</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Health<wbr>And<wbr>Armor<wbr>Scale_<wbr>DIFFICULTY_<wbr>VERYHARD</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Health<wbr>Regen<wbr>Delay</code></td>
+<td>float</td>
+<td><code>3</code></td>
+<td>no</td>
+<td>seconds we wait after last damage to give health back to player</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Health<wbr>Regen<wbr>Speed</code></td>
+<td>float</td>
+<td><code>5.75</code></td>
+<td>no</td>
+<td>what speed the player health regenerates in. hp/s</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>EASY</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>HARD</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>MEINLEBEN</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>NIGHTMARE</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>NORMAL</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>VERYEASY</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Incoming<wbr>Damage<wbr>Scale_<wbr>DIFFICULTY_<wbr>VERYHARD</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Difficulty Scaling</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Shield<wbr>Regen<wbr>Delay</code></td>
+<td>float</td>
+<td><code>5</code></td>
+<td>no</td>
+<td>seconds we wait after last damage to give shield back to player</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Shield<wbr>Regen<wbr>Interval</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>once regenerating shield how often to increment</td>
+</tr>
+<tr>
+<td><code>g_<wbr>player<wbr>Shield<wbr>Regen<wbr>Rate</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>once regenerating shield, how much we give per second</td>
+</tr>
+<tr>
+<td><code>g_<wbr>post<wbr>Serialize<wbr>Read<wbr>Uses<wbr>Spawned<wbr>List</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Whether PostSerializeRead calls all spawned entities or just those serialized this frame</td>
+</tr>
+<tr>
+<td><code>g_<wbr>predict<wbr>Hit</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true, client will predict hits and do the hit flash beep</td>
+</tr>
+<tr>
+<td><code>g_<wbr>predict<wbr>Use<wbr>Damage<wbr>Decl<wbr>Client<wbr>Auth</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>If true, use the damage decl's hitClientAuthoritative functionality</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>Adjust<wbr>Start</code></td>
+<td>int</td>
+<td><code>6</code></td>
+<td>no</td>
+<td>the offset dir from the trace point</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>Client<wbr>Authoritative</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>If true, client will send reliables when his projectiles hit enemies.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>Client<wbr>Dont<wbr>Move</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug projectiles</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>Debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug projectiles</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>Debug<wbr>Stuck</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug projectile getting stuck</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>EMPstick</code></td>
+<td>float</td>
+<td><code>35</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>Impact<wbr>Distance</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>how far we should test to see what surf type the explosion would hit</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>Impale</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>to allow rockets to impale AI on contact</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>Rocket<wbr>Impact<wbr>Distance</code></td>
+<td>float</td>
+<td><code>100.0</code></td>
+<td>no</td>
+<td>how far we should test to see what surf type the rocket explosion would hit</td>
+</tr>
+<tr>
+<td><code>g_<wbr>projectile<wbr>Trace<wbr>Seek</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>trace the seek behavior</td>
+</tr>
+<tr>
+<td><code>g_<wbr>prop2<wbr>Debug<wbr>Movement</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true, prop will draw its movement radius when active, if tracking towards someone it will show an arrow</td>
+</tr>
+<tr>
+<td><code>g_<wbr>prop<wbr>Drop<wbr>Player<wbr>Vel<wbr>Mod</code></td>
+<td>float</td>
+<td><code>1.0f</code></td>
+<td>no</td>
+<td>Percent of velocity from the player to be applied to the dropped prop</td>
+</tr>
+<tr>
+<td><code>g_<wbr>prop<wbr>Drop<wbr>Velocity</code></td>
+<td>float</td>
+<td><code>250.0f</code></td>
+<td>no</td>
+<td>Velocity to apply to the prop in the dropping player's view direction</td>
+</tr>
+<tr>
+<td><code>g_<wbr>pvs<wbr>Location<wbr>Memory</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>used to store a position that will be checked against the players PVS. Set to 'current' to tag your current pos, or 'clear' to clear.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>radius<wbr>Damage<wbr>Hit<wbr>Projectiles</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true radius damage can hit projectiles in the world causing them to explode</td>
+</tr>
+<tr>
+<td><code>g_<wbr>radius<wbr>Damage<wbr>Multiplier</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Damage multiplier to all RadiusDamage() calls.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>radius<wbr>Damage<wbr>Radius<wbr>Multiplier</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Radius multiplier to all RadiusDamage() calls.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>radius<wbr>Damage<wbr>Use<wbr>Simple<wbr>Hit<wbr>Msg</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true radius damage will only send a single hit trace across the network</td>
+</tr>
+<tr>
+<td><code>g_<wbr>rail<wbr>Debug<wbr>Render</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug rendering for idRailSpline</td>
+</tr>
+<tr>
+<td><code>g_<wbr>rail<wbr>Search<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>16</code></td>
+<td>no</td>
+<td>Threshold used to determine when to stop searching for closeset point on a rail.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>rail<wbr>Speed</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Speed to move when player is on a rail. (units / sec)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>record<wbr>Damage<wbr>Secs</code></td>
+<td>float</td>
+<td><code>2</code></td>
+<td>no</td>
+<td>How many seconds of damage should be recorded</td>
+</tr>
+<tr>
+<td><code>g_<wbr>reticle<wbr>Mode</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>How to draw the reticles. 0 - Full, 1 - Dot, 2 - hide</td>
+</tr>
+<tr>
+<td><code>g_<wbr>run<wbr>Cmd<wbr>On<wbr>Map<wbr>Gameplay</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>cmd to run (once) after map load when player is active, for smoke/soak tests</td>
+</tr>
+<tr>
+<td><code>g_<wbr>run<wbr>Cmd<wbr>On<wbr>Map<wbr>Gameplay<wbr>Delay</code></td>
+<td>int</td>
+<td><code>180</code></td>
+<td>no</td>
+<td>minimum delay in frames from level start for g_runCmdOnMapGameplay</td>
+</tr>
+<tr>
+<td><code>g_<wbr>run<wbr>Frames</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>you can set g_runFrames while g_stopTime is set to have the game run that many frames, then stop again</td>
+</tr>
+<tr>
+<td><code>g_<wbr>send<wbr>All<wbr>Reliables</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Should we record data about reliable game messages</td>
+</tr>
+<tr>
+<td><code>g_<wbr>send<wbr>Entity<wbr>Count<wbr>Interval<wbr>MS</code></td>
+<td>int</td>
+<td><code>500</code></td>
+<td>no</td>
+<td>How often to send entity counts to telemetry</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>aim_<wbr>assist</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>0 = off, 1 = on, 2 = singleplayer only, 3 = multiplayer only, 4 = joystick only</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>boss_<wbr>health</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Show or hide the boss health</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>compass</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Show or hide the compass</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>gk_<wbr>highlight</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>show or hide the GK highlight</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>hud_<wbr>show</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Show or hide the hud</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>hud<wbr>Notifications</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>show or hide the hud notifications</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>interact_<wbr>prompt</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>show or hid the interact prompt</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>objective<wbr>Markers</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>show or hide the objective markers</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>objective<wbr>Update</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>show or hide the objective updates</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>photomode</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>enable/disable photomode</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>subtitles</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>show or hide the subtitles</td>
+</tr>
+<tr>
+<td><code>g_<wbr>setting_<wbr>tutorials</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>show or hide the tutorials</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Active<wbr>Entities</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>draws boxes around thinking entities. dormant entities (outside of pvs) are drawn yellow. non-dormant are green.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>All<wbr>Player<wbr>Info</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>shows player information for All players.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Bounds<wbr>Timings</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>show bounds of all entities in specified logic group</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Collision<wbr>Query<wbr>Filter</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>String filter for selecting which queries to visualize</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Collision<wbr>Surfaces<wbr>Distance</code></td>
+<td>float</td>
+<td><code>50</code></td>
+<td>no</td>
+<td>Distance to trace when showing collision surfaces</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Crosshair</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>if true we draw the crosshair</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Crosshair<wbr>Info</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = Show dist to entity we have our crosshair over. 2 = Show dist to whatever colliding surface we have our crosshair over. 3 = Same as 2, but skip everything but the world for the trace</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Edit<wbr>Entity<wbr>Depth<wbr>Tested</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>draws the debug bounds in edit mode with depth testing</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Edit<wbr>Entity<wbr>Info</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>draws debug info when editing entities with g_editEntityMode &gt; 0</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Edit<wbr>Entity<wbr>Local<wbr>Axes</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>draws the local axes of the selected entity instead of world axes</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Edit<wbr>Layer<wbr>Names</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>draws the layer names when g_editEntityMode is enabled</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Entity<wbr>Deferred</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Entity<wbr>Warnings</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>set to 1 to see entities that are incorrectly placed/configured/etc</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Game<wbr>Decl<wbr>Heap<wbr>Warnings</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Issues warnings for game decls that are allocated on the global heap</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Guis</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td><strong>yes</strong></td>
+<td>enables drawing of GUI elements other then HUD</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Havok<wbr>Cloth<wbr>Fill<wbr>Opacity</code></td>
+<td>float</td>
+<td><code>0.3</code></td>
+<td>no</td>
+<td>Fill color opacity</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Havok<wbr>Distance</code></td>
+<td>float</td>
+<td><code>3</code></td>
+<td>no</td>
+<td>radius for drawing Havok physics geometry</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Hud</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td><strong>yes</strong></td>
+<td>enables drawing of HUD elements</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Light<wbr>Entities</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>includes light entities when editing sounds ( g_editEntityMode == 2 )</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Num<wbr>Active<wbr>Entities</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true it displays the number of currently active entities</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Object<wbr>Gets</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 - show classes of objects fetched, 2 - show names of entities fetch</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Player<wbr>Info</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>enables drawing of Player Information elements in the HUD (e.g. name and health).</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Player<wbr>Shadow</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td><strong>yes</strong></td>
+<td>enables shadow of player model</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Poi<wbr>Info</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td><strong>yes</strong></td>
+<td>enables drawing of Poi Information elements in the HUD (e.g. leader, base, flag).</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Timings</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>show entity timings</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Water<wbr>Debug</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>render water surface debug</td>
+</tr>
+<tr>
+<td><code>g_<wbr>show<wbr>Wind<wbr>Debug</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = render wind debug, 2 = sound debug</td>
+</tr>
+<tr>
+<td><code>g_<wbr>skip<wbr>Anim<wbr>Event<wbr>Sounds</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>skip anim event sounds</td>
+</tr>
+<tr>
+<td><code>g_<wbr>skip<wbr>View<wbr>Effects</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>skip damage and other view effects</td>
+</tr>
+<tr>
+<td><code>g_<wbr>skip<wbr>Water<wbr>Sim</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>skips water surface simulation</td>
+</tr>
+<tr>
+<td><code>g_<wbr>sleep</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Testing tool to force longer game frames, use negative values to produce uneven sleeps</td>
+</tr>
+<tr>
+<td><code>g_<wbr>sort<wbr>Physics<wbr>List</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Sort the physics update list before to reduce spinning</td>
+</tr>
+<tr>
+<td><code>g_<wbr>Spawnable<wbr>Prop<wbr>Shot<wbr>Impulse</code></td>
+<td>float</td>
+<td><code>150</code></td>
+<td>no</td>
+<td>impulse to apply when shot</td>
+</tr>
+<tr>
+<td><code>g_<wbr>spawn<wbr>Debug<wbr>Level</code></td>
+<td>int</td>
+<td><code>2</code></td>
+<td>no</td>
+<td>Amount of detail to show when drawing system debugging information. 0 = only scores, 1 = locations, 2 = volumes, 3 = LoS checks</td>
+</tr>
+<tr>
+<td><code>g_<wbr>spawn<wbr>Debug<wbr>Pause<wbr>Bots<wbr>When<wbr>Spawn</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If on, whenever the debug player respawns, pause all bots</td>
+</tr>
+<tr>
+<td><code>g_<wbr>spawn<wbr>Debug<wbr>Render<wbr>Duration</code></td>
+<td>int</td>
+<td><code>999999</code></td>
+<td>no</td>
+<td>How long debug spawn render lines stick around</td>
+</tr>
+<tr>
+<td><code>g_<wbr>spawn<wbr>Debug<wbr>Show<wbr>Spawn<wbr>Nodes</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show spawn point cylinders</td>
+</tr>
+<tr>
+<td><code>g_<wbr>spawn<wbr>Jitter</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Amount of random variation in spawn location values.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>spawn<wbr>Skipped<wbr>Entities</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = spawn (and delete) the entites that are skipped during load (statics and decals)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>spectator<wbr>Allow<wbr>Frozen<wbr>Player<wbr>Targets</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>allow spectating of frozen player targets</td>
+</tr>
+<tr>
+<td><code>g_<wbr>stop<wbr>Time</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 - stops all entity updating, but the player can still run around, 2 - stop all entity updating, including player uses free cam</td>
+</tr>
+<tr>
+<td><code>g_<wbr>swf<wbr>Floating<wbr>Text<wbr>Scale</code></td>
+<td>int</td>
+<td><code>100</code></td>
+<td>no</td>
+<td>0 = off, 100 = full size</td>
+</tr>
+<tr>
+<td><code>g_<wbr>temp<wbr>Projectile<wbr>Test</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>if true we try the new system for detecting throwing through geometry</td>
+</tr>
+<tr>
+<td><code>g_<wbr>test<wbr>Fx<wbr>Name</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>fx decl name used for the testFx command in absence of a name parameter</td>
+</tr>
+<tr>
+<td><code>g_<wbr>test<wbr>Material</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>name of material to draw over screen</td>
+</tr>
+<tr>
+<td><code>g_<wbr>test<wbr>Particle<wbr>Name</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>particle decl name used for the testParticle command in absence of a name parameter</td>
+</tr>
+<tr>
+<td><code>g_<wbr>timer</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>set to 1 to start timing, set back to 0 to stop timing and report the interval</td>
+</tr>
+<tr>
+<td><code>g_<wbr>trajectory<wbr>Timestep</code></td>
+<td>float</td>
+<td><code>16</code></td>
+<td>no</td>
+<td>time in milliseconds for each timestep during trajectory simulation</td>
+</tr>
+<tr>
+<td><code>g_<wbr>universal<wbr>Ammo<wbr>Direct<wbr>To<wbr>Clip</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>If true, universal ammo pickups will load directly into weapon clips, bypassing inventory.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>use<wbr>MPReference<wbr>HUD</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Runs MP hud through reference path that skips as much SWF as possible</td>
+</tr>
+<tr>
+<td><code>g_<wbr>use<wbr>MPReference<wbr>HUD_<wbr>Death</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Run death message reference</td>
+</tr>
+<tr>
+<td><code>g_<wbr>use<wbr>Spawn<wbr>Influencers</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If on, use the new spawn influencers system.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>view<wbr>Note<wbr>Dev<wbr>Track</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>default viewnote devtrack setting</td>
+</tr>
+<tr>
+<td><code>g_<wbr>view<wbr>Note<wbr>Priority</code></td>
+<td>int</td>
+<td><code>2</code></td>
+<td>no</td>
+<td>default viewnote priority setting</td>
+</tr>
+<tr>
+<td><code>g_<wbr>view<wbr>Note<wbr>Repeat</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>default viewnote repeatability setting</td>
+</tr>
+<tr>
+<td><code>g_<wbr>view<wbr>Note<wbr>Type</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>default viewnote type setting</td>
+</tr>
+<tr>
+<td><code>g_<wbr>water<wbr>Force<wbr>Generate</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>force water surfaces to regenerate</td>
+</tr>
+<tr>
+<td><code>g_<wbr>weapon<wbr>Auto<wbr>Switch<wbr>On<wbr>Empty</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>0 - no auto switching, 1 - auto switch as soon as the weapon is empty</td>
+</tr>
+<tr>
+<td><code>g_<wbr>weapon<wbr>Spread<wbr>Scale</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Global player weapon spread scale</td>
+</tr>
+<tr>
+<td><code>g_<wbr>wpn<wbr>Select<wbr>Block<wbr>Input</code></td>
+<td>time_ms</td>
+<td><code>180</code></td>
+<td>no</td>
+<td>How many milliseconds after the actual selection we block the look stick</td>
+</tr>
+<tr>
+<td><code>g_<wbr>wpn<wbr>Select<wbr>Block<wbr>Selection</code></td>
+<td>time_ms</td>
+<td><code>96</code></td>
+<td>no</td>
+<td>How many milliseconds we block the selection after the wheels change</td>
+</tr>
+<tr>
+<td><code>g_<wbr>wpn<wbr>Select<wbr>Show<wbr>Delay</code></td>
+<td>time_ms</td>
+<td><code>200</code></td>
+<td>no</td>
+<td>How many milliseconds before we show the actual wpn select, to ensure quick grenade is on press and wpn is hold.</td>
+</tr>
+<tr>
+<td><code>g_<wbr>wpn<wbr>Select<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>0.6</code></td>
+<td><strong>yes</strong></td>
+<td>How much need to be set for the wpn wheel actually starts selecting. val * (maxstick)</td>
+</tr>
+<tr>
+<td><code>g_<wbr>wpnwheel_<wbr>debugtimer</code></td>
+<td>time_ms</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>How long between prints of the wheel</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="hud_">hud_</h2>
+<p>86 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hud_<wbr>3dmarkerdebug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show debug information for 3d icons, objective markers etc.</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>chargebar_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show information when charging the bar</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>amp_<wbr>alarm</code></td>
+<td>float</td>
+<td><code>0.670</code></td>
+<td>no</td>
+<td>How far the extrusion is on alarm</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>amp_<wbr>regular</code></td>
+<td>float</td>
+<td><code>0.540</code></td>
+<td>no</td>
+<td>How far the extrusion is on regular commander walking around</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>arrow_<wbr>movement_<wbr>end</code></td>
+<td>float</td>
+<td><code>40.0f</code></td>
+<td>no</td>
+<td>movement from middle, based on distance</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>arrow_<wbr>movement_<wbr>start</code></td>
+<td>float</td>
+<td><code>45.0f</code></td>
+<td>no</td>
+<td>movement from middle, based on distance</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show debug info for commander</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>debug_<wbr>timer</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Full debug print with fades and everything</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>dot_<wbr>spread</code></td>
+<td>float</td>
+<td><code>0.85</code></td>
+<td>no</td>
+<td>How far the falloff is for the direction, player -&gt; commander</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>pulse_<wbr>time_<wbr>max</code></td>
+<td>int</td>
+<td><code>6000</code></td>
+<td>no</td>
+<td>( CurrentDistance / MaxDistance ) * this gives ms for the pulse will be tweened for</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>pulse_<wbr>time_<wbr>min</code></td>
+<td>int</td>
+<td><code>1000</code></td>
+<td>no</td>
+<td>fastest pulse time</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>commander_<wbr>statustexttime</code></td>
+<td>int</td>
+<td><code>2000</code></td>
+<td>no</td>
+<td>How long do we want to display the status text for</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Armor<wbr>Color</code></td>
+<td>string</td>
+<td><code>0.686 0.686 0.584</code></td>
+<td>no</td>
+<td>Color used to draw the armor damage numbers</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Dir<wbr>XMax</code></td>
+<td>float</td>
+<td><code>-0.25</code></td>
+<td>no</td>
+<td>X Force max</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Dir<wbr>XMin</code></td>
+<td>float</td>
+<td><code>-2.0</code></td>
+<td>no</td>
+<td>X Force min</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Dir<wbr>YMax</code></td>
+<td>float</td>
+<td><code>9.5</code></td>
+<td>no</td>
+<td>Y Force max</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Dir<wbr>YMin</code></td>
+<td>float</td>
+<td><code>6.0</code></td>
+<td>no</td>
+<td>Y Force min</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Equipment<wbr>Color</code></td>
+<td>string</td>
+<td><code>0.5 0.5 0.5</code></td>
+<td>no</td>
+<td>Color used to draw the equipment damage numbers</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Fade<wbr>Time</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Time for number to fade out in seconds</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Fall<wbr>Rate</code></td>
+<td>float</td>
+<td><code>0.09</code></td>
+<td>no</td>
+<td>Rate at which damage numbers fall</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Headshot<wbr>Color</code></td>
+<td>string</td>
+<td><code>0.749 0.545 0.258</code></td>
+<td>no</td>
+<td>Color used to draw the headshot damage numbers</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>damage<wbr>Number<wbr>Health<wbr>Color</code></td>
+<td>string</td>
+<td><code>1 0.247 0.019</code></td>
+<td>no</td>
+<td>Color used to draw the health damage numbers</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>debug<wbr>Spawn<wbr>Verbosity<wbr>Distance</code></td>
+<td>int</td>
+<td><code>300</code></td>
+<td>no</td>
+<td>The distance that you must be closer than to get detailed information on spawn scoring</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>disable<wbr>All</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td><strong>yes</strong></td>
+<td>disables hud-rendering</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>enable<wbr>Forced<wbr>GUISurface<wbr>Removal</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Whether or not to enable forced GUI surface cleanup.</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>enemy<wbr>Damage<wbr>Crit<wbr>Font<wbr>Size</code></td>
+<td>float</td>
+<td><code>0.825</code></td>
+<td>no</td>
+<td>font size for critical hit (headshot) floating enemy damage numbers</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>enemy<wbr>Damage<wbr>Duration<wbr>MS</code></td>
+<td>int</td>
+<td><code>3000</code></td>
+<td>no</td>
+<td>floating enemy damage numbers speed floating up</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>enemy<wbr>Damage<wbr>Follow<wbr>Target</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Do enemy damage numbers follow the target damaged?</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>enemy<wbr>Damage<wbr>Font<wbr>Size</code></td>
+<td>float</td>
+<td><code>0.6</code></td>
+<td>no</td>
+<td>font size for floating enemy damage numbers</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>envlinger_<wbr>timer</code></td>
+<td>int</td>
+<td><code>400</code></td>
+<td>no</td>
+<td>How many milli we wait with the env damage before going back to health again</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>extrude_<wbr>movelengthxy</code></td>
+<td>float</td>
+<td><code>5.0</code></td>
+<td>no</td>
+<td>How far we should move out on the xy axis</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>extrude_<wbr>movementtimez</code></td>
+<td>int</td>
+<td><code>300</code></td>
+<td>no</td>
+<td>How long does the tween take</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>extrude_<wbr>simulatemovingcenter</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Run this to simulate movement on the center point to see how perp visualizes</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>floatingicon_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show debug info for the floating icons</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>floatingicon_<wbr>distancetousefade</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>For how many meters do we fade the marker</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>floatingicon_<wbr>fadeoutuseable</code></td>
+<td>int</td>
+<td><code>150</code></td>
+<td>no</td>
+<td>For how long we fade out the marker when used.</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>floatingicon_<wbr>lowestalpha</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>Lowest value that the icon can have</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>floatingicon_<wbr>use</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Use floating icons on the vicinity of the screen for objectives etc.</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>follower_<wbr>anim_<wbr>threshold</code></td>
+<td>float</td>
+<td><code>0.65</code></td>
+<td>no</td>
+<td>Where do we start the interaction animation</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>follower_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Show debug info about the follower</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>follower_<wbr>speed</code></td>
+<td>int</td>
+<td><code>200</code></td>
+<td>no</td>
+<td>How fast we tween from follower start location to end location</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>force<wbr>Crosshair<wbr>Type</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>override the type of crosshair being used</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>force<wbr>Crosshair<wbr>Type<wbr>DW</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>override the type of crosshair being used for the dual wield weapon</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>hide<wbr>Damage<wbr>Numbers</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>0 = Show damage numbers; 1 = hide damage numbers</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>lkw_<wbr>explode_<wbr>length</code></td>
+<td>float</td>
+<td><code>1.0f</code></td>
+<td>no</td>
+<td>Duration of tween and time until explosion</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>lkw_<wbr>explode_<wbr>size</code></td>
+<td>float</td>
+<td><code>600.0f</code></td>
+<td>no</td>
+<td>How much larger than the orig size the lkw bar becomes on explosion</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>lkw_<wbr>jitter_<wbr>deltax</code></td>
+<td>float</td>
+<td><code>6.0f</code></td>
+<td>no</td>
+<td>How far we move in x in terms of jitter</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>lkw_<wbr>jitter_<wbr>deltay</code></td>
+<td>float</td>
+<td><code>6.0f</code></td>
+<td>no</td>
+<td>How far we move in y in terms of jitter</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>lkw_<wbr>jitter_<wbr>max_<wbr>charge_<wbr>dur</code></td>
+<td>float</td>
+<td><code>3000.0f</code></td>
+<td>no</td>
+<td>Max charge duration</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>marker_<wbr>debugindex</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>Only show the set marker index if -1 then show all</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>marker<wbr>Show<wbr>Hint<wbr>Time<wbr>Fade</code></td>
+<td>int</td>
+<td><code>200</code></td>
+<td>no</td>
+<td>How long for fade in/out to occur for hint marker</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>notification_<wbr>follower_<wbr>lockdist</code></td>
+<td>float</td>
+<td><code>0.05</code></td>
+<td>no</td>
+<td>How far from the center we actually lock the follower to the center icon</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>npc<wbr>Name<wbr>Timer</code></td>
+<td>time_ms</td>
+<td><code>150</code></td>
+<td>no</td>
+<td>Fade in/out for npc names</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>overcharge_<wbr>higheroffset</code></td>
+<td>int</td>
+<td><code>3</code></td>
+<td>no</td>
+<td>When we get a new stockpile that is higher the overcharge icon runs these frames higher to avoid ugly pixels</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>overcharge_<wbr>loweroffset</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>When we get a new stockpile that is lower the overcharge icon runs these frames higher to avoid ugly pixels</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>perk_<wbr>fromto_<wbr>timer</code></td>
+<td>int</td>
+<td><code>1250</code></td>
+<td>no</td>
+<td>Time before the actual from to starts</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>perk_<wbr>levelup_<wbr>timer</code></td>
+<td>int</td>
+<td><code>1000</code></td>
+<td>no</td>
+<td>how long until level up has been completed.</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>perk_<wbr>leveluptext_<wbr>timer</code></td>
+<td>int</td>
+<td><code>250</code></td>
+<td>no</td>
+<td>for how long the text lingers on screen</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>perk_<wbr>sanity_<wbr>timer</code></td>
+<td>int</td>
+<td><code>6000</code></td>
+<td>no</td>
+<td>In case we get fed with incorrect values fade away anyway</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>perk_<wbr>sprite_<wbr>linger</code></td>
+<td>int</td>
+<td><code>2000</code></td>
+<td>no</td>
+<td>For how long the sprite lingers to allow rolloff sequence</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>perk_<wbr>sprite_<wbr>timer</code></td>
+<td>int</td>
+<td><code>2000</code></td>
+<td>no</td>
+<td>For how long we display the sprite timer</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>perk_<wbr>text_<wbr>timer</code></td>
+<td>int</td>
+<td><code>5000</code></td>
+<td>no</td>
+<td>For how long we display the perk timer</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>player<wbr>Pickup<wbr>Progress<wbr>Text<wbr>Scale</code></td>
+<td>float</td>
+<td><code>0.8f</code></td>
+<td>no</td>
+<td>Text scale for player pickup progress text</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>player<wbr>Pickup<wbr>Progress<wbr>YOffset</code></td>
+<td>int</td>
+<td><code>-7</code></td>
+<td>no</td>
+<td>Text Y offset for player pickup progress text</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>point<wbr>Number<wbr>Color</code></td>
+<td>string</td>
+<td><code>1 1 1</code></td>
+<td>no</td>
+<td>Color used to draw points</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>print<wbr>Enemy<wbr>Dmg<wbr>Msg<wbr>Text</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Print enemy damage msg debug text</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>quickitem_<wbr>inactivetime</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>For how long does the ammo need to be 0 for it to disappear</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>render<wbr>Diagnostic<wbr>Gauge</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Display a diagnostic telemetry gauge(if telemetry enabled) on screen. 0 = Off. 1 = Positioning Error.</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>render<wbr>Player<wbr>Names<wbr>Under<wbr>Crosshair</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Toggle showing enemy names under crosshair.</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>resource<wbr>Number<wbr>Color</code></td>
+<td>string</td>
+<td><code>0 1 0.2</code></td>
+<td>no</td>
+<td>Color used to draw resource</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>reticle_<wbr>anim<wbr>Speed</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>animation speed for the reticle spread</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>reticle_<wbr>critical_<wbr>a</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>alpha channel of critical hit reticle</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>reticle_<wbr>critical_<wbr>b</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>blue color channel of critical hit reticle</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>reticle_<wbr>critical_<wbr>g</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>green color channel of critical hit reticle</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>reticle_<wbr>critical_<wbr>r</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>red color channel of critical hit reticle</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>reticle_<wbr>scaler</code></td>
+<td>float</td>
+<td><code>0.6f</code></td>
+<td>no</td>
+<td>speed at which the reticle grows and shirnks for spread</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>reticle_<wbr>scaler<wbr>Zoomed</code></td>
+<td>float</td>
+<td><code>0.01f</code></td>
+<td>no</td>
+<td>speed at which the reticle grows and shirnks for spread</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>show<wbr>Damage<wbr>Numbers<wbr>In<wbr>World</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>0 = Show xp callouts on hud, 1 = show damage above target</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>show<wbr>Game<wbr>Facts</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Whether or not to show game fact tool tips while loading maps</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>show<wbr>Load<wbr>Dev<wbr>Message</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Show level loading status in development</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>skip_<wbr>cinematics</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>skips intro cinematics after load</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>tutorial_<wbr>fadeouttime</code></td>
+<td>int</td>
+<td><code>750</code></td>
+<td>no</td>
+<td>Time until the tutorial image actually starts to fade out</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>tutorial_<wbr>textgouptime</code></td>
+<td>int</td>
+<td><code>2000</code></td>
+<td>no</td>
+<td>Time until we move the text up</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>wpnselect_<wbr>distance</code></td>
+<td>float</td>
+<td><code>150.0</code></td>
+<td>no</td>
+<td>How far from center we tween the weapon wheel</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>wpnselect_<wbr>triggerholdlength</code></td>
+<td>int</td>
+<td><code>250</code></td>
+<td>no</td>
+<td>How many ms before actually changing the wheel</td>
+</tr>
+<tr>
+<td><code>hud_<wbr>wpnwheelslowmo</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>enable slow motion for wpnwheel</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="nav_">nav_</h2>
+<p>20 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nav_<wbr>avoidence_<wbr>collisionpenalty</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>A multiplier applied to the penalty for projected collisions.</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>avoidence_<wbr>dodgingpenalty</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>A penalty applied to velocity candidates which avoid collisions by turning rather than by changing speed.</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>avoidence_<wbr>penetrationpenalty</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>A multiplier applied to the penalty for ongoing penetrations.</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>avoidence_<wbr>sidednesschangingpenalty</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>Unwillingness to change the side on which an agent plans to pass another agent.</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>avoidence_<wbr>velocity<wbr>Hysteresis</code></td>
+<td>float</td>
+<td><code>0.01</code></td>
+<td>no</td>
+<td>Preference for continuing along the same velocity</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>avoidence_<wbr>wallfollowingangle</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>Max angle above 90 degrees of to do wall following</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>behaviour</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Selects the pathing behaviour, 0 = path, 1 = edge</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>cacheclearenceceiling</code></td>
+<td>float</td>
+<td><code>4.0</code></td>
+<td>no</td>
+<td>Range to invalidate clearence cache when something happens (map restart required)</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>complexity<wbr>Distance</code></td>
+<td>float</td>
+<td><code>3</code></td>
+<td>no</td>
+<td>Distance used during complexity analysis</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>complexity<wbr>Max<wbr>Threads</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>Maximum number of threads to use during complexity analysis</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>complexity<wbr>Warning</code></td>
+<td>int</td>
+<td><code>100</code></td>
+<td>no</td>
+<td>What complexity to consider too much</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>debug_<wbr>mesh</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>debug_<wbr>range_<wbr>horz</code></td>
+<td>float</td>
+<td><code>20</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>debug_<wbr>range_<wbr>vert</code></td>
+<td>float</td>
+<td><code>10</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>pathing_<wbr>limititerations</code></td>
+<td>int</td>
+<td><code>1000</code></td>
+<td>no</td>
+<td>limit the number of iterations</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>pathing_<wbr>limitrange</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>limit the search range</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>pathing_<wbr>minimumrange</code></td>
+<td>float</td>
+<td><code>30</code></td>
+<td>no</td>
+<td>minimum search range</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>pathing_<wbr>rangemodifier</code></td>
+<td>float</td>
+<td><code>2.0</code></td>
+<td>no</td>
+<td>multipled with the distance to goal to determine search radius</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>tracefloor</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Trace X meters forward on the floor from from the player</td>
+</tr>
+<tr>
+<td><code>nav_<wbr>usefastgather</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Use a faster version of gather edges if possible</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="player_">player_</h2>
+<p>40 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>player_<wbr>analyze<wbr>Env</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>If true the enviroment analyzer will run</td>
+</tr>
+<tr>
+<td><code>player_<wbr>analyzeenvdebug</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug player environment analyzer, 1 = all, 2 = cover stuff, 3 = jumpover stuff, 4 = jumpover stuff jump only, 5 = weapon collision, 6 = lean camera collision detection, 7 = prone collision</td>
+</tr>
+<tr>
+<td><code>player_<wbr>analyze<wbr>Env<wbr>Free<wbr>Lean<wbr>Only</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>disables sliding along walls while not being able to lean</td>
+</tr>
+<tr>
+<td><code>player_<wbr>damage<wbr>Feedback<wbr>Minimum</code></td>
+<td>float</td>
+<td><code>0.5f</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>player_<wbr>damage<wbr>Feedback<wbr>Scale</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>player_<wbr>damage<wbr>Feedback<wbr>Verbose</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Print damage names</td>
+</tr>
+<tr>
+<td><code>player_<wbr>debug<wbr>Shake</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = display debugging info for camera shakes</td>
+</tr>
+<tr>
+<td><code>player_<wbr>difficulty<wbr>Damage<wbr>Scale<wbr>Easy</code></td>
+<td>float</td>
+<td><code>0.25</code></td>
+<td>no</td>
+<td>how much to scale incoming damage on easy if there is no easy damage table</td>
+</tr>
+<tr>
+<td><code>player_<wbr>difficulty<wbr>Damage<wbr>Scale<wbr>Hard</code></td>
+<td>float</td>
+<td><code>0.75</code></td>
+<td>no</td>
+<td>how much to scale incoming damage on hard if there is no hard damage table</td>
+</tr>
+<tr>
+<td><code>player_<wbr>difficulty<wbr>Damage<wbr>Scale<wbr>Mein<wbr>Leben</code></td>
+<td>float</td>
+<td><code>1.25</code></td>
+<td>no</td>
+<td>how much to scale incoming damage on nightmare if there is no nightmare damage table</td>
+</tr>
+<tr>
+<td><code>player_<wbr>difficulty<wbr>Damage<wbr>Scale<wbr>Nightmare</code></td>
+<td>float</td>
+<td><code>1.25</code></td>
+<td>no</td>
+<td>how much to scale incoming damage on nightmare if there is no nightmare damage table</td>
+</tr>
+<tr>
+<td><code>player_<wbr>difficulty<wbr>Damage<wbr>Scale<wbr>Normal</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>how much to scale incoming damage on medium if there is no normal damage table</td>
+</tr>
+<tr>
+<td><code>player_<wbr>difficulty<wbr>Damage<wbr>Scale<wbr>Very<wbr>Hard</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>how much to scale incoming damage on hard if there is no hard damage table</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focusboxfloor</code></td>
+<td>float</td>
+<td><code>-0.1f</code></td>
+<td>no</td>
+<td>How far below the ground the focus box should be</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focusboxheight</code></td>
+<td>float</td>
+<td><code>3.0f</code></td>
+<td>no</td>
+<td>How high the focus box should be from the ground</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focusboxtest</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Focus floating icons for testing</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focusboxwandererheight</code></td>
+<td>float</td>
+<td><code>4.3f</code></td>
+<td>no</td>
+<td>How high the focus box should be from the ground when in wanderer</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focus<wbr>Causes<wbr>Rumble</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Toggles whether to rumble controller when hovering over a usable item</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focus<wbr>Crosshair<wbr>Entity<wbr>Time</code></td>
+<td>int</td>
+<td><code>300</code></td>
+<td>no</td>
+<td>Amount of time, in milliseconds, entity name will appear in crosshair after focus is lost.</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focus<wbr>Cylinder<wbr>Offset</code></td>
+<td>float</td>
+<td><code>1.375f</code></td>
+<td>no</td>
+<td>How far in front of the player should the cylinder be?</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focus<wbr>Cylinder<wbr>Radius<wbr>X</code></td>
+<td>float</td>
+<td><code>1.0f</code></td>
+<td>no</td>
+<td>RadiusX of the cylinder</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focus<wbr>Cylinder<wbr>Radius<wbr>Y</code></td>
+<td>float</td>
+<td><code>1.5f</code></td>
+<td>no</td>
+<td>RadiusY of the cylinder</td>
+</tr>
+<tr>
+<td><code>player_<wbr>focus<wbr>Debug</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 = Highlights focus entity in cyan. 2 = Highlights usable entity in orange 3 = Show use box vicinity</td>
+</tr>
+<tr>
+<td><code>player_<wbr>heavy<wbr>Drop<wbr>Time</code></td>
+<td>time_ms</td>
+<td><code>1000</code></td>
+<td>no</td>
+<td>Linger duration of heavy weapon drop info for PL.</td>
+</tr>
+<tr>
+<td><code>player_<wbr>interactable<wbr>Rumble<wbr>Dur<wbr>High</code></td>
+<td>float</td>
+<td><code>50</code></td>
+<td>no</td>
+<td>Sets Controller rumble high magnitude on interactable</td>
+</tr>
+<tr>
+<td><code>player_<wbr>interactable<wbr>Rumble<wbr>Dur<wbr>Low</code></td>
+<td>float</td>
+<td><code>75</code></td>
+<td>no</td>
+<td>Sets Controller rumble high magnitude on interactable</td>
+</tr>
+<tr>
+<td><code>player_<wbr>interactable<wbr>Rumble<wbr>Mag<wbr>High</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>Sets Controller rumble high magnitude on interactable</td>
+</tr>
+<tr>
+<td><code>player_<wbr>interactable<wbr>Rumble<wbr>Mag<wbr>Low</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>Sets Controller rumble low magnitude on interactable</td>
+</tr>
+<tr>
+<td><code>player_<wbr>Loot<wbr>Check</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>player_<wbr>prone<wbr>Lookup<wbr>Angle</code></td>
+<td>float</td>
+<td><code>10.0</code></td>
+<td>no</td>
+<td>Angle player must look below for auto look up to start</td>
+</tr>
+<tr>
+<td><code>player_<wbr>prone<wbr>Lookup<wbr>Speed</code></td>
+<td>float</td>
+<td><code>150.0</code></td>
+<td>no</td>
+<td>Speed for autolook up when entering prone</td>
+</tr>
+<tr>
+<td><code>player_<wbr>spike<wbr>Damage<wbr>Feedback<wbr>Scale</code></td>
+<td>float</td>
+<td><code>4.0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>player_<wbr>throwback<wbr>Angle<wbr>Speed</code></td>
+<td>float</td>
+<td><code>400.0</code></td>
+<td>no</td>
+<td>Grenade throw back auto look up speed</td>
+</tr>
+<tr>
+<td><code>player_<wbr>throwback<wbr>Auto<wbr>Lookup<wbr>End<wbr>Angle</code></td>
+<td>float</td>
+<td><code>-10.0</code></td>
+<td>no</td>
+<td>View angle auto look up code will end at</td>
+</tr>
+<tr>
+<td><code>player_<wbr>throwback<wbr>Auto<wbr>Lookup<wbr>Start<wbr>Angle</code></td>
+<td>float</td>
+<td><code>10.0</code></td>
+<td>no</td>
+<td>Angle player must look below for auto look up to start</td>
+</tr>
+<tr>
+<td><code>player_<wbr>update<wbr>Focus</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>1 to enable updating the player's focus icon</td>
+</tr>
+<tr>
+<td><code>player_<wbr>whiplash_<wbr>friction_<wbr>frac</code></td>
+<td>float</td>
+<td><code>.8</code></td>
+<td>no</td>
+<td>frac speed that slows overall whiplash</td>
+</tr>
+<tr>
+<td><code>player_<wbr>whiplash_<wbr>min_<wbr>velocity_<wbr>len</code></td>
+<td>float</td>
+<td><code>.01</code></td>
+<td>no</td>
+<td>min velocity required to activate whiplash</td>
+</tr>
+<tr>
+<td><code>player_<wbr>whiplash_<wbr>update_<wbr>frac</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>update frac per frame (partial updates)</td>
+</tr>
+<tr>
+<td><code>player_<wbr>whiplash_<wbr>velocity_<wbr>frac</code></td>
+<td>float</td>
+<td><code>.1</code></td>
+<td>no</td>
+<td>frac speed that whiplash cycles back and forth</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="pm_">pm_</h2>
+<p>88 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pm_<wbr>airaccelerate</code></td>
+<td>float</td>
+<td><code>5.2</code></td>
+<td>no</td>
+<td>how fast the player will accelerate in the air</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>airfriction</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>no</td>
+<td>friction when in the air</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>allow<wbr>Fatal<wbr>Fall<wbr>Damage</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true - player CAN die from a fatal fall</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>anim<wbr>Cam<wbr>Amount</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>use this amount of camera animation. later to be used as an option for motionsickness</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>back<wbr>Speed<wbr>Ratio</code></td>
+<td>float</td>
+<td><code>0.75</code></td>
+<td>no</td>
+<td>ratio of player max backward speed to forward speed</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>box<wbr>Repulsor<wbr>Scalar</code></td>
+<td>float</td>
+<td><code>8.0</code></td>
+<td>no</td>
+<td>How much to push the player when he's in the box</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>break<wbr>Surface<wbr>Timout</code></td>
+<td>time_ms</td>
+<td><code>850</code></td>
+<td>no</td>
+<td>block breaking the surface during this time</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>buffer<wbr>Time<wbr>For<wbr>Player<wbr>Origin<wbr>Interpolation</code></td>
+<td>float</td>
+<td><code>10.0f</code></td>
+<td>no</td>
+<td>How much of a buffer to add to the interpolation time range</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>crouchaccelerate</code></td>
+<td>float</td>
+<td><code>42.0</code></td>
+<td>no</td>
+<td>how fast the player will accelerate when crouching</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>crouch<wbr>Back<wbr>Speed<wbr>Ratio</code></td>
+<td>float</td>
+<td><code>0.85</code></td>
+<td>no</td>
+<td>ratio of player max backward speed to forward speed while crouching</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>crouchbasespeed</code></td>
+<td>float</td>
+<td><code>1.75</code></td>
+<td>no</td>
+<td>base speed the player can move while crouched</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>crouchheight</code></td>
+<td>float</td>
+<td><code>0.89</code></td>
+<td>no</td>
+<td>height of player's bounding box while crouched</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>crouchviewheight</code></td>
+<td>float</td>
+<td><code>0.80</code></td>
+<td>no</td>
+<td>height of player's view while crouched</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>deadheight</code></td>
+<td>float</td>
+<td><code>0.4</code></td>
+<td>no</td>
+<td>height of player's bounding box while dead</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>debug<wbr>View</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true will draw debug info for player view calculations</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>disable<wbr>Fall<wbr>Damage</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true - player takes no damage from falls</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>enable<wbr>Quick<wbr>Turn</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td><strong>yes</strong></td>
+<td>enables quickturn system (saves this setting)</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>extrapolator_<wbr>delta<wbr>Smooth<wbr>Per<wbr>Frame<wbr>MS</code></td>
+<td>time_ms</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Amount of time to remove/add per frame to smooth the fence post timing changes.</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>extrapolator_<wbr>fence<wbr>Decay<wbr>Per<wbr>Frame</code></td>
+<td>float</td>
+<td><code>0.25</code></td>
+<td>no</td>
+<td>Speed at which a fence will decay if it is an old position</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>extrapolator_<wbr>look<wbr>Ahead<wbr>MS</code></td>
+<td>int</td>
+<td><code>64</code></td>
+<td>no</td>
+<td>Amount of time to look ahead in the extrapolator.</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>extrapolator_<wbr>max<wbr>Look<wbr>Ahead<wbr>MS</code></td>
+<td>int</td>
+<td><code>128</code></td>
+<td>no</td>
+<td>The amount of time to look ahead if we hear nothing from our partner.</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>force<wbr>Explicit<wbr>Motion<wbr>X</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>x value of explicit motion to force</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>force<wbr>Explicit<wbr>Motion<wbr>Y</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>y value of explicit motion to force</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>force<wbr>Explicit<wbr>Motion<wbr>Z</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>z value of explicit motion to force</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>gradual<wbr>Sensitivity<wbr>Scale<wbr>Time<wbr>Sec</code></td>
+<td>float</td>
+<td><code>0.15</code></td>
+<td>no</td>
+<td>Gradually gives the player look control over this time.</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>gradual<wbr>Sync<wbr>View<wbr>Reset</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>0 - Off, 1 - only pitch 2 - yaw/pitch 3 - constant pitch resting</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>gradual<wbr>Sync<wbr>View<wbr>Reset<wbr>Time</code></td>
+<td>int</td>
+<td><code>200</code></td>
+<td>no</td>
+<td>Gradually moves the player's view back to original angles.</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>groundpoundvelocity</code></td>
+<td>float</td>
+<td><code>-2.0f</code></td>
+<td>no</td>
+<td>velocity if ground pound is performed</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>ignore<wbr>Sprint<wbr>Button</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true, the sprint button will be ignored as a requirement for sprinting</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>jumpheight</code></td>
+<td>float</td>
+<td><code>1.15</code></td>
+<td>no</td>
+<td>approximate height the player can jump</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>jump<wbr>Height<wbr>Panzer<wbr>Ride</code></td>
+<td>float</td>
+<td><code>1.15</code></td>
+<td>no</td>
+<td>approximate height the player can jump while in panzerride</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>jumpheight<wbr>Wheel<wbr>Chair</code></td>
+<td>float</td>
+<td><code>0.15</code></td>
+<td>no</td>
+<td>approximate height the player can jump while in wheelchair</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>knock<wbr>Down<wbr>Player<wbr>At<wbr>Kick</code></td>
+<td>float</td>
+<td><code>200.0f</code></td>
+<td>no</td>
+<td>if knockback by damage is greater than this, the player will get knocked to the ground, entering ground combat</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>lineardamping_<wbr>free</code></td>
+<td>float</td>
+<td><code>5.0</code></td>
+<td>no</td>
+<td>linear damping on the havok body when free floating (air, swimming etc)</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>lineardamping_<wbr>grounded</code></td>
+<td>float</td>
+<td><code>0.01</code></td>
+<td>no</td>
+<td>linear damping on the havok body when connected with the ground</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>maxviewpitch</code></td>
+<td>float</td>
+<td><code>89</code></td>
+<td>no</td>
+<td>amount player's view can look down</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>minviewpitch</code></td>
+<td>float</td>
+<td><code>-89</code></td>
+<td>no</td>
+<td>amount player's view can look up (negative values are up)</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>noclipfriction</code></td>
+<td>float</td>
+<td><code>12.0</code></td>
+<td>no</td>
+<td>friction when in noclip</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>noclipspeed</code></td>
+<td>float</td>
+<td><code>10.0</code></td>
+<td>no</td>
+<td>speed the player can move while in noclip</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>normalheight</code></td>
+<td>float</td>
+<td><code>1.79</code></td>
+<td>no</td>
+<td>height of player's bounding box while standing</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>normal<wbr>View<wbr>Height</code></td>
+<td>float</td>
+<td><code>1.54</code></td>
+<td>no</td>
+<td>height of player's view while standing</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>prone<wbr>Activation<wbr>Window</code></td>
+<td>time_ms</td>
+<td><code>500</code></td>
+<td>no</td>
+<td>hold crouch button for this amount of time to enter prone</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>prone<wbr>Angle<wbr>Enter</code></td>
+<td>float</td>
+<td><code>20.0f</code></td>
+<td>no</td>
+<td>View angle needed for auto prone enter</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>prone<wbr>Angle<wbr>Exit</code></td>
+<td>float</td>
+<td><code>-20.0f</code></td>
+<td>no</td>
+<td>View angle needed for auto prone exit</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>proneccelerate</code></td>
+<td>float</td>
+<td><code>33.0</code></td>
+<td>no</td>
+<td>how fast the player will accelerate when prone</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>proneheight</code></td>
+<td>float</td>
+<td><code>0.29</code></td>
+<td>no</td>
+<td>height of player's bounding box while in prone stance</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>pronesprintspeed</code></td>
+<td>float</td>
+<td><code>2.2</code></td>
+<td>no</td>
+<td>speed the player can move while sprinting while prone</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>radius</code></td>
+<td>float</td>
+<td><code>0.395</code></td>
+<td>no</td>
+<td>radius of player collision capsule</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>rammbockactivationtime</code></td>
+<td>int</td>
+<td><code>200</code></td>
+<td>no</td>
+<td>ms after sprinting is started that rammbock will be activated</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>rammbock<wbr>Dot<wbr>Checker</code></td>
+<td>float</td>
+<td><code>-0.69</code></td>
+<td>no</td>
+<td>value for valid collision check. -1 is a normal fully facing you, 1 is the direction you are running int</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>remote<wbr>Input<wbr>Avg<wbr>Delta<wbr>Count</code></td>
+<td>int</td>
+<td><code>10</code></td>
+<td>no</td>
+<td>The amount of remote input time values that the time delta should be avg'd against</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>runspeed</code></td>
+<td>float</td>
+<td><code>5.2</code></td>
+<td>no</td>
+<td>speed the player can move while running</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>screen<wbr>Particle<wbr>Offset</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>forward offset when placing screen particles</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>soft<wbr>Spring<wbr>Repulsor<wbr>Vel<wbr>Max</code></td>
+<td>float</td>
+<td><code>-30.0</code></td>
+<td>no</td>
+<td>Maximum spring velocity for SoftSpring repulsors</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>soft<wbr>Spring<wbr>Repulsor<wbr>Vel<wbr>Min</code></td>
+<td>float</td>
+<td><code>-5.0</code></td>
+<td>no</td>
+<td>Minimum spring velocity for SoftSpring repulsors</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>sprintaccelerate</code></td>
+<td>float</td>
+<td><code>104.0</code></td>
+<td>no</td>
+<td>how fast the player will accelerate when sprinting</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>sprint<wbr>Back<wbr>Speed<wbr>Ratio</code></td>
+<td>float</td>
+<td><code>0.50</code></td>
+<td>no</td>
+<td>ratio of player max sprint backward speed to forward speed for thruster sprint</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>sprint<wbr>Charge<wbr>Time</code></td>
+<td>float</td>
+<td><code>2000</code></td>
+<td>no</td>
+<td>how many ms to fully recharge sprint</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>sprint<wbr>Enable</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>enable thruster sprint instead of old sprint</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>sprint<wbr>Max<wbr>Time</code></td>
+<td>int</td>
+<td><code>1500</code></td>
+<td>no</td>
+<td>how many ms the player can sprint</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>sprintslidefriction</code></td>
+<td>float</td>
+<td><code>1.5</code></td>
+<td>no</td>
+<td>friction when sprint sliding</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>sprint<wbr>Slide<wbr>Lower<wbr>Speed</code></td>
+<td>float</td>
+<td><code>4.0</code></td>
+<td>no</td>
+<td>Sprint slide will stop at this speed</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>sprintspeed</code></td>
+<td>float</td>
+<td><code>9.0</code></td>
+<td>no</td>
+<td>speed the player can move while sprinting</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>sprintspeed<wbr>Unarmed</code></td>
+<td>float</td>
+<td><code>6.5</code></td>
+<td>no</td>
+<td>speed the player can move while sprinting unarmed</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>stepsize</code></td>
+<td>float</td>
+<td><code>0.32</code></td>
+<td>no</td>
+<td>maximum height the player can step up without jumping</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>stopspeed</code></td>
+<td>float</td>
+<td><code>2.0</code></td>
+<td>no</td>
+<td>which speed we should really stop the player from moving</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>strafe<wbr>Speed<wbr>Ratio</code></td>
+<td>float</td>
+<td><code>0.85</code></td>
+<td>no</td>
+<td>ratio of run speed player can strafe; 1.0 allows strafing at full run speed</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>swim<wbr>Base<wbr>Speed</code></td>
+<td>float</td>
+<td><code>1.5</code></td>
+<td>no</td>
+<td>speed the player moves while swimming, no including boosts from the animations</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>swimheight</code></td>
+<td>float</td>
+<td><code>0.79</code></td>
+<td>no</td>
+<td>height of player's bounding box while swimming</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>togglesprint</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td><strong>yes</strong></td>
+<td>if true will use the toggle sprint on PC</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>torso<wbr>Pitch<wbr>Clamp</code></td>
+<td>float</td>
+<td><code>45.0</code></td>
+<td>no</td>
+<td>max angle torso can turn from body forward around pitch axis</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>use<wbr>Clamp<wbr>User<wbr>Cmd<wbr>Interp<wbr>Percentage</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Disable for testing user commands that don't have a clamped percentage</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>walkaccelerate</code></td>
+<td>float</td>
+<td><code>52.0</code></td>
+<td>no</td>
+<td>how fast the player will accelerate when walking</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>walkfriction</code></td>
+<td>float</td>
+<td><code>10.0</code></td>
+<td>no</td>
+<td>friction when walking</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>walkspeed</code></td>
+<td>float</td>
+<td><code>2.8</code></td>
+<td>no</td>
+<td>speed the player can move while walking</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>walkthreshold</code></td>
+<td>float</td>
+<td><code>68.0</code></td>
+<td>no</td>
+<td>user command threshold where we transition from walking / sneaking to running.</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wanderer<wbr>Activation<wbr>Window</code></td>
+<td>time_ms</td>
+<td><code>300</code></td>
+<td>no</td>
+<td>how quick to doubletap jump to activate wanderer</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wandererheight</code></td>
+<td>float</td>
+<td><code>4.09</code></td>
+<td>no</td>
+<td>height of player's bounding box while standing</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wandererspeed</code></td>
+<td>float</td>
+<td><code>3.6</code></td>
+<td>no</td>
+<td>speed the player can move while in wanderer</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wanderersprintspeed</code></td>
+<td>float</td>
+<td><code>4.5</code></td>
+<td>no</td>
+<td>speed the player can move while in wanderer and sprinting</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wateraccelerate</code></td>
+<td>float</td>
+<td><code>6.0</code></td>
+<td>no</td>
+<td>how fast the player will accelerate when swimming</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>waterfriction</code></td>
+<td>float</td>
+<td><code>0.75</code></td>
+<td>no</td>
+<td>friction when swimming</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wheelchairfriction</code></td>
+<td>float</td>
+<td><code>1.5</code></td>
+<td>no</td>
+<td>friction when in wheelchair</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wheelchairheight</code></td>
+<td>float</td>
+<td><code>1.28</code></td>
+<td>no</td>
+<td>height of player's bounding box while in wheelchair</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wheel<wbr>Chairprintspeed</code></td>
+<td>float</td>
+<td><code>2.3</code></td>
+<td>no</td>
+<td>speed the player moves while in wheelchair and sprinting, no including boosts from the animations</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wheel<wbr>Chair<wbr>Speed</code></td>
+<td>float</td>
+<td><code>1.5</code></td>
+<td>no</td>
+<td>speed the player moves while in wheelchair, no including boosts from the animations</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>wheel<wbr>Chair<wbr>Strafe<wbr>Speed<wbr>Ratio</code></td>
+<td>float</td>
+<td><code>0.65</code></td>
+<td>no</td>
+<td>ratio of run speed player can strafe while in wheelchair; 1.0 allows strafing at full run speed</td>
+</tr>
+<tr>
+<td><code>pm_<wbr>youngheight</code></td>
+<td>float</td>
+<td><code>1.3</code></td>
+<td>no</td>
+<td>height of young player's bounding box while standing</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="poi_">poi_</h2>
+<p>54 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>poi_<wbr>allow3rd<wbr>Person<wbr>Enemy<wbr>Nameplates</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Alpha<wbr>Scale</code></td>
+<td>float</td>
+<td><code>0.75</code></td>
+<td>no</td>
+<td>Scale the alpha when the POI is behind another object</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Angular<wbr>Scale</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Toggle angular scale on POI hud objects</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Artificial<wbr>POILimit</code></td>
+<td>int</td>
+<td><code>25</code></td>
+<td>no</td>
+<td>Although we allocate space for additional POIs past this, we will throw an error if we get this many POIs - so we can evaluate how many we actually need.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>border<wbr>Scale<wbr>X</code></td>
+<td>float</td>
+<td><code>0.75</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>border<wbr>Scale<wbr>Y</code></td>
+<td>float</td>
+<td><code>0.75</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>border<wbr>Splitscreen<wbr>Scale<wbr>X</code></td>
+<td>float</td>
+<td><code>0.59</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>border<wbr>Splitscreen<wbr>Scale<wbr>Y</code></td>
+<td>float</td>
+<td><code>0.6</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>border<wbr>Steps</code></td>
+<td>int</td>
+<td><code>36</code></td>
+<td>no</td>
+<td>Number of points generated on the border ellipse.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>border<wbr>Steps<wbr>Splitscreen</code></td>
+<td>int</td>
+<td><code>24</code></td>
+<td>no</td>
+<td>Number of points generated on the border ellipse in splitscreen.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Bot<wbr>Buddy<wbr>Icon<wbr>Height<wbr>Offset</code></td>
+<td>float</td>
+<td><code>175.0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Debug</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Debug<wbr>Gui_<wbr>draw</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Enable the POI debug gui</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>distance<wbr>Text<wbr>Relative<wbr>Scale</code></td>
+<td>float</td>
+<td><code>0.9f</code></td>
+<td>no</td>
+<td>For poi distance text, this value scales that text relative to the other verb text</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>draw<wbr>Points</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Enemy<wbr>Player<wbr>Name<wbr>Screen<wbr>Offset<wbr>Y</code></td>
+<td>float</td>
+<td><code>10</code></td>
+<td>no</td>
+<td>Offset above player's head for enemy player name</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>focus<wbr>Point<wbr>Offset</code></td>
+<td>float</td>
+<td><code>100.0</code></td>
+<td>no</td>
+<td>Distance to offset the focus point for the POI vertically.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>focus<wbr>Point<wbr>Swf<wbr>Offset</code></td>
+<td>float</td>
+<td><code>-0.2</code></td>
+<td>no</td>
+<td>Focus pois start centered at (0.5,0.5), this will add to the vertical amount of the poi. Positive numbers will move it down.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>focus<wbr>Smoothing<wbr>Range</code></td>
+<td>float</td>
+<td><code>32.0</code></td>
+<td>no</td>
+<td>Distance to smooth the lerp of a POI going from focused to non-focused</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>focus<wbr>Transition<wbr>Duration</code></td>
+<td>int</td>
+<td><code>250</code></td>
+<td>no</td>
+<td>MS to focus/unfocus</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Force<wbr>Offscreen</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Goal<wbr>Height<wbr>Offset</code></td>
+<td>float</td>
+<td><code>105.0f</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Height<wbr>Scaling</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Icon<wbr>Size</code></td>
+<td>float</td>
+<td><code>64.0f</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Icon<wbr>Size<wbr>Splitscreen</code></td>
+<td>float</td>
+<td><code>54.0f</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>last<wbr>Hit<wbr>Timeout</code></td>
+<td>int</td>
+<td><code>3000</code></td>
+<td>no</td>
+<td>Time in milliseconds until enemy player nameplate stops rendering after being hit.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Pivot<wbr>Test</code></td>
+<td>int</td>
+<td><code>3</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Player<wbr>Base<wbr>Offset</code></td>
+<td>float</td>
+<td><code>13</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>player<wbr>Down<wbr>Pulse<wbr>Rate</code></td>
+<td>float</td>
+<td><code>0.015</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Player<wbr>Name<wbr>Screen<wbr>Offset<wbr>Y</code></td>
+<td>float</td>
+<td><code>40</code></td>
+<td>no</td>
+<td>Offset above player's head for player name</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>player<wbr>Scale<wbr>Minimum</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>Percentage scale minimum for player POIs</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>presentation<wbr>VIPIcon<wbr>Height<wbr>Offset</code></td>
+<td>float</td>
+<td><code>175.0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPEnemy<wbr>Name<wbr>Max<wbr>Alpha</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Enemy names can't go beyond this alpha</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPEnemy<wbr>Name<wbr>Max<wbr>Deg</code></td>
+<td>float</td>
+<td><code>5</code></td>
+<td>no</td>
+<td>This angle or higher shows at full opacity</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPEnemy<wbr>Name<wbr>Min<wbr>Alpha</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Enemy names can't go below this alpha</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPEnemy<wbr>Name<wbr>Min<wbr>Deg</code></td>
+<td>float</td>
+<td><code>10</code></td>
+<td>no</td>
+<td>This angle or lower is invisible</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPEnemy<wbr>Name<wbr>Plate<wbr>Distance<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>750</code></td>
+<td>no</td>
+<td>Distance at which to start fading enemy nameplates.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPEnemy<wbr>Name<wbr>Plate<wbr>Fade<wbr>Distance</code></td>
+<td>float</td>
+<td><code>128</code></td>
+<td>no</td>
+<td>Distance to fading enemy nameplates.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPEnemy<wbr>Player<wbr>Nameplate<wbr>Occlusion</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Toggle to use or ignore occlusion query data with POIs on player nameplates</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPNameplate<wbr>Style</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>0 = off, 1 = old style, 2 = new style</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPShow<wbr>Enemy<wbr>Player<wbr>Nameplate</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Toggle displaying enemy nameplates in PVP</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPTeammate<wbr>Name<wbr>Max<wbr>Alpha</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Teammate names can't go beyond this alpha</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPTeammate<wbr>Name<wbr>Max<wbr>Deg</code></td>
+<td>float</td>
+<td><code>10</code></td>
+<td>no</td>
+<td>This angle or higher shows at full opacity</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPTeammate<wbr>Name<wbr>Min<wbr>Alpha</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Teammate names can't go below this alpha</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPTeammate<wbr>Name<wbr>Min<wbr>Deg</code></td>
+<td>float</td>
+<td><code>35</code></td>
+<td>no</td>
+<td>This angle or lower is invisible</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPTeammate<wbr>Name<wbr>Plate<wbr>Distance<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>1280</code></td>
+<td>no</td>
+<td>Distance at which to start fading teammate nameplates.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>PVPTeammate<wbr>Name<wbr>Plate<wbr>Fade<wbr>Distance</code></td>
+<td>float</td>
+<td><code>256</code></td>
+<td>no</td>
+<td>Distance to fading teammate nameplates.</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Ray<wbr>Cast</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Toggle ray casting from viewer to POI entity position</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Ray<wbr>Cast<wbr>Epsilon</code></td>
+<td>float</td>
+<td><code>0.01</code></td>
+<td>no</td>
+<td>Allow for some amount of threshold on the raycast fraction</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>rounded<wbr>Rect<wbr>Radius</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>rounded<wbr>Rect<wbr>Steps<wbr>Per<wbr>Quad</code></td>
+<td>int</td>
+<td><code>5</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>scale<wbr>Minimum</code></td>
+<td>float</td>
+<td><code>0.75f</code></td>
+<td>no</td>
+<td>Percentage scale minimum for POI</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>use<wbr>PVPPlayer<wbr>Names</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Use the new pvp poi player name code</td>
+</tr>
+<tr>
+<td><code>poi_<wbr>Verb<wbr>Screen<wbr>Offset<wbr>Y</code></td>
+<td>float</td>
+<td><code>4</code></td>
+<td>no</td>
+<td>Offset above icon for verb text</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="springcam_">springcam_</h2>
+<p>17 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Always<wbr>Snap</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>always snap position and orientation to desired values</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Auto<wbr>Center<wbr>Spring<wbr>C</code></td>
+<td>float</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>spring C value for auto center spring</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Auto<wbr>Center<wbr>Spring<wbr>K</code></td>
+<td>float</td>
+<td><code>150</code></td>
+<td>no</td>
+<td>spring K value for auto center spring ( can be overridden per anim )</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Auto<wbr>Center<wbr>Spring<wbr>M</code></td>
+<td>float</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>spring M value for auto center spring</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Blend<wbr>Spring<wbr>K</code></td>
+<td>float</td>
+<td><code>300</code></td>
+<td>no</td>
+<td>spring constant for blend spring controlling blend to and from the player view</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Clip<wbr>Test<wbr>Movement</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>clip test the camera's movement against solid geometry</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Constraint<wbr>Cone<wbr>Degs</code></td>
+<td>float</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>angle of LOOK_ADD_HEADING and LOOK_ADD_HEADING_AUTOCENTER mode constraint cone in degrees, centered on animated forward direction</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>show debug info on the spring cam</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Debug<wbr>Parent<wbr>Info</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>trace the updates due to parent movement</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Debug<wbr>Trace<wbr>Blend</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>trace the camera blending (0=off, 1=positions only, 2=angles only, 3=positions and angles)</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Debug<wbr>Trace<wbr>States</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>trace the camera states to the console</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Force<wbr>Blend<wbr>Duration<wbr>MS</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>forces the blend duration</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Force<wbr>Calc<wbr>View<wbr>Stage</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>0=STAGE_DEFAULT, 1=STAGE_UPDATE, 2=STAGE_DRAW</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Force<wbr>Follow<wbr>Blend<wbr>Mode</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>force the blend mode, or -1 to ignore (0=SMOOTH, 1=SMOOTH_SNAP_SMOOTH, 2=SNAP_SNAP_SMOOTH, 3=SNAP)</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Force<wbr>Look<wbr>Blend<wbr>Mode</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>force the blend mode, or -1 to ignore (0=SMOOTH, 1=SMOOTH_SNAP_SMOOTH, 2=SNAP_SNAP_SMOOTH, 3=SNAP)</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Force<wbr>Look<wbr>Mode</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>force the look mode, or -1 to ignore (0=NONE, 1=HEADING, 2=POSITION, 3=ADD_POSITION)</td>
+</tr>
+<tr>
+<td><code>spring<wbr>Cam_<wbr>Update<wbr>View</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>should the spring cam update the view?</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="view_">view_</h2>
+<p>85 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>view_<wbr>allow<wbr>Full<wbr>Screen<wbr>Flash</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Allow a full-screen flash when health gets low</td>
+</tr>
+<tr>
+<td><code>view_<wbr>amount<wbr>To<wbr>Fade</code></td>
+<td>int</td>
+<td><code>2</code></td>
+<td>no</td>
+<td>Amount to fade the full-screen damage tint</td>
+</tr>
+<tr>
+<td><code>view_<wbr>blur_<wbr>max</code></td>
+<td>float</td>
+<td><code>3</code></td>
+<td>no</td>
+<td>view blur from damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>blur_<wbr>min</code></td>
+<td>float</td>
+<td><code>1.5</code></td>
+<td>no</td>
+<td>view blur from damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>blur<wbr>Time_<wbr>max</code></td>
+<td>float</td>
+<td><code>2.0</code></td>
+<td>no</td>
+<td>view blur time from damage in seconds</td>
+</tr>
+<tr>
+<td><code>view_<wbr>blur<wbr>Time_<wbr>min</code></td>
+<td>float</td>
+<td><code>0.35</code></td>
+<td>no</td>
+<td>view blur time from damage in seconds</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage_<wbr>max<wbr>Scale</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>highest visual effect.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage_<wbr>min<wbr>Scale</code></td>
+<td>float</td>
+<td><code>0.05</code></td>
+<td>no</td>
+<td>lowest visual effect</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage_<wbr>rescale<wbr>Post<wbr>Clamp</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Rescales the damage scale after clamping between min and max</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Blur</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>show blur when taking damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Effect<wbr>Random<wbr>Texture<wbr>Flip</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Feedback<wbr>Melee<wbr>Only</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Overlay<wbr>Parm<wbr>Base<wbr>Cooldown<wbr>Rate</code></td>
+<td>float</td>
+<td><code>0.05</code></td>
+<td>no</td>
+<td>Base cooldown rate for overlay intensity</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Overlay<wbr>Parm<wbr>Effective<wbr>Max<wbr>Heath</code></td>
+<td>float</td>
+<td><code>100.0</code></td>
+<td>no</td>
+<td>Value to use for MaxHealth in calculations</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Overlay<wbr>Parm<wbr>Extra<wbr>Cooldown<wbr>For<wbr>Health</code></td>
+<td>float</td>
+<td><code>0.7</code></td>
+<td>no</td>
+<td>How much current health contributes to overlay cooldown</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Overlay<wbr>Parm<wbr>Max<wbr>Intensity<wbr>Clamp</code></td>
+<td>float</td>
+<td><code>1.5</code></td>
+<td>no</td>
+<td>The maximum value the overlay intensity can be</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Overlay<wbr>Parm<wbr>Min<wbr>Damage<wbr>To<wbr>Affect<wbr>Overlay</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Smallest amount of damage that will increase overlay intensity</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Overlay<wbr>Parm<wbr>Min<wbr>To<wbr>Add</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>Minimum amount to increase overlay intensity when damaged</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Overlay<wbr>Parm<wbr>Scalar<wbr>For<wbr>Current<wbr>Health</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>How much current health contributes to increasing overlay intensity</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Overlay<wbr>Parm<wbr>Scalar<wbr>For<wbr>Damage</code></td>
+<td>float</td>
+<td><code>2.0</code></td>
+<td>no</td>
+<td>How much to scale intensity increased from damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Overlay<wbr>Use<wbr>Alternate<wbr>Version</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>An alternate version of controlling the low-health overlay based on damage and health</td>
+</tr>
+<tr>
+<td><code>view_<wbr>damage<wbr>Ring3<wbr>DEnabled</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>If true, the 3D version of the threat indicator ring will be used</td>
+</tr>
+<tr>
+<td><code>view_<wbr>debug<wbr>DMG</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Prints out damage debug information</td>
+</tr>
+<tr>
+<td><code>view_<wbr>dof<wbr>Blend<wbr>In</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Blend in depth of field by changing bokeh disc radius instead of moving focus plane</td>
+</tr>
+<tr>
+<td><code>view_<wbr>dof<wbr>Return<wbr>Far<wbr>End</code></td>
+<td>float</td>
+<td><code>0.0f</code></td>
+<td>no</td>
+<td>What value to return to when ending DoF</td>
+</tr>
+<tr>
+<td><code>view_<wbr>dof<wbr>Return<wbr>Far<wbr>Start</code></td>
+<td>float</td>
+<td><code>0.0f</code></td>
+<td>no</td>
+<td>What value to return to when ending DoF</td>
+</tr>
+<tr>
+<td><code>view_<wbr>dof<wbr>Return<wbr>Near<wbr>End</code></td>
+<td>float</td>
+<td><code>0.0f</code></td>
+<td>no</td>
+<td>What value to return to when ending DoF</td>
+</tr>
+<tr>
+<td><code>view_<wbr>dof<wbr>Return<wbr>Near<wbr>Start</code></td>
+<td>float</td>
+<td><code>0.0f</code></td>
+<td>no</td>
+<td>What value to return to when ending DoF</td>
+</tr>
+<tr>
+<td><code>view_<wbr>double<wbr>Vision</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>show double vision when taking damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>double<wbr>Vision_<wbr>max</code></td>
+<td>float</td>
+<td><code>0.05</code></td>
+<td>no</td>
+<td>view double vision amount from damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>double<wbr>Vision_<wbr>min</code></td>
+<td>float</td>
+<td><code>0.02</code></td>
+<td>no</td>
+<td>view double vision amount from damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>double<wbr>Vision<wbr>Period</code></td>
+<td>int</td>
+<td><code>500</code></td>
+<td>no</td>
+<td>how many ms for a full period</td>
+</tr>
+<tr>
+<td><code>view_<wbr>double<wbr>Vision<wbr>Period<wbr>Effect</code></td>
+<td>float</td>
+<td><code>0.025</code></td>
+<td>no</td>
+<td>how big an effect the period has on the double vision</td>
+</tr>
+<tr>
+<td><code>view_<wbr>double<wbr>Vision<wbr>Time_<wbr>max</code></td>
+<td>float</td>
+<td><code>2.0</code></td>
+<td>no</td>
+<td>view double vision amount from damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>double<wbr>Vision<wbr>Time_<wbr>min</code></td>
+<td>float</td>
+<td><code>0.25</code></td>
+<td>no</td>
+<td>view double vision amount from damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>draw<wbr>DMG</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Draws debug lines in the positions of damage feedback textures</td>
+</tr>
+<tr>
+<td><code>view_<wbr>health<wbr>Post<wbr>Process<wbr>Enable</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Uses a post process effect for low health state tweaked via idDeclPlayerProps::damageFeedback_t::healthToStartFullScreenFlash</td>
+</tr>
+<tr>
+<td><code>view_<wbr>health<wbr>Post<wbr>Process<wbr>Ramp<wbr>Delta</code></td>
+<td>float</td>
+<td><code>0.05f</code></td>
+<td>no</td>
+<td>How fast should we ramp to/from the low health/glory kill state</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Amplitude_<wbr>max</code></td>
+<td>float</td>
+<td><code>2</code></td>
+<td>no</td>
+<td>view kick amplitude from damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Amplitude_<wbr>min</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>view kick amplitude from damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Amplitude<wbr>Rotation_<wbr>max</code></td>
+<td>float</td>
+<td><code>2</code></td>
+<td>no</td>
+<td>view kick rotation amplitude from explosive damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Amplitude<wbr>Rotation_<wbr>min</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>view kick rotation amplitude from explosive damage</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Lerp<wbr>Out<wbr>Elapsed</code></td>
+<td>float</td>
+<td><code>0.3</code></td>
+<td>no</td>
+<td>Ratio between lerping out and lerping back in for the kick</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Offset</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Enables view kick offset</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Offset<wbr>Amplitude_<wbr>max</code></td>
+<td>float</td>
+<td><code>5</code></td>
+<td>no</td>
+<td>Offset distance from damage in game units. This distance will be used if you take an amount of damage equal to your maximum health.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Offset<wbr>Amplitude_<wbr>min</code></td>
+<td>float</td>
+<td><code>4</code></td>
+<td>no</td>
+<td>Offset distance from damage in game units. This distance will be used if you take 1 damage.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Offset<wbr>Time_<wbr>max</code></td>
+<td>float</td>
+<td><code>0.3</code></td>
+<td>no</td>
+<td>Offset time from damage in seconds. Offset will last this long if you take an amount of damage equal to your maximum health.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Offset<wbr>Time_<wbr>min</code></td>
+<td>float</td>
+<td><code>0.15</code></td>
+<td>no</td>
+<td>Offset time from damage in seconds. Offset will last this long even if you take 1 damage.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Time_<wbr>max</code></td>
+<td>float</td>
+<td><code>0.300</code></td>
+<td>no</td>
+<td>view kick time from damage in seconds</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Time_<wbr>min</code></td>
+<td>float</td>
+<td><code>0.150</code></td>
+<td>no</td>
+<td>view kick time from damage in seconds</td>
+</tr>
+<tr>
+<td><code>view_<wbr>kick<wbr>Up<wbr>From<wbr>Front</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>If true, damage from your front will kick your view up. Otherwise, it will go down. (note: from the back it's the opposite)</td>
+</tr>
+<tr>
+<td><code>view_<wbr>max<wbr>Damage<wbr>For<wbr>Full<wbr>Damage<wbr>Feedback</code></td>
+<td>float</td>
+<td><code>40.0f</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>view_<wbr>max<wbr>Time<wbr>Between<wbr>Full<wbr>Screen<wbr>Flash<wbr>MS</code></td>
+<td>int</td>
+<td><code>1250</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>view_<wbr>min<wbr>Time<wbr>Between<wbr>Full<wbr>Screen<wbr>Flash<wbr>MS</code></td>
+<td>int</td>
+<td><code>500</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>view_<wbr>mp<wbr>View<wbr>Kick</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>MP view kick method</td>
+</tr>
+<tr>
+<td><code>view_<wbr>outer<wbr>Damage<wbr>Alternate<wbr>Direct<wbr>Hit<wbr>Angle</code></td>
+<td>float</td>
+<td><code>15.0</code></td>
+<td>no</td>
+<td>Damage vectors on unit circle within this angle will be shaded</td>
+</tr>
+<tr>
+<td><code>view_<wbr>outer<wbr>Damage<wbr>Alternate<wbr>Direct<wbr>Hit<wbr>Angle<wbr>Bleed<wbr>Over</code></td>
+<td>float</td>
+<td><code>15.0</code></td>
+<td>no</td>
+<td>Maximum bleedover from direct hit angle</td>
+</tr>
+<tr>
+<td><code>view_<wbr>outer<wbr>Damage<wbr>Alternate<wbr>Overlay</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true, will use an alternate overlay specified in postprocess.mrpr</td>
+</tr>
+<tr>
+<td><code>view_<wbr>outer<wbr>Damage<wbr>Minimum<wbr>Bleed<wbr>Over<wbr>Intensity</code></td>
+<td>float</td>
+<td><code>0.5</code></td>
+<td>no</td>
+<td>Past what intensity should the bleed over angle be used.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>score<wbr>Debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>debug points ...</td>
+</tr>
+<tr>
+<td><code>view_<wbr>score<wbr>Fade</code></td>
+<td>int</td>
+<td><code>2500</code></td>
+<td>no</td>
+<td>Fade time for score in milli</td>
+</tr>
+<tr>
+<td><code>view_<wbr>score<wbr>Fade<wbr>Scale</code></td>
+<td>float</td>
+<td><code>2.25</code></td>
+<td>no</td>
+<td>How much the text should scale using the table lookup</td>
+</tr>
+<tr>
+<td><code>view_<wbr>score<wbr>Line<wbr>Delay</code></td>
+<td>float</td>
+<td><code>0.15</code></td>
+<td>no</td>
+<td>Delay between score lines in seconds</td>
+</tr>
+<tr>
+<td><code>view_<wbr>score<wbr>Multi<wbr>Line<wbr>Delay</code></td>
+<td>float</td>
+<td><code>0.175</code></td>
+<td>no</td>
+<td>Delay before multiple lines starts showin in seconds</td>
+</tr>
+<tr>
+<td><code>view_<wbr>score<wbr>Scale</code></td>
+<td>float</td>
+<td><code>0.4</code></td>
+<td>no</td>
+<td>How much the score text should be scaled</td>
+</tr>
+<tr>
+<td><code>view_<wbr>score<wbr>Shadow<wbr>Offset</code></td>
+<td>float</td>
+<td><code>0.75</code></td>
+<td>no</td>
+<td>How much the score text drop-shadow should be offseted</td>
+</tr>
+<tr>
+<td><code>view_<wbr>score<wbr>Travel</code></td>
+<td>float</td>
+<td><code>0.3</code></td>
+<td>no</td>
+<td>Travel for score</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Crack<wbr>Fade<wbr>Time</code></td>
+<td>float</td>
+<td><code>1.0f</code></td>
+<td>no</td>
+<td>The time (in seconds) it takes for screen cracks to fade in/out.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Crack<wbr>Heavy<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>30</code></td>
+<td>no</td>
+<td>The amount of health under which to consider the player critically damaged.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Crack<wbr>Light<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>75</code></td>
+<td>no</td>
+<td>The amount of health under which to consider the player lightly damaged.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Crack<wbr>Medium<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>50</code></td>
+<td>no</td>
+<td>The amount of health under which to consider the player somewhat damaged.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Cracks<wbr>Enabled</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Whether or not to enable screen cracks when players are damaged.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Cracks<wbr>FXEnabled</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Whether or not to start / stop FX events for various screen crack damage levels.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Damage<wbr>Blood<wbr>Splatter<wbr>Time</code></td>
+<td>float</td>
+<td><code>1.0f</code></td>
+<td>no</td>
+<td>The amount of time to leave blood splatters on screen before they fade out.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Damage<wbr>Enabled</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Whether or not to enable screen damage effects (blood splatter, helmet cracks).</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Damage<wbr>Front<wbr>Radius</code></td>
+<td>float</td>
+<td><code>0.3f</code></td>
+<td>no</td>
+<td>The half-angle (in radians) in front of the player at which damage will be considered to be coming from both the left and right for screen damage effect purposes.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Damage<wbr>Heavy<wbr>Damage<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>25</code></td>
+<td>no</td>
+<td>The amount of damage to consider heavy, for displaying blood splatter when damaged.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>screen<wbr>Damage<wbr>Medium<wbr>Damage<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>10</code></td>
+<td>no</td>
+<td>The amount of damage to consider medium, for displaying blood splatter when damaged.</td>
+</tr>
+<tr>
+<td><code>view_<wbr>show<wbr>Player<wbr>Damage<wbr>View<wbr>Effect</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>view_<wbr>show<wbr>World<wbr>Markers</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Show the interaction markers</td>
+</tr>
+<tr>
+<td><code>view_<wbr>skip<wbr>Damage<wbr>Effect</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>skip the screen damage effects</td>
+</tr>
+<tr>
+<td><code>view_<wbr>skip<wbr>Dof</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Don't use the view DOF lerpers</td>
+</tr>
+<tr>
+<td><code>view_<wbr>skip<wbr>Outer<wbr>Damage<wbr>Effect</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Skip outer edge damage effect</td>
+</tr>
+<tr>
+<td><code>view_<wbr>skip<wbr>Shakes</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>If true, skip view shakes</td>
+</tr>
+<tr>
+<td><code>view_<wbr>skip<wbr>Spike<wbr>Damage<wbr>Effect</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Skip spike damage effect</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="smaller-prefixes">Smaller prefixes</h2>
+<p>62 cvars.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Exposed</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>af_<wbr>blend<wbr>Duration</code></td>
+<td>float</td>
+<td><code>0.2</code></td>
+<td>no</td>
+<td>duration over which animation will blend into ragdoll once ragdoll is active</td>
+</tr>
+<tr>
+<td><code>af_<wbr>force<wbr>Scale</code></td>
+<td>float</td>
+<td><code>0.3</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>af_<wbr>highlight<wbr>Body</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>name of the body to highlight</td>
+</tr>
+<tr>
+<td><code>af_<wbr>highlight<wbr>Constraint</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>no</td>
+<td>name of the constraint to highlight</td>
+</tr>
+<tr>
+<td><code>af_<wbr>spam<wbr>Joint<wbr>Warnings</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 - spam the console with joint warnings</td>
+</tr>
+<tr>
+<td><code>af_<wbr>sync<wbr>Test<wbr>Margin</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>Collision fraction margin</td>
+</tr>
+<tr>
+<td><code>af_<wbr>sync<wbr>Void<wbr>Check<wbr>Distance</code></td>
+<td>float</td>
+<td><code>0.4</code></td>
+<td>no</td>
+<td>How far to do void test</td>
+</tr>
+<tr>
+<td><code>aic_<wbr>default<wbr>Difficulty</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Default difficulty of ai conductor.</td>
+</tr>
+<tr>
+<td><code>ai<wbr>Cam_<wbr>lerp<wbr>Scale</code></td>
+<td>float</td>
+<td><code>1.0f</code></td>
+<td>no</td>
+<td>float</td>
+</tr>
+<tr>
+<td><code>ai<wbr>Cam_<wbr>scale</code></td>
+<td>float</td>
+<td><code>0.0f</code></td>
+<td>no</td>
+<td>float</td>
+</tr>
+<tr>
+<td><code>aievents_<wbr>print</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 to print AI events to the console.</td>
+</tr>
+<tr>
+<td><code>aievents_<wbr>show</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>1 to show ai event origins, 2 to show event bounds, &gt; 2 = millseconds to show event bounds</td>
+</tr>
+<tr>
+<td><code>aim<wbr>Assist_<wbr>adhes_<wbr>Look<wbr>Speed<wbr>Threshold</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>no</td>
+<td>Speed Threshold that determines how fast the assistee needs to look before adhesion is allowed to kick in</td>
+</tr>
+<tr>
+<td><code>aim<wbr>Assist_<wbr>Interpolate<wbr>Values_<wbr>Rate</code></td>
+<td>float</td>
+<td><code>0.65</code></td>
+<td>no</td>
+<td>The Rate in which we Interpolate the friction / Adhesion</td>
+</tr>
+<tr>
+<td><code>aimtarget_<wbr>max<wbr>Distance</code></td>
+<td>float</td>
+<td><code>500.0</code></td>
+<td>no</td>
+<td>The Max Distance a target can be from the player to be considered a target</td>
+</tr>
+<tr>
+<td><code>aim<wbr>Target_<wbr>view<wbr>Angleimportance</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>How important view angle is to our target scoring function</td>
+</tr>
+<tr>
+<td><code>cam_<wbr>cutscene<wbr>Freecam</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>0 = Normal debug free cam, 1 = Use the cutscene camera to setup camera effects when in freecam, 2 = Use cutscene setup excluding fov &amp; dof</td>
+</tr>
+<tr>
+<td><code>cam_<wbr>debug<wbr>Rendering</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>cause anim cameras to render a visualisation of DoF etc...</td>
+</tr>
+<tr>
+<td><code>cam_<wbr>lerp<wbr>Rate</code></td>
+<td>float</td>
+<td><code>0.25</code></td>
+<td>no</td>
+<td>follow camera lerp rate</td>
+</tr>
+<tr>
+<td><code>cam_<wbr>max<wbr>Dist</code></td>
+<td>float</td>
+<td><code>500.0</code></td>
+<td>no</td>
+<td>max distance a utility camera can be from its target.</td>
+</tr>
+<tr>
+<td><code>cam_<wbr>min<wbr>Dist</code></td>
+<td>float</td>
+<td><code>150.0</code></td>
+<td>no</td>
+<td>min distance a utility camera can be from its target.</td>
+</tr>
+<tr>
+<td><code>cam_<wbr>target<wbr>Lerp<wbr>Rate</code></td>
+<td>float</td>
+<td><code>0.1</code></td>
+<td>no</td>
+<td>follow camera's target lerp rate</td>
+</tr>
+<tr>
+<td><code>enigma_<wbr>complete</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>unlock active puzzle</td>
+</tr>
+<tr>
+<td><code>enigma_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>print information about enigma related things</td>
+</tr>
+<tr>
+<td><code>enigma_<wbr>invert<wbr>Controls</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Invert enigma controls.</td>
+</tr>
+<tr>
+<td><code>enigma_<wbr>reinitialize</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>set this to reinitialize the enigma menu state again</td>
+</tr>
+<tr>
+<td><code>env<wbr>Suit_<wbr>debug<wbr>Hazards</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Enables Designers to see what their intervals are doing</td>
+</tr>
+<tr>
+<td><code>gore_<wbr>max<wbr>Living<wbr>Gore<wbr>Ents</code></td>
+<td>int</td>
+<td><code>10</code></td>
+<td>no</td>
+<td>How many gore entities can be out in the world at one time</td>
+</tr>
+<tr>
+<td><code>hurt<wbr>Surface_<wbr>bounds_<wbr>x</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>hurt<wbr>Surface_<wbr>bounds_<wbr>y</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>hurt<wbr>Surface_<wbr>bounds_<wbr>z</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>hurt<wbr>Surface_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>hurt<wbr>Surface_<wbr>offset_<wbr>x</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>hurt<wbr>Surface_<wbr>offset_<wbr>y</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>hurt<wbr>Surface_<wbr>offset_<wbr>z</code></td>
+<td>float</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>hurt<wbr>Surface_<wbr>particle<wbr>Index</code></td>
+<td>int</td>
+<td><code>-1</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>interactable_<wbr>debug</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Draws debug information for interactables. 1 = CurrentState</td>
+</tr>
+<tr>
+<td><code>interact<wbr>Door_<wbr>Debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true show debug info on screen for the interact door entities</td>
+</tr>
+<tr>
+<td><code>inventory_<wbr>serialize_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug inventory serializiation</td>
+</tr>
+<tr>
+<td><code>loot_<wbr>enable</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Enable loot dropping</td>
+</tr>
+<tr>
+<td><code>loot_<wbr>no<wbr>Drop<wbr>Chance</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Drops will always spawn, no random chance</td>
+</tr>
+<tr>
+<td><code>perk_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true show debug info on screen for the upgrade tree and upgrades</td>
+</tr>
+<tr>
+<td><code>pickup_<wbr>tractor<wbr>Accel</code></td>
+<td>float</td>
+<td><code>0.000001</code></td>
+<td>no</td>
+<td>acceleration to frac along pickup-to-player</td>
+</tr>
+<tr>
+<td><code>pickup_<wbr>tractor<wbr>Initial<wbr>Rate</code></td>
+<td>float</td>
+<td><code>0.05</code></td>
+<td>no</td>
+<td>starting frac along pickup-to-player</td>
+</tr>
+<tr>
+<td><code>pickup_<wbr>tractor<wbr>Range</code></td>
+<td>float</td>
+<td><code>150</code></td>
+<td>no</td>
+<td>distance of the tractor test</td>
+</tr>
+<tr>
+<td><code>pickuplog_<wbr>allownextitem</code></td>
+<td>int</td>
+<td><code>350</code></td>
+<td>no</td>
+<td>How fast can the next item be added</td>
+</tr>
+<tr>
+<td><code>pickuplog_<wbr>fadetotal</code></td>
+<td>int</td>
+<td><code>2000</code></td>
+<td>no</td>
+<td>How long before fully faded out</td>
+</tr>
+<tr>
+<td><code>pickuplog_<wbr>itemmovement</code></td>
+<td>int</td>
+<td><code>35</code></td>
+<td>no</td>
+<td>How many pixels to tween on each step</td>
+</tr>
+<tr>
+<td><code>pickuplog_<wbr>itemmovementspeed</code></td>
+<td>int</td>
+<td><code>200</code></td>
+<td>no</td>
+<td>How fast the tween goes</td>
+</tr>
+<tr>
+<td><code>pickuplog_<wbr>stagetimernext</code></td>
+<td>int</td>
+<td><code>350</code></td>
+<td>no</td>
+<td>How long before moving to the next stage</td>
+</tr>
+<tr>
+<td><code>presentable<wbr>Weapon_<wbr>time<wbr>Before<wbr>Release<wbr>Trigger</code></td>
+<td>int</td>
+<td><code>250</code></td>
+<td>no</td>
+<td>Debug PresentableWeapons</td>
+</tr>
+<tr>
+<td><code>proj_<wbr>emp_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Enable projectile EMP debug info.</td>
+</tr>
+<tr>
+<td><code>prop_<wbr>debug<wbr>Lifetime</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug output for the lifecycle of all props</td>
+</tr>
+<tr>
+<td><code>prop_<wbr>force<wbr>Regen<wbr>Upkeep<wbr>When<wbr>Full</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>for debugging. forces the upkeep even if the player is full</td>
+</tr>
+<tr>
+<td><code>prop_<wbr>pool_<wbr>size</code></td>
+<td>int</td>
+<td><code>256</code></td>
+<td>no</td>
+<td>Size of the shared re-spawnable pool</td>
+</tr>
+<tr>
+<td><code>prop_<wbr>secret_<wbr>debug</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Debug the secrets 1 show info about spawning and using, do we need unlocking as well</td>
+</tr>
+<tr>
+<td><code>prop_<wbr>separateicons</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>Use icon on prop far away and up close on the use gui</td>
+</tr>
+<tr>
+<td><code>turret_<wbr>debug<wbr>Targeting</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>tutorial_<wbr>enable</code></td>
+<td>bool</td>
+<td><code>1</code></td>
+<td>no</td>
+<td>Enable displaying of tutorials</td>
+</tr>
+<tr>
+<td><code>upgrade_<wbr>debug</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true show debug info on screen for the upgrade tree and upgrades</td>
+</tr>
+<tr>
+<td><code>weapon_<wbr>debug<wbr>LKW</code></td>
+<td>bool</td>
+<td><code>0</code></td>
+<td>no</td>
+<td>if true draw debug and show debug info for LKW</td>
+</tr>
+<tr>
+<td><code>weapon_<wbr>lkw_<wbr>outer_<wbr>spread</code></td>
+<td>float</td>
+<td><code>2.0</code></td>
+<td>no</td>
+<td>extrude * this 1.0f straight line</td>
+</tr>
+</tbody>
+</table></div></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNC-CVar-Catalog.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Cvars: Wolfenstein II: The New Colossus</a><a class="next" href="TNC-CVar-Catalog-Rendering.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC Cvars: Rendering</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cvars: Wolfenstein: The New Order – Wolfenstein Modloader</title>
+<meta name="description" content="All 3,194 settings of Wolfenstein: The New Order, which ones count as cheats, and how to set them.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#tno"><span class="en">The New Order</span><span class="de">The New Order</span></a></p>
+<h1>Cvars: Wolfenstein: The New Order</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNO-CVar-Catalog"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#where-the-data-comes-from">Where the data comes from</a></li><li><a href="#status-cheat-normal-saved-init-only-read-only">Status: cheat, normal, saved, init-only, read-only</a></li><li><a href="#how-to-set-a-cvar">How to set a cvar</a></li><li><a href="#pages">Pages</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Console variables (<span class="t" data-t="cvar">cvars</span>) are the named settings of the game engine, such as field of view or HUD on/off. This page is the start of the full catalogue for Wolfenstein: The New Order, read from the game&#x27;s own list in a memory snapshot of the running game. In this game most settings count as cheats: the game quietly resets them at start-up if you set them the normal way. The page explains which route works for which setting, which parts are proven in the game and which are only read from the code, and splits the cvars over three pages.</p><ul><li>3,194 cvars, all listed, with the developers&#x27; own description, the default value and, where the game defines one, the allowed range.</li><li>2,865 count as cheats, because the engine makes every setting a cheat unless it is explicitly marked otherwise. A status column marks cheat, normal, saved, start-up-only and read-only settings.</li><li>A cheat cvar given as a launch option (+name value) is reset at start-up. &#x27;toggle name value value&#x27; sets it anyway; the loader now does this, but it is not yet tested in the game.</li><li>Not cheats, so they work directly: g_permaGodMode, g_fov and g_damageScale. g_infiniteAmmo and pm_runspeed are cheats.</li><li>The console opens with Ctrl+^ according to the code (not yet tried); god, noclip, notarget, give and spawn do not exist in this game.</li></ul></div><div class="de"><p class="lede">Konsolenvariablen (<span class="t" data-t="cvar">Cvars</span>) sind die benannten Einstellungen der Spiel-Engine, etwa Sichtfeld oder HUD an/aus. Diese Seite ist der Einstieg in den vollständigen Katalog für Wolfenstein: The New Order, gelesen aus der eigenen Liste des Spiels in einem Speicherabbild des laufenden Spiels. In diesem Spiel gelten die meisten Einstellungen als Cheat: Das Spiel setzt sie beim Start stillschweigend zurück, wenn man sie auf dem normalen Weg setzt. Die Seite erklärt, welcher Weg für welche Einstellung funktioniert, was im Spiel bewiesen und was nur aus dem Code gelesen ist, und verteilt die Cvars auf drei Seiten.</p><ul><li>3.194 Cvars, alle aufgelistet, mit der Originalbeschreibung der Entwickler, dem Standardwert und, wo das Spiel einen festlegt, dem erlaubten Bereich.</li><li>2.865 gelten als Cheat, weil die Engine jede Einstellung zum Cheat macht, die nicht ausdrücklich anders markiert ist. Eine Status-Spalte zeigt Cheat, normal, gespeichert, nur beim Start setzbar und schreibgeschützt.</li><li>Ein Cheat-Cvar als Startoption (+name wert) wird beim Start zurückgesetzt. „toggle name wert wert“ setzt ihn trotzdem; der Loader macht das jetzt so, im Spiel getestet ist es aber noch nicht.</li><li>Keine Cheats, wirken also direkt: g_permaGodMode, g_fov und g_damageScale. g_infiniteAmmo und pm_runspeed sind Cheats.</li><li>Die Konsole öffnet sich laut Code mit Strg+^ (noch nicht ausprobiert); god, noclip, notarget, give und spawn gibt es in diesem Spiel nicht.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><blockquote>
+<p>Generated by <code>tools/build_cvar_wiki.py</code> from the engine's own cvar registry. Edits made here are overwritten by the next run.</p>
+</blockquote>
+<p>A <strong>cvar</strong> (console variable) is a named engine setting: field of view, HUD on or off, a damage factor, a debug overlay. Each one has a name, a type, a default value and usually a one-line help text written by the developers. This catalogue lists all <strong>3194 cvars</strong> of Wolfenstein: The New Order with the engine's own description and default value, whether the game treats each one as a cheat, and the allowed range where the engine declares one.</p>
+<h2 id="where-the-data-comes-from">Where the data comes from</h2>
+<ul>
+<li><strong>Source:</strong> the engine's own cvar list. Every <code>idCVar</code> links itself into it when it is constructed, and the startup cheat reset walks the same list. It was read from a read-only memory capture of the running <code>WolfNewOrder_x64.exe</code>; nothing was launched for it. Raw data in the repository: <code>docs/cvars_tno.json</code>, written by <code>tools/extract_cvars_tno.py</code>.</li>
+<li><strong>Count:</strong> 3194 registered cvars, <strong>all listed</strong>, including the 8 read-only and 38 init-only ones.</li>
+<li><strong>Default</strong> is the reset value declared in the program, not a value seen in one session.</li>
+<li><strong>Range:</strong> 130 cvars declare a minimum and maximum, 4 a list of allowed values; the engine clamps a value to the declared range (read from the code). Empty means none is declared.</li>
+<li><strong>Description</strong> is the developers' help text, verbatim. 349 cvars have none (—).</li>
+<li><strong>Type:</strong> bool (1189), float (1054), int (788), string (163).</li>
+</ul>
+<h2 id="status-cheat-normal-saved-init-only-read-only">Status: cheat, normal, saved, init-only, read-only</h2>
+<p><strong>Cheat is the default.</strong> The engine marks every cvar as a cheat unless it is registered as non-cheat, init-only, read-only or saved (read from the constructor). The Status column shows what that means for each cvar:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Status</th>
+<th style="text-align: right;">Count</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>cheat</strong></td>
+<td style="text-align: right;">2865</td>
+<td>Wiped by the cheat reset at startup, refused when typed as <code>name value</code>. Set it with <code>toggle</code> (below).</td>
+</tr>
+<tr>
+<td>normal</td>
+<td style="text-align: right;">114</td>
+<td>Not a cheat: <code>+name value</code> on the launch line works.</td>
+</tr>
+<tr>
+<td>saved</td>
+<td style="text-align: right;">169</td>
+<td>Not a cheat, and the game writes the value to its own <code>wolfConfig.cfg</code>, so a value set once stays until it is set back.</td>
+</tr>
+<tr>
+<td>init-only</td>
+<td style="text-align: right;">38</td>
+<td>Can only be set on the command line at startup.</td>
+</tr>
+<tr>
+<td>read-only</td>
+<td style="text-align: right;">8</td>
+<td>Cannot be set at all.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="how-to-set-a-cvar">How to set a cvar</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Non-cheat cvar</th>
+<th>Cheat cvar</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Launch argument <code>+name value</code></td>
+<td>set, init-only ones included</td>
+<td>set, then wiped by the startup cheat reset; the log says <code>Resetting cheat cvar: &lt;name&gt;</code></td>
+<td>measured in game (<a href="Modding-Limits.html">Modding-Limits</a> §1)</td>
+</tr>
+<tr>
+<td>Launch argument <code>+toggle name value value</code></td>
+<td>set</td>
+<td>set: startup commands run after the reset, and <code>toggle</code> sets the value without the cheat check</td>
+<td><code>+toggle devgui</code> (without values) measured surviving the reset (<a href="Modding-Limits.html">Modding-Limits</a> §2); <strong>with values not yet tested in game</strong>, only read from the code</td>
+</tr>
+<tr>
+<td>Console, <code>name value</code></td>
+<td>set</td>
+<td>refused: <code>&lt;name&gt; CANNOT be set in retail!</code></td>
+<td>read from the code; the same message is measured for <code>.cfg</code> lines</td>
+</tr>
+<tr>
+<td>Console, <code>toggle name value value</code></td>
+<td>set</td>
+<td>set</td>
+<td>read from the code, not yet tested in game</td>
+</tr>
+<tr>
+<td>A line <code>name value</code> in a <code>.cfg</code> file</td>
+<td>set</td>
+<td>refused: <code>WARNING: &lt;name&gt; CANNOT be set in retail!</code></td>
+<td>measured in game for 26 names, all of them cheat cvars; the 9 names measured as accepted are all non-cheat</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>toggle name value value</code> always ends at that value: <code>toggle</code> cycles through the values given after it, and with the same value twice there is only one to land on. <code>toggle name 0 1</code> flips between 0 and 1.</p>
+<p><strong>The console</strong> opens with <strong>Ctrl+^</strong> (the key left of 1, with Ctrl held); <code>com_allowConsole</code> does not open it. This is read from the code and not yet tried in game.</p>
+<p><strong>The mod loader</strong> sends the Cheats &amp; QoL tweaks and the <code>"cvars"</code> of a <code>mod.json</code> on the launch line: a non-cheat cvar as <code>+name value</code>, a cheat cvar as <code>+name value</code> followed by <code>+toggle name value value</code>, and it drops read-only cvars and names that are not cvars. The <code>+toggle</code> part has <strong>not been tested in game yet</strong>.</p>
+<p><strong>Commands that do not exist</strong> in The New Order, neither as commands nor as cvars: <code>god</code>, <code>noclip</code>, <code>notarget</code>, <code>give</code> and <code>spawn</code>. The closest substitutes are <code>toggle g_permaGodMode 0 1</code> (a saved, non-cheat cvar) and the cheat cvar <code>g_freeCam</code> (a free-moving debug camera).</p>
+<h2 id="pages">Pages</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Page</th>
+<th style="text-align: right;">Cvars</th>
+<th>Prefixes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="TNO-CVar-Catalog-Gameplay.html">Gameplay</a>: player, movement, AI, weapons, camera and HUD</td>
+<td style="text-align: right;">976</td>
+<td><a href="TNO-CVar-Catalog-Gameplay.html#aa_">aa_</a> 18, <a href="TNO-CVar-Catalog-Gameplay.html#af_">af_</a> 84, <a href="TNO-CVar-Catalog-Gameplay.html#ai_">ai_</a> 221, <a href="TNO-CVar-Catalog-Gameplay.html#anim_">anim_</a> 31, <a href="TNO-CVar-Catalog-Gameplay.html#g_">g_</a> 386, <a href="TNO-CVar-Catalog-Gameplay.html#player_">player_</a> 28, <a href="TNO-CVar-Catalog-Gameplay.html#pm_">pm_</a> 140, <a href="TNO-CVar-Catalog-Gameplay.html#springcam_">springcam_</a> 13, <a href="TNO-CVar-Catalog-Gameplay.html#view_">view_</a> 31, <a href="TNO-CVar-Catalog-Gameplay.html#smaller-prefixes">smaller prefixes</a> 24</td>
+</tr>
+<tr>
+<td><a href="TNO-CVar-Catalog-Rendering.html">Rendering</a>: renderer, textures and video</td>
+<td style="text-align: right;">550</td>
+<td><a href="TNO-CVar-Catalog-Rendering.html#r_">r_</a> 428, <a href="TNO-CVar-Catalog-Rendering.html#vt_">vt_</a> 97, <a href="TNO-CVar-Catalog-Rendering.html#smaller-prefixes">smaller prefixes</a> 25</td>
+</tr>
+<tr>
+<td><a href="TNO-CVar-Catalog-Other.html">Other</a>: engine, sound, network, input, UI and the rest</td>
+<td style="text-align: right;">1668</td>
+<td><a href="TNO-CVar-Catalog-Other.html#aas_">aas_</a> 53, <a href="TNO-CVar-Catalog-Other.html#alignedent_">alignedent_</a> 11, <a href="TNO-CVar-Catalog-Other.html#atv_">atv_</a> 26, <a href="TNO-CVar-Catalog-Other.html#blendtree_">blendtree_</a> 10, <a href="TNO-CVar-Catalog-Other.html#cg_">cg_</a> 22, <a href="TNO-CVar-Catalog-Other.html#ch_">ch_</a> 17, <a href="TNO-CVar-Catalog-Other.html#cm_">cm_</a> 46, <a href="TNO-CVar-Catalog-Other.html#com_">com_</a> 79, <a href="TNO-CVar-Catalog-Other.html#face_">face_</a> 34, <a href="TNO-CVar-Catalog-Other.html#fc_">fc_</a> 11, <a href="TNO-CVar-Catalog-Other.html#forge_">forge_</a> 13, <a href="TNO-CVar-Catalog-Other.html#fs_">fs_</a> 23, <a href="TNO-CVar-Catalog-Other.html#gc_">gc_</a> 17, <a href="TNO-CVar-Catalog-Other.html#hands_">hands_</a> 29, <a href="TNO-CVar-Catalog-Other.html#in_">in_</a> 11, <a href="TNO-CVar-Catalog-Other.html#joy_">joy_</a> 13, <a href="TNO-CVar-Catalog-Other.html#mp_">mp_</a> 15, <a href="TNO-CVar-Catalog-Other.html#mq_">mq_</a> 12, <a href="TNO-CVar-Catalog-Other.html#net_">net_</a> 132, <a href="TNO-CVar-Catalog-Other.html#p_">p_</a> 24, <a href="TNO-CVar-Catalog-Other.html#pb_">pb_</a> 125, <a href="TNO-CVar-Catalog-Other.html#playercontrolled_">playercontrolled_</a> 14, <a href="TNO-CVar-Catalog-Other.html#playtest_">playtest_</a> 24, <a href="TNO-CVar-Catalog-Other.html#racecam_">racecam_</a> 14, <a href="TNO-CVar-Catalog-Other.html#resource_">resource_</a> 14, <a href="TNO-CVar-Catalog-Other.html#robot_">robot_</a> 13, <a href="TNO-CVar-Catalog-Other.html#rs_">rs_</a> 11, <a href="TNO-CVar-Catalog-Other.html#s_">s_</a> 73, <a href="TNO-CVar-Catalog-Other.html#savegame_">savegame_</a> 12, <a href="TNO-CVar-Catalog-Other.html#si_">si_</a> 21, <a href="TNO-CVar-Catalog-Other.html#spl_">spl_</a> 35, <a href="TNO-CVar-Catalog-Other.html#swf_">swf_</a> 58, <a href="TNO-CVar-Catalog-Other.html#sys_">sys_</a> 15, <a href="TNO-CVar-Catalog-Other.html#third_">third_</a> 17, <a href="TNO-CVar-Catalog-Other.html#tm_">tm_</a> 18, <a href="TNO-CVar-Catalog-Other.html#v_">v_</a> 47, <a href="TNO-CVar-Catalog-Other.html#veh_">veh_</a> 34, <a href="TNO-CVar-Catalog-Other.html#vehicle_">vehicle_</a> 223, <a href="TNO-CVar-Catalog-Other.html#win_">win_</a> 14, <a href="TNO-CVar-Catalog-Other.html#smaller-prefixes">smaller prefixes</a> 288</td>
+</tr>
+</tbody>
+</table></div></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="TNO-Modding-Surface.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Modding Surface: Wolfenstein — The New Order</a><a class="next" href="TNO-CVar-Catalog-Gameplay.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Cvars: Gameplay</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

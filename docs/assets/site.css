@@ -255,6 +255,9 @@ footer p { max-width: 46rem; margin: 0 0 .8rem; }
 .doc blockquote.alert { background: rgba(185,139,62,.08); padding: .8rem 1rem; }
 .doc blockquote.warning, .doc blockquote.caution { border-color: var(--flare); background: rgba(213,97,79,.08); }
 .doc .table-wrap { overflow-x: auto; margin: 0 0 1.3rem; }
+.doc.catalog table { min-width: 42rem; }  /* phones scroll the cvar tables sideways instead of crushing columns */
+.doc.catalog td:first-child code { overflow-wrap: normal; }  /* breaks only at the <wbr> the builder adds */
+.doc.catalog td:nth-child(2), .doc.catalog td:nth-child(4) { white-space: nowrap; }  /* type, status */
 .doc table { border-collapse: collapse; font-size: .95rem; min-width: 60%; }
 .doc th, .doc td { text-align: left; vertical-align: top; padding: .45rem .7rem; border-bottom: 1px solid var(--rule); }
 .doc th { border-bottom: 2px solid var(--plaster); font-weight: 600; }
