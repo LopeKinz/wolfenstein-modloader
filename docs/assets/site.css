@@ -189,7 +189,7 @@ footer p { max-width: 46rem; margin: 0 0 .8rem; }
   .rail { position: static; }
   .mast nav { display: none; }
   .mast .support { margin-left: auto; padding: .3rem .6rem; }
-  .mast .support .long { display: none; }
+  .mast .support .long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }  /* hidden on screen, still the link name for screen readers */
   .mast .support .short { display: inline; }
 }
 @media (max-width: 560px) {
