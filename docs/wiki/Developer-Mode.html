@@ -239,7 +239,7 @@ DEVMODE_DEVELOPER  = 1
 — <code>0x0294F6C0</code></p>
 </blockquote>
 <p>In Part 1, the same description ends at 2 (<code>0x01038310</code>). Part 2 therefore includes a complete ImGui interface. The pages are named in the Exe: <code>VirtualTexturing</code>, <code>UmbraDebug</code>, <code>LightDebug</code>, <code>RenderingStats</code>, <code>Render_Reload</code>, <code>RenderModes</code>, <code>Set_Team</code>, <code>Weapon_Offsets</code>, <code>AI_NavDebug</code>, <code>Spawn_AI</code>, <code>Time_Scale</code> (<code>0x0294F5F8</code>–<code>0x0294F6A0</code>).</p>
-<p>Incidental finding: <strong><code>com_allowConsole</code> does not exist in Part 2.</strong> In Part 1, it is the locked Cvar that prevents the console (<code>0x00E67C18</code>); in Part 2 there is no such Cvar. This fits with the screenshot showing the input line <code>]</code>: There is nothing in Part 2 that holds the console via a Cvar.</p>
+<p>Incidental finding: <strong><code>com_allowConsole</code> does not exist in Part 2.</strong> In Part 1 it exists (<code>0x00E67C18</code>), but a later code reading shows it does <strong>not</strong> gate the console: the console opens with Ctrl+^ and the cvar only feeds an achievement check (code only, see <a href="Modding-Limits.html">Modding-Limits</a> §2). In Part 2 there is no such Cvar, which fits with the screenshot showing the input line <code>]</code>.</p>
 <hr />
 <h2 id="6-com_production-and-production-toggles">6. <code>com_production</code> and Production Toggles</h2>
 <p><strong>Grade: Cvar.</strong> All four exist, three with descriptions:</p>
