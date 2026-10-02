@@ -182,17 +182,17 @@
 328: Resetting cheat cvar: com_skipIntroVideo
 </code></pre>
 <p>The value arrives and is wiped again by the Cheat-Reset. <code>Home.md</code> no longer promises that the intro is skipped, but states that the argument is provided and the signs speak against it. <code>Modding-Limits.md</code> §1 has added a new section "Two different Nows" regarding this.</p>
-<p><strong>Open:</strong> whether the intro skips <em>despite</em> this. No log says so; someone must inspect.</p>
+<p><strong>Open:</strong> whether the intro skips <em>despite</em> this. No log says so; someone must inspect. <strong>Later code reading (not measured in game):</strong> the intro flag is read at startup <em>before</em> the cheat reset runs, so <code>+com_skipIntroVideo 1</code> very probably does work even though the reset log line appears. Whether the flag really skips the intro is not proven.</p>
 <p><strong>Reported in code:</strong> <code>wolfsdk/cvars.py:184</code> sets <code>com_skipIntroVideo</code> via <code>ALWAYS</code> on every start, with the justification "Sitting through the logo reel on each start is nobody's idea of quality of life" — this is a performance claim that contradicts the lock list twelve lines above. Harmless (an additional argument), but the comment needs correction.</p>
 <p><a id="w2"></a></p>
 <h2 id="w2--readme-lists-locked-cvars-as-functions">W2 — README lists locked Cvars as functions</h2>
 <p><strong>Fixed.</strong> The table in <code>Home.md</code> now lists only those items under Cheats/QoL that are not affected by the lock (Godmode, infinite ammo, damage factor, FOV, toggle sprint, HUD, FPS). Below it is a box explicitly listing Noclip, gravity, head-bob, intro-skip, console, and <code>pm_*</code> speeds as locked, with a reference to §1 of <code>Modding-Limits.md</code>.</p>
-<p>The second half — where the console was listed as <em>unverified</em> in the list of open questions, despite <code>Modding-Limits.md</code> having a measured no — is also corrected: The item now stands under "measured answered," supported by both forms of evidence (Config rejection and Cheat reset).</p>
+<p>The second half — where the console was listed as <em>unverified</em> in the list of open questions, despite <code>Modding-Limits.md</code> having a measured no — is also corrected: The item now stands under "measured answered," supported by both forms of evidence (Config rejection and Cheat reset). <strong>Superseded in part (code reading, not run in game):</strong> the console was never locked by <code>com_allowConsole</code>; it opens with Ctrl+^, and the plain <code>~</code> used in the earlier test does nothing. See <code>Modding-Limits.md</code> §2. The cvar <code>com_allowConsole</code> itself only feeds an achievement check.</p>
 <p><strong>Additionally found:</strong> The quick-start line showed <code>launch --god --ammo --console --skip-intro --fov 105 --binds</code>, advertising two locked Cvars. The line is shortened, and below it states what the two switches are still useful for.</p>
 <hr />
 <p><a id="w3"></a></p>
 <h2 id="w3--2231-cvars-for-part-2">W3 — "2231 Cvars" for Part 2</h2>
-<p><strong>Fixed in text.</strong> <code>docs/cvars-tnc.md</code> now begins with a box identifying the file as a candidate list (222 of 2231 real, Quote 10%; the Engine reports 304, of which 82 are not present in this list at all) and references <code>TNC-CVar-Validation.md</code> as a reliable source. <code>docs/audio.md</code> §5 says the same at the point where it adopted the number.</p>
+<p><strong>Fixed in text.</strong> <code>docs/cvars-tnc.md</code> now begins with a box identifying the file as a candidate list (222 of 2231 real, Quote 10%; the Engine reports 304, of which 82 are not present in this list at all) and references <code>TNC-CVar-Validation.md</code> as a reliable source. The candidate list itself has since been replaced by the registry catalogue (<a href="TNC-CVar-Catalog.html">TNC-CVar-Catalog</a>, 3,256 registered cvars; for The New Order <a href="TNO-CVar-Catalog.html">TNO-CVar-Catalog</a>, 3,194), so the 10 % figure describes only the old scraped list. <code>docs/audio.md</code> §5 says the same at the point where it adopted the number.</p>
 <p><strong>Reported in code</strong> (four locations, all with the same phrasing "2231 mined cvar names" or "2231 Cvar names"):</p>
 <ul>
 <li><code>wolfsdk/gui.py:5</code>, <code>:28</code> — Module header and <code>ROW_LIMIT</code> comment.</li>
@@ -248,7 +248,7 @@
 <ul>
 <li><code>wolfsdk/devmenu.py:18-19</code> — "Appending another page therefore gives a real in-game UI with no injection and no executable patch — the engine renders it, we only supply data." Two measurements explicitly exclude this (<code>Modding-Limits.md</code> §2, <code>UI-Assets.md</code> §5).</li>
 <li><code>wolfsdk/cli.py:583</code> — The command <code>ingame-menu</code> carries no caveat. A user creates a menu page with it that they never see.</li>
-<li><code>wolfsdk/cvars.py:170</code> — presents <code>devgui</code> as a usable command, "Debug GUI (Default F10)", without noting that F10 does nothing according to measurements.</li>
+<li><code>wolfsdk/cvars.py:170</code> — presents <code>devgui</code> as a usable command, "Debug GUI (Default F10)", without noting that F10 does nothing according to measurements. <strong>Later code reading (not measured in game):</strong> the stock bind is <code>devgui 1</code>, a bare assignment to a cheat cvar, so it is refused; <code>toggle devgui 0 1</code> is not, and the DevGUI only stays on inside a level. <code>debugmenu.txt</code> has no consumer that could be found, so the loader's page is probably never read. See <code>Modding-Limits.md</code> §2 and <a href="TNO-CVar-Catalog.html">TNO-CVar-Catalog</a>.</li>
 </ul>
 <hr />
 <p><a id="w12"></a></p>
@@ -317,7 +317,7 @@
 <p>Four things that were not present in the initial survey:</p>
 <ol>
 <li>
-<p><strong>The log refutes the read method of the blacklist.</strong> From the command line, the engine does <strong>not</strong> output "CANNOT be set in retail" — it accepts the assignment and wipes it on cheat reset. The warning is the response to a <em>Config</em> line. Anyone searching the command line for <code>CANNOT be set</code> to check if a CVar passes through is looking at the wrong line. Newly documented in <code>Modding-Limits.md</code> §1.</p>
+<p><strong>The log refutes the read method of the blacklist.</strong> From the command line, the engine does <strong>not</strong> output "CANNOT be set in retail" — it accepts the assignment and wipes it on cheat reset. The warning is the response to a <em>Config</em> line. Anyone searching the command line for <code>CANNOT be set</code> to check if a CVar passes through is looking at the wrong line. Newly documented in <code>Modding-Limits.md</code> §1. A later code reading adds that this accept-then-wipe is the cheat reset, and that <code>toggle</code>, <code>cvarAdd</code> and <code>sys.setcvar</code> are not gated (code only).</p>
 </li>
 <li>
 <p><strong>Patched archives loaded.</strong> This was posed as the most critical open question in <code>Home.md</code>. The run on 21.09.2026 (Apply 18:47:35, Start 18:47:50, approximately 48 minutes until Chapter 12) rewrote all 14 <code>.resources</code> files, patched 373 Assets, and included four self-built BIMs in the archive — and <code>qconsole.log</code> contains 0 lines of <code>ERROR</code>, 0 <code>zlib inflate error</code>, 0 <code>FileTable is out of order</code>, and 0 <code>No address</code>. This was added to <code>Modding-Limits.md</code> §4, <code>Home.md</code>, and <code>docs/README.md</code>.</p>
@@ -326,7 +326,7 @@
 <p><strong><code>g_EnableGore</code> survives the reset.</strong> It was on the same command line, it is in the blacklist — and does not appear under "Resetting cheat cvar", unlike <code>g_goreBloodyMess</code> next to it. Whether it therefore <em>works</em>, the log does not say. Noted as an unverified side finding in <code>Modding-Limits.md</code> §1, not sold as a function.</p>
 </li>
 <li>
-<p><strong><code>wolfsdk tweaks</code> do not mark locked Cvars.</strong> The GUI writes <code>✕ in Retail locked</code> behind the affected lines (<code>wolfsdk/gui.py:326-327</code>), but <code>cmd_tweaks</code> in <code>wolfsdk/cli.py</code> does not, and even announces console commands with "need <code>com_allowConsole 1</code>", without stating that exactly this cannot be measured. Reported in code; <code>Home.md</code> notes the difference.</p>
+<p><strong><code>wolfsdk tweaks</code> do not mark locked Cvars.</strong> The GUI writes <code>✕ in Retail locked</code> behind the affected lines (<code>wolfsdk/gui.py:326-327</code>), but <code>cmd_tweaks</code> in <code>wolfsdk/cli.py</code> does not, and even announces console commands with "need <code>com_allowConsole 1</code>", without stating that exactly this cannot be measured. Reported in code; <code>Home.md</code> notes the difference. <strong>Update:</strong> <code>com_allowConsole</code> does not open the console at all (Ctrl+^ does, code-only); the loader now also sends cheat cvars as <code>+toggle name v v</code>, which is code-proven but not yet run in game.</p>
 </li>
 </ol>
 <hr />

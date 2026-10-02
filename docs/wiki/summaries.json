@@ -81,7 +81,7 @@
    "summary": "The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game. It also links to the detailed pages and to read-only tools that recompute the evidence.",
    "points": [
     "Strict rule: a text found in the game program does not prove the feature exists; of 2,231 harvested setting names in Wolfenstein II, 409 were not settings at all.",
-    "The New Order: patched archives load in game (14/14 rebuilt files, 48 minutes of play, 0 errors); the {console|console} stays locked.",
+    "The New Order: patched archives load in game (14/14 rebuilt files, 48 minutes of play, 0 errors); cheat settings from config files stay locked, while the {console|console} (Ctrl+^) is code-read only and untested.",
     "Wolfenstein II: value edits (pistol magazine 10 to 30), a custom weapon skin and a custom map are confirmed in a running game.",
     "Wolfenstein II: the encrypted config files were cracked and used to run God mode and infinite ammo in a real save.",
     "Still not working or unverified: The New Order's new 3D models and megatexture pixels, Wolfenstein II's megatexture pixels and loose files."
@@ -92,7 +92,7 @@
    "summary": "Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie erklärt drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur als Text in der Datei gefunden. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist. Dazu kommen Links zu den Detailseiten und zu Werkzeugen, die die Belege nur lesend nachrechnen.",
    "points": [
     "Strenge Regel: Ein Text im Spielprogramm beweist nicht, dass die Funktion existiert; von 2.231 gesammelten Einstellungsnamen in Wolfenstein II waren 409 gar keine Einstellungen.",
-    "The New Order: gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); die {console|Konsole} bleibt gesperrt.",
+    "The New Order: gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); Cheat-Einstellungen aus Konfigurationsdateien bleiben gesperrt, die {console|Konsole} (Strg+^) ist nur aus dem Code gelesen und ungetestet.",
     "Wolfenstein II: Wertänderungen (Pistolenmagazin 10 auf 30), ein eigener Waffenskin und eine eigene Karte sind im laufenden Spiel bestätigt.",
     "Wolfenstein II: Die verschlüsselten Konfigurationsdateien wurden geknackt und damit Gottmodus und unendliche Munition in einem echten Spielstand ausgelöst.",
     "Noch nicht möglich oder unbestätigt: neue 3D-Modelle und Megatextur-Pixel in The New Order, Megatextur-Pixel und lose Dateien in Wolfenstein II."
@@ -1646,24 +1646,24 @@
   "status": "reference",
   "en": {
    "oneLine": "What cannot be modded in Wolfenstein: The New Order, why, and which file rules a patcher must obey.",
-   "summary": "This page lists what cannot be changed in Wolfenstein: The New Order (TNO) and why, based on the game's own log file. Many cheat {cvar|settings} are locked in the retail version, and none of five tested ways around the lock worked. It explains two strict file rules the patcher must follow, and shows that {decl|decl} text files are the way to change damage, health and gore instead.",
+   "summary": "This page lists what cannot be changed in Wolfenstein: The New Order (TNO) and why, based on the game's own log file. Many cheat {cvar|settings} (most of the 3,194 in the engine) are locked in the retail version, and none of five tested ways around the lock from config files worked. A later code reading (not yet run in game) finds the {console|console} opens with Ctrl+^ and that the toggle command can set cheat settings. It explains two strict file rules the patcher must follow, and shows that {decl|decl} text files are the way to change damage, health and gore instead.",
    "points": [
-    "Cvars like g_infiniteAmmo are locked, while g_permaGodMode and g_damageScale are not.",
+    "Cvars like g_infiniteAmmo are locked, while g_permaGodMode and g_damageScale are not; cheat is the default flag (2,865 of 3,194).",
     "{compression|Compressed} data must end with a sync marker; a normal stream end breaks the whole resource reader.",
     "Data in an archive must stay in ascending order, so patches write into the existing slot.",
     "A patch of 373 assets loaded and ran for about 48 minutes with zero errors in the log.",
-    "New 3D models, new weapon textures and movement speed cannot be modded yet."
+    "Read from code only: the console needs Ctrl+^ (not com_allowConsole), and god, noclip and give do not exist in this game.", "New 3D models, new weapon textures and movement speed cannot be modded yet."
    ]
   },
   "de": {
    "oneLine": "Was sich in Wolfenstein: The New Order nicht modden lässt, warum, und welche Dateiregeln ein Patcher einhalten muss.",
-   "summary": "Diese Seite listet, was sich in Wolfenstein: The New Order (TNO) nicht ändern lässt und warum, gestützt auf die Logdatei des Spiels. Viele Cheat-{cvar|Einstellungen} sind in der Verkaufsversion gesperrt, und keiner von fünf getesteten Umwegen hat funktioniert. Sie erklärt zwei strenge Dateiregeln für den Patcher und zeigt, dass stattdessen {decl|Decl}-Textdateien der Weg sind, um Schaden, Leben und Gore zu ändern.",
+   "summary": "Diese Seite listet, was sich in Wolfenstein: The New Order (TNO) nicht ändern lässt und warum, gestützt auf die Logdatei des Spiels. Viele Cheat-{cvar|Einstellungen} (die meisten der 3.194 in der Engine) sind in der Verkaufsversion gesperrt, und keiner von fünf getesteten Umwegen über Konfigurationsdateien hat funktioniert. Eine spätere Code-Analyse (im Spiel noch nicht ausprobiert) zeigt, dass sich die {console|Konsole} mit Strg+^ öffnet und der Befehl toggle Cheat-Einstellungen setzen kann. Sie erklärt zwei strenge Dateiregeln für den Patcher und zeigt, dass stattdessen {decl|Decl}-Textdateien der Weg sind, um Schaden, Leben und Gore zu ändern.",
    "points": [
-    "Cvars wie g_infiniteAmmo sind gesperrt, g_permaGodMode und g_damageScale dagegen nicht.",
+    "Cvars wie g_infiniteAmmo sind gesperrt, g_permaGodMode und g_damageScale dagegen nicht; Cheat ist das Standard-Flag (2.865 von 3.194).",
     "{compression|Komprimierte} Daten müssen mit einer Sync-Markierung enden; ein normales Stream-Ende legt den ganzen Ressourcenleser lahm.",
     "Daten im Archiv müssen aufsteigend sortiert bleiben, daher schreiben Patches in den bestehenden Platz.",
     "Ein Patch mit 373 Assets lud und lief rund 48 Minuten ohne einen einzigen Fehler im Log.",
-    "Neue 3D-Modelle, neue Waffentexturen und Laufgeschwindigkeit lassen sich noch nicht modden."
+    "Nur aus dem Code gelesen: Die Konsole braucht Strg+^ (nicht com_allowConsole), und god, noclip und give gibt es in diesem Spiel nicht.", "Neue 3D-Modelle, neue Waffentexturen und Laufgeschwindigkeit lassen sich noch nicht modden."
    ]
   }
  },
@@ -2080,7 +2080,7 @@
     "The 9 menu and HUD screens use idSWF version 20, not Adobe Flash or Scaleform.",
     "7,154 text strings exist, 367 of them for the menu; replacements must keep exactly the same byte length.",
     "New menu lines cannot be added; the game's code decides which lines exist.",
-    "The hidden developer menu ({devgui|DevGUI}) is not connected in the retail game.",
+    "The hidden developer menu ({devgui|DevGUI}) showed nothing in a main-menu test; it only stays on inside a level and the menu file has no known reader (code only).",
     "A three-line menu text mod was applied, but it did not appear in the game."
    ]
   },
@@ -2091,7 +2091,7 @@
     "Die 9 Menü- und HUD-Oberflächen nutzen idSWF Version 20, nicht Adobe Flash oder Scaleform.",
     "Es gibt 7.154 Texte, 367 davon fürs Menü; Ersatztexte müssen exakt gleich viele Bytes lang sein.",
     "Neue Menüzeilen lassen sich nicht hinzufügen; welche Zeilen es gibt, entscheidet der Programmcode.",
-    "Das versteckte Entwicklermenü ({devgui|DevGUI}) ist in der Verkaufsversion nicht angeschlossen.",
+    "Das versteckte Entwicklermenü ({devgui|DevGUI}) zeigte im Test am Hauptmenü nichts; es bleibt nur in einem Level an und die Menüdatei hat keinen bekannten Leser (nur Code).",
     "Ein Mod mit drei geänderten Menütexten wurde eingespielt, erschien im Spiel aber nicht."
    ]
   }

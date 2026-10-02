@@ -278,12 +278,12 @@ u8[]     Data
 <hr />
 <h2 id="8-cvars-and-start-arguments">8. Cvars and Start Arguments</h2>
 <p>The engine accepts Cvar assignments directly on the command line:</p>
-<pre><code>WolfNewOrder_x64.exe +g_fov 105 +com_allowConsole 1 +bind F1 &quot;toggle g_permaGodMode 0 1&quot;
+<pre><code>WolfNewOrder_x64.exe +g_fov 105 +bind F1 &quot;toggle g_permaGodMode 0 1&quot;
 </code></pre>
 <p>This confirms that the game-specific <code>base/build.cfg</code> uses exactly this syntax:</p>
 <pre><code>+feature_hq 1 +feature_lowgore 0 +sys_region &quot;ww&quot; +g_EnableGore 1 ...
 </code></pre>
-<p>The Retail EXE contains around 2,000 Cvar names, including fully preserved developer functions (<code>g_permaGodMode</code>, <code>g_permaInfiniteAmmo</code>, <code>com_allowConsole</code>, <code>devgui</code>) and commands <code>noclip</code>, <code>god</code>, <code>notarget</code>, <code>teleport</code>, <code>spawn</code>, <code>devmap</code>.</p>
+<p>The Retail EXE contains around 2,000 Cvar names, including preserved developer cvars (<code>g_permaGodMode</code>, <code>g_permaInfiniteAmmo</code>, <code>com_allowConsole</code>, <code>devgui</code>) and the commands <code>teleport</code> and <code>devmap</code>. <code>noclip</code>, <code>god</code>, <code>notarget</code>, <code>give</code> and <code>spawn</code> do <strong>not</strong> exist in The New Order (the earlier string-based list was wrong); the registry has 3,194 cvars, see <a href="TNO-CVar-Catalog.html">TNO-CVar-Catalog</a>.</p>
 <p>The strings lie in the <code>.rdata</code> pool roughly as <code>Description \0 Default \0 Name \0</code>, but the linker frequently deduplicates common values like <code>"0"</code> and <code>"1"</code>, making it <strong>impossible to reliably assign Defaults</strong>. The names, however, are fine. There is no static registration table — MSVC passes the pointers RIP-relative in the code.</p></article></section>
 <nav class="pager" aria-label="Pages"><a class="prev" href="Modding-Guide.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Modding Guide</a><a class="next" href="Modding-Limits.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Limits — what works, what doesn&#x27;t, and why</a></nav>
 </div></div>
