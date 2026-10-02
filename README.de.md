@@ -116,6 +116,10 @@ Große generierte Artefakte aus dem Forschungsarbeitsbereich sind über ein
 [Artefakt-Verzeichnis](https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Artifacts)
 erfasst, statt im Wiki-Repository dupliziert zu werden.
 
+## Unterstützen
+
+WolfSDK ist kostenlos und bleibt es. Wenn es dir hilft, kannst du dem Entwickler [einen Kaffee spendieren](https://buymeacoffee.com/swscc5yr7rs). Dafür wird nichts freigeschaltet.
+
 ## Haftungsausschluss
 
 Dies ist ein unabhängiges Community-Projekt. Es steht in keiner Verbindung zu
