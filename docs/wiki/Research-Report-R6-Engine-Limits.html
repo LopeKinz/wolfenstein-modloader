@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Engine Limits: Entities, AI, Lights, Map Size, Streaming, Decls, Physics, Strings – Wolfenstein Modloader</title>
+<meta name="description" content="The hard limits of both Wolfenstein engines (entities, AI, lights, projectiles, settings) and what happens when a mod hits them.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Engine Limits: Entities, AI, Lights, Map Size, Streaming, Decls, Physics, Strings</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Engine-Limits"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#pass-1-errors-verifier-round">Pass 1 errors (verifier round)</a></li><li><a href="#question">Question</a></li><li><a href="#answer-short">Answer (short)</a></li><li><a href="#1-the-one-limit-that-is-neither-a-cvar-nor-a-max_-name-the-registry-arrays-themselves-tnc">1. The one limit that is neither a cvar nor a MAX_* name: the registry arrays themselves (TNC)</a></li><li><a href="#2-ai-population-per-spawner-data-field-not-a-global-constant-tnc">2. AI population: per-spawner data field, not a global constant (TNC)</a></li><li><a href="#3-compiled-numeric-constants-actually-pulled-out-of-disassembly-tnc">3. Compiled numeric constants actually pulled out of disassembly (TNC)</a></li><li><a href="#4-cvar-governed-limits-the-full-minmax-clamped-set-plus-named-max-cvars-tnc">4. Cvar-governed limits: the full min/max-clamped set, plus named max* cvars (TNC)</a></li><li><a href="#5-decls--resources-no-fixed-array-cap-found--idlist-shaped-not-idarray-shaped">5. Decls / resources: no fixed-array cap found — idList-shaped, not idArray-shaped</a></li><li><a href="#6-shared-max_-symbol-family-present-named-in-both-games-numeric-value-mostly-out-of-reach">6. Shared MAX_* symbol family: present (named) in both games, numeric value mostly out of reach</a></li><li><a href="#7-physics-body-limits-tnc--missed-entirely-in-pass-1-traced-further-this-round">7. Physics body limits (TNC) — missed entirely in pass 1, traced further this round</a></li><li><a href="#proven">PROVEN</a></li><li><a href="#inferred-plausible-not-independently-nailed-down-this-round">INFERRED (plausible, not independently nailed down this round)</a></li><li><a href="#failed-hypotheses--dead-ends">Failed hypotheses / dead ends</a></li><li><a href="#recipe-what-a-modder-can-actually-do-with-this-today">Recipe: what a modder can actually do with this, today</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#reproduction">Reproduction</a></li><li><a href="#smallest-in-game-test">Smallest in-game test</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report looks for the built-in limits that matter to modders in Wolfenstein II: The New Colossus (TNC) and Wolfenstein: The New Order (TNO). For TNC, reading the program code found fixed caps, such as 16 projectiles per shot, 64 members per AI group and 8,196 visible lights per frame, and showed which ones only print a warning and which ones crash the game. Many other limits are settings with default values, and the AI population limit is set per spawner by the map author, not by the engine. For TNO only text strings could be scanned, so no numbers are confirmed there. Everything is <span class="t" data-t="static">static analysis</span>; neither game was launched.</p><ul><li>The command and setting lists have a fixed size: 234 of 256 commands and 3,256 of 4,096 settings are used, but no current mod route can add new ones.</li><li>Caps read from the code: 16 projectiles per shot (warning, clamped), 64 members per AI group (crash), 128 dynamic reflection volumes and 8,196 visible lights per frame (both warnings).</li><li>Running out of <span class="t" data-t="entity">entity</span> slots crashes the game, but the exact entity limit could not be found.</li><li>AI count is map data: each spawner has its own maxActiveAIs value (-1 = unlimited, most common 12, median 8).</li><li>Open: physics limits sit inside the Havok middleware with no number found, and TNO&#x27;s values are unknown; the suggested in-game tests (such as a shotgun set above 16 pellets) have not been run.</li></ul></div><div class="de"><p class="lede">Dieser Bericht sucht die eingebauten Grenzen, die für Modder zählen, in Wolfenstein II: The New Colossus (TNC) und Wolfenstein: The New Order (TNO). Für TNC hat das Lesen des Programmcodes feste Obergrenzen gefunden, etwa 16 Projektile pro Schuss, 64 Mitglieder pro KI-Gruppe und 8.196 sichtbare Lichter pro Bild, und gezeigt, welche nur eine Warnung ausgeben und welche das Spiel abstürzen lassen. Viele andere Grenzen sind Einstellungen mit Standardwerten, und die Obergrenze für KI-Gegner legt der Kartenautor pro Spawner fest, nicht die Engine. Für TNO ließen sich nur Textzeichenketten durchsuchen, dort ist also keine Zahl bestätigt. Alles ist <span class="t" data-t="static">statische Analyse</span>; keines der beiden Spiele wurde gestartet.</p><ul><li>Befehls- und Einstellungslisten haben eine feste Größe: 234 von 256 Befehlen und 3.256 von 4.096 Einstellungen sind belegt, aber kein heutiger Mod-Weg kann neue hinzufügen.</li><li>Aus dem Code gelesene Grenzen: 16 Projektile pro Schuss (Warnung, wird gekappt), 64 Mitglieder pro KI-Gruppe (Absturz), 128 dynamische Reflexionsvolumen und 8.196 sichtbare Lichter pro Bild (beides Warnungen).</li><li>Gehen die <span class="t" data-t="entity">Entity</span>-Plätze aus, stürzt das Spiel ab, aber die genaue Entity-Grenze wurde nicht gefunden.</li><li>Die KI-Anzahl ist Kartendaten: Jeder Spawner hat seinen eigenen Wert maxActiveAIs (-1 = unbegrenzt, am häufigsten 12, Median 8).</li><li>Offen: Physikgrenzen stecken in der Havok-Middleware ohne gefundene Zahl, und die Werte von TNO sind unbekannt; die vorgeschlagenen Tests im Spiel (etwa eine Schrotflinte mit mehr als 16 Kugeln) liefen noch nicht.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on the hard limits of both engines that matter to modders — entities, AI, lights, map size, streaming pools, decl counts, physics bodies and string lengths — on which of them are raisable cvars and which are compiled constants, and on what happens at the limit (warning, cull or fatal error). For TNC (decompiled), the command and cvar registries themselves are fixed-size arrays, a few literal caps were pulled out of disassembly, and most named <code>MAX_*</code> constants exist only as names whose values could not be extracted. TNO had no runtime image at the time, so its side is a string scan only; the decompiled TNO follow-up is <a href="Research-Report-R7-Tno-Limits.html">TNO engine limits (R7)</a>. <strong>Static evidence only; neither game was launched.</strong> The verifier's corrections (pass-1 errors) and the PROVEN/INFERRED split are kept as written.</p>
+<p>Track <code>enginelimits</code>. Read-only on both game installs and on every project file
+outside <code>re_probes/enginelimits/</code> and this report. Neither game was launched,
+no process attached. Builds on and does not redo: <code>r4_consolecmds.md</code>/
+<code>cmdtable.md</code>/<code>cvartable.md</code> (the cvar/command restriction-level gate and its
+two hard-capacity arrays, reused directly in §1), <code>r4_aispawnwaves.md</code>
+(<code>maxActiveAIs</code> is per-spawner data, not a global AI cap — reused in §2),
+<code>r5_kisculecmd.md</code> (the <code>resourceExec -s</code> / Kiscule-Command route non-exposed
+cvars need), <code>docs/limits.md</code> (TNO's retail console lock and archive-offset
+invariants — a different limit, not duplicated here), <code>docs/engine-surface.md</code>
+(TNC asset-type counts, reused in §5). Tools: <code>python tools/decomp.py
+&lt;rva|name&gt; [--xrefs] [--callers] [--strings PATTERN]</code> (TNC only, Ghidra over
+<code>re_probes/runtime_87400/module.bin</code>) and a new, small read-only scanner,
+<code>re_probes/enginelimits/tno_strings.py &lt;regex&gt;</code>, written this track because
+<strong>TNO has no runtime image and no decompiled code</strong> (<code>.text</code> is SteamStub-
+encrypted, confirmed again in <code>docs/ghidra.md</code>) — it is a plain ASCII-string
+scan over <code>WolfNewOrder_x64.exe</code>'s <code>.rdata</code>/<code>.data</code>, the only static-analysis
+option available for TNO. All TNC addresses below are RVAs into
+<code>re_probes/runtime_87400/module.bin</code> (base <code>0x7FF62C210000</code>); all TNO
+addresses are RVAs into <code>WolfNewOrder_x64.exe</code> (base <code>0x140000000</code>).</p>
+<h2 id="pass-1-errors-verifier-round">Pass 1 errors (verifier round)</h2>
+<p>A verifier independently re-checked every claim in the first pass and found
+5 concrete errors, all confirmed by re-running the exact same read-only tools
+this round. Fixed in place below; marked here for the record:</p>
+<ol>
+<li><strong>False PROVEN claim</strong>: <code>idAAS2File::MAX_AREAS</code> was claimed to exist
+   "verbatim in both TNC and TNO". Re-ran <code>decomp.py --strings idAAS2File</code>,
+   <code>--strings AAS2</code>, <code>--strings MAX_AREAS</code> — <strong>zero hits in TNC</strong>, all three.
+   The symbol exists <strong>only in TNO</strong> (RVA <code>0xd95778</code>). §6 table and the PROVEN
+   list corrected below.</li>
+<li><strong>False "TNO only" claim</strong>: §6 claimed <code>MAX_RENDER_LIGHTS</code>/<code>MAX_RENDER_MODELS</code>
+   were "not found in TNC's <code>--strings MAX_</code> sweep". Re-ran
+   <code>decomp.py --strings MAX_RENDER</code> — <strong>both exist in TNC</strong>
+   (RVA <code>0x279f100</code> / <code>0x279f0e8</code>). The "may use different naming
+   post-refactor" speculation built on this false premise is dropped.</li>
+<li><strong>Statistic mislabeled</strong>: §2 called the <code>maxActiveAIs</code> corpus's <code>12</code> a
+   "median". Recomputed directly from <code>r4_aispawnwaves.md</code>'s own cited n=504
+   distribution: the median is <strong>8</strong> (ranks 252/253 both fall in the <code>8</code>
+   bucket); <code>12</code> is the <strong>mode</strong> (177/504, the single most common value) —
+   <code>r4_aispawnwaves.md</code> itself already says "mode <code>12</code>" correctly; this
+   report's prose conflated the two. Fixed below.</li>
+<li><strong>Citation error</strong>: the cuttable/fracture-model <code>[-16, 16]</code> string was
+   cited at RVA <code>0x2652620</code>; re-running <code>decomp.py --strings "16, 16"</code> finds
+   it at <strong>RVA <code>0x26526c0</code></strong> (0xA0 off). String content and existence were
+   correct, only the address was wrong. Fixed below.</li>
+<li><strong>Unflagged tooling artifact</strong>: Ghidra's decompiler tags the call site for
+   the (confirmed non-fatal) 16-projectile clamp with
+   <code>/* WARNING: Subroutine does not return */</code>, the same tag used on the
+   genuinely fatal calls — the report never flagged that this tag is
+   unreliable in this snapshot. Investigated further this round (§2.2 below):
+   the tag turns out to be wrong on <strong>every</strong> non-fatal call site found so
+   far, and there is a reliable alternative discriminator.</li>
+</ol>
+<p>The verifier also flagged 4 missed items — physics body limits, a real
+raisable <code>poi_ArtificialPOILimit</code> cvar, a 4th hard numeric <code>MAX_*</code> constant
+(<code>MAX_DYNAMIC_ENVIRONMENT = 128</code>), and partial resolution of the two
+light/shadow caps §4/§8 left open. All four are addressed below (§2.2, §3.4,
+§3.5, §4 shadows/lights subsection, §7).</p>
+<h2 id="question">Question</h2>
+<p>Hard limits of both engines for modders: max entities, max AI, max active
+lights, map size/coordinate limits, streaming/memory pools, decl/resource
+count limits, physics body limits, string/name length limits. Which limits
+are cvars (raisable) and which are compiled constants; what happens at the
+limit (warning, cull, fatal).</p>
+<h2 id="answer-short">Answer (short)</h2>
+<p><strong>TNC (decompiled, strong evidence):</strong> two <em>completely different kinds</em> of
+limit coexist, and conflating them is the easiest way to get this wrong.</p>
+<ol>
+<li><strong>Hard, fixed-size C arrays with no cvar at all</strong>, found by direct
+   disassembly, not by name-matching: the command and cvar <em>registries
+   themselves</em> are capped — 234/<strong>256</strong> commands, 34/<strong>64</strong> exposed commands,
+   3256/<strong>4096</strong> cvars, 304/<strong>512</strong> exposed cvars (§1, from <code>r4_consolecmds.md</code><ul>
+<li><code>cvars_tnc_v2.json</code>'s own <code>runtime_lists</code> metadata, independently
+   re-verified here). This is the one limit that directly bounds "how many
+   new commands/cvars can a mod register" — headroom: <strong>22</strong> commands, <strong>30</strong>
+   exposed commands, <strong>840</strong> cvars, <strong>208</strong> exposed cvars before the engine's
+   own array caps out. No cvar raises this; it is a compiled array size.</li>
+</ul>
+</li>
+<li><strong>~400 named <code>MAX_*</code>/<code>*_MAX_ID</code> C++ static-const symbols</strong> compiled into
+   both EXEs as RTTI/debug-string literals (§6) — <code>MAX_GENTITIES</code>,
+   <code>ENTITYNUM_MAX_NORMAL</code>, <code>MAX_RENDER_LIGHTS</code>, <code>MAX_WORLD_AREAS</code>, etc.
+   <strong>Proven to exist</strong> (the strings are real, referenced by RTTI/type tables)
+   in <strong>both</strong> TNC and TNO verbatim for most of the family — itself evidence
+   the two engines share code lineage — but for the overwhelming majority
+   <strong>the literal numeric value could not be extracted</strong> this round: they are
+   compiled directly into comparison instructions at each call site, not
+   stored as a single addressable constant, and digging out "the" value would
+   mean finding and disassembling every use site individually. (Not every
+   name is shared — <code>idAAS2File::MAX_AREAS</code> is TNO-only, corrected from pass
+   1's wrong "both" claim, §6.) Five exceptions where the value <em>was</em> pulled
+   out of disassembly (§3): <strong>16</strong> (max projectiles spawned per weapon-fire
+   call, TNC), <strong>64</strong> (max members of an AI "Group", TNC, string-identical
+   warning exists in TNO too), <strong>128</strong> (<code>MAX_DYNAMIC_ENVIRONMENT</code>, TNC, found
+   this round, §3.4), <strong>8196</strong> (max visible lights per frame, TNC, found this
+   round, §4), and the <code>[-16,16]</code> world-unit cube a cuttable/fracture model's
+   geometry must fit inside (TNC).</li>
+<li><strong>131 cvars with an engine-enforced <code>min</code>/<code>max</code> clamp range</strong> and <strong>309</strong>
+   more whose <em>name</em> suggests a cap (not independently verified as clamped) —
+   full table extracted from <code>re_probes/cvartable/cvars_tnc_v2.json</code> (§4),
+   covering AI/physics/streaming/render/world-geometry caps with their
+   defaults, ranges, <code>CVAR_</code> flags and whether they are console-reachable
+   (<code>exposed</code>) or need the <code>resourceExec -s</code> / Kiscule-Command route proven
+   in <code>r4_consolecmds.md</code>/<code>r5_kisculecmd.md</code>.</li>
+<li><strong>AI population caps are level-design data, not an engine constant.</strong>
+   <code>idTarget_AISpawn</code>'s "Too many AIs active!" warning (disassembled, §2)
+   reads a per-entity field <code>m_maxActiveAIs</code> set by the map author (<code>-1</code> =
+   unlimited, corpus mode <code>12</code>/177 of 504, median <code>8</code>, per
+   <code>r4_aispawnwaves.md</code>) and compares it to
+   a live AI counter — there is <strong>no</strong> global "max AI in world" engine
+   constant gating this; a custom map is free to set <code>maxActiveAIs = -1</code> on
+   every spawner.</li>
+<li><strong>What happens at the limit differs by subsystem, now proven across 6
+   disassembled call sites and traced to a single reliable discriminator
+   (§2.2)</strong>: every fatal-vs-warn call in this report routes through one of
+   two shared logger trampolines, and the trampoline's own first argument to
+   the underlying log function (5 = warn, 7 = fatal) decides the outcome —
+   <strong>not</strong> Ghidra's own "does not return" tag, which this round found to be
+   wrong on every one of the 4 confirmed-non-fatal call sites. <strong>FATAL</strong>
+   (severity 7, terminates first): the entity registry overflow
+   (<code>idGameLocal::RegisterManagedObject</code>, §2.1) and the AI "Group"-size cap
+   (§3.2). <strong>Warn, logged, execution continues</strong> (severity 5): the per-
+   spawner AI cap (§2), the multi-projectile clamp (§3.1), the
+   <code>MAX_DYNAMIC_ENVIRONMENT</code> cap (§3.4), and the "too many visible lights"
+   cap (§4).</li>
+<li><strong>Physics body limits exist but are Havok-internal, not id Tech-level</strong>
+   (§7, new this round): a "shape instances exceeded maximum" string and a
+   Havok motion-solver rotation/position-clamp-event pair were traced to
+   real call sites, but both numeric ceilings live inside Havok middleware's
+   own budget/threshold system rather than a single findable <code>idLib</code>-style
+   comparison — a structurally different, harder static-analysis target than
+   every cap in points 1–5, and still numerically unresolved.</li>
+</ol>
+<p><strong>TNO (no runtime image, strings only — honestly limited):</strong> the exact same
+<code>MAX_*</code> symbol family exists verbatim in <code>.rdata</code> (<code>MAX_GENTITIES</code>,
+<code>ENTITYNUM_MAX_NORMAL</code>, <code>MAX_PLAYERS</code>, <code>idAAS2File::MAX_AREAS</code>, …, §6), and
+the exact same "Too many AIs active!"/"Group '%s' has too many members. The
+max is %d."/<code>idGameLocal::RegisterEntity: spawn count overflow</code> message
+family exists too — strong evidence TNO and TNC are the same engine lineage
+with the same limit <em>architecture</em> — but <strong>no numeric value, no cvar
+min/max, no flag byte, and no fatal-vs-warning behaviour could be confirmed
+for TNO this round</strong>: <code>.text</code> is encrypted, there is no runtime snapshot, and
+this project's rule against unpacking SteamStub was respected. Everything
+TNO-side in this report is string evidence only, marked INFERRED, never
+PROVEN.</p>
+<h2 id="1-the-one-limit-that-is-neither-a-cvar-nor-a-max_-name-the-registry-arrays-themselves-tnc">1. The one limit that is neither a cvar nor a <code>MAX_*</code> name: the registry arrays themselves (TNC)</h2>
+<p>From <code>r4_consolecmds.md</code> §1 (disassembled <code>idCmdSystemLocal</code>/<code>idCVarSystemLocal</code>,
+re-verified against the live snapshot this run) and <code>cvars_tnc_v2.json</code>'s own
+<code>runtime_lists</code> block (machine-readable, produced by walking the same two
+<code>idList</code> heads at runtime):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>registry</th>
+<th style="text-align: right;">used</th>
+<th style="text-align: right;"><strong>capacity</strong></th>
+<th style="text-align: right;">headroom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all commands (<code>idCmdSystemLocal+8</code>, RVA <code>0x4104428</code>)</td>
+<td style="text-align: right;">234</td>
+<td style="text-align: right;"><strong>256</strong></td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr>
+<td>exposed commands (<code>idCmdSystemLocal+0x28</code>, RVA <code>0x4104448</code>)</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;"><strong>64</strong></td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr>
+<td>all cvars (<code>idCVarSystemLocal</code>, array ptr <code>0x2f4f8c0</code>)</td>
+<td style="text-align: right;">3256</td>
+<td style="text-align: right;"><strong>4096</strong></td>
+<td style="text-align: right;">840</td>
+</tr>
+<tr>
+<td>exposed cvars (array ptr <code>0x2f578f0</code>)</td>
+<td style="text-align: right;">304</td>
+<td style="text-align: right;"><strong>512</strong></td>
+<td style="text-align: right;">208</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is a hard, compiled array size — not a cvar, nothing in the <code>CVAR_</code>/<code>CMD_</code>
+flag set changes it. It matters for modding because it is the ceiling on
+<strong>adding</strong> new commands/cvars at all (e.g. via a hypothetical <code>AddCommand</code>/
+<code>RegisterStaticVars</code> hook): retail already uses 79.5% of the cvar slots and
+91.4% of the command slots, but there is real headroom (840 cvars, 22
+commands) before the engine would need the backing array reallocated —
+something no proven mechanism in this project currently does. Not tested in
+this round (would need a working <code>AddCommand</code>/<code>RegisterStaticVar</code> injection
+point, which no track has built); recorded as a hard ceiling to keep in mind,
+not as "headroom available to mods today".</p>
+<h2 id="2-ai-population-per-spawner-data-field-not-a-global-constant-tnc">2. AI population: per-spawner data field, not a global constant (TNC)</h2>
+<p><code>idTarget_AISpawn</code>'s Exec/Think body at RVA <code>0x96d290</code>
+(<code>tools/decomp.py 0x96d290</code>) is the function behind the string
+<code>"idTarget_AISpawn: ( Spawn ScenePoint execution ) Too many AIs active!
+Number of AIs active: %i, limit set to: %i, number shown: %i out of: %i "</code>
+(RVA <code>0x26a19c0</code>, confirmed as this function's own referenced string via
+<code>--strings "too many"</code>). The decompiled body reads three named fields off the
+entity through the generic decl-parameter accessor (same reflection
+mechanism <code>r4_aispawnwaves.md</code> §3 inferred from the lack of direct code
+xrefs to the field name):</p>
+<pre><code class="language-c">puVar10 = FUN_7ff62cb86060(param_1, s_m_maxActiveAIs_..., param_2);
+uVar6 = *puVar10;                              // m_maxActiveAIs (per-entity, map-author-set)
+puVar10 = FUN_7ff62cb86060(param_1, s_m_maxNumOfSpawn_..., param_2);
+uVar8 = *puVar10;                              // m_maxNumOfSpawn
+pcVar11 = FUN_7ff62cb85ec0(param_1, s_m_randomSpawn_..., param_2);
+cVar4 = *pcVar11;                              // m_randomSpawn (bool)
+...
+if ((-1 &lt; (int)uVar6) &amp;&amp; ((int)uVar6 &lt;= iVar17)) {
+    return;                                    // cap not exceeded (or -1 = unlimited) -&gt; fall through, no warning
+}
+</code></pre>
+<p><code>iVar17</code> is read earlier from <code>*(int*)(*(longlong*)(lVar12+8) + 0x56a20)</code> —
+a live counter field, not a constant. <strong>This confirms <code>r4_aispawnwaves.md</code>'s
+inference directly in code</strong>: <code>maxActiveAIs</code> is a per-<code>idTarget_AISpawn</code>
+entity parameter (map/decl data), compared against a live count, with no
+engine-wide ceiling anywhere in this function. A custom map setting
+<code>maxActiveAIs = -1</code> on every spawner is not fighting any compiled limit here
+(it may still hit AI <em>performance</em> limits — pathfinding, nav-mesh job count,
+<code>ai_visAreaNodesPerFrame</code>/<code>ai_visAreaTracesPerFrame</code> cvars §4 — but not this
+hard-coded population gate). (Corpus distribution note, corrected from pass 1:
+the value <code>12</code> quoted above is the <strong>mode</strong> — 177 of 504 spawners that set the
+field — not the median, which is <code>8</code>; see "Pass 1 errors" item 3.)</p>
+<h3 id="22-how-to-tell-warn-from-fatal-reliably-the-loggers-severity-argument-not-ghidras-noreturn-tag">2.2 How to tell warn from fatal reliably: the logger's severity argument, not Ghidra's NORETURN tag</h3>
+<p>Pass 1 used Ghidra's <code>/* WARNING: Subroutine does not return */</code> tag as a
+rough fatal/warn signal and got it right by luck; the verifier caught that the
+tag is also present on the confirmed-non-fatal 16-projectile clamp call site.
+This round traced <strong>every</strong> warn- and fatal-style call found across the whole
+track (§2.1, §3.1, §3.2, §3.4, §4) down one more level, into the two shared
+logger trampolines they all call through:</p>
+<pre><code class="language-c">void FUN_7ff62d4485c0(a,b,c,d) { ...; FUN_7ff62d446a60(5, a, &amp;local); return; }   // WARN path
+void FUN_7ff62d4486b0(a,b,c,d) { ...; FUN_7ff62d4481e0();                        // FATAL path
+                                       FUN_7ff62d446a60(7, a, &amp;local); return; }
+</code></pre>
+<p>Both wrappers are tagged NORETURN by Ghidra at their call sites, and both
+decompile to a normal <code>return;</code> themselves — the tag is simply wrong/
+unreliable in this GZF snapshot (likely because <code>FUN_7ff62d446a60</code> itself,
+or its own leaf <code>FUN_7ff62df567c0</code>, genuinely never returns for <em>some</em>
+severity level, and Ghidra's static analysis applied that NORETURN-ness to
+the trampoline regardless of which severity it is called with). <strong>The real
+discriminator is the first argument to <code>FUN_7ff62d446a60</code></strong>: severity <strong>5</strong>
+is a log-and-continue warning (the wrapper always falls through to its own
+<code>return;</code>); severity <strong>7</strong> first tail-calls a dedicated terminate chain
+(<code>FUN_7ff62d4481e0</code>, itself genuinely NORETURN) before logging — i.e. the
+process is already being torn down by the time the message prints. This
+holds across every call site traced this track: <strong>fatal (severity 7,
+<code>FUN_7ff62d4486b0</code>)</strong> — <code>idGameLocal::RegisterManagedObject</code> overflow (§2.1),
+the Group-member cap (§3.2); <strong>warn (severity 5, <code>FUN_7ff62d4485c0</code>)</strong> — the
+16-projectile clamp (§3.1), the <code>idTarget_AISpawn</code> AI-cap check (§2), the new
+<code>MAX_DYNAMIC_ENVIRONMENT</code> cap (§3.4), and the new "too many visible lights"/
+"max visible shadow slices" caps (§4). <strong>Recipe for future passes</strong>: when
+classifying a new <code>MAX_*</code>/limit call site in this snapshot, find the call
+into <code>FUN_7ff62d446a60</code> (directly or through one of the two wrappers above)
+and read its first argument — do not trust the NORETURN tag alone.</p>
+<h3 id="21-what-overflow-actually-does-fatal-for-entities-not-for-ai-count">2.1 What overflow actually does: FATAL for entities, not for AI count</h3>
+<p><code>idGameLocal::RegisterManagedObject</code>'s overflow branch (RVA <code>0x11c8a91</code>,
+<code>tools/decomp.py 0x11c8a91</code>) is a <strong>one-instruction, no-return tail call</strong>:</p>
+<pre><code class="language-c">void FUN_7ff62d3d8a91(void) {
+    /* WARNING: Subroutine does not return */
+    FUN_7ff62d4486b0(s_idGameLocal__RegisterManagedObje_7ff62eb80810);
+    // &quot;idGameLocal::RegisterManagedObject: spawn count overflow&quot;
+}
+</code></pre>
+<p><code>FUN_7ff62d4486b0</code> is the engine's fatal-error entry point (same call shape
+used by every other no-return <code>assert</code>-style error string found in this
+track, e.g. <code>s_Tried_to_spawn_too_many_projecti_...</code> in §3.1, and matches the
+<code>idCommonLocal</code>/<code>idLib::FatalError</code> idiom this project's other tracks already
+established). <strong>Exceeding the managed-object/entity registration slot count
+is FATAL, not a soft cull.</strong> The companion string, <code>"Could not register
+'%s'. Managed Object number %d already used."</code> (RVA <code>0x2970880</code>, function
+<code>0x11c8a9e</code>), is a related but distinct error — a slot-reuse conflict, also a
+no-return fatal call — not the same condition as the pure overflow. <strong>Open
+question, not resolved this round</strong>: the actual numeric capacity behind
+<code>MAX_GENTITIES</code>/<code>MAX_G_MANAGED_OBJECTS</code> (both exist as RTTI/debug-string
+names, §6, in both games) was not extracted — no caller of the overflow
+function was found by Ghidra's static xref scan (likely an indirect/
+optimized call site), so the comparison that triggers it was not located.</p>
+<h2 id="3-compiled-numeric-constants-actually-pulled-out-of-disassembly-tnc">3. Compiled numeric constants actually pulled out of disassembly (TNC)</h2>
+<p>Three cases where a <code>MAX_*</code>-style cap's <strong>literal value</strong>, not just its name,
+was confirmed:</p>
+<h3 id="31-multi-projectile-spawn-hard-coded-16">3.1 Multi-projectile spawn: hard-coded <strong>16</strong></h3>
+<p><code>tools/decomp.py 0x105a280</code> (the function behind
+<code>"Tried to spawn too many projectiles (%d).  Max allowed is (%d)"</code>, RVA
+<code>0x2955758</code>):</p>
+<pre><code class="language-c">iVar1 = *(int *)(param_2[0x1d] + 0x3bc);   // requested projectile count (weapon/ammo decl field)
+if (iVar1 &lt; 1) { iVar6 = 1; }
+else {
+    iVar6 = iVar1;
+    if (0x10 &lt; iVar1) { iVar6 = 0x10; }     // clamp to 16
+}
+FUN_7ff62d448640(iVar1 != iVar6, s_Tried_to_spawn_too_many_projecti_...);
+                                             // assert(iVar1==iVar6) -- warns+continues (severity 5, see §2.2),
+                                             // despite Ghidra's misleading NORETURN tag on this call site
+</code></pre>
+<p>This clamps (not fatals) to <strong>16</strong> simultaneous projectiles per fire call —
+relevant to any weapon mod that sets a decl's pellet/burst count above 16
+(e.g. a shotgun with more than 16 pellets per shot): the engine will
+silently cap it to 16 and print a warning, not crash.</p>
+<h3 id="32-aiencounter-group-size-hard-coded-64">3.2 AI/encounter "Group" size: hard-coded <strong>64</strong></h3>
+<p><code>tools/decomp.py 0xdae38b</code> (behind <code>"Group '%s' has too many members. The
+max is %d."</code>, RVA <code>0x28b9430</code>):</p>
+<pre><code class="language-c">FUN_7ff62d4486b0(s_Group___s__has_too_many_members__..., *(undefined8*)(unaff_RBP+0x20), 0x40);
+</code></pre>
+<p>The format's <code>%d</code> is filled from the literal <code>0x40</code> = <strong>64</strong> — a fatal
+no-return call (same idiom as §2.1). <strong>This exact message string exists
+verbatim in TNO</strong> (<code>"Group '%s' has too many members. The max is %d."</code>,
+RVA <code>0xf327d0</code>, found by <code>tno_strings.py</code>) — the number itself could not be
+confirmed for TNO (encrypted <code>.text</code>), but the shared, byte-identical format
+string is itself evidence the cap is the same architectural mechanism
+(possibly the same 64) in both games.</p>
+<h3 id="33-cuttablefracture-model-geometry-a-literal-world-space-bound">3.3 Cuttable/fracture model geometry: a literal world-space bound</h3>
+<p><code>"DynamicFracture : Model '&lt;name&gt;' is too large to use as a cuttable, ensure
+model is contained inside a [-16, 16] world boundary axis box."</code> (RVA
+<code>0x26526c0</code>, corrected from pass 1's <code>0x2652620</code> — see "Pass 1 errors" item 4)
+— a plain-text literal bound, no disassembly needed: any cuttable/destructible
+model's local geometry must fit inside a 32×32×32 world-unit cube or
+<code>DynamicFracture</code> rejects it. Relevant to any mod adding a new breakable prop.</p>
+<h3 id="34-dynamic-environment-probe-population-hard-coded-128">3.4 Dynamic environment probe population: hard-coded <strong>128</strong></h3>
+<p><code>tools/decomp.py --strings "MAX_DYNAMIC_ENVIRONMENT"</code> finds the string
+<code>"MAX_DYNAMIC_ENVIRONMENT exceeded"</code> (RVA <code>0x2605538</code>) referenced from
+<code>FUN_7ff62c589120</code> (RVA <code>0x379120</code>) — a function that registers/looks up a
+dynamic-environment (reflection-probe-style) volume by its world-space
+bounding box. A live population counter is read at the top of the function
+(<code>iVar1 = *(int*)(lVar2 + 0xc510)</code>) and, further down, compared directly:</p>
+<pre><code class="language-c">if ((param_3 != 0) &amp;&amp; (param_6 &lt; 0x11)) {
+    if (iVar1 == 0x80) {                       // 0x80 = 128
+                    /* WARNING: Subroutine does not return */
+        FUN_7ff62d4485c0(s_MAX_DYNAMIC_ENVIRONMENT_exceeded_...);  // severity 5 -- warn, not fatal (§2.2)
+    }
+    /* ... falls through and continues registering the probe ... */
+</code></pre>
+<p>A 4th confirmed hard numeric cap: <strong>128</strong> simultaneous dynamic-environment
+probes, warn-and-continue (same non-fatal severity-5 path as §3.1/§2),
+despite carrying the same misleading NORETURN tag. Relevant to any mod/map
+that spawns an unusually large number of reflection-probe-style volumes.</p>
+<h2 id="4-cvar-governed-limits-the-full-minmax-clamped-set-plus-named-max-cvars-tnc">4. Cvar-governed limits: the full <code>min</code>/<code>max</code>-clamped set, plus named <code>max*</code> cvars (TNC)</h2>
+<p><code>re_probes/cvartable/cvars_tnc_v2.json</code> (3256 cvars, each with <code>default</code>,
+<code>type</code>, <code>flags_decoded</code>, <code>exposed</code>/<code>settable_in_retail</code>, and — for 131 of
+them — an engine-enforced <code>min</code>/<code>max</code>). Flag meanings (from
+<code>tools/cvar_table.py</code>'s own cross-checked bit table, <code>selbsttest()</code>):
+<code>CVAR_CHEAT</code> = reset-on-cheat-path candidate (TNC has no proven TNO-style
+reset mechanism found so far, unlike the TNO behaviour <code>docs/limits.md</code>
+documents); <code>CVAR_INIT</code> = only takes effect if set <strong>before</strong> that subsystem
+initializes (startup <code>.cfg</code>/<code>+set</code>, not mid-session console); <code>CVAR_ROM</code> =
+never settable; <code>CVAR_EXPOSE</code> = reachable by the normal, restricted (level-1)
+console — everything <em>not</em> <code>EXPOSE</code> needs the <code>resourceExec &lt;file&gt; -s</code> /
+Kiscule-Command-node route <code>r4_consolecmds.md</code>/<code>r5_kisculecmd.md</code> already
+proved reaches non-exposed cvars with no code patch.</p>
+<p><strong>World geometry / joints (all <code>CHEAT</code>+<code>INIT</code>, none <code>EXPOSE</code> — startup-config only):</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th style="text-align: right;">default</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_worldGeometryManagerMaxVerts</code></td>
+<td style="text-align: right;">11</td>
+<td><strong>million</strong> static vertices, engine-wide cap for <code>mergedworld</code>-class geometry</td>
+</tr>
+<tr>
+<td><code>r_worldGeometryManagerMaxIndices</code></td>
+<td style="text-align: right;">36</td>
+<td><strong>million</strong> static indices (~12M triangles)</td>
+</tr>
+<tr>
+<td><code>r_worldGeometryVertexPaintMaxVerts</code></td>
+<td style="text-align: right;">8</td>
+<td>million, vertex-painted subset</td>
+</tr>
+<tr>
+<td><code>r_worldJointsManagerMaxJoints</code></td>
+<td style="text-align: right;">300000</td>
+<td>max joints usable for skinned geometry engine-wide</td>
+</tr>
+<tr>
+<td><code>r_LODSkipOnLargeModelsMaxVerts</code></td>
+<td style="text-align: right;">500000</td>
+<td>per-model; skip auto-LOD generation above this</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Collision/kd-tree (<code>CHEAT</code>, not <code>EXPOSE</code>; engine-clamped <code>min</code>/<code>max</code>):</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th style="text-align: right;">default</th>
+<th>min–max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>kd_maxTrisPerLeaf</code></td>
+<td style="text-align: right;">8192</td>
+<td>64–16384</td>
+</tr>
+<tr>
+<td><code>kd_maxVertsPerLeaf</code></td>
+<td style="text-align: right;">8192</td>
+<td>64–16384</td>
+</tr>
+<tr>
+<td><code>kd_maxLeafSize</code></td>
+<td style="text-align: right;">800</td>
+<td>200–2000</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>AI / entity population &amp; physics (<code>CHEAT</code>, not <code>EXPOSE</code>):</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th style="text-align: right;">default</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g_maxEffectPhysicsBodies</code></td>
+<td style="text-align: right;">64</td>
+<td>max active <em>effect</em> (non-gameplay) physics bodies at once</td>
+</tr>
+<tr>
+<td><code>g_maxSpawnLocations</code></td>
+<td style="text-align: right;">150</td>
+<td>approx. limit of generated MP-style spawn locations</td>
+</tr>
+<tr>
+<td><code>gore_maxLivingGoreEnts</code></td>
+<td style="text-align: right;">10</td>
+<td>max simultaneous gore-piece entities in the world</td>
+</tr>
+<tr>
+<td><code>ai_maxTurnRate</code></td>
+<td style="text-align: right;">360</td>
+<td>deg/s</td>
+</tr>
+<tr>
+<td><code>g_parallelMaxThreads</code></td>
+<td style="text-align: right;">4</td>
+<td>threads for parallel game jobs</td>
+</tr>
+<tr>
+<td><code>aimtarget_maxDistance</code></td>
+<td style="text-align: right;">500</td>
+<td>aim-assist target distance</td>
+</tr>
+<tr>
+<td><code>poi_PVPEnemyNameMaxAlpha</code>/<code>...Deg</code></td>
+<td style="text-align: right;">—</td>
+<td>leftover PvP/MP scaffolding (TNC ships SP-only)</td>
+</tr>
+<tr>
+<td><code>poi_ArtificialPOILimit</code></td>
+<td style="text-align: right;">25</td>
+<td><code>CHEAT, NETWORKSYNC</code> (not <code>EXPOSE</code> — needs <code>resourceExec -s</code>). Description verbatim: "Although we allocate space for additional POIs past this, we will throw an error if we get this many POIs — so we can evaluate how many we actually need." Directly backs the string <code>"idPOIManager::UpdatePOIInfo had too many POIs - exceeded artificial limit of %d, had %d. Increase CVAR 'poi_ArtificialPOILimit' to raise this."</code> — a named, raisable POI (point-of-interest / HUD marker) population cap, found this round (missed in pass 1 despite being reachable from the same <code>--strings "exceeded"</code> sweep)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Streaming / memory pools (mixed <code>EXPOSE</code> status — check before assuming a route):</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th style="text-align: right;">default</th>
+<th style="text-align: right;">min–max</th>
+<th>exposed?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_poolSize</code></td>
+<td style="text-align: right;">1024 MiB</td>
+<td style="text-align: right;">—</td>
+<td><strong>yes</strong> (<code>NOCHEAT, LOCAL_SETTING, EXPOSE</code>) — plain console-settable</td>
+</tr>
+<tr>
+<td><code>is_maxUploadsPerFrame</code></td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">—</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>is_maxTextureSize</code></td>
+<td style="text-align: right;">32768 KB</td>
+<td style="text-align: right;">—</td>
+<td>no (<code>CHEAT, INIT</code>)</td>
+</tr>
+<tr>
+<td><code>is_maxAllocationsPerFrame</code></td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">—</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>fc_maxCacheMemoryMB</code></td>
+<td style="text-align: right;">1024</td>
+<td style="text-align: right;">1–2048</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>fc_minCacheMemoryMB</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0–96</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>fc_leaveFreeMapMB</code></td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">1–1024</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>fc_leaveFreePersistMB</code></td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1–1024</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>resource_diskStreamingBufferSize</code></td>
+<td style="text-align: right;">8 MiB</td>
+<td style="text-align: right;">1–1024</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>resource_diskStreamingScratchBufferSize</code></td>
+<td style="text-align: right;">4 MiB</td>
+<td style="text-align: right;">1–1024</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>s_initStreamPoolSizeMB</code></td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">—</td>
+<td>no (<code>INIT</code> — startup only)</td>
+</tr>
+<tr>
+<td><code>s_initApuMemoryHeapSize</code></td>
+<td style="text-align: right;">370 MB</td>
+<td style="text-align: right;">—</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>vt_maxLockedPagesPercent</code></td>
+<td style="text-align: right;">20%</td>
+<td style="text-align: right;">0–50</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>vt_maxPPF</code> (pages/frame, virtual texture)</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">0–64</td>
+<td><strong>yes</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Strings / names (cvar-level only — the C++ <code>MAX_*</code> string-length constants
+in §6 have no retrievable numeric value this round):</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th style="text-align: right;">default</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>swf_textMaxInputLength</code></td>
+<td style="text-align: right;">512</td>
+<td>max chars in a UI text-input field</td>
+</tr>
+<tr>
+<td><code>snapEdit_scriptVarNameMaxLength</code></td>
+<td style="text-align: right;">20</td>
+<td>max script-variable name length in the SnapMap-derived editor</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Shadows / lights (compiled caps, <code>CHEAT</code>, not <code>EXPOSE</code>):</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th style="text-align: right;">default</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_staticShadowsMaxOpaqueVertices</code></td>
+<td style="text-align: right;">33 554 432</td>
+<td>32M, static shadow cache</td>
+</tr>
+<tr>
+<td><code>r_staticShadowsMaxAlphaVertices</code></td>
+<td style="text-align: right;">1 048 576</td>
+<td>1M, transparent subset</td>
+</tr>
+<tr>
+<td><code>r_umbraMaxShadowQueriesVisible</code>/<code>...Invisible</code></td>
+<td style="text-align: right;">6 / 1</td>
+<td>0–512 clamp</td>
+</tr>
+</tbody>
+</table></div>
+<p>No cvar named "max visible lights"/"max active lights" exists. Pass 1 left
+both compiled caps unresolved; this round finished reading both to their
+comparison line:</p>
+<ul>
+<li><strong>Visible lights per frame: hard-coded 8196.</strong> The light-gather function
+  (RVA <code>0x113549b</code>) guards its "Too many visible lights.\n" warning with a
+  direct literal comparison: <code>if (unaff_R12 == 0x2004) { FUN_7ff62d4485c0(...) }</code>
+  — <code>0x2004</code> = <strong>8196</strong>. Severity 5, i.e. warn-and-continue (§2.2), same
+  misleading NORETURN tag. <code>unaff_R12</code> is a live visible-light counter (its
+  increment site was not traced this round, but the comparison itself is a
+  direct literal, not table- or cvar-driven).</li>
+<li><strong>"Max visible shadow slices" is a <em>table</em>, not one number.</strong>
+  <code>GatherShadowCasters</code> (RVA <code>0x1136efd</code>) reads its cap from
+  <code>*(uint*)(&amp;DAT_7ff62e878100 + index*4)</code> — a small <code>int32</code> array indexed by
+  a live value (<code>uVar29</code>, whose origin — most likely a quality-tier or
+  light-type enum — was not traced back this round) — then warns (severity 5,
+  <code>"Max visible shadow slices exceeded"</code>) if the live count exceeds
+  <code>table[index] + some_float</code>. Reading the raw bytes directly from
+  <code>re_probes/runtime_87400/module.bin</code> at file offset <code>0x2668100</code> (= RVA of
+  <code>DAT_7ff62e878100</code>, same file-offset-as-RVA convention <code>tools/decomp.py</code>
+  uses) gives the first 6 <code>int32</code> entries as <strong><code>{6, 1, 4, 0, 6, 0}</code></strong> before
+  the data starts looking like 8-byte-aligned pointers (plausible table end,
+  not confirmed by a bounds check in code). So this is a <strong>per-context cap
+  table with small values (0–6)</strong>, not a single large constant — a materially
+  different shape of limit than every other cap in this report, which is
+  itself a useful finding: not every <code>MAX_*</code>-adjacent check is a flat array
+  bound.</li>
+</ul>
+<h2 id="5-decls--resources-no-fixed-array-cap-found--idlist-shaped-not-idarray-shaped">5. Decls / resources: no fixed-array cap found — <code>idList</code>-shaped, not <code>idArray</code>-shaped</h2>
+<p>Unlike the cvar/command registries (§1, a genuine fixed C array), nothing in
+this track found a compiled ceiling on decl or resource <em>counts</em>. Circumstantial
+but consistent evidence: <code>docs/engine-surface.md</code> already measured TNC's live
+install at <strong>203 843 assets across 105 types</strong>, with single types running into
+the tens of thousands (<code>sample</code> 61 318 in the TNO measurement in the same
+doc, <code>sound</code> 43 782) — if a small fixed array like the cvar one existed here,
+retail content would already be bumping into it, and it isn't. <code>declManager</code>
+itself is referenced in TNC's strings only via generic "type already
+registered"/"decl not found" messages (§6), never a capacity message, and its
+RTTI name (<code>idDeclManagerLocal</code>) uses the generic <code>idList</code>-backed container
+idiom this project's other tracks have repeatedly found to be dynamically
+growable (unlike <code>idCmdSystemLocal</code>'s/<code>idCVarSystemLocal</code>'s static arrays).
+<strong>Inferred, not proven</strong>: decl/resource counts are bounded by available
+memory and by the archive/cfile container format (<code>csize</code>/offset invariants,
+<code>docs/limits.md</code> §3–4), not by a small compiled array — the practical ceiling
+for a modder is "the container format and streaming budget", not an
+entity-style hard count.</p>
+<h2 id="6-shared-max_-symbol-family-present-named-in-both-games-numeric-value-mostly-out-of-reach">6. Shared <code>MAX_*</code> symbol family: present (named) in both games, numeric value mostly out of reach</h2>
+<p><code>tools/decomp.py --strings "MAX_"</code> (TNC, ~450 hits) and
+<code>re_probes/enginelimits/tno_strings.py "MAX_[A-Z_]+"</code> (TNO, ~450 hits,
+reproducible on demand) both surface the same C++-mangled static-const-member
+symbol family, e.g. (TNC left / TNO right, both confirmed present in the
+respective binary, values below are each binary's own string, not compared
+numerically — neither is readable):</p>
+<pre><code>MAX_GENTITIES                     MAX_GENTITIES
+ENTITYNUM_MAX_NORMAL              ENTITYNUM_MAX_NORMAL
+ENTITYNUM_WORLD / _NONE / _ALL_BUT_WORLD   (TNO has the same trio)
+MAX_PLAYERS / MAX_COOP_PLAYERS / MAX_BOTS / MAX_LOCAL_PLAYERS   (both)
+MAX_WORLD_AREAS / MAX_WORLD_VIEWS                               (both)
+idCmdArgs::MAX_COMMAND_STRING / MAX_COMMAND_ARGS                 (both)
+MAX_RENDER_LIGHTS / MAX_RENDER_MODELS                             (both — corrected from pass 1, which wrongly said &quot;TNO only&quot;; re-run `decomp.py --strings MAX_RENDER` confirms TNC RVA 0x279f100/0x279f0e8)
+MAX_ENTITY_COORDINATE                                             (both)
+</code></pre>
+<p><strong>Corrected from pass 1</strong> (see "Pass 1 errors" item 1): <code>idAAS2File::MAX_AREAS</code>
+was wrongly claimed above and in PROVEN to exist in both games. Re-checked
+three ways this round (<code>--strings idAAS2File</code>, <code>--strings AAS2</code>,
+<code>--strings MAX_AREAS</code>) — <strong>zero hits in TNC</strong>. It exists <strong>only in TNO</strong>
+(RVA <code>0xd95778</code>, via <code>tno_strings.py</code>). Dropped from the "both" list.</p>
+<p><strong>Why the numbers can't be read even for TNC (where <code>.text</code> <em>is</em> decompilable
+this round)</strong>: almost all of these strings show "(no references found)" under
+<code>tools/decomp.py</code>'s xref scan — they are consumed by a reflection/RTTI name
+table (likely per-type static-member descriptors for the save/serialization
+or script-binding system), not by a single, findable comparison instruction.
+The 3 exceptions in §3 were found precisely because their <em>error-message</em>
+siblings (format strings passed to a fatal/warn call) sit right next to a
+literal integer argument in the same short function — that pattern does not
+exist for most of the <code>MAX_*</code> family, which are structural/reflection
+metadata rather than runtime-checked limits with a logged error path.</p>
+<p><strong>TNO-specific finding</strong>: <code>idGameLocal::RegisterEntity: spawn count
+overflow</code> (TNO's name for TNC's <code>RegisterManagedObject</code>, same message shape,
+RVA <code>0xffeb60</code>) confirms TNO has the identical entity-overflow mechanism —
+further lineage evidence — but, again, no numeric value, no code path, and
+no fatal-vs-warning confirmation is possible without a decompiled TNO image,
+which does not exist in this project.</p>
+<h2 id="7-physics-body-limits-tnc--missed-entirely-in-pass-1-traced-further-this-round">7. Physics body limits (TNC) — missed entirely in pass 1, traced further this round</h2>
+<p>The question explicitly asked about physics body limits; pass 1's report had
+only the <code>g_maxEffectPhysicsBodies=64</code> cvar (§4) and no mention of the
+Havok (<code>hknp</code>) engine's own internal limits, despite the relevant strings
+being directly reachable from the report's own <code>--strings "exceeded"</code> sweep.
+This round traced two separate Havok-side limit families as far as static
+analysis allows:</p>
+<p><strong>Shape-instance budget.</strong> <code>"The number of shape instances (%i) exceeded the
+maximum number (%i) by %i. Number of triangle meshes used: %i. Number of
+polytopes used: %i"</code> (RVA <code>0x26544e0</code>). Pass 1's xref scan found only a raw
+reference address (<code>~0x7ff62c931487</code>) that <code>tools/decomp.py</code> would not
+resolve to a function start — reproduced here and confirmed still true. This
+round went one level deeper with <code>tools/tnc_runtime_code.py</code>'s Capstone
+disassembler (reads <code>module.bin</code> directly, independent of Ghidra's function
+boundaries) and disassembled the actual instructions at that address:</p>
+<pre><code>0x721487  lea rdx, [rip + 0x1f33052]   ; -&gt; 0x26544e0, the shape-instance string
+0x72148e  mov rcx, qword ptr [rbp+0x1e8]
+0x721495  call 0x120fb40
+</code></pre>
+<p><code>FUN_7ff62d41fb40</code> (the call target) is a thin trampoline into
+<code>FUN_7ff62d41fa90</code> — <strong>a different logging path than §2.2's
+<code>FUN_7ff62d446a60</code>/severity pair</strong>, consistent with this being a Havok
+middleware-internal error reporter, not an id Tech-level <code>MAX_*</code> check. The
+message's own two <code>%i</code> fields (current count, max count) are filled from
+<em>runtime arguments</em> passed into this call, not from a literal immediate at
+this site, so <strong>the numeric ceiling itself remains unresolved</strong> — but this
+round establishes <em>why</em>: it is a Havok-internal configured budget (most
+likely set once at physics-world init from a Havok config/tuning asset, not
+a single compiled constant anywhere in <code>idGameLocal</code>-level code), which is a
+materially different, harder static-analysis target than every <code>idLib</code>-level
+cap in §2–§4. <code>tools/decomp.py 0x7210c0</code>-area and <code>tools/tnc_runtime_code.py</code>
+disagree on this function's boundaries (the <code>.pdata</code>-derived range
+<code>0x720100</code>–<code>0x7218e0</code> that <code>tnc_runtime_code.py</code> reports contains the target
+address, but <code>tools/decomp.py</code>'s Ghidra-derived function at that same start
+address decompiles to an unrelated 6-line stub) — recorded as a tooling
+discrepancy for whoever picks this up next, not re-investigated further this
+round (capped per this track's "~3 identical dead ends" rule).</p>
+<p><strong>Motion/constraint clamp events.</strong> <code>"MimaxRotationExceeded"</code> /
+<code>"MimaxPositionExceeded"</code> (RVA <code>0x1f8b310</code>/<code>0x1f8b328</code>) are referenced by
+three real functions, not reflection metadata — decompiled one,
+<code>FUN_7ff62db9e250</code> (RVA <code>0x198e250</code>): it is a <strong>debug-telemetry event
+emitter</strong> (writes named events — <code>YtDebris</code>, <code>YtGetClosestPoint</code>,
+<code>YtCheckContactCache</code>, then conditionally <code>MimaxRotationExceeded</code>/
+<code>MimaxPositionExceeded</code> — into a ring buffer for an external physics
+visual-debugger), not the threshold check itself. It forwards a live
+exceeded-flag/magnitude (<code>*(int*)(param_1+9)</code> / <code>*(int*)(param_1+0x4c)</code>,
+non-zero = exceeded) that was computed earlier by Havok's own motion solver;
+the actual rotation/position thresholds that set that flag are Havok-internal
+and were not located this round.</p>
+<p><strong>Net assessment</strong>: physics body/shape limits are real, stringed, and now
+traced one concrete level deeper than pass 1 (an actual disassembled call
+site for the shape-instance cap, a decompiled telemetry emitter for the
+motion-clamp events) — but, unlike §2–§4's id Tech-level caps, they live
+inside Havok middleware's own internal budget/threshold system rather than a
+single findable <code>idLib</code>-style comparison, so no numeric value could be
+extracted this round either. This is a different <em>kind</em> of dead end than
+§2.1's "no callers found" (an architectural one, not a search-coverage one),
+worth recording as such for the next pass rather than re-attempting the same
+xref search a 4th time.</p>
+<h2 id="proven">PROVEN</h2>
+<ul>
+<li>TNC's command/cvar registries are fixed-size C arrays with the exact
+  capacities in §1 (<code>r4_consolecmds.md</code>'s disassembly + <code>cvars_tnc_v2.json</code>'s
+  own <code>runtime_lists</code> metadata — two independent sources agreeing).</li>
+<li><code>idTarget_AISpawn</code>'s "Too many AIs active" check (RVA <code>0x96d290</code>) reads a
+  per-entity <code>m_maxActiveAIs</code> field, not a global constant, and the function
+  returns normally (no fatal, no assert) when the cap is not exceeded or is
+  <code>-1</code> — confirms <code>r4_aispawnwaves.md</code>'s data-level inference directly in
+  disassembly (§2).</li>
+<li><code>idGameLocal::RegisterManagedObject</code>'s overflow path (RVA <code>0x11c8a91</code>) is
+  an unconditional, no-return fatal-error call — exceeding it crashes, it
+  does not cull or warn-and-continue (§2.1).</li>
+<li>The multi-projectile spawn cap is a hard-coded <strong>16</strong> (RVA <code>0x105a280</code>,
+  §3.1) — a warn-and-clamp, not fatal.</li>
+<li>The "Group has too many members" cap is a hard-coded <strong>64</strong> (RVA
+  <code>0xdae38b</code>, §3.2) — fatal, no-return.</li>
+<li>The cuttable/fracture model bound is a literal <code>[-16, 16]</code> world-unit cube
+  per model (string, RVA <code>0x26526c0</code>, §3.3; corrected from pass 1's
+  <code>0x2652620</code>, see "Pass 1 errors" item 4).</li>
+<li><code>MAX_DYNAMIC_ENVIRONMENT</code> is a hard-coded <strong>128</strong> (RVA <code>0x379120</code>, §3.4) —
+  warn-and-continue (severity 5, §2.2), not fatal.</li>
+<li>The light-gather function's "too many visible lights" cap is a hard-coded
+  <strong>8196</strong> (<code>0x2004</code>, RVA <code>0x113549b</code>, §4 shadows/lights) — warn, not fatal.
+  <code>GatherShadowCasters</code>'s "max visible shadow slices" cap (RVA <code>0x1136efd</code>)
+  is <strong>not</strong> a single literal but a small <code>int32</code> lookup table at
+  <code>DAT_7ff62e878100</code>, first 6 entries read directly from <code>module.bin</code> as
+  <code>{6, 1, 4, 0, 6, 0}</code> (§4).</li>
+<li>The logger <code>FUN_7ff62d446a60</code>'s first argument is the real fatal/warn
+  discriminator (5 = warn/returns, 7 = fatal/terminates first), independently
+  reproducible across all 6 warn/fatal call sites traced this track (§2.2) —
+  more reliable than Ghidra's own NORETURN tag, which is wrong on every one
+  of the 4 warn-path call sites.</li>
+<li><code>poi_ArtificialPOILimit</code> (default 25, <code>CHEAT, NETWORKSYNC</code>, not <code>EXPOSE</code>)
+  exists in <code>cvars_tnc_v2.json</code> exactly as described and backs the
+  <code>idPOIManager::UpdatePOIInfo</code> "exceeded artificial limit" string (§4).</li>
+<li>The 131-entry <code>min</code>/<code>max</code>-clamped cvar table and the broader <code>max*</code>-named
+  cvar set in §4, with exact defaults, ranges and <code>CVAR_</code> flags, all read
+  directly from <code>cvars_tnc_v2.json</code> (produced by walking the live cvar
+  registry, per that file's own <code>runtime_lists</code>/<code>hinweis</code> metadata).</li>
+<li>The <code>CVAR_</code> flag bit table used to interpret <code>exposed</code>/<code>INIT</code>/<code>CHEAT</code>
+  above is <code>tools/cvar_table.py</code>'s own cross-checked table (<code>selbsttest()</code>
+  asserts it against two independently-read reflection tables in the EXE and
+  confirms TNO uses a <em>different</em> bit layout — proof the table is measured,
+  not assumed).</li>
+<li>The <code>MAX_*</code>/<code>*_MAX_ID</code> string family exists, by name, in <strong>both</strong> TNC
+  (<code>tools/decomp.py --strings "MAX_"</code>) and TNO
+  (<code>re_probes/enginelimits/tno_strings.py "MAX_[A-Z_]+"</code>), including several
+  identical fully-qualified names (<code>MAX_GENTITIES</code>, <code>ENTITYNUM_MAX_NORMAL</code>,
+  <code>idCmdArgs::MAX_COMMAND_STRING</code>, <code>MAX_RENDER_LIGHTS</code>, <code>MAX_RENDER_MODELS</code>,
+  §6) — both runs are reproducible on demand, output included inline above.
+  (<code>idAAS2File::MAX_AREAS</code> is <strong>not</strong> in this "both" list — pass 1 wrongly
+  included it; it is TNO-only, see "Pass 1 errors" item 1 and §6.)</li>
+<li>The error-message strings <code>"Too many AIs active!"</code> (as <code>idTarget_AISpawn</code>
+  in TNC / <code>idTarget_ShowAI</code> in TNO) and <code>"Group '%s' has too many members.
+  The max is %d."</code> exist <strong>verbatim</strong> in both binaries' string tables (§3.2,
+  §6) — found independently via <code>tools/decomp.py --strings</code> and
+  <code>tno_strings.py</code> respectively.</li>
+</ul>
+<h2 id="inferred-plausible-not-independently-nailed-down-this-round">INFERRED (plausible, not independently nailed down this round)</h2>
+<ul>
+<li>That decl/resource counts have no small fixed-array ceiling (§5) — based
+  on the absence of any capacity-style error message for <code>declManager</code> and
+  on retail's own very high per-type counts, not on a disassembled bounds
+  check (none was found to disassemble).</li>
+<li>That TNO's identical <code>MAX_*</code>/error-string family implies the <em>same</em>
+  numeric caps as TNC — plausible given shared code lineage but explicitly
+  unconfirmed; TNO could easily have different compiled values even with
+  identical symbol names (different game, different build).</li>
+<li>That <code>MAX_GENTITIES</code>/<code>MAX_G_MANAGED_OBJECTS</code>'s actual numeric value governs
+  the fatal overflow in §2.1 — the string names exist and the overflow
+  function exists, but the comparison site tying the two together was not
+  located (no callers found by Ghidra's static xref scan for the overflow
+  function itself, §2.1).</li>
+<li>That <code>GatherShadowCasters</code>'s shadow-slice cap table (<code>DAT_7ff62e878100</code>,
+  §4) is indexed by a quality-tier or light-type enum — the index register
+  (<code>uVar29</code>) is plausibly one of those given the surrounding light-culling
+  code, but its origin was not traced back to a named source this round
+  (resolved from pass 1's open question: the light-gather cap itself, <code>0x2004</code>,
+  <em>is</em> now PROVEN, not inferred — only this table's index semantics remain
+  inferred).</li>
+<li>That the Havok shape-instance budget (§7) is a configured-at-init value
+  rather than a compiled constant — based on the call site passing both the
+  current count and the max as runtime arguments (not literals) into a
+  distinct Havok-internal logging path, not on having located the actual
+  init-time assignment.</li>
+</ul>
+<h2 id="failed-hypotheses--dead-ends">Failed hypotheses / dead ends</h2>
+<ul>
+<li>Tried to find a caller of <code>idGameLocal::RegisterManagedObject</code>'s overflow
+  branch (<code>tools/decomp.py 0x11c8a91 --callers</code>) to recover the actual
+  <code>MAX_GENTITIES</code>-equivalent numeric comparison — <strong>zero callers found</strong> by
+  Ghidra's static xref scan (consistent with an optimized/indirect call,
+  same class of dead end <code>r4_aispawnwaves.md</code> §3 already hit trying to
+  xref <code>maxActiveAIs</code>). Not pursued further this round; would need either a
+  broader caller search strategy or runtime breakpoint data this project's
+  rules don't allow (no process attach).</li>
+<li>Searched TNO's <code>.rdata</code>/<code>.data</code> for any literal small-integer array or
+  table that might sit adjacent to the <code>MAX_GENTITIES</code> string and encode its
+  value directly — none found; C++ <code>static const int</code> members at this era
+  are near-universally inlined as immediate operands at each use site rather
+  than stored as data, which is exactly why they show up as debug-string
+  labels with "no references" in TNC's own decompiled xref scan too. Not a
+  promising lead for either game; abandoned after one check.</li>
+<li>Looked for a single <code>max visible lights</code>/<code>max active lights</code> cvar by name
+  pattern in <code>cvars_tnc_v2.json</code> (<code>ai_</code>-, <code>r_</code>-, <code>g_</code>-prefixed candidates) —
+  none exists; the only light-count-adjacent cvars found
+  (<code>r_umbraMaxShadowQueriesVisible</code>/<code>Invisible</code>) govern <em>occlusion-query job
+  counts</em>, not a light population cap. Confirmed by full-table grep, not
+  abandoned early.</li>
+<li>Tried to find the real function start for the Havok shape-instance-exceeded
+  call site (§7) three ways: <code>tools/decomp.py</code>'s own xref scan (pass 1, no
+  callers resolved), <code>tools/decomp.py</code> on the <code>.pdata</code>-derived containing
+  range reported by <code>tnc_runtime_code.py</code> (decompiles to an unrelated 6-line
+  stub — the two tools' function boundaries disagree at this address), and
+  direct Capstone disassembly at the exact byte offset (succeeded at the
+  instruction level, §7, but the call target is a thin trampoline whose
+  numeric argument is a runtime value, not a literal). Capped here per this
+  track's "~3 identical dead ends" rule; a working caller-boundary
+  reconciliation between the two tools would be needed to go further.</li>
+<li>Traced one of the three <code>MimaxRotationExceeded</code>/<code>MimaxPositionExceeded</code>
+  referencing functions (§7, <code>FUN_7ff62db9e250</code>) to completion — it is a
+  debug-telemetry emitter, not a threshold check; did not decompile the
+  other two referencing functions (<code>FUN_7ff62db9e77a</code>, <code>FUN_7ff62db9e49a</code>)
+  since the first already established the pattern (event emission, not the
+  solver threshold itself) and this track's dead-end cap applies.</li>
+</ul>
+<h2 id="recipe-what-a-modder-can-actually-do-with-this-today">Recipe: what a modder can actually do with this, today</h2>
+<ol>
+<li><strong>Raise streaming/cache pools with no code patch</strong>: <code>is_poolSize</code> (image
+   streaming) and <code>vt_maxPPF</code>/<code>vt_maxLockedPagesPercent</code> (virtual texture)
+   are <strong>EXPOSE</strong>d — settable from the plain, unrestricted console or any
+   <code>.cfg</code>, no <code>resourceExec -s</code> needed. <code>fc_maxCacheMemoryMB</code> (file cache,
+   1–2048 MB) and <code>s_initStreamPoolSizeMB</code> (WWise sound pool) are not
+   exposed but have no other barrier — the <code>resourceExec &lt;modded cfile&gt; -s</code>
+   route already proven in <code>r4_consolecmds.md</code>/<code>r5_kisculecmd.md</code> reaches
+   them the same way it reached <code>God</code>/<code>g_infiniteAmmo</code>. <code>s_initStreamPoolSizeMB</code>
+   is additionally <code>CVAR_INIT</code> — it must be set in the config that runs
+   <em>before</em> the audio subsystem initializes (i.e. early in <code>default.cfg</code>'s
+   own exec chain, not a late in-level <code>resourceExec</code>), or it has no effect
+   until the next full restart.</li>
+<li><strong>World-geometry ceilings are a startup-config matter, not a console
+   one</strong>: <code>r_worldGeometryManagerMaxVerts</code>/<code>...Indices</code>/
+   <code>r_worldJointsManagerMaxJoints</code> are all <code>CHEAT</code>+<code>INIT</code>, never <code>EXPOSE</code> —
+   raising them for an unusually large custom map means writing them into
+   whatever <code>.cfg</code> the loader gets exec'd <strong>before</strong> the renderer's world
+   geometry manager initializes, not setting them mid-session. Retail's
+   defaults (11M verts / 36M indices / 300k joints) are generous for a
+   single custom map, so this only matters for an exceptionally large
+   build.</li>
+<li><strong>Don't fight the per-spawner AI cap — it isn't the engine's.</strong> §2 proves
+   <code>maxActiveAIs</code> is authored per <code>idTarget_AISpawn</code> entity; a mod wanting
+   "unlimited AI" just needs <code>maxActiveAIs = -1</code> (or omit the field) on its
+   own spawners, exactly as 83/504 retail spawners already do
+   (<code>r4_aispawnwaves.md</code>). This is a data change, no cvar, no patch.</li>
+<li><strong>Respect the two confirmed hard numeric caps</strong> (§3): a weapon/ammo decl
+   asking for more than <strong>16</strong> simultaneous projectiles gets silently
+   clamped with a warning (not fatal) — if a mod wants a "32-pellet shotgun"
+   effect, it needs 2 fire events or 2 weapon stages, not one 32-count decl.
+   A single AI "Group" (encounter roster) is capped at <strong>64</strong> members and
+   this one <em>is</em> fatal — a mod building an unusually large single encounter
+   group should stay under 64 distinct group members.</li>
+<li><strong>The cvar/command registry headroom (§1, 840 cvars / 22 commands) is
+   real but currently unreachable</strong> by any proven mechanism in this
+   project — no track has built a working <code>AddCommand</code>/<code>RegisterStaticVar</code>
+   injection. Recorded for whoever picks that up next, not usable today.</li>
+<li><strong>New this round: a named, raisable POI cap.</strong> <code>poi_ArtificialPOILimit</code>
+   (default 25, §4) is not <code>EXPOSE</code>d but needs no code patch — the
+   <code>resourceExec -s</code> route raises it like any other non-exposed cvar; useful
+   for a mod/map that places more than 25 simultaneous HUD points-of-interest
+   (collectibles, objective markers) before hitting its logged "exceeded
+   artificial limit" message.</li>
+<li><strong>New this round: two more hard numeric caps to design around.</strong>
+   <code>MAX_DYNAMIC_ENVIRONMENT</code> (§3.4) caps simultaneous reflection-probe-style
+   volumes at <strong>128</strong>, warn-and-continue. The light-gather function's
+   "too many visible lights" check (§4) caps at <strong>8196</strong>, also
+   warn-and-continue — generous enough that no normal custom map should hit
+   it, but a mod programmatically spawning dynamic lights should know the
+   ceiling exists. <code>GatherShadowCasters</code>'s shadow-slice cap (§4) is a small
+   per-context table (<code>{6, 1, 4, 0, 6, 0, ...}</code>), not one number — a mod
+   relying on many simultaneous shadow-casting slices in one context could
+   plausibly hit a cap as low as single digits depending on which table
+   index applies; worth keeping in mind for any "many dynamic shadows at
+   once" effect.</li>
+</ol>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>The actual numeric value of <code>MAX_GENTITIES</code>/<code>MAX_G_MANAGED_OBJECTS</code> (TNC) —
+  blocked on finding the (apparently indirect/optimized) call site that
+  compares the live count against it before calling the fatal overflow path
+  (§2.1, "Failed hypotheses").</li>
+<li>The light-gather function's cap is now resolved (<strong>8196</strong>, PROVEN, §4).
+  Still open: <code>GatherShadowCasters</code>'s shadow-slice cap <strong>table</strong>'s index
+  semantics — which live value selects the <code>DAT_7ff62e878100[index]</code> entry
+  (quality tier? light type? both were plausible from the surrounding code,
+  neither confirmed) — and whether the 6 values read this round
+  (<code>{6, 1, 4, 0, 6, 0}</code>) are the table's full extent or just its first 6
+  entries (the following bytes look like pointers, suggesting the table
+  itself is that short, but no explicit bounds check was found to confirm
+  it).</li>
+<li>The Havok-internal shape-instance budget (§7) and the Havok motion-solver's
+  rotation/position-clamp thresholds behind <code>MimaxRotationExceeded</code>/
+  <code>MimaxPositionExceeded</code> (§7) — both are now traced one concrete level
+  deeper than pass 1 (an actual call site for the former, a decompiled
+  telemetry emitter for the latter) but neither numeric value was recovered;
+  likely needs either locating Havok's own init-time config read or a
+  different search strategy than the xref/disassembly approach this track
+  used throughout.</li>
+<li>Whether TNO's identical symbol/message family carries the <em>same</em> numeric
+  values as TNC — fundamentally unanswerable without a TNO runtime image,
+  which this project's rules (no process attach, no <code>.text</code> unpacking) keep
+  out of reach; flagging it as a standing limitation of any future TNO-side
+  limits work, not something the next pass should expect to solve with
+  static analysis alone.</li>
+<li>The remaining ~440 unexplored <code>MAX_*</code> names in TNC and TNO (§6) — most are
+  reflection/debug metadata with "no references found", so a blanket attempt
+  to resolve all of them is likely low-yield; worth doing only for specific
+  ones a future track actually needs (e.g. if someone hits
+  <code>MAX_PARMBLOCK_OPS</code>/<code>MAX_NODE_TYPES</code> in practice while scripting).</li>
+</ul>
+<h2 id="reproduction">Reproduction</h2>
+<pre><code># TNC — the exact queries this report's evidence came from, each ~15 s:
+python tools/decomp.py --strings &quot;exceeded&quot;
+python tools/decomp.py --strings &quot;overflow&quot;
+python tools/decomp.py --strings &quot;too many&quot;
+python tools/decomp.py --strings &quot;MAX_&quot;
+python tools/decomp.py 0x96d290            # idTarget_AISpawn AI-cap check
+python tools/decomp.py 0x11c8a91 --callers # RegisterManagedObject overflow (fatal, no callers found)
+python tools/decomp.py 0x105a280           # multi-projectile clamp (16)
+python tools/decomp.py 0xdae38b            # Group member cap (64)
+python tools/decomp.py --strings &quot;16, 16&quot;              # cuttable-model bound, correct RVA 0x26526c0
+python tools/decomp.py --strings &quot;MAX_RENDER&quot;          # MAX_RENDER_LIGHTS/MODELS exist in TNC (pass 1 said no)
+python tools/decomp.py --strings &quot;idAAS2File&quot;          # zero hits in TNC (pass 1 wrongly said &quot;both&quot;)
+python tools/decomp.py --strings &quot;MAX_DYNAMIC_ENVIRONMENT&quot;  # new this round
+python tools/decomp.py 0x379120            # MAX_DYNAMIC_ENVIRONMENT cap (128), warn not fatal
+python tools/decomp.py 0x113549b           # light-gather &quot;too many visible lights&quot; cap (0x2004=8196)
+python tools/decomp.py 0x1136efd           # GatherShadowCasters shadow-slice cap table lookup
+python tools/decomp.py 0x12385c0           # warn logger (severity 5) -- §2.2
+python tools/decomp.py 0x12386b0           # fatal logger (severity 7) -- §2.2
+python -c &quot;import struct; d=open('re_probes/runtime_87400/module.bin','rb').read(); print(struct.unpack_from('&lt;6i', d, 0x2668100))&quot;  # shadow-slice table raw values
+
+# TNC — physics (§7), new this round:
+python tools/decomp.py --strings &quot;exceeded the maximum&quot;   # Havok shape-instance string, RVA 0x26544e0
+python tools/decomp.py --strings &quot;MimaxRotationExceeded|MimaxPositionExceeded&quot;
+python tools/decomp.py 0x198e250           # one of the 3 referencing functions (debug-telemetry emitter)
+python -c &quot;
+import sys; sys.path.insert(0,'tools')
+from tnc_runtime_code import Image
+img = Image('re_probes/runtime_87400')
+rva = 0x721487
+for insn in img.cs.disasm(img.data[rva-32:rva+32], rva-32):
+    print(hex(insn.address), insn.mnemonic, insn.op_str)
+&quot;                                           # direct Capstone disasm of the shape-instance call site
+
+# TNC cvar table (no decompiler needed, pure data read):
+python -c &quot;import json; d=json.load(open('re_probes/cvartable/cvars_tnc_v2.json',encoding='utf-8')); print(d['runtime_lists'])&quot;
+python -c &quot;import json; d=json.load(open('re_probes/cvartable/cvars_tnc_v2.json',encoding='utf-8')); print([c for c in d['cvars'] if c['name']=='poi_ArtificialPOILimit'])&quot;
+
+# TNO — read-only PE string scan, new this track:
+python re_probes/enginelimits/tno_strings.py &quot;MAX_[A-Z_]+&quot;
+python re_probes/enginelimits/tno_strings.py &quot;exceeded|overflow&quot;
+python re_probes/enginelimits/tno_strings.py &quot;too many&quot;
+python re_probes/enginelimits/tno_strings.py &quot;idAAS2File&quot;  # TNO-only confirmation
+</code></pre>
+<h2 id="smallest-in-game-test">Smallest in-game test</h2>
+<p><em>(Translated from German.)</em></p>
+<p>The most robust, most easily checkable findings here are the
+16-projectile clamp and the two free (EXPOSE'd) streaming cvars —
+neither needs the <code>resourceExec -s</code> detour, only an own weapon decl
+or the normal console, respectively:</p>
+<ol>
+<li><strong>16-projectile clamp (TNC, §3.1):</strong> In an own weapon/ammo decl
+   (e.g. a copy of <code>example_fast_shotgun</code>), set the field that sets the
+   projectile count per shot (find it by a decl diff against a shotgun
+   decl, if the field name is not already known) experimentally
+   to <code>24</code> or <code>32</code> and load it. Expectation according to this report: the
+   weapon still fires only <strong>16</strong> projectiles per shot (visible from the
+   spread/hit count on a wall at short distance), and in the
+   <code>qconsole.log</code> equivalent (TNC log path not yet checked in this track)
+   the warning <code>"Tried to spawn too many projectiles"</code> should
+   appear. A decl with <code>&lt;=16</code> as a control should fire exactly the set
+   number, without a warning.</li>
+<li><strong>Free streaming cvar (TNC, §4/Recipe 1):</strong> Via the normal, unrestricted
+   console (no <code>resourceExec -s</code> needed, because of the <code>EXPOSE</code> flag)
+   set <code>is_poolSize 2048</code> (<code>is_restart</code> afterwards, according to the cvar's
+   description), then load a texture-heavy scene. Expectation: if the game
+   noticeably reloaded/popped before, there should be less reloading/
+   popping with the larger pool — not a hard pass/fail test, but an
+   immediately observable difference that shows the cvar actually takes
+   effect and is not reset at the next start (unlike TNO's
+   cheat-reset mechanism from <code>docs/limits.md</code>, which has not been shown
+   for TNC in any track so far).</li>
+<li><strong>New this round — <code>poi_ArtificialPOILimit</code> (TNC, §4/Recipe 6):</strong> Via the
+   already-proven <code>resourceExec &lt;modded cfile&gt; -s</code> route, set
+   <code>poi_ArtificialPOILimit 5</code> (instead of the default <code>25</code>), then load a scene
+   with more than 5 simultaneous POI markers (e.g. several
+   collectibles/objective markers in view at the same time). Expectation from the
+   disassembly: from the 6th POI on, the engine should log the error message
+   <code>"idPOIManager::UpdatePOIInfo had too many POIs - exceeded artificial
+   limit of %d, had %d."</code> — the simplest evidence that the
+   <code>resourceExec -s</code> route also reaches non-<code>EXPOSE</code>'d <code>NETWORKSYNC</code> cvars like
+   this one, not only the already-confirmed <code>God</code>/<code>g_infiniteAmmo</code>.</li>
+</ol>
+<p>Related: <a href="Research-Report-R4-Console-Commands.html">Research Report: R4 Console Commands</a>, <a href="Research-Report-Cmdtable.html">Research Report: Cmdtable</a>, <a href="Research-Report-Cvartable.html">Research Report: Cvartable</a>, <a href="Research-Report-R4-Ai-Spawn-Waves.html">Research Report: R4 Ai Spawn Waves</a>, <a href="Research-Report-R5-Kiscule-Command.html">Research Report: R5 Kiscule Command</a>, <a href="Research-Report-R7-Tno-Limits.html">Research Report: R7 Tno Limits</a>, <a href="Modding-Limits.html">Modding Limits</a>, <a href="Engine-Modding-Surface.html">Engine Modding Surface</a>, <a href="Ghidra-Analysis.html">Ghidra Analysis</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Dynamic-Lights.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC Dynamic Lights: Classes, Fields, Budgets, and Whether They Can Light New Kit Geometry</a><a class="next" href="Research-Report-R6-Fx-Decls.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>FX, Particle, Impact and Gore Effect Decls: Format, Reference Chains, and Two Decl-Only Mods</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

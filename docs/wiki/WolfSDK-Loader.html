@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WolfSDK Loader – Wolfenstein Modloader</title>
+<meta name="description" content="Player guide to the WolfSDK Loader 0.2.0: install it, tick and apply mods, revert, cheats, presets and custom maps.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
+<h1>WolfSDK Loader</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/WolfSDK-Loader"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#loader-what-the-wolfsdk-loader-is-player-guide">Loader: what the WolfSDK Loader is (player guide)</a></li><li><a href="#loader-download-wolfsdk-020-loader-zip-or-studio-zip">Loader: download WolfSDK 0.2.0 (Loader ZIP or Studio ZIP)</a></li><li><a href="#loader-install-and-start-wolfsdk-unzip-wolfsdkcmd">Loader: install and start WolfSDK (unzip, WolfSDK.cmd)</a></li><li><a href="#loader-the-tabs-overview-cheats--qol-mods-studio-system--info">Loader: the tabs (Overview, Cheats &amp; QoL, Mods, Studio, System &amp; Info)</a></li><li><a href="#loader-overview-tab-install-status-and-quick-actions">Loader: Overview tab (install status and quick actions)</a></li><li><a href="#loader-mods-tab-tick-mods-search-read-descriptions">Loader: Mods tab (tick mods, search, read descriptions)</a></li><li><a href="#loader-add-a-new-mod-folder-open-folder-reload">Loader: add a new mod folder (Open folder, Reload)</a></li><li><a href="#loader-how-to-install-mods-apply-mods">Loader: how to install mods (Apply mods)</a></li><li><a href="#loader-check-mods-before-applying-check-mod-set">Loader: check mods before applying (Check mod set)</a></li><li><a href="#loader-undo-all-mods-revert">Loader: undo all mods (Revert)</a></li><li><a href="#loader-start-the-game-start-game">Loader: start the game (Start game)</a></li><li><a href="#loader-backups-and-safety-net-journal-_wolfsdk_backup">Loader: backups and safety net (journal, _wolfsdk_backup)</a></li><li><a href="#loader-what-to-do-after-a-game-update">Loader: what to do after a game update</a></li><li><a href="#cheats--qol-set-cvars-cheats-graphics-quality-of-life">Cheats &amp; QoL: set cvars (cheats, graphics, quality of life)</a></li><li><a href="#cheats--qol-presets-ultra-clean-image-and-photo-mode-apply-preset">Cheats &amp; QoL: presets Ultra+, Clean Image and Photo Mode (Apply preset)</a></li><li><a href="#system--info-the-new-order-console-ctrl-and-f1f4-keys">System &amp; Info: The New Order console (Ctrl+^) and F1–F4 keys</a></li><li><a href="#the-new-colossus-no-default-f-key-binds-use-sandbox-tools">The New Colossus: no default F-key binds (use Sandbox Tools)</a></li><li><a href="#shipped-mods-which-mods-come-with-wolfsdk-020">Shipped mods: which mods come with WolfSDK 0.2.0</a></li><li><a href="#mod-sandbox-tools-god-mode-notarget-infinite-ammo-kill-all-enemies">Mod: Sandbox Tools (god mode, Notarget, infinite ammo, kill all enemies)</a></li><li><a href="#mod-dev-menu-map-loading-developer-menu-loads-maps-again">Mod: Dev Menu Map Loading (developer menu loads maps again)</a></li><li><a href="#mod-hidden-menu-options-developer-menu-entry-sas-menu-mein-leben">Mod: Hidden Menu Options (developer menu entry, SAS menu, Mein Leben!)</a></li><li><a href="#mod-photo-mode-f8-freezes-time-with-a-free-camera">Mod: Photo Mode (F8 freezes time with a free camera)</a></li><li><a href="#mods-explosive-pistol-and-golden-pistol-simple-for-the-new-colossus">Mods: Explosive Pistol and Golden Pistol (Simple) for The New Colossus</a></li><li><a href="#mods-invulnerable-tnc-and-gore-enhanced-tnc">Mods: Invulnerable (TNC) and Gore Enhanced (TNC)</a></li><li><a href="#mods-for-the-new-order-the-five-example-mods">Mods for The New Order: the five example mods</a></li><li><a href="#mods-for-the-new-order-gore-mods">Mods for The New Order: gore mods</a></li><li><a href="#mods-for-the-new-order-gameplay-mods">Mods for The New Order: gameplay mods</a></li><li><a href="#mods-for-the-new-order-sound-mods-impact">Mods for The New Order: sound mods (Impact)</a></li><li><a href="#custom-map-install-a-map-for-the-new-colossus-install-map">Custom map: install a map for The New Colossus (Install map…)</a></li><li><a href="#custom-map-remove-the-map-remove-map">Custom map: remove the map (Remove map)</a></li><li><a href="#dev-menu-open-the-developer-menu-and-load-maps-the-new-colossus">Dev menu: open the developer menu and load maps (The New Colossus)</a></li><li><a href="#dev-menu-the-entries-wolfsdk-mod-test-map-and-wolfsdk-box">Dev menu: the entries WolfSDK: Mod test map and WolfSDK: Box</a></li><li><a href="#loader-what-is-confirmed-in-game-and-what-is-not-020">Loader: what is confirmed in game and what is not (0.2.0)</a></li><li><a href="#troubleshooting-the-loader-does-not-start">Troubleshooting: the loader does not start</a></li><li><a href="#troubleshooting-the-game-is-not-found-choose-folder">Troubleshooting: the game is not found (Choose folder…)</a></li><li><a href="#troubleshooting-a-mod-has-no-effect-in-the-game">Troubleshooting: a mod has no effect in the game</a></li><li><a href="#troubleshooting-apply-mods-or-revert-is-refused">Troubleshooting: Apply mods or Revert is refused</a></li><li><a href="#troubleshooting-install-map-is-refused">Troubleshooting: Install map… is refused</a></li><li><a href="#troubleshooting-report-a-problem">Troubleshooting: report a problem</a></li><li><a href="#loader-limits-steam-only-german-version-one-pc">Loader limits: Steam only, German version, one PC</a></li><li><a href="#loader-limits-save-games-and-disk-space">Loader limits: save games and disk space</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">The WolfSDK Loader is a free mod manager for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows only). You tick mods, click Apply mods and start the game; Revert puts the original game files back from the loader&#x27;s backups. It also sets <span class="t" data-t="cvar">cvars</span> for cheats and quality of life, offers graphics presets for The New Colossus and installs custom maps for that game. The page marks every feature as confirmed in game, not yet confirmed in game, or held back.</p><ul><li>Confirmed in game: applying and reverting mods with backups, and installing a custom map.</li><li>Both downloads contain 24 mods (8 for The New Colossus, 16 for The New Order); most are only checked structurally, not confirmed in game.</li><li>The cvar list has 3,116 entries for The New Colossus and 3,194 for The New Order; the presets Ultra+ (17 cvars), Clean Image (11) and Photo Mode (3) are not yet confirmed in game.</li><li>In The New Colossus a bound key runs restricted, so the loader sets no F-keys there; Sandbox Tools (god mode and infinite ammo confirmed in game) and Photo Mode bind a key to resourceExec instead.</li><li>Maps loading from the developer menu and the mod test map loading are confirmed in game; the 126 developer start points and Hidden Menu Options are not yet.</li></ul></div><div class="de"><p class="lede">Der WolfSDK Loader ist ein kostenloser Mod-Manager für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (nur Steam-Versionen unter Windows). Du hakst Mods an, klickst auf „Apply mods“ und startest das Spiel; „Revert“ stellt die Original-Spieldateien aus den Sicherungen des Loaders wieder her. Er setzt außerdem <span class="t" data-t="cvar">Cvars</span> für Cheats und Komfort, bietet Grafik-Presets für The New Colossus und installiert eigene Karten für dieses Spiel. Die Seite kennzeichnet jede Funktion als im Spiel bestätigt, im Spiel noch nicht bestätigt oder zurückgehalten.</p><ul><li>Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen sowie eine eigene Karte installieren.</li><li>Beide Downloads enthalten 24 Mods (8 für The New Colossus, 16 für The New Order); die meisten sind nur im Aufbau geprüft, nicht im Spiel bestätigt.</li><li>Die Cvar-Liste hat 3.116 Einträge für The New Colossus und 3.194 für The New Order; die Presets Ultra+ (17 Cvars), Clean Image (11) und Photo Mode (3) sind im Spiel noch nicht bestätigt.</li><li>In The New Colossus läuft eine belegte Taste gesperrt, darum belegt der Loader dort keine F-Tasten; Sandbox Tools (God-Mode und unendliche Munition im Spiel bestätigt) und Photo Mode binden stattdessen eine Taste an resourceExec.</li><li>Das Laden von Karten aus dem Entwicklermenü und das Laden der Mod-Testkarte sind im Spiel bestätigt; die 126 Entwickler-Startpunkte und Hidden Menu Options noch nicht.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>🇬🇧 English · <a href="WolfSDK-Loader-DE.html">🇩🇪 Deutsch</a></p>
+<h1 id="wolfsdk-loader">WolfSDK Loader</h1>
+<h2 id="loader-what-the-wolfsdk-loader-is-player-guide">Loader: what the WolfSDK Loader is (player guide)</h2>
+<p>The WolfSDK Loader is the mod manager for players of <em>Wolfenstein: The New Order</em> and <em>Wolfenstein II: The New Colossus</em>. You tick mods, apply them to the game, start the game and revert everything to the original. It also sets cheat and quality-of-life cvars and installs custom maps for The New Colossus. Version 0.2.0, free, MIT license, Windows and Steam versions only. This page is the player guide; modders read <a href="WolfSDK-Studio.html">WolfSDK Studio</a>.</p>
+<p>Status labels on this page: <strong>Confirmed in game</strong> (seen working in the running game), <strong>Not yet confirmed in game</strong> (built and checked, not yet seen working in the game), <strong>Held back</strong> (built, but switched off in this release).</p>
+<p>Keywords: wolfsdk loader, mod loader, mod manager, what is the loader, player guide, wolfenstein mods, new order, new colossus, tno, tnc, was ist der loader, anleitung für spieler</p>
+<h2 id="loader-download-wolfsdk-020-loader-zip-or-studio-zip">Loader: download WolfSDK 0.2.0 (Loader ZIP or Studio ZIP)</h2>
+<p>WolfSDK 0.2.0 came out on 2026-10-04: <a href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0">release page</a>.</p>
+<ul>
+<li><strong>WolfSDK-Loader-0.2.0.zip</strong> is for players: mods, Cheats &amp; QoL, presets, custom map install.</li>
+<li><strong>WolfSDK-Studio-0.2.0.zip</strong> is for modders: the same Loader plus the Studio.</li>
+</ul>
+<p>Both need Windows and the Steam version of the game. Python is bundled, so you install nothing else. The source code is in the repository folder <code>modloader/</code>.</p>
+<p>Keywords: download, release, wolfsdk 0.2.0, zip, which zip, loader zip, studio zip, where to get it, latest version, herunterladen, welche datei, neueste version</p>
+<h2 id="loader-install-and-start-wolfsdk-unzip-wolfsdkcmd">Loader: install and start WolfSDK (unzip, WolfSDK.cmd)</h2>
+<ol>
+<li>Right-click the ZIP → <em>Extract All…</em> into a normal folder, for example <code>Documents\WolfSDK</code>. Do not run it from inside the ZIP and do not use <code>C:\Program Files</code>: the loader saves its settings in its own folder.</li>
+<li>Double-click <code>WolfSDK.cmd</code>. A black window flashes, then the loader opens.</li>
+<li>The loader finds the games through Steam. If it does not, click <strong>Choose folder…</strong> at the top right.</li>
+<li>If Windows says "Windows protected your PC", click <em>More info → Run anyway</em>.</li>
+</ol>
+<p>Later, a double-click on <code>Spielen.cmd</code> ("play") is enough: it applies the ticked mods if needed and starts the game.</p>
+<p>Keywords: install wolfsdk, setup, unzip, extract, WolfSDK.cmd, Spielen.cmd, first start, smartscreen, windows protected your pc, choose folder, entpacken, einrichten, loader starten</p>
+<h2 id="loader-the-tabs-overview-cheats--qol-mods-studio-system--info">Loader: the tabs (Overview, Cheats &amp; QoL, Mods, Studio, System &amp; Info)</h2>
+<p>The loader window has five tabs:</p>
+<ul>
+<li><strong>Overview</strong>: install status, Check mod set, Start game, Install map… and Remove map.</li>
+<li><strong>Cheats &amp; QoL</strong>: the searchable cvar catalogue and, for The New Colossus, the presets.</li>
+<li><strong>Mods</strong>: the mods of the selected game, to tick and untick.</li>
+<li><strong>Studio</strong>: Open Studio (only in the Studio package).</li>
+<li><strong>System &amp; Info</strong>: console commands, key binds, notes and the support link.</li>
+</ul>
+<p>At the top right you pick the game (The New Order or The New Colossus). At the bottom are <strong>Save</strong>, <strong>Revert</strong>, <strong>Apply mods</strong> and <strong>Start game</strong>.</p>
+<p>Keywords: tabs, loader window, gui, interface, buttons, overview tab, mods tab, cheats tab, console tab, studio tab, reiter, oberfläche, fenster, knöpfe</p>
+<h2 id="loader-overview-tab-install-status-and-quick-actions">Loader: Overview tab (install status and quick actions)</h2>
+<p><strong>INSTALL STATUS</strong> shows the state of the selected game:</p>
+<ul>
+<li>"Original state · ready": no mods are in the game files.</li>
+<li>"Mod set active · backup in place": mods are applied and the backup is intact.</li>
+<li>"Recovery needed": the last apply or revert was interrupted. Click <strong>Revert</strong>.</li>
+</ul>
+<p>Below are the counters ACTIVE MODS, TWEAKS (cvars set) and ARCHIVES. <strong>Quick actions</strong> has Manage mods, <strong>Check mod set</strong> and <strong>Start game</strong>, and for The New Colossus <strong>Install map…</strong> and <strong>Remove map</strong>.</p>
+<p>Keywords: overview, dashboard, install status, original state, mod set active, recovery needed, quick actions, game status, übersicht, zustand, status</p>
+<h2 id="loader-mods-tab-tick-mods-search-read-descriptions">Loader: Mods tab (tick mods, search, read descriptions)</h2>
+<p>The <strong>Mods</strong> tab lists only the mods of the game selected at the top right. Click a row to tick or untick it (the Active column shows ●), or select it and press Space. <strong>All on</strong> and <strong>All off</strong> tick everything or nothing. "Search mods…" filters by name, id, author and description. A click on a mod shows its description below the list: it says what the mod does and whether it is tested. "Checks &amp; messages" shows the results of Check, Apply mods and Revert.</p>
+<p>Ticking alone changes nothing in the game: click <strong>Apply mods</strong> afterwards.</p>
+<p>Keywords: mods tab, mod list, tick mod, select mods, choose mods, search mods, mod description, all on, all off, mod auswählen, anhaken, mods ankreuzen</p>
+<h2 id="loader-add-a-new-mod-folder-open-folder-reload">Loader: add a new mod folder (Open folder, Reload)</h2>
+<p>A mod is a folder with a <code>mod.json</code> file. To add a mod you downloaded:</p>
+<ol>
+<li>On the <strong>Mods</strong> tab click <strong>Open folder</strong>. This opens the loader's <code>mods</code> folder.</li>
+<li>Copy the mod's folder into it, so that <code>mods\&lt;name&gt;\mod.json</code> exists.</li>
+<li>Click <strong>Reload</strong>. The mod appears if it is made for the selected game.</li>
+<li>Tick it and click <strong>Apply mods</strong>.</li>
+</ol>
+<p>Mods saved by the Studio land in the same folder; click <strong>Reload</strong> to see them. The file format is described on <a href="Mod-Format.html">Mod Format</a>.</p>
+<p>Keywords: add mod, new mod, downloaded mod, mods folder, mod.json, open folder, reload, mod not showing, mod not listed, mod hinzufügen, mod ordner, neue mod</p>
+<h2 id="loader-how-to-install-mods-apply-mods">Loader: how to install mods (Apply mods)</h2>
+<p>Applying is how you install mods: the loader writes the ticked mods into the game's archives and backs up everything first.</p>
+<ol>
+<li>Close the game.</li>
+<li>Tick the mods on the <strong>Mods</strong> tab.</li>
+<li>Click <strong>Apply mods</strong>. "N asset(s) patched." under "Checks &amp; messages" means the mods are applied.</li>
+<li>Click <strong>Start game</strong>.</li>
+</ol>
+<p>Each apply reverts first and then applies the whole ticked set again, so applying twice is safe. Applying closes an open Studio. With no mod ticked, <strong>Apply mods</strong> reverts the game.</p>
+<p>Status: Confirmed in game.</p>
+<p>Keywords: apply mods, applying mods, install mods, install a mod, enable mods, load mods, use mods, add mods, patch the game, mods anwenden, mods installieren, wie installiere ich mods</p>
+<h2 id="loader-check-mods-before-applying-check-mod-set">Loader: check mods before applying (Check mod set)</h2>
+<p><strong>Check mod set</strong> on the Overview tab, or <strong>Check</strong> on the Mods tab, tests the ticked mods and writes nothing. It checks asset names, conflicts between mods and the backup. Typical answers:</p>
+<ul>
+<li>"No conflicts. Ready to apply."</li>
+<li>"N conflict(s); higher priority wins."</li>
+<li>"Your selection is out of sync with the game.": the ticked mods differ from the applied ones; Apply mods fixes that.</li>
+<li>"Check failed — nothing was changed." with the error, for example two mods that change the same textures.</li>
+</ul>
+<p>Keywords: check mods, check mod set, test mods, conflicts, compatible mods, out of sync, mods prüfen, konflikt, kompatibel, vorab prüfen</p>
+<h2 id="loader-undo-all-mods-revert">Loader: undo all mods (Revert)</h2>
+<p><strong>Revert</strong> undoes every mod change and restores the original game files bit for bit from the loader's backups. Close the game, click <strong>Revert</strong> and confirm "Undo all mod changes and restore the original game files?". The message "The game is back to its original state." means it is done. Each game has its own backups and its own Revert. Revert also removes the cvars the loader wrote into The New Colossus' <code>default.cfg</code>.</p>
+<p>Last resort, if the backups are gone: in Steam, Properties → Installed Files → <em>Verify integrity of game files</em>.</p>
+<p>Status: Confirmed in game.</p>
+<p>Keywords: revert, undo mods, remove mods, uninstall mods, disable mods, restore original, reset game, rollback, mods rückgängig machen, zurücksetzen, mods entfernen, deinstallieren</p>
+<h2 id="loader-start-the-game-start-game">Loader: start the game (Start game)</h2>
+<p><strong>Start game</strong> saves your settings and starts the game through Steam with the cvars from Cheats &amp; QoL and from the ticked mods. If the ticked mods are not in the game files yet, it asks "Apply them now and then start?": answer Yes, otherwise the game starts with the old mod set. <code>Spielen.cmd</code> does the same without opening the window.</p>
+<p>Applied mods stay in the game files, so a start from the Steam library has them too. The cvars that the loader passes as start arguments only come with <strong>Start game</strong> or <code>Spielen.cmd</code>.</p>
+<p>Keywords: start game, launch game, play, run game, steam, Spielen.cmd, starts without mods, cvars missing, spiel starten, spielen, starten</p>
+<h2 id="loader-backups-and-safety-net-journal-_wolfsdk_backup">Loader: backups and safety net (journal, _wolfsdk_backup)</h2>
+<p>Before it writes, the loader saves the original data of everything an apply changes. The backups are in the game's <code>base</code> folder: <code>_wolfsdk_backup</code> for The New Order, <code>_wolfsdk_tnc</code> for The New Colossus. <strong>Do not delete them while mods are applied.</strong> A write-ahead journal lets <strong>Revert</strong> finish an apply that a crash or power cut interrupted ("Recovery needed" on the Overview tab). A lock stops two apply or revert runs at the same time. The backups need about 1 GB free on the game's drive, with The New Order up to about 3 GB depending on the mods.</p>
+<p>Keywords: backup, journal, _wolfsdk_backup, _wolfsdk_tnc, safety, crash during apply, power cut, disk space, sicherung, sicherheitskopie, absturz, stromausfall</p>
+<h2 id="loader-what-to-do-after-a-game-update">Loader: what to do after a game update</h2>
+<p>The game must be closed while the loader applies or reverts mods. After a game update, click <strong>Revert</strong> first, then <strong>Apply mods</strong> again. The last resort, if the original files cannot be restored: in Steam, Properties → Installed Files → <em>Verify integrity of game files</em>, then apply the mods again.</p>
+<p>Keywords: game update, steam update, after update, mods broken after update, verify integrity, spiel update, nach dem update, aktualisierung</p>
+<h2 id="cheats--qol-set-cvars-cheats-graphics-quality-of-life">Cheats &amp; QoL: set cvars (cheats, graphics, quality of life)</h2>
+<p>The <strong>Cheats &amp; QoL</strong> tab lists the engine's own cvars with the game's descriptions: 3,116 for The New Colossus and 3,194 for The New Order. Search with "Search cvar or text…", pick a group, or tick "only set". Type extra lines under <strong>Custom cvars</strong>, for example <code>pm_runspeed 400</code>. Click <strong>Save</strong> to keep them.</p>
+<ul>
+<li>The New Order: passed when the game starts; no file changes. Cheat cvars are also sent as <code>+toggle</code>, so the startup cheat reset does not wipe them.</li>
+<li>The New Colossus: cvars the retail console accepts go as start arguments; the rest go into <code>default.cfg</code> with the next apply. Revert removes them.</li>
+</ul>
+<p>Status: Not yet confirmed in game (the <code>+toggle</code> route and the <code>default.cfg</code> route).</p>
+<p>Keywords: cheats, cvars, console variables, qol, tweaks, fov, graphics settings, custom cvars, cheats aktivieren, einstellungen, konsolenvariablen</p>
+<h2 id="cheats--qol-presets-ultra-clean-image-and-photo-mode-apply-preset">Cheats &amp; QoL: presets Ultra+, Clean Image and Photo Mode (Apply preset)</h2>
+<p>Presets exist for The New Colossus only, on the <strong>Cheats &amp; QoL</strong> tab:</p>
+<ul>
+<li><strong>Ultra+</strong> (17 cvars): sharper texture filtering, more texture streaming, longer decal, shadow and foliage distances, better water.</li>
+<li><strong>Clean Image</strong> (11): no depth of field, motion blur, chromatic aberration, film grain or vignette, no resolution scaling, plus sharpening.</li>
+<li><strong>Photo Mode</strong> (3): screenshot quality only.</li>
+</ul>
+<p>Pick one and click <strong>Apply preset</strong>: it fills in the values. Click <strong>Save</strong> to keep them; Start game or Apply mods delivers them. <strong>Reset preset</strong> takes the values back.</p>
+<p>Status: Not yet confirmed in game.</p>
+<p>Keywords: presets, ultra, ultra+, clean image, photo mode preset, graphics preset, better graphics, apply preset, reset preset, grafik, voreinstellung, grafik verbessern</p>
+<h2 id="system--info-the-new-order-console-ctrl-and-f1f4-keys">System &amp; Info: The New Order console (Ctrl+^) and F1–F4 keys</h2>
+<p>In The New Order the console opens with <strong>Ctrl+^</strong> (Ctrl and the key left of 1); no setting is needed. The <strong>System &amp; Info</strong> tab lists useful commands, such as <code>toggle g_permaGodMode 0 1</code> (god mode), <code>toggle g_infiniteAmmo 0 1</code>, <code>toggle g_freeCam 0 1</code> (free camera), <code>killMonsters</code> and <code>devmap</code>. The loader also binds four keys in The New Order: F1 god mode, F2 infinite ammo, F3 free camera, F4 HUD on/off.</p>
+<p>Status: Not yet confirmed in game (console with Ctrl+^, <code>+toggle</code> cheat cvars, F1–F4 binds).</p>
+<p>Keywords: console, open console, new order console, ctrl+^, god mode, free camera, f1, f2, f3, f4, key binds, konsole öffnen, cheats tno, tasten</p>
+<h2 id="the-new-colossus-no-default-f-key-binds-use-sandbox-tools">The New Colossus: no default F-key binds (use Sandbox Tools)</h2>
+<p>The loader gives The New Colossus no default F-key binds. A key bound in that game runs at a restricted console level, where <code>toggle</code> and <code>noclip</code> do not exist. The mods for The New Colossus use <code>resourceExec &lt;cfg&gt; -s</code> instead: the key runs a config file that the mod put into the game's archives, and that file can use the hidden commands. You bind such a key once in the game's console; binds are saved. For god mode and infinite ammo use the <strong>Sandbox Tools</strong> mod, for screenshots the <strong>Photo Mode</strong> mod.</p>
+<p>Keywords: tnc keys, f keys, hotkeys, key bind, bind, resourceExec, restricted console, f1 does nothing, tastenbelegung, tasten belegen, new colossus konsole</p>
+<h2 id="shipped-mods-which-mods-come-with-wolfsdk-020">Shipped mods: which mods come with WolfSDK 0.2.0</h2>
+<p>Both ZIPs contain 24 mods in the <code>mods</code> folder: 8 for The New Colossus and 16 for The New Order. All are off until you tick them.</p>
+<ul>
+<li>The New Colossus: Sandbox Tools, Dev Menu Map Loading, Hidden Menu Options, Photo Mode, Explosive Pistol, Golden Pistol (Simple), Invulnerable (TNC), Gore Enhanced (TNC).</li>
+<li>The New Order: five example mods, four gore mods, five gameplay mods and two sound mods.</li>
+</ul>
+<p>Most shipped mods are only checked structurally. Unless a mod's description in the loader says otherwise, treat it as not yet confirmed in game. Four mods that carry whole modified retail files are left out of the package: gore textures, the supersoldiers map, the golden pistol with textures and the menu branding.</p>
+<p>Keywords: shipped mods, included mods, which mods, mod list, built-in mods, available mods, mitgelieferte mods, welche mods, mod liste, enthaltene mods</p>
+<h2 id="mod-sandbox-tools-god-mode-notarget-infinite-ammo-kill-all-enemies">Mod: Sandbox Tools (god mode, Notarget, infinite ammo, kill all enemies)</h2>
+<p>For The New Colossus. <strong>F6</strong> toggles god mode, Notarget and infinite ammo; <strong>F7</strong> kills all enemies. Tick the mod, click <strong>Apply mods</strong>, start the game and bind the keys once in the game's console (binds are saved):</p>
+<pre><code>bind F6 &quot;resourceExec snapdemo.cfg -s&quot;
+bind F7 &quot;resourceExec snapedit.cfg -s&quot;
+</code></pre>
+<p>The mod uses two unused SnapMap configs.</p>
+<p>Status: god mode and infinite ammo: Confirmed in game. Notarget and F7: Not yet confirmed in game; in the test, Notarget did not stop enemies that were already fighting you.</p>
+<p>Keywords: sandbox tools, god mode, godmode, invincible, notarget, infinite ammo, unlimited ammo, kill all enemies, killMonsters, f6, f7, cheats tnc, unsterblich, unendlich munition</p>
+<h2 id="mod-dev-menu-map-loading-developer-menu-loads-maps-again">Mod: Dev Menu Map Loading (developer menu loads maps again)</h2>
+<p>For The New Colossus. In the retail game the developer menu's map entries do not load maps. With this mod each map entry runs <code>devmap</code> with its spawn spot and layers, so the map loads. 126 entries also get their developer start point (dev teleport) back. Not included: chapter progression, the <code>give</code> lines and the DLC maps' dev teleports. The menu also lists "WolfSDK: Mod test map" and "WolfSDK: Box"; both need maps this package does not build yet.</p>
+<p>Status: loading maps from the developer menu: Confirmed in game. The 126 developer start points: Not yet confirmed in game.</p>
+<p>Keywords: dev menu map loading, developer menu, devmenu, devmap, load map, level select, chapter select, dev start points, entwicklermenü, karte laden, levelauswahl</p>
+<h2 id="mod-hidden-menu-options-developer-menu-entry-sas-menu-mein-leben">Mod: Hidden Menu Options (developer menu entry, SAS menu, Mein Leben!)</h2>
+<p>For The New Colossus. Turns on four menu options the retail game hides:</p>
+<ul>
+<li>the main menu entry to the developer menu (<code>menu_showOptionForDevMenu</code>),</li>
+<li>the SAS menu entry (<code>menu_showOptionForSASMenu</code>),</li>
+<li>the hardest difficulty <em>Mein Leben!</em> without finishing the game first (<code>menu_allowMeinLeben</code>),</li>
+<li>the photo mode setting (<code>g_setting_photomode</code>); what it does in this game is unknown.</li>
+</ul>
+<p>The console refuses these developer cvars, so the loader writes them into the game's <code>default.cfg</code> when you click <strong>Apply mods</strong>.</p>
+<p>Status: Not yet confirmed in game.</p>
+<p>Keywords: hidden menu options, hidden options, developer menu entry, sas menu, mein leben, hardest difficulty, unlock difficulty, versteckte optionen, schwierigkeitsgrad freischalten</p>
+<h2 id="mod-photo-mode-f8-freezes-time-with-a-free-camera">Mod: Photo Mode (F8 freezes time with a free camera)</h2>
+<p>For The New Colossus. One key freezes the game for screenshots: time stops, the free camera turns on, and the HUD, menus and crosshair disappear. Press it again to return. Tick the mod, click <strong>Apply mods</strong>, start the game and bind the key once in the console (binds are saved):</p>
+<pre><code>bind F8 &quot;resourceExec default_snap.cfg -s&quot;
+</code></pre>
+<p>It uses the unused SnapMap config <code>default_snap.cfg</code>. It is not the same as the Photo Mode preset on Cheats &amp; QoL, which only raises screenshot quality.</p>
+<p>Status: Not yet confirmed in game.</p>
+<p>Keywords: photo mode, photomode, f8, freeze time, free camera, hide hud, screenshots, fotomodus, freie kamera, hud ausblenden</p>
+<h2 id="mods-explosive-pistol-and-golden-pistol-simple-for-the-new-colossus">Mods: Explosive Pistol and Golden Pistol (Simple) for The New Colossus</h2>
+<p><strong>Explosive Pistol</strong>: the standard pistol fires the rocket of the Kampfpistole, which explodes on impact, and the magazine holds 30 instead of 10 rounds. It takes over the launcher's sound, recoil and direct-hit damage; the silencer no longer makes it quiet. The rocket arms only after about 5 m; closer, it bounces off and goes off after 3 s. Status: 30-round magazine: Confirmed in game. Explosion: Not yet confirmed in game.</p>
+<p><strong>Golden Pistol (Simple)</strong>: makes the standard pistol golden, in the campaign and in the DLC "Agent Silent Death", with material decls only. Do not tick it together with another skin for the pistol. Status: Not yet confirmed in game.</p>
+<p>Keywords: explosive pistol, rocket pistol, kampfpistole, 30 rounds, magazine, golden pistol, gold skin, weapon skin, explosivpistole, goldene pistole, waffenskin</p>
+<h2 id="mods-invulnerable-tnc-and-gore-enhanced-tnc">Mods: Invulnerable (TNC) and Gore Enhanced (TNC)</h2>
+<p><strong>Invulnerable (TNC)</strong>: sets the multiplier on the damage the player takes to 0 in all seven difficulty tables. It was the first mod for The New Colossus. Status: Not yet confirmed in game.</p>
+<p><strong>Gore Enhanced (TNC)</strong>: raises the gore probability of the standard enemy behaviours. It was built from The New Colossus' own decls, never from The New Order's. Status: Not yet confirmed in game.</p>
+<p>Keywords: invulnerable, no damage, take no damage, god mode mod, gore enhanced, more gore, blood, dismemberment tnc, unverwundbar, kein schaden, mehr gore</p>
+<h2 id="mods-for-the-new-order-the-five-example-mods">Mods for The New Order: the five example mods</h2>
+<p>Small mods that show how mods work:</p>
+<ul>
+<li><strong>Big Pistol Magazine (Example)</strong>: pistol magazine 20 → 66; the HUD shows at once that mods arrive in the game.</li>
+<li><strong>Dev Loadout (Example)</strong>: much more player health and air.</li>
+<li><strong>Faster Shotgun (Example)</strong>: shorter firing intervals for the shotgun.</li>
+<li><strong>Weapon Tuning (Example)</strong>: more damage for several weapons.</li>
+<li><strong>White Pistol (Skin Example)</strong>: the standard pistol uses a white material that already exists in the game.</li>
+</ul>
+<p>Status: Not yet confirmed in game (checked structurally).</p>
+<p>Keywords: example mods, big magazine, dev loadout, faster shotgun, weapon tuning, white pistol, first mod, test mod, beispielmods, beispiel mod</p>
+<h2 id="mods-for-the-new-order-gore-mods">Mods for The New Order: gore mods</h2>
+<ul>
+<li><strong>More Realistic Gore</strong>: each weapon class gets its own gore table, with decapitation and torso split, tied to the damage dealt.</li>
+<li><strong>Gore Deep Layer</strong>: removes the melee block on the head zone, so knife kills bleed, and sets forceInjured on all 13 body zones.</li>
+<li><strong>Ultimate Gore - Hits, Voice, Physics, Lethality</strong>: more blood on hits, working blood pools, pain and death screams 4× as often, limper ragdolls, and enemies that die faster.</li>
+<li><strong>Ragdolls Stay Dismemberable</strong>: corpses keep reacting to hits and can be cut apart; ragdoll impulse +120%.</li>
+</ul>
+<p>Status: Not yet confirmed in game (checked structurally).</p>
+<p>Keywords: gore, blood, dismemberment, decapitation, ragdoll, realistic gore, brutal, more blood, gore mod tno, mehr blut, zerstückelung, blutiger</p>
+<h2 id="mods-for-the-new-order-gameplay-mods">Mods for The New Order: gameplay mods</h2>
+<ul>
+<li><strong>Cheats - Health and Ammo</strong>: the campaign gets the values of the 999 mode: 999 starting health, ammo is never used up, health above 100 does not drain.</li>
+<li><strong>Enigma - Bonus Modes Without Secrets</strong>: the four bonus modes need no Enigma secrets; whether the engine accepts "0 secrets" is unclear.</li>
+<li><strong>Factions - Panzerhunds Go Berserk</strong>: Panzerhunds should attack the enemies on their own side.</li>
+<li><strong>Resistance - Combat Overhaul</strong>: tougher, better armed enemies in chapter 6, a tougher player and a stronger pistol.</li>
+<li><strong>Aim Assist for All Weapons</strong>: aim assist for every player projectile, spread lowered to 40%.</li>
+</ul>
+<p>Status: Not yet confirmed in game (checked structurally).</p>
+<p>Keywords: gameplay mods, cheats, more health, unlimited ammo, enigma codes, bonus modes, factions, panzerhund, combat overhaul, aim assist, zielhilfe, spielmodi freischalten</p>
+<h2 id="mods-for-the-new-order-sound-mods-impact">Mods for The New Order: sound mods (Impact)</h2>
+<ul>
+<li><strong>Impact: Hit Sounds</strong>: four impact sounds can play at the same time instead of two, the random volume drops less, and body hits are 4 dB louder so flesh stands out from concrete and metal.</li>
+<li><strong>Impact: Weapons and Explosions</strong>: the player weapons mix bus goes from -11 to -6 dB and explosions from -5 to -2 dB. Loud scenes may pump a little.</li>
+</ul>
+<p>No audio file is changed, only sound decls.</p>
+<p>Status: Not yet confirmed in game.</p>
+<p>Keywords: sound mods, louder weapons, impact, hit sounds, explosions, audio, volume, lautere waffen, trefferklang, lautstärke</p>
+<h2 id="custom-map-install-a-map-for-the-new-colossus-install-map">Custom map: install a map for The New Colossus (Install map…)</h2>
+<p>A custom map is a finished map file, <code>chunk_22.resources</code>, built by someone else; the loader cannot build maps. You need the DLC <em>The Freedom Chronicles</em>, episode 2.</p>
+<ol>
+<li>Close the game. If mods are applied, the loader usually asks for a <strong>Revert</strong> first.</li>
+<li>On the <strong>Overview</strong> tab, under Quick actions, click <strong>Install map…</strong> and choose the file.</li>
+<li>The loader sets it up as its own DLC folder <code>dlc\dlc_0</code>.</li>
+<li>In the game, load The Freedom Chronicles, episode 2: the custom map takes the place of the map c2v1.</li>
+</ol>
+<p>Extra maps in the same file are loaded from the developer menu.</p>
+<p>Status: Confirmed in game.</p>
+<p>Keywords: custom map, install map, new map, map file, chunk_22.resources, dlc_0, freedom chronicles, c2v1, eigene karte, karte installieren, map installieren</p>
+<h2 id="custom-map-remove-the-map-remove-map">Custom map: remove the map (Remove map)</h2>
+<p>On the <strong>Overview</strong> tab click <strong>Remove map</strong> and confirm. The loader deletes only what it put into <code>dlc\dlc_0</code>; afterwards episode 2 of The Freedom Chronicles loads the original map c2v1 again. A custom map folder in <code>dlc_0</code> that was set up by hand is left alone: click <strong>Install map…</strong> once to let the loader take it over, then it can remove it too. Close the game first; if mods are applied, Revert first.</p>
+<p>Keywords: remove map, uninstall map, delete custom map, original c2v1, dlc_0, karte entfernen, map löschen, karte deinstallieren</p>
+<h2 id="dev-menu-open-the-developer-menu-and-load-maps-the-new-colossus">Dev menu: open the developer menu and load maps (The New Colossus)</h2>
+<ol>
+<li>Tick <strong>Hidden Menu Options</strong> (adds the developer menu entry to the main menu) and <strong>Dev Menu Map Loading</strong> (makes the map entries work).</li>
+<li>Click <strong>Apply mods</strong>, then <strong>Start game</strong>.</li>
+<li>In the main menu, open the developer menu and pick a map entry. The entry runs <code>devmap</code> and the map loads.</li>
+</ol>
+<p>Status: the menu running <code>devmap</code> and loading the map: Confirmed in game. The main menu entry from Hidden Menu Options (<code>menu_showOptionForDevMenu</code>): Not yet confirmed in game. Details: <a href="TNC-Dev-Menu.html">TNC Dev Menu</a>.</p>
+<p>Keywords: dev menu, developer menu, devmenu, open dev menu, debug menu, level select, load any map, devmap, entwicklermenü öffnen, levelauswahl</p>
+<h2 id="dev-menu-the-entries-wolfsdk-mod-test-map-and-wolfsdk-box">Dev menu: the entries WolfSDK: Mod test map and WolfSDK: Box</h2>
+<p>Dev Menu Map Loading adds two entries to the developer menu:</p>
+<ul>
+<li><strong>WolfSDK: Mod test map</strong>: a copy of c2v1 with 11 weapons and 8 enemies, for trying out mods.</li>
+<li><strong>WolfSDK: Box</strong>: a small map of its own.</li>
+</ul>
+<p>Both maps are <strong>not</strong> in the 0.2.0 package; their builder comes later. An entry only works once its map is installed in <code>dlc\dlc_0</code>, with <strong>Install map…</strong> and a map file that contains it.</p>
+<p>Status: the mod test map loading: Confirmed in game (with the map installed).</p>
+<p>Keywords: mod test map, test map, wolfsdk box, map missing, entry does nothing, 11 weapons 8 enemies, testkarte, eintrag lädt nicht</p>
+<h2 id="loader-what-is-confirmed-in-game-and-what-is-not-020">Loader: what is confirmed in game and what is not (0.2.0)</h2>
+<p>Confirmed in game:</p>
+<ul>
+<li>applying and reverting mods with backups;</li>
+<li>installing a custom map;</li>
+<li>Sandbox Tools: god mode and infinite ammo;</li>
+<li>Dev Menu Map Loading: the menu runs <code>devmap</code> and loads the map;</li>
+<li>WolfSDK: Mod test map loads.</li>
+</ul>
+<p>Not yet confirmed in game:</p>
+<ul>
+<li>the 126 developer start points; Sandbox Tools Notarget and F7;</li>
+<li>Hidden Menu Options, the presets and the Photo Mode mod (F8);</li>
+<li>The New Colossus cvars written into <code>default.cfg</code>;</li>
+<li>The New Order console with Ctrl+^, <code>+toggle</code> cheat cvars and the F1–F4 binds;</li>
+<li>most other shipped mods (checked structurally only).</li>
+</ul>
+<p>Keywords: confirmed, tested, working, what works, status, verified, not tested, bestätigt, getestet, funktioniert, was funktioniert</p>
+<h2 id="troubleshooting-the-loader-does-not-start">Troubleshooting: the loader does not start</h2>
+<ul>
+<li>Extract the ZIP first. Started from inside the ZIP, <code>WolfSDK.cmd</code> only tells you to extract it.</li>
+<li>Do not put it under <code>C:\Program Files</code>; the loader saves its settings in its own folder.</li>
+<li>"Windows protected your PC": click <em>More info → Run anyway</em>.</li>
+<li>The black window usually stays open with the error message. The same text is in <code>%LOCALAPPDATA%\wolfsdk\start.log</code>.</li>
+</ul>
+<p>Keywords: loader does not start, will not open, crash on start, black window, start.log, error message, smartscreen, startet nicht, öffnet nicht, fehlermeldung</p>
+<h2 id="troubleshooting-the-game-is-not-found-choose-folder">Troubleshooting: the game is not found (Choose folder…)</h2>
+<p>The loader finds the Steam installs of both games by itself. If the Overview tab says "No game install found", click <strong>Choose folder…</strong> at the top right and choose the game's install folder. Only the Steam version works: the Microsoft Store/Game Pass version locks the game files, and GOG and Epic are untested. With both games installed, switch between them in the drop-down at the top right.</p>
+<p>Keywords: game not found, no game install found, choose folder, game path, wrong game, game pass, microsoft store, gog, epic, spiel nicht gefunden, spielordner</p>
+<h2 id="troubleshooting-a-mod-has-no-effect-in-the-game">Troubleshooting: a mod has no effect in the game</h2>
+<ul>
+<li>Ticking is not enough: click <strong>Apply mods</strong>, then start the game. <strong>Start game</strong> offers to apply first.</li>
+<li>Check the game selected at the top right; the Mods tab only shows that game's mods.</li>
+<li>The Overview tab should say "Mod set active · backup in place".</li>
+<li>Mods for The New Colossus that use keys (Sandbox Tools, Photo Mode) need their <code>bind</code> line typed once in the game's console.</li>
+<li>Many mods are not yet confirmed in game; read the mod's description on the Mods tab.</li>
+</ul>
+<p>Keywords: mod not working, no effect, nothing changed, mod does nothing, mod not applied, keys do nothing, mod funktioniert nicht, keine wirkung, mod geht nicht</p>
+<h2 id="troubleshooting-apply-mods-or-revert-is-refused">Troubleshooting: Apply mods or Revert is refused</h2>
+<ul>
+<li>The game is running: close it completely and try again.</li>
+<li>Not enough disk space: the loader stops before it writes any mods (mods that were applied are reverted). Free about 1 GB on the game's drive, up to about 3 GB for The New Order.</li>
+<li>"Recovery needed" or "Interrupted patch run - please revert.": an earlier run was cut off. Click <strong>Revert</strong>.</li>
+<li>"Check failed — nothing was changed.": read the error under "Checks &amp; messages"; often two mods change the same textures.</li>
+</ul>
+<p>Keywords: apply failed, revert failed, refused, cancelled, disk space, game running, interrupted, recovery needed, fehler beim anwenden, abgelehnt, abgebrochen</p>
+<h2 id="troubleshooting-install-map-is-refused">Troubleshooting: Install map… is refused</h2>
+<ul>
+<li>The DLC <em>The Freedom Chronicles</em> (episode 2, map c2v1) is not installed. Custom maps need it.</li>
+<li>Mods are applied: click <strong>Revert</strong>, install or remove the map, then click <strong>Apply mods</strong> again.</li>
+<li><code>dlc\dlc_0</code> belongs to something else: the loader leaves a folder it does not know alone.</li>
+<li>The buttons are grey: Install map… and Remove map only work for The New Colossus.</li>
+</ul>
+<p>Keywords: install map failed, map refused, dlc missing, freedom chronicles missing, map buttons grey, karte installieren fehler, karte abgelehnt</p>
+<h2 id="troubleshooting-report-a-problem">Troubleshooting: report a problem</h2>
+<p>WolfSDK has so far been tested on one PC. If something does not work, report it with the text from the loader window ("Checks &amp; messages" on the Mods tab, or the status line at the bottom) or from <code>%LOCALAPPDATA%\wolfsdk\start.log</code>. Say which game, which mods were ticked and what you clicked. The Discord is linked on the website: https://lopekinz.github.io/wolfenstein-modloader/</p>
+<p>Keywords: report bug, bug report, help, support, discord, log file, start.log, fehler melden, hilfe, problem melden</p>
+<h2 id="loader-limits-steam-only-german-version-one-pc">Loader limits: Steam only, German version, one PC</h2>
+<ul>
+<li>Steam versions only. Microsoft Store/Game Pass does not work; GOG and Epic are untested.</li>
+<li>The German, censored version has different textures. Skins made from the international version probably do not apply there; this is unverified.</li>
+<li>Tested on one PC so far.</li>
+<li>The loader cannot build maps; a custom map file has to come from someone who built it.</li>
+<li>Do not tick two skins for the same weapon at the same time. The loader only refuses this by itself when both change the same textures.</li>
+</ul>
+<p>More limits: <a href="Modding-Limits.html">Modding Limits</a>.</p>
+<p>Keywords: limits, limitations, what does not work, not supported, steam only, game pass, gog, epic, german version, censored, grenzen, einschränkungen, deutsche version</p>
+<h2 id="loader-limits-save-games-and-disk-space">Loader limits: save games and disk space</h2>
+<ul>
+<li>Back up your saves once before you use mods: copy the folder <code>%USERPROFILE%\Saved Games\MachineGames</code>. Whether old saves load cleanly with and without every mod has not been checked for every mod.</li>
+<li>The backups need about 1 GB free on the game's drive; with The New Order up to about 3 GB, depending on the mods.</li>
+<li>The game must be closed while mods are applied or reverted.</li>
+</ul>
+<p>Keywords: save games, saves, back up saves, savegame safe, disk space, free space, spielstände sichern, speicherstände, speicherplatz</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Home.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Wolfenstein Modding Wiki</a><a class="next" href="WolfSDK-Loader-DE.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>WolfSDK Loader DE</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

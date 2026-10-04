@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tnodump: A Read-Only Runtime Capture Tool for TNO, and the Ghidra Import Prepared for the Moment a TNO Image Exists – Wolfenstein Modloader</title>
+<meta name="description" content="A safe, read-only tool that copies The New Order&#x27;s unpacked program code from memory so it can be decompiled.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Tnodump: A Read-Only Runtime Capture Tool for TNO, and the Ghidra Import Prepared for the Moment a TNO Image Exists</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Tno-Dump"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#question">Question</a></li><li><a href="#answer-short">Answer (short)</a></li><li><a href="#1-how-the-tnc-capture-actually-works-read-not-redone">1. How the TNC capture actually works (read, not redone)</a></li><li><a href="#2-toolstno_runtime_capturepy--design-and-the-self-test-run-for-real">2. tools/tno_runtime_capture.py — design and the self-test, run for real</a></li><li><a href="#3-toolsghidra_runtime_import_tnopy--prepared-not-runnable-yet">3. tools/ghidra_runtime_import_tno.py — prepared, not runnable yet</a></li><li><a href="#4-toolsdecomppy--one-additive-flag">4. tools/decomp.py — one additive flag</a></li><li><a href="#proven">PROVEN</a></li><li><a href="#inferred-not-run-against-tno-itself--cannot-be-see-rules">INFERRED (not run against TNO itself — cannot be, see Rules)</a></li><li><a href="#failed-hypotheses--rejected-designs">Failed hypotheses / rejected designs</a></li><li><a href="#recipe-for-the-maintainer">Recipe for the maintainer</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#pass-1-errors">Pass 1 errors</a></li><li><a href="#smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein: The New Order (TNO) keeps its program code encrypted on disk under Steam&#x27;s copy protection (<span class="t" data-t="steamstub">SteamStub</span>), so it cannot be read directly. This report copies the method already used for Wolfenstein II (TNC): a small tool that only reads the running game&#x27;s memory and saves the unpacked code, plus a prepared <span class="t" data-t="ghidra">Ghidra</span> import to decompile it. The tool was tested only against a harmless stand-in program; neither game was launched for this report. A real TNO capture was made afterwards and is the basis of the reports from round 7 on.</p><ul><li>The tool only asks Windows for read access and copies four sections of the program, each checked with its own hash; nothing is ever written into the game.</li><li>Its self-test on a stand-in program passed: a real capture, a repeat capture with identical hashes, and three failure cases that all leave zero bytes on disk.</li><li>The reviewer found a first-pass bug (files could stay on disk after a failed capture); it was fixed and the third failure case was added to test it.</li><li>The prepared import read 506 of 506 function ranges correctly from a test capture; about 50,884 functions are expected for TNO, against 121,682 for TNC.</li><li>The game was never started for this report, and finding TNO&#x27;s console command table was left open for a later track.</li></ul></div><div class="de"><p class="lede">Wolfenstein: The New Order (TNO) speichert seinen Programmcode unter Steams Kopierschutz (<span class="t" data-t="steamstub">SteamStub</span>) verschlüsselt auf der Festplatte, deshalb lässt er sich nicht direkt lesen. Dieser Bericht übernimmt die schon für Wolfenstein II (TNC) genutzte Methode: ein kleines Werkzeug, das den Speicher des laufenden Spiels nur liest und den entpackten Code speichert, dazu ein vorbereiteter <span class="t" data-t="ghidra">Ghidra</span>-Import zum Dekompilieren. Getestet wurde das Werkzeug nur an einem harmlosen Ersatzprogramm; für diesen Bericht wurde keines der beiden Spiele gestartet. Ein echtes Speicherabbild von TNO wurde danach erstellt und ist die Grundlage der Berichte ab Runde 7.</p><ul><li>Das Werkzeug fordert von Windows nur Lesezugriff an und kopiert vier Abschnitte des Programms, jeden mit eigenem Hash geprüft; ins Spiel wird nie etwas geschrieben.</li><li>Sein Selbsttest an einem Ersatzprogramm bestand: ein echtes Abbild, ein Wiederholungsabbild mit identischen Hashes und drei Fehlerfälle, die alle null Bytes auf der Festplatte hinterlassen.</li><li>Der Prüfer fand einen Fehler aus dem ersten Durchgang (nach einem gescheiterten Abbild konnten Dateien liegen bleiben); er wurde behoben und der dritte Fehlerfall dafür ergänzt.</li><li>Der vorbereitete Import las aus einem Testabbild 506 von 506 Funktionsbereichen korrekt; für TNO werden etwa 50.884 Funktionen erwartet, gegenüber 121.682 bei TNC.</li><li>Für diesen Bericht wurde das Spiel nie gestartet, und die Konsolenbefehlstabelle von TNO zu finden blieb für eine spätere Untersuchung offen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 tooling pass: how the read-only TNC runtime capture was made, and an equivalent capture tool for The New Order (<code>tools/tno_runtime_capture.py</code>) plus a prepared Ghidra import, so that TNO's SteamStub-encrypted <code>.text</code> can be decompiled as soon as a capture exists. The tool was tested against a harmless stand-in process with a positive control, a determinism check and three negative controls; <strong>the games were never launched.</strong> From round 7 on, the reports work from a captured TNO runtime image (<code>re_probes/runtime_tno_186352</code>).</p>
+<p><strong>Pass 2 of 2.</strong> Pass 1's verifier found a real bug (files could land on disk
+before a capture failure was detected) and two gaps (an untested failure
+path; an unvalidated multi-snapshot selection). All three are fixed below,
+re-tested for real, and verified with the verifier's own reproduction method.
+See <strong>"Pass 1 errors"</strong> near the end for the short version.</p>
+<p>Read-only on the game installs and on all project files outside this track's
+own area. New files only: <code>tools/tno_runtime_capture.py</code>,
+<code>tools/ghidra_runtime_import_tno.py</code>, a 4-line additive change to
+<code>tools/decomp.py</code> (new <code>--gzf</code> flag, default unchanged — see §4), scratch
+work under <code>re_probes/tnodump/</code> (left empty, cleaned up after every test
+run), and this report. <strong>TNO and TNC were never launched.</strong> Every test below
+ran against a throwaway <code>python.exe</code> child process this track spawned and
+killed itself.</p>
+<h2 id="question">Question</h2>
+<p>TNO has no unpacked runtime image, which blocks decompiling it (<code>.text</code> is
+SteamStub-encrypted in both EXEs on disk — <code>docs/ghidra.md</code>, entropy 8.000).
+TNC has one (<code>re_probes/runtime_87400/</code>), captured read-only from a live,
+already-running process while SteamStub had unpacked <code>.text</code> in memory for
+it. How was that capture done, and can the same method be built for TNO as a
+tool the maintainer can run once, safely, while TNO sits at the main menu — tested now,
+without the game, against a harmless stand-in process, with a negative
+control — with the Ghidra import prepared so decompiling starts the moment a
+TNO image exists?</p>
+<h2 id="answer-short">Answer (short)</h2>
+<p><strong>Yes, done and tested.</strong> The TNC capture (<code>tools/tnc_runtime_read.py</code>) is
+~110 lines of stdlib <code>ctypes</code>: <code>OpenProcess(0x410, …)</code> —
+<code>PROCESS_QUERY_INFORMATION | PROCESS_VM_READ</code>, nothing else —
+<code>CreateToolhelp32Snapshot</code>/<code>Module32FirstW/NextW</code> to find the target module's
+base/size inside that PID, then <code>ReadProcessMemory</code> for the PE header plus
+four sections (<code>.text .rdata .data .pdata</code>), written to <code>module.bin</code> +
+<code>manifest.json</code> (base, size, per-section RVA/size/sha256, build sha256 of the
+file on disk). No write, thread or debug API appears anywhere in the file.
+<code>tools/tnc_runtime_commands.py</code> layers one more read-only pass on top for the
+console-command tables, gated by an exact build-hash check.</p>
+<p>I built the direct TNO equivalent, <strong><code>tools/tno_runtime_capture.py</code></strong>, by
+parametrizing the one TNC-specific thing in that file (the hardcoded target
+module name) and adding a default output path
+(<code>re_probes/runtime_tno_&lt;pid&gt;/</code>) and an explicit post-write verification
+pass. Usage for the maintainer is one command with TNO running:</p>
+<pre><code>python tools/tno_runtime_capture.py --pid &lt;PID&gt;
+</code></pre>
+<p>I could not run this against TNO (never launch the games). Instead I ran its
+<strong>built-in self-test</strong> (<code>--selftest</code>) for real, right now, with no game
+involved at all — see §2 for the full transcript. It passed: a positive
+control (capture a live stand-in process, verify every section hash from the
+bytes actually on disk), a determinism check (two captures of the same idle
+process hash identically), and <strong>three</strong> negative controls (unknown module
+name; a dead PID; every per-section read failing right after a successful
+header read) that all fail closed with <strong>zero bytes written</strong>. The third
+control is new in this pass — it exercises the exact path pass‑1's verifier
+found broken; see "Pass 1 errors".</p>
+<p>I then prepared <strong><code>tools/ghidra_runtime_import_tno.py</code></strong>, the TNO sibling of
+the proven <code>tools/ghidra_runtime_import.py</code> (which turns TNC's capture into
+121,682 named, decompilable functions today). It autodetects the newest
+<code>re_probes/runtime_tno_*/</code> snapshot, uses <code>docs/ghidra/rtti_tno.json</code> for
+class/vtable labels (same static image base <code>0x140000000</code> as TNC, asserted
+at runtime against the RTTI file, not assumed), and fails with one clear,
+actionable line right now, since no TNO snapshot exists yet (verified — see
+§3). Its core non-Ghidra logic (parsing <code>.pdata</code> RUNTIME_FUNCTION entries out
+of a captured image) I validated against a <strong>real</strong> throwaway capture: 506
+functions parsed correctly out of a live <code>python.exe</code>'s own <code>.pdata</code>. I also
+added one additive, backward-compatible flag to <code>tools/decomp.py</code>
+(<code>--gzf</code>, default = the current TNC path) so the existing decompiler query
+tool can point at a TNO GZF the moment one exists, without touching how it
+is used for TNC today.</p>
+<p><strong>What this does not and cannot do:</strong> it does not produce a TNO image —
+nobody but the maintainer can run the capture tool, because that requires TNO actually
+running, and the task forbids this agent from launching or attaching to
+either game. Nothing about TNO's code, commands or cvars was learned here;
+this track is infrastructure, proven on a stand-in, ready for the maintainer's one
+real run.</p>
+<h2 id="1-how-the-tnc-capture-actually-works-read-not-redone">1. How the TNC capture actually works (read, not redone)</h2>
+<p><code>tools/tnc_runtime_read.py</code>, <code>Reader.__init__</code>:</p>
+<pre><code class="language-python">self.handle = self.k.OpenProcess(0x410, False, pid)   # QUERY_INFORMATION|VM_READ
+...
+snap = self.k.CreateToolhelp32Snapshot(0x18, pid)      # TH32CS_SNAPMODULE|SNAPMODULE32
+... Module32FirstW/NextW until szModule.lower()==&quot;newcolossus_x64vk.exe&quot;
+</code></pre>
+<p><code>snapshot()</code> then reads the PE header at the module base (<code>0x1000</code> bytes),
+parses the section table itself (no <code>pefile</code>/third-party dependency — raw
+<code>struct.unpack_from</code> over the <code>IMAGE_FILE_HEADER</code>/<code>IMAGE_SECTION_HEADER</code>
+layout), and for exactly <code>.text .rdata .data .pdata</code> issues one
+<code>ReadProcessMemory</code> per section at <code>base+rva</code>, size <code>vsize</code>. Every section
+actually captured gets a <code>sha256</code> and <code>"captured": true</code> in the manifest;
+sections outside that allowlist (<code>.rsrc .reloc .bind</code> — the SteamStub
+loader itself, icons, relocations) are listed with their PE metadata but
+never read. <code>re_probes/runtime_87400/manifest.json</code> confirms this is exactly
+what landed: <code>access: "read only 0x410"</code>, <code>layout: "virtual RVA"</code>, base
+<code>0x7ff62c210000</code>, size 92,188,672, four sections with <code>sha256</code>+<code>captured</code>,
+the rest without. <code>disk_sha256</code> ties the capture to one exact build of the
+file on disk (<code>tools/tnc_runtime_commands.py</code> re-asserts this hash before
+trusting any vtable offset it hardcodes).</p>
+<p>The output is explicitly <em>not</em> a launchable or relocatable image — it's a
+sparse <code>bytearray</code> the size of the module, PE header at offset 0, each
+captured section's bytes written at its own RVA, everything else zero. That
+is exactly the "virtual RVA" layout <code>tools/ghidra_runtime_import.py</code> expects:
+it rebases a Ghidra program to the manifest's live <code>base</code>, and because RVA
+numbering is base-independent, <code>.pdata</code> RUNTIME_FUNCTION entries, RTTI
+VA-minus-static-preferred-base math and the console-command callback RVAs
+from <code>tools/tnc_runtime_commands.py</code> all line up without any relocation
+step.</p>
+<p><code>tools/tnc_runtime_commands.py</code> is a second, independent read-only pass:
+it re-derives <code>idCmdSystemLocal</code>'s vtable RVA, asserts it against the known
+build hash and an expected <code>vtable - base</code> delta before trusting it, then
+walks two pointer arrays (<code>all</code>, <code>exposed</code>) and reads each command's name
+string, refusing to dereference any pointer that falls outside the module's
+own address range ("refusing speculative read"). This is the part that is
+<strong>not yet reproduced for TNO</strong> — see §5, Open questions.</p>
+<h2 id="2-toolstno_runtime_capturepy--design-and-the-self-test-run-for-real">2. <code>tools/tno_runtime_capture.py</code> — design and the self-test, run for real</h2>
+<p>Design: identical safety contract to <code>tnc_runtime_read.py</code>
+(<code>PROCESS_QUERY_INFORMATION | PROCESS_VM_READ</code> = <code>0x410</code>, nothing else —
+grep the file, no <code>WriteProcessMemory</code>/<code>CreateRemoteThread</code>/
+<code>SetThreadContext</code>/<code>QueueUserAPC</code>/<code>DebugActiveProcess</code>/<code>SuspendThread</code>
+appears), with three differences, all additive:</p>
+<ol>
+<li>Target module name is a parameter (<code>--module</code>, default
+   <code>WolfNewOrder_x64.exe</code> — confirmed as the exe filename both in
+   <code>wolfsdk/game.py</code>'s <code>Title</code> table and by listing the install directory).
+   This is what let me point the <em>exact same code path</em> at a harmless
+   <code>python.exe</code> child for testing instead of TNO.</li>
+<li><code>output.mkdir()</code> now happens <em>after</em> the module is found, not before
+   (TNC's version creates the output directory, then opens the process and
+   looks up the module — a failed lookup there still leaves an empty
+   directory). Moving it after means a failed <em>module-lookup</em> run leaves
+   <strong>nothing</strong> on disk.</li>
+<li>An explicit <code>verify()</code> pass: after writing, it re-reads <code>module.bin</code> +
+   <code>manifest.json</code> back from disk and recomputes every captured section's
+   sha256 independently, raising on any mismatch. This is the "verifies
+   section hashes" step — it checks what's actually on disk, not just the
+   in-memory bytes right after the read. <strong>(Pass‑1 bug, fixed in pass 2:</strong>
+   <code>snapshot()</code> used to write <code>module.bin</code>+<code>manifest.json</code> to disk and <em>then</em>
+   call <code>verify()</code>, so a capture where the header read succeeded but every
+   per-section read then failed raised <code>ValueError</code> with non-empty files
+   already on disk — contradicting the "zero bytes on failure" claim this
+   report made in pass 1. <code>snapshot()</code> now wraps the write+verify in
+   <code>try/except Exception: shutil.rmtree(output); raise</code>, so <em>any</em> failure
+   after the directory is created — zero sections captured, a hash mismatch
+   on re-read, anything — deletes it again before the exception propagates.
+   See "Pass 1 errors" below.)</li>
+</ol>
+<p>Default output: <code>re_probes/runtime_tno_&lt;pid&gt;/</code> (matching the TNC naming
+convention <code>runtime_&lt;pid&gt;</code>), overridable with <code>--out</code>, both still constrained
+to stay under the repo's <code>re_probes/</code> (same guard TNC's script has).</p>
+<h3 id="the-test-no-game-real-run-full-output-below">The test (no game, real run, full output below)</h3>
+<pre><code>python tools/tno_runtime_capture.py --selftest
+</code></pre>
+<p>spawns one throwaway <code>python.exe -c "import time; time.sleep(120)"</code> as a
+stand-in for "TNO sitting idle at the main menu" (a stable, loaded, running
+process with real PE sections) and runs:</p>
+<ul>
+<li><strong>Positive control</strong> — capture that child's own <code>python.exe</code> module by
+  PID, assert all four target sections got captured, run <code>verify()</code>.</li>
+<li><strong>Determinism check</strong> — capture the same still-running process a second
+  time, assert the two runs' per-section sha256 are identical (proves the
+  read is a stable, repeatable observation, not reading garbage/timing-
+  dependent memory).</li>
+<li><strong>Negative control A</strong> — same real, running PID, but ask for a module name
+  that isn't loaded in it (<code>doesnotexist.exe</code>). Must raise, and must leave no
+  output directory.</li>
+<li><strong>Negative control B</strong> — a PID that has already exited (a second
+  throwaway child, killed and reaped first). Must raise, and must leave no
+  output directory.</li>
+<li><strong>Negative control C</strong> (new in pass 2) — same real, running PID and
+  module, but <code>Reader.read</code> is monkeypatched so the fixed-size <code>0x1000</code>
+  header read still succeeds while every per-section read raises. This is
+  the exact failure shape pass‑1's verifier used to reproduce the bug: the
+  header parses fine, <code>sections()</code> returns real section metadata, but
+  nothing gets captured. Must raise, and must leave no output directory —
+  this is the control that pass 1 was missing.</li>
+</ul>
+<p>Actual transcript from this session, unmodified (re-run after the fix):</p>
+<pre><code>spawned harmless stand-in: pid=120328 exe=&lt;user folder&gt;\AppData\Local\hermes\hermes-agent\venv\Scripts\python.exe
+positive control OK: pid=120328 module=python.exe sections captured=['.text', '.rdata', '.data', '.pdata'] verified=4
+determinism OK: repeat capture hashes identical (4 sections)
+negative control A OK (bad module name): pid 120328 has no 'doesnotexist.exe' module
+negative control B OK (dead pid 163524): [WinError 299] Nur ein Teil der ReadProcessMemory- oder WriteProcessMemory-Anforderung wurde abgeschlossen.
+negative control C OK (all section reads fail): no sections captured -- nothing to verify
+SELFTEST PASSED
+</code></pre>
+<p>(Transcript kept verbatim. The <code>WinError 299</code> text is the German-locale Windows
+message for "Only part of a ReadProcessMemory or WriteProcessMemory request was
+completed.")</p>
+<p>I also independently re-ran the verifier's own reproduction recipe (spawn a
+throwaway <code>python.exe</code>, monkeypatch <code>Reader.read</code> to fail every non-header
+read, call <code>snapshot()</code> directly) against the fixed code outside the
+self-test harness, to be sure the fix holds and not just the new assertion:
+raised <code>ValueError: no sections captured -- nothing to verify</code> as before,
+but now <code>output dir exists after failure: False</code> — confirmed zero bytes on
+disk.</p>
+<p>One thing worth flagging precisely, not glossed over: for negative control B,
+<code>OpenProcess(0x410, …)</code> on the already-exited PID actually <em>succeeded</em> (a
+just-freed PID's kernel object can still answer briefly), and the toolhelp
+module snapshot also returned a module entry for it — it was the actual
+<code>ReadProcessMemory</code> call that then failed (<code>WinError 299</code>, partial read),
+which the code correctly surfaces as an <code>OSError</code> and treats as a hard
+failure (no file written). The control still proves what it needs to prove
+— a stale/wrong PID cannot produce a capture — but the exact failure point is
+one step later than I initially expected (read, not open). Noted here so
+nobody re-derives a wrong assumption from the error class alone.</p>
+<p>After the run, <code>re_probes/tnodump/</code> is empty (the self-test creates its
+scratch dir under there and <code>shutil.rmtree</code>s it in a <code>finally</code> block) —
+confirmed with <code>ls</code> immediately after.</p>
+<h2 id="3-toolsghidra_runtime_import_tnopy--prepared-not-runnable-yet">3. <code>tools/ghidra_runtime_import_tno.py</code> — prepared, not runnable yet</h2>
+<p>Sibling of the proven <code>tools/ghidra_runtime_import.py</code>, same transaction
+order (disable analyzers <em>before</em> creating any function — <code>docs/ghidra.md</code>'s
+documented pitfall: <code>AutoAnalysisManager</code> reads enablement at event time, and
+121,682 <code>createFunction()</code> events already queued the wrong analyzers once
+before this was understood, 1409s vs ~290s), same two analyzers left on
+(<code>ASCII Strings</code>, <code>x86 Constant Reference Analyzer</code>), same GZF-export-to-temp
+-then-rename so a concurrent <code>decomp.py</code> read never sees a half-written
+file. Three differences:</p>
+<ol>
+<li><strong>Autodetects the snapshot</strong> — <code>find_snapshot()</code> globs
+   <code>re_probes/runtime_tno_*/</code> for the newest one with both <code>module.bin</code> and
+   a <code>manifest.json</code> whose <code>sections</code> list has at least one entry with
+   <code>"captured": true</code>, instead of a hardcoded PID (TNC's script hardcodes
+   <code>runtime_87400</code> because that one capture is the project's fixed
+   reference; TNO's PID will be whatever the maintainer's capture run used). <strong>New in
+   pass 2:</strong> the manifest-content check — pass 1 only checked that
+   <code>module.bin</code>/<code>manifest.json</code> <em>exist</em>, so a broken, zero-section snapshot
+   (which could not actually happen before the pass‑1 bug fix above, but
+   could in principle from a hand-edited or corrupted manifest) would have
+   silently outranked a good older one by mtime alone. A snapshot that fails
+   the check is skipped with one line to stderr, not picked silently. Tested
+   with its own self-test (no Ghidra/JVM/game needed):
+   <code>python tools/ghidra_runtime_import_tno.py --selftest</code> builds two
+   throwaway <code>re_probes/runtime_tno_999999001/</code> (good, older) and
+   <code>..._999999002/</code> (broken: <code>"captured": false</code>, newer) fixtures, asserts
+   <code>find_snapshot()</code> picks the good older one over the broken newer one,
+   and deletes both. Run just now:</li>
+</ol>
+<p><code>skipping ...\re_probes\runtime_tno_999999002: invalid/empty manifest (no captured sections)
+   find_snapshot() selftest OK: skipped broken newer ..._999999002, picked good older ..._999999001</code>
+2. <strong>No curated function names, no console-command table</strong> — TNC's script
+   names ~234 functions from <code>tnc_runtime_commands.py</code>'s live command dump
+   plus 8 hand-verified RVAs from other tracks' reports. Nothing equivalent
+   exists for TNO yet: nobody has had a decompilable TNO image to find
+   <code>idCmdSystemLocal</code>'s vtable RVA in. <code>CURATED_NAMES = {}</code>; the command-table
+   step is skipped outright rather than faked. This is real, flagged in
+   §5/Open questions, not hidden in the diff.
+3. Project/GZF names say <code>tno</code> (<code>wolf_tno_runtime.gpr</code>, <code>tno_runtime.gzf</code>),
+   written beside the TNC ones under the same <code>D:/wolf-decomp/ghidra/</code>, so
+   both can coexist and <code>tools/decomp.py --gzf &lt;path&gt;</code> picks between them.</p>
+<p><strong>Tested now, without Ghidra, in three ways:</strong></p>
+<ul>
+<li><code>--selftest</code> (new in pass 2): <code>find_snapshot()</code>'s good-vs-broken selection
+  logic, against real fixture directories — see above.</li>
+<li>Ran it with no TNO snapshot present (the actual current state, re-checked
+  again after this pass's edits): it prints exactly</li>
+</ul>
+<p><code>no re_probes/runtime_tno_&lt;pid&gt;/ snapshot found -- run
+      python tools/tno_runtime_capture.py --pid &lt;PID&gt;
+  once while TNO is at the main menu, then re-run this script.</code>
+  and exits — no stack trace, no partial Ghidra project created. This is the
+  state the moment this report is written, so it's a real test, not a
+  hypothetical one.
+- Pulled <code>read_pdata_funcs()</code> out and ran it standalone against a real
+  throwaway <code>python.exe</code> capture made the same way <code>tno_runtime_capture.py</code>
+  makes one (same code path, same self-test child-process pattern): it
+  parsed <strong>506 well-formed <code>(start_rva, end_rva)</code> function ranges</strong> straight
+  out of that capture's <code>.pdata</code> section, all <code>start &lt; end</code>, matching the
+  exact struct layout (<code>&lt;III</code> triples: <code>BeginAddress, EndAddress,
+  UnwindInfoAddress</code>) the proven TNC pipeline and <code>tools/tnc_runtime_code.py</code>
+  both already rely on. This is the one piece of TNO-import logic that <em>can</em>
+  be exercised without a real TNO capture or a running Ghidra/JVM, and it
+  checks out.</p>
+<p><code>RTTI_IMAGE_BASE = 0x140000000</code> is asserted, not assumed: the script reads
+<code>docs/ghidra/rtti_tno.json["image_base"]</code> and asserts it equals
+<code>0x140000000</code> before using it for any VA→RVA math — <code>docs/ghidra.md</code> already
+states both EXEs share this static preferred base, and <code>rtti_tno.json</code>'s own
+header confirms it.</p>
+<h2 id="4-toolsdecomppy--one-additive-flag">4. <code>tools/decomp.py</code> — one additive flag</h2>
+<p>Added <code>--gzf PATH</code> (default: the existing hardcoded TNC path, unchanged
+behavior for every existing call site/report that invokes <code>decomp.py</code>
+without it). Once <code>ghidra_runtime_import_tno.py</code> has produced
+<code>D:/wolf-decomp/ghidra/tno_runtime.gzf</code>, querying it needs nothing new:</p>
+<pre><code>python tools/decomp.py &lt;rva|name&gt; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+</code></pre>
+<p>Everything else about <code>decomp.py</code> — the copy-on-open throwaway project per
+call so concurrent agents never contend on a lock, <code>--xrefs</code>/<code>--callers</code>/
+<code>--strings</code> — is untouched and still applies to TNO once there's a GZF to
+point it at.</p>
+<h2 id="proven">PROVEN</h2>
+<ul>
+<li>The exact read-only mechanism <code>re_probes/runtime_87400/</code> was captured
+  with: <code>OpenProcess(0x410, …)</code> + toolhelp module lookup + per-section
+  <code>ReadProcessMemory</code>, four sections only, sha256 per section, no write API
+  anywhere in the capturing code (<code>tools/tnc_runtime_read.py</code>, read in full).</li>
+<li><code>tools/tno_runtime_capture.py</code> performs a real, verified, read-only
+  capture of a live process's module by PID + module name: proven by running
+  it against a throwaway <code>python.exe</code> child, twice, with identical
+  per-section hashes both times, and with every captured section's hash
+  re-verified from the bytes written to disk.</li>
+<li>All three negative controls fail closed with zero bytes written: a wrong
+  module name on a real PID, a PID that no longer exists, and (new in pass
+  2, fixing the gap pass‑1's verifier found) a real PID/module whose header
+  read succeeds but every per-section read then fails.</li>
+<li><code>tools/ghidra_runtime_import_tno.py</code>'s <code>find_snapshot()</code> skips a broken
+  (zero-captured-sections) snapshot even when it is the newest by mtime,
+  picking the good older one instead — proven against two real throwaway
+  fixture directories, both deleted after the check.</li>
+<li><code>tools/ghidra_runtime_import_tno.py</code>'s <code>.pdata</code>-parsing logic (the only
+  part of the Ghidra-import pipeline that doesn't require Ghidra itself)
+  correctly parses RUNTIME_FUNCTION ranges from a real captured image (506/
+  506 well-formed ranges from a live <code>python.exe</code>).</li>
+<li><code>tools/ghidra_runtime_import_tno.py</code> fails safely and informatively when
+  no TNO snapshot exists — the actual current state, tested for real.</li>
+<li>TNO's static preferred image base is <code>0x140000000</code>, same as TNC
+  (<code>docs/ghidra/rtti_tno.json</code>, <code>docs/ghidra/pdata_tno.json</code>, cross-checked
+  against <code>docs/ghidra.md</code>) — the precondition the RTTI-labeling step in the
+  import script relies on, asserted at runtime, not hardcoded blindly.</li>
+</ul>
+<h2 id="inferred-not-run-against-tno-itself--cannot-be-see-rules">INFERRED (not run against TNO itself — cannot be, see Rules)</h2>
+<ul>
+<li>That <code>tno_runtime_capture.py --pid &lt;PID&gt;</code> will succeed against the real
+  <code>WolfNewOrder_x64.exe</code> process the same way it did against <code>python.exe</code>.
+  Inferred from: identical Win32 API usage to the proven TNC tool (which
+  <em>has</em> captured a real game process), identical PE-parsing code, and a
+  clean self-test against a real OS process. The one thing this cannot
+  rule out without an actual run is whether SteamStub has fully unpacked
+  TNO's <code>.text</code> in memory by the time the maintainer captures it (true for TNC's
+  capture — the module's <code>.text</code> section there is real, decompilable code
+  per the existing 121,682-function pipeline) — TNO uses the same packer
+  per <code>docs/ghidra.md</code>'s identical entropy table (8.000 for both <code>.text</code>
+  sections on disk), so the same in-memory-unpacking behavior is expected,
+  but "expected by analogy" is not "measured for TNO."</li>
+<li>That <code>tools/ghidra_runtime_import_tno.py</code> will complete end-to-end once a
+  real TNO snapshot exists — the Ghidra-dependent two-thirds of it (import,
+  disassemble, function creation, analysis, GZF export) is untouched,
+  line-for-line, from the script that has already done exactly this for TNC
+  (121,682 functions, ~290s limited analysis). Only the snapshot-independent
+  third (<code>.pdata</code> parsing) could be tested here and was.</li>
+</ul>
+<h2 id="failed-hypotheses--rejected-designs">Failed hypotheses / rejected designs</h2>
+<ul>
+<li><strong>Auto-discovering TNO's PID by process name</strong>, so the maintainer could run the tool
+  with zero arguments. Rejected in favor of requiring <code>--pid</code> explicitly,
+  matching the proven TNC tool: matching by <code>szExeFile</code> alone over a
+  process-list snapshot can't safely disambiguate if more than one process
+  ever shares that name, and a silent wrong-PID match is worse than asking
+  the maintainer to paste one number from Task Manager. <strong>Correction (pass 2):</strong> pass 1
+  cited <code>wolfsdk/game.py</code>'s <code>Game.launch()</code> docstring as evidence for this,
+  claiming it "notes a Steam-side bounce/relaunch quirk" implying two
+  concurrently-live same-named processes. Re-read for this pass: that
+  docstring actually describes the <em>opposite</em> — a direct (non-Steam) launch
+  of the SteamStub-wrapped exe gets bounced back to the Steam client and the
+  bounced process is killed immediately, "dies so early that it never even
+  opens qconsole.log" — a dead-on-arrival process, not a second live one.
+  It is not evidence for "more than one same-named process can be running
+  at once." The design decision (require <code>--pid</code>) is still kept, because
+  the simpler reason above — no safe way to disambiguate multiple
+  same-named processes in general, and it matches the already-proven TNC
+  tool exactly — is sufficient on its own and doesn't need that citation.</li>
+<li><strong>Capturing every PE section, not just <code>.text/.rdata/.data/.pdata</code>.</strong>
+  Rejected to match the proven TNC capture exactly: <code>.rsrc</code>/<code>.reloc</code>/<code>.bind</code>
+  (the SteamStub loader itself) add nothing the decompiler needs and only
+  grow the image/attack surface of "what did we read from a running game."</li>
+<li><strong>Keeping <code>output.mkdir()</code> before the module lookup</strong> (TNC's original
+  order). Changed for the TNO tool specifically because the self-test's
+  negative controls need to assert zero footprint, and an empty leftover
+  directory on every failed/mistyped run would be exactly the kind of
+  project-file clutter the rules ask to avoid.</li>
+</ul>
+<h2 id="recipe-for-the-maintainer">Recipe for the maintainer</h2>
+<ol>
+<li>Start TNO, get to the main menu (idle state — nothing loading, no level
+   active — minimizes the chance a section read lands mid-stream-write; this
+   is also when TNC's reference capture was most likely taken, per how every
+   later TNC track describes <code>runtime_87400</code> as a stable, reusable snapshot).</li>
+<li>Task Manager → Details tab → find <code>WolfNewOrder_x64.exe</code> → note the PID.</li>
+<li>In a second window, from the repo root:
+   <code>python tools/tno_runtime_capture.py --pid &lt;PID&gt;</code>
+   This only reads; TNO keeps running untouched. Output:
+   <code>re_probes/runtime_tno_&lt;PID&gt;/module.bin</code> + <code>manifest.json</code>, with
+   per-section sha256 already verified against what's on disk before the
+   command returns.</li>
+<li>Close TNO (capture is done, no need to keep it running).</li>
+<li>```
+   python tools/ghidra_runtime_import_tno.py</li>
+</ol>
+<p><code>Needs the same Ghidra+PyGhidra-venv setup `docs/ghidra.md` already walks
+   through for TNC (`&lt;user folder&gt;\tools\pfade.json` etc.) — if that's set
+   up for TNC already, nothing new to install. Expect roughly TNC's order of
+   magnitude (~50,884 functions vs. TNC's 121,682 — TNO's `.pdata` is
+   smaller, so import should be faster, not slower).
+6.</code>
+   python tools/decomp.py <rva|name> --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+   <code>``
+   works exactly like the existing TNC</code>decomp.py<code>calls throughout</code>re_probes/agent_reports/r*.md`, just pointed at TNO's GZF.</p>
+<p>From there, the natural next track is a TNO analog of
+<code>tools/tnc_runtime_commands.py</code> — finding <code>idCmdSystemLocal</code>'s vtable RVA in
+the new TNO disassembly the same way <code>r4_consolecmds.md</code>/
+<code>tnc_runtime_commands.py</code> did for TNC — which would unlock the same
+<code>resourceExec</code>-style non-exposed-command story (<code>docs/limits.md</code> already
+shows TNO's retail cvar lock is narrower than one might assume, e.g.
+<code>g_permaGodMode</code>/<code>g_permaInfiniteAmmo</code> are <em>not</em> locked — a code-level
+command/cvar table for TNO would make that list exact instead of empirically
+sampled).</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether SteamStub has actually finished unpacking TNO's <code>.text</code> in memory
+  by the main menu, the same way it evidently had for TNC's capture (see
+  INFERRED above) — only answerable by the maintainer's actual capture + a quick
+  entropy/disassembly sanity check on the result (first instructions should
+  decode as plausible x86-64, not near-random bytes).</li>
+<li>TNO's <code>idCmdSystemLocal</code> vtable RVA / command-table layout — not found
+  yet, needed for a <code>tnc_runtime_commands.py</code> TNO equivalent, needs a real
+  TNO disassembly to locate (chicken-and-egg with this track's own output:
+  solvable the moment step 5/6 above produces a queryable GZF).</li>
+<li>Whether TNO's class hierarchy differs from TNC's beyond what
+  <code>docs/ghidra.md</code> already shows via RTTI alone (TNO has no Havok RTTI, no
+  <code>idManagedClass</code> in the inheritance chain) — decompiled method bodies, once
+  available, would show whether that's a deeper engine difference or just
+  vtable slot content.</li>
+</ul>
+<h2 id="pass-1-errors">Pass 1 errors</h2>
+<p>Pass‑1's verifier ran this track's code for real and found one actual bug
+and two untested gaps. All fixed and re-verified in pass 2:</p>
+<ol>
+<li><strong>Bug (confirmed, fixed):</strong> <code>snapshot()</code> wrote <code>module.bin</code>+<code>manifest.json</code>
+   to disk <em>before</em> checking whether any section was captured. If the PE
+   header read succeeded but every per-section <code>ReadProcessMemory</code> then
+   failed, the function raised <code>ValueError("no sections captured")</code> with
+   non-empty files already on disk — directly contradicting pass 1's "zero
+   bytes on disk on failure" claim. Fix: the write + <code>verify()</code> call is now
+   wrapped in <code>try/except Exception: shutil.rmtree(output); raise</code>, so any
+   failure after the directory is created deletes it again. Re-verified two
+   ways: a new negative control C in <code>--selftest</code> (header read OK, all
+   section reads fail → raises, <code>out.exists() is False</code>), and an
+   independent re-run of the verifier's own monkeypatch reproduction outside
+   the self-test harness, which now prints <code>output dir exists after
+   failure: False</code>.</li>
+<li><strong>Missed test (added):</strong> neither original negative control exercised the
+   above path (both failed earlier — module lookup, or a dead handle).
+   Negative control C above closes this gap directly.</li>
+<li><strong>Missed test (added):</strong> <code>ghidra_runtime_import_tno.py</code>'s <code>find_snapshot()</code>
+   picked the newest <code>runtime_tno_*/</code> directory by mtime with no check on
+   its <em>contents</em>, so a broken, later capture could have silently shadowed
+   a good earlier one. <code>find_snapshot()</code> now requires at least one
+   <code>"captured": true</code> section in the manifest and skips (with a stderr
+   line) anything that doesn't qualify; a new <code>--selftest</code> flag proves this
+   with two real throwaway fixture dirs (good-older vs. broken-newer) and
+   deletes them afterward.</li>
+<li><strong>Inaccurate citation (corrected):</strong> pass 1's justification for requiring
+   <code>--pid</code> over PID auto-discovery cited <code>wolfsdk/game.py</code>'s <code>Game.launch()</code>
+   docstring as describing two same-named processes able to run
+   concurrently. Re-read for this pass: that docstring describes a
+   dead-on-arrival bounced process (killed immediately, no window, no log),
+   not a concurrency scenario. The design decision itself is unchanged and
+   still matches the proven TNC tool; the citation is corrected under
+   "Failed hypotheses" above rather than repeated here.</li>
+</ol>
+<p>Not changed: the verifier's other five checks (<code>safe_api_only</code>,
+<code>selftest_reproducible</code> in its pre-fix form, <code>pdata_506_count</code>,
+<code>ghidra_import_fails_clean</code>, <code>decomp_gzf_additive</code>, <code>rtti_image_base</code>,
+<code>module_name_and_files_claim</code>) were not refuted and needed no fix; nothing
+in this pass touched <code>tools/decomp.py</code> or the RTTI/pdata TNO docs.</p>
+<h2 id="smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</h2>
+<p><em>(Translated from German.)</em></p>
+<p>No in-game test is needed for this tool itself — it does not touch TNO
+as long as TNO is not running. The only step that actually needs TNO
+is the one capture command:</p>
+<ol>
+<li>Start TNO, wait until the main menu (do not load a map).</li>
+<li>Task Manager → Details → read the PID of <code>WolfNewOrder_x64.exe</code>.</li>
+<li>Run <code>python tools/tno_runtime_capture.py --pid &lt;PID&gt;</code> — it only
+   reads, writes nothing into the game process, TNO stays untouched in the
+   main menu.</li>
+<li>Check the output directly afterwards: <code>re_probes/runtime_tno_&lt;PID&gt;/
+   manifest.json</code> should show four sections with <code>"captured": true</code> and one
+   <code>sha256</code> each (same form as <code>re_probes/runtime_87400/manifest.json</code>).
+   That alone already proves: the capture tool works against the
+   real game just as in the self-test against the Python stand-in process.</li>
+<li>Then close TNO normally. The rest (Ghidra import, decompiler queries)
+   runs offline against the file, without TNO having to run again.</li>
+</ol>
+<p>Related: <a href="Research-Report-R4-Console-Commands.html">Research Report: R4 Console Commands</a>, <a href="Research-Report-R7-Tno-Cheat-Gate.html">Research Report: R7 Tno Cheat Gate</a>, <a href="Ghidra-Analysis.html">Ghidra Analysis</a>, <a href="Modding-Limits.html">Modding Limits</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Tno-Decls.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Decl System: Catalogue, Loader Capability, New Entries, Load-Order Traps</a><a class="next" href="Research-Report-R6-Tno-Megatexture.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO MegaTexture (<code>virtualtextures/*.pages</code>): Page Table, Codec, One Decoded Region, and a Round-Trip-Proven Writer</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

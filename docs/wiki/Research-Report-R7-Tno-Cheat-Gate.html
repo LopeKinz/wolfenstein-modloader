@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Cheat Gate: The Actual Code, Now That `.text` Is Decrypted – Wolfenstein Modloader</title>
+<meta name="description" content="Where The New Order blocks cheat settings in code, and console routes around that block without patching.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Cheat Gate: The Actual Code, Now That <code>.text</code> Is Decrypted</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R7-Tno-Cheat-Gate"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#question">Question</a></li><li><a href="#answer-short">Answer (short)</a></li><li><a href="#1-finding-the-two-gate-strings-and-following-them-to-code">1. Finding the two gate strings and following them to code</a></li><li><a href="#2-the-global-is-never-written--exhaustive-not-a-sample">2. The global is never written — exhaustive, not a sample</a></li><li><a href="#3-the-gate-sits-at-the-dispatchers-cvar-fallback-not-a-dedicated-command">3. The gate sits at the dispatcher&#x27;s cvar-fallback, not a dedicated command</a></li><li><a href="#4-the-same-global-also-gates-70-sites-inside-gameplayphysics-code">4. The same global also gates ~70 sites inside gameplay/physics code</a></li><li><a href="#5-command-line-cvars-confirmed-sequence-exact-mechanism-still-open">5. Command-line cvars: confirmed sequence, exact mechanism still open</a></li><li><a href="#proven-this-track-decrypted-runtime-static-evidence--no-game-was-launched">PROVEN (this track, decrypted-runtime static evidence — no game was launched)</a></li><li><a href="#inferred-plausible-not-measured-this-pass">INFERRED (plausible, not measured this pass)</a></li><li><a href="#failed-hypotheses--dead-ends-this-track">Failed hypotheses / dead ends (this track)</a></li><li><a href="#recipe-for-the-loader">Recipe for the loader</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#smallest-in-game-test">Smallest in-game test</a></li><li><a href="#reproducibility">Reproducibility</a></li><li><a href="#p20-answer">P2.0 Answer</a></li><li><a href="#p21-the-force-path-decompiled">P2.1 The force path (decompiled)</a></li><li><a href="#p22-which-cvars-are-gated-cheat-is-the-default">P2.2 Which cvars are gated: cheat is the default</a></li><li><a href="#p23-the-24-call-reg0x38-sites-after-a-load-of-the-cvar-system-singleton-0x15ba110">P2.3 The 24 call [reg+0x38] sites after a load of the cvar-system singleton (0x15ba110)</a></li><li><a href="#p24-console-key-chain-decompiled">P2.4 Console: key chain (decompiled)</a></li><li><a href="#p25-devgui-gating-row-execution-debugmenutxt">P2.5 DevGUI: gating, row execution, debugmenu.txt</a></li><li><a href="#p26-doomscript">P2.6 DoomScript</a></li><li><a href="#p27-ranked-routes">P2.7 Ranked routes</a></li><li><a href="#p28-smallest-in-game-test-for-the-maintainer">P2.8 Smallest in-game test (for the maintainer)</a></li><li><a href="#p29-what-stays-open">P2.9 What stays open</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report read the decrypted program code of Wolfenstein: The New Order (TNO) to find what blocks cheat settings (<span class="t" data-t="cvar">cvars</span>). It is one hidden number that is always 0 and is never changed anywhere in the program: it resets all cheat cvars at startup and rejects a plain &#x27;name value&#x27; line. A second pass found that this check only covers that plain form: commands like toggle, the script command setcvar and DevGUI sliders set cheat cvars past it, and the <span class="t" data-t="console">console</span> opens with Ctrl plus the ^/~ key, not that key alone. All of this comes from reading code; an older measurement shows the toggle route accepted on the command line, but nobody has tried Ctrl+^ in the game yet.</p><ul><li>The block is one number that no instruction in the 12,436,956-byte code section ever writes (80 reads, 0 writes), and it read 0 in the capture of the running game.</li><li>At startup every cheat cvar is reset to its default, and a plain &#x27;name value&#x27; line, typed or from a config file, prints &#x27;CANNOT be set in retail!&#x27;.</li><li>Correction in pass 2: toggle, cvarAdd and four similar commands, the script command sys.setcvar and DevGUI sliders set cvars with a force flag that skips the block.</li><li>Every cvar registered without one of four exemption flags (saved options are exempt) counts as a cheat, including devgui, which is why the stock F10 bind &#x27;devgui 1&#x27; never opened the DevGUI.</li><li>god, noclip and give are not commands, but toggle g_permaGodMode 0 1 should work because its code ignores the block; untested, since nobody has pressed Ctrl+^ in TNO yet.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um herauszufinden, was Cheat-Einstellungen (<span class="t" data-t="cvar">Cvars</span>) blockiert. Es ist eine einzige versteckte Zahl, die immer 0 ist und nirgends im Programm geändert wird: Sie setzt beim Start alle Cheat-Cvars zurück und lehnt eine einfache Zeile „Name Wert“ ab. Ein zweiter Durchgang fand, dass diese Prüfung nur genau diese einfache Form abdeckt: Befehle wie toggle, der Skriptbefehl setcvar und DevGUI-Schieberegler setzen Cheat-Cvars an ihr vorbei, und die <span class="t" data-t="console">Konsole</span> öffnet sich mit Strg plus der ^/~-Taste, nicht mit dieser Taste allein. Das alles stammt aus Codelesen; eine ältere Messung zeigt, dass der toggle-Weg auf der Kommandozeile angenommen wird, aber Strg+^ hat in TNO noch niemand im Spiel ausprobiert.</p><ul><li>Die Sperre ist eine Zahl, die kein Befehl im 12.436.956 Byte großen Codeabschnitt je schreibt (80 Lesezugriffe, 0 Schreibzugriffe), und im Abbild des laufenden Spiels stand sie auf 0.</li><li>Beim Start wird jede Cheat-Cvar auf ihren Standardwert zurückgesetzt, und eine einfache Zeile „Name Wert“, getippt oder aus einer Konfigurationsdatei, meldet „CANNOT be set in retail!“.</li><li>Korrektur im zweiten Durchgang: toggle, cvarAdd und vier ähnliche Befehle, der Skriptbefehl sys.setcvar und DevGUI-Schieberegler setzen Cvars mit einem Erzwingen-Schalter, der die Sperre überspringt.</li><li>Jede Cvar, die ohne eines von vier Ausnahme-Flags registriert ist (gespeicherte Optionen sind ausgenommen), gilt als Cheat, auch devgui; deshalb öffnete die Standardbelegung F10 = „devgui 1“ das DevGUI nie.</li><li>god, noclip und give sind keine Befehle, aber toggle g_permaGodMode 0 1 sollte wirken, weil sein Code die Sperre nicht prüft; ungetestet, denn Strg+^ hat in TNO noch niemand gedrückt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-7 research pass reading The New Order's cheat gate as decompiled code from the decrypted runtime image. One 32-bit global, never written anywhere in the shipped binary, gates everything: in <code>idCommonLocal::Init</code> it triggers the reset of all <code>CVAR_CHEAT</code> cvars, and at the dispatcher's bare <code>name value</code> fallback it rejects them. A second pass (appended below) finds no-patch routes: the console opens on Ctrl plus the <code>^</code>/<code>~</code> key rather than through <code>com_allowConsole</code>, and <code>toggle</code> and the other typed cvar setters take a force path past the gate. <strong>Static evidence only; nobody has pressed Ctrl+<code>^</code> in TNO yet.</strong> The loader-side follow-up is <a href="Research-Report-R8-Tno-Cvars.html">TNO cvar registry (R8)</a>.</p>
+<p>Read-only. Track <code>tnocheatgate</code>. Builds directly on <code>r6_tnoconsole.md</code> (static-only,
+encrypted <code>.text</code>: no <code>CMD_*</code> flag enum, <code>CVAR_CHEAT 0x8</code>/<code>CVAR_NOCHEAT 0x10</code> flag
+bits recovered from <code>.rdata</code> strings, <code>wolfsdk/cvars.py::RETAIL_BLOCKED</code> — 25 cvars
+measured in a real run to print <code>"%s CANNOT be set in retail!"</code>) and on
+<code>docs/devmodus.md</code> (the flag enum). The difference this pass: a <strong>decrypted runtime
+snapshot</strong> now exists (<code>re_probes/runtime_tno_186352/module.bin</code>, captured read-only
+from the live, running retail game, pid 186352, base <code>0x140000000</code>/rebased to
+<code>0x7ff749000000</code> in the snapshot) with a matching Ghidra GZF
+(<code>D:/wolf-decomp/ghidra/tno_runtime.gzf</code>), so for the first time the TNO cheat gate
+can be read as actual disassembled/decompiled code instead of inferred from string
+adjacency. Nothing was launched, nothing was attached to, no game or save file was
+touched. New files: this report and <code>re_probes/tnocheatgate/find_gate_writes.py</code>
+(the reproducibility script for §2's exhaustive write-search, <code>--self-check</code> re-runs
+and re-verifies the central claim every time).</p>
+<h2 id="question">Question</h2>
+<p>Where exactly, in code, does TNO reject or reset cheat cvars — the <code>Set()</code> path,
+the source/flags check, any "cheats enabled" global, developer mode, net/session
+cheat flags — what conditions allow them, and is there a no-patch route (config
+file, exec path, DevGUI action, startup order) the loader could use to set them?</p>
+<h2 id="answer-short">Answer (short)</h2>
+<p><strong>One single 32-bit global, never written anywhere in the shipped binary, gates
+everything.</strong> Ghidra-labelled <code>DAT_7ff74c1821c8</code> (RVA <code>0x1df21c8</code>, in <code>.data</code>,
+read live as <code>0</code> from the running process). It is read with a plain
+<code>cmp dword ptr [rip+disp], 0</code> at <strong>two load-bearing sites</strong> plus, separately,
+<strong>~70 more sites</strong> scattered through gameplay/physics code (same global, same
+<code>== 0</code> idiom, most likely individual cheat-adjacent command implementations each
+guarding themselves at entry — not run down to identity, see §4) — and <strong>zero
+write sites</strong> anywhere in the 12 436 956-byte <code>.text</code> section, checked
+exhaustively across every RIP-relative x86-64 addressing form (<code>find_gate_writes.py</code>,
+self-check passes). The two load-bearing sites:</p>
+<ol>
+<li><strong><code>idCommonLocal::Init</code></strong> (<code>FUN_7ff74a4c3380</code>, RVA <code>0x133380</code>), right after it
+   logs <code>"Command line is: %s\n"</code> and before it execs <code>default.cfg</code>:</li>
+</ol>
+<p><code>asm
+   00133e0a  cmp  dword ptr [rip+0x1cbe3b7], 0   ; RVA 0x1df21c8 (DAT_7ff74c1821c8)
+   00133e11  jne  0x133e28
+   00133e13  mov  rcx, [rip+0x1486314]           ; RVA 0x15ba110 (idCVarSystem singleton)
+   00133e1a  mov  rax, [rcx]
+   00133e1d  mov  edx, 8                          ; CVAR_CHEAT = 0x8
+   00133e22  call [rax+0xa0]                      ; idCVarSystem::ResetFlaggedVariables(CVAR_CHEAT)
+   00133e28  ...</code>
+   i.e. <strong>if the global is 0, every <code>CVAR_CHEAT</code>-flagged cvar is force-reset to
+   default right here</strong>, logging <code>"Resetting cheat cvar: %s\n"</code> per cvar
+   (<code>FUN_7ff74ad6daa0</code>/its twin <code>FUN_7ff74ad6dabc</code>, both just
+   <code>for (cvar = g_cvarListHead; cvar; cvar = cvar-&gt;next) if (cvar-&gt;flags &amp; mask) reset(cvar)</code>).
+   This runs <strong>after</strong> command-line <code>+cvar value</code> pairs have already taken effect
+   (they are applied before this point — see §5) and <strong>before</strong> <code>default.cfg</code> is
+   executed at all.
+2. <strong>The cvar-assignment fallback inside the command dispatcher</strong>
+   (<code>FUN_7ff74ad7e102</code>, RVA <code>0x9ee102</code> — this is <code>idCmdSystemLocal</code>'s
+   token-execute loop: it walks the hash-bucketed registered-command table, and
+   <strong>only when a typed/exec'd token matches no registered command at all</strong> does
+   it fall through to <code>(*vtbl[0x78])()</code> on the cvar-system singleton — this
+   vtable slot <strong>is</strong> <code>FUN_7ff74ad6d810</code> (confirmed by Ghidra's own
+   <code>COMPUTED_CALL</code> resolution at the call site). This is the actual, single
+   choke point every bare <code>name value</code> line goes through, whether typed at a
+   console, sitting in <code>default.cfg</code>, or <code>exec</code>'d from any <code>.cfg</code> — <strong>not</strong> a
+   dedicated <code>set</code>/<code>seta</code> command, the generic "token isn't a command, try it as
+   a cvar" fallback itself):</p>
+<p><code>c
+   if ((DAT_7ff74c1821c8 == 0) &amp;&amp; ((cvar-&gt;flags &amp; 0x10) == 0)) {
+       pcVar7 = "%s CANNOT be set in retail!";
+   } else {
+       ... actually assign the value, then printf("\"%s\" is:\"%s\"^7 default:\"%s\"\n", ...) ...
+   }</code>
+   (<code>0x10</code> = <code>CVAR_NOCHEAT</code> per <code>docs/devmodus.md</code>'s enum — a cvar carrying that
+   bit is exempt and always settable; a cvar without it needs the global
+   nonzero. Two other, unrelated gates sit in the same function and fire first:
+   <code>CVAR_INIT</code> (<code>0x4000</code>, "can only be set on the command line") and <code>CVAR_ROM</code>
+   (<code>0x8000</code>, "is read only").)</p>
+<p><strong>Both checks read the exact same global, with the exact same <code>== 0</code> test, and
+nothing in the shipped <code>.text</code> ever sets it to anything else.</strong> That is the
+entire "cheat gate": not a build-type enum, not a signed/encrypted check, not a
+<code>sv_cheats</code>-equivalent cvar of its own (it has no name string anywhere — it is
+addressed only ever by raw RIP-relative displacement, never printed, never
+listed) — a single always-zero flag. <strong>No config file, no <code>exec</code> path, no
+command-line cvar/bind, no DevGUI action can set it</strong>, because none of those
+channels write raw process memory; they all route through cvars/commands, and
+the flag itself is not a cvar. The only way MachineGames' own dev/QA builds
+would ever have had it nonzero is a build-time code path (<code>#ifdef</code> out in
+retail) that simply isn't present in this binary at all — consistent with
+<code>docs/devmodus.md</code>'s and <code>r6</code>'s independent finding that no <code>devMode_t</code>/
+<code>com_enableDeveloperMode</code>/<code>CVAR_SHIPPINGDISABLED</code> exists in TNO either. This is
+a <strong>stronger, code-level restatement</strong> of what <code>docs/limits.md</code> already
+measured empirically (every <code>RETAIL_BLOCKED</code> cvar in <code>wolfsdk/cvars.py</code> really
+is blocked, through every channel tested) — now with the exact instruction and
+the proof that it is not a channel/source distinction at all, but one
+dead global.</p>
+<h2 id="1-finding-the-two-gate-strings-and-following-them-to-code">1. Finding the two gate strings and following them to code</h2>
+<pre><code>python tools/decomp.py --strings &quot;CANNOT be set in retail&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+=== strings matching 'CANNOT be set in retail' ===
+0x7ff74b3e19f8 (rva 0x10519f8)  &quot;%s CANNOT be set in retail!&quot;
+    &lt;- FUN_7ff74ad6d810 @ 7ff74ad6d810
+    &lt;- FUN_7ff74ad6d2d0 @ 7ff74ad6d2d0
+
+python tools/decomp.py --strings &quot;Resetting cheat cvar&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+=== strings matching 'Resetting cheat cvar' ===
+0x7ff74b3e1a60 (rva 0x1051a60)  &quot;Resetting cheat cvar: %s\n&quot;
+    &lt;- FUN_7ff74ad6dabc @ 7ff74ad6dabc
+</code></pre>
+<p>Unlike <code>r6</code> (encrypted <code>.text</code>, 0 xrefs ever resolvable), these xrefs are real —
+the Ghidra GZF was built from the decrypted snapshot. <code>FUN_7ff74ad6d810</code>
+decompiles to the <code>Set</code>-fallback handler quoted in the Answer; its <em>only</em>
+caller via Ghidra's <code>COMPUTED_CALL</code> resolution is <code>FUN_7ff74ad7e102</code> at RVA
+<code>0x9ee13f</code> — the command-dispatcher's "token didn't match any command, try the
+cvar system" fallback (full decompile in §3). <code>FUN_7ff74ad6dabc</code> (the
+<code>ResetFlaggedVariables</code> body) itself has <strong>no static callers</strong> (small, tail-
+duplicated loop body — a second, byte-identical copy of the same loop,
+<code>FUN_7ff74ad6daa0</code>, is the one actually reachable, see §2); its one real caller
+is <code>idCommonLocal::Init</code> (<code>FUN_7ff74a4c3380</code>, RVA <code>0x133380</code>), found by
+disassembling the <code>COMPUTED_CALL</code> Ghidra attributed to it from RVA <code>0x133e22</code>
+(full byte trace in §1b).</p>
+<h3 id="1a-the-per-cvar-gate-decompiled-in-full">1a. The per-cvar gate, decompiled in full</h3>
+<pre><code class="language-c">// FUN_7ff74ad6d810, RVA 0x9dd810 -- idCmdSystem's cvar-set fallback
+undefined8 FUN_7ff74ad6d810(longlong *param_1, int *param_2)
+{
+  ...
+  lVar3 = (**(code **)(*param_1 + 0x20))(param_1, puVar8); // look up the cvar by name
+  if (lVar3 == 0) return 0;                                  // not a cvar either -&gt; caller prints &quot;Unknown command&quot;
+  if (*param_2 == 1) { ... print current value and default ...; return 1; } // bare &quot;name&quot; with no value
+  lVar5 = FUN_7ff74ada3cb0(param_2,1,0xffffffff,0,0);         // join remaining tokens into the value string
+  uVar1 = *(uint *)(lVar3 + 0x48);                            // cvar-&gt;flags
+  if ((uVar1 &gt;&gt; 0xe &amp; 1) != 0) {                              // bit 0x4000 = CVAR_INIT
+      print &quot;%s can only be set on the command line&quot;; return 1;
+  }
+  if ((uVar1 &gt;&gt; 0xf &amp; 1) != 0) {                              // bit 0x8000 = CVAR_ROM
+      print &quot;%s is read only&quot;; return 1;
+  }
+  if ((DAT_7ff74c1821c8 == 0) &amp;&amp; ((uVar1 &amp; 0x10) == 0)) {     // bit 0x10 = CVAR_NOCHEAT
+      pcVar7 = &quot;%s CANNOT be set in retail!&quot;;
+  } else {
+      ... actually sets lVar3's value, clears modified flags, marks CVAR_MODIFIED2 (0x40000) ...
+      if ((flags &amp; CVAR_ARCHIVE) &amp;&amp; buildType==3) pcVar7 = &quot;Archived CVar '%s' in production...&quot;;
+  }
+  FUN_7ff74ad5a7b0(pcVar7, name);  // only printed in the two warning branches above
+  return 1;
+}
+</code></pre>
+<h3 id="1b-disassembly-of-the-idcommonlocalinit-gate-site-ground-truth-not">1b. Disassembly of the <code>idCommonLocal::Init</code> gate site (ground truth, not</h3>
+<p>decompiler reconstruction)</p>
+<pre><code>python3 -c &quot;
+import sys; sys.path.insert(0,'tools')
+from tnc_runtime_code import Image
+im = Image('re_probes/runtime_tno_186352')
+im.disasm(0x133dd8, 0x60)&quot;
+</code></pre>
+<pre><code>00133dd8  call      0x1323a0                     ; (unrelated: GPU-driver-version check, see §5)
+00133ddd  test      al, al
+00133ddf  jne       0x133de8
+00133de1  xor       ecx, ecx
+00133de3  call      0x4e84e0                     ; (driver-too-old warning dialog)
+00133de8  mov       rcx, [rip+0x146d8b9]          ; RVA 0x15a16a8
+00133def  mov       rax, [rcx]
+00133df2  call      [rax+8]
+00133df5  mov       rcx, [rip+0x1486314]          ; RVA 0x15ba110 (idCVarSystem singleton)
+00133dfc  mov       rax, [rcx]
+00133dff  mov       edx, 0x10000                  ; CVAR_ARCHIVE
+00133e04  call      [rax+0x98]                    ; (unrelated housekeeping -- &quot;move archived cvars to a dict&quot;-style call)
+00133e0a  cmp       dword ptr [rip+0x1cbe3b7], 0  ; RVA 0x1df21c8  &lt;-- THE GATE
+00133e11  jne       0x133e28
+00133e13  mov       rcx, [rip+0x14862f6]          ; RVA 0x15ba110
+00133e1a  mov       rax, [rcx]
+00133e1d  mov       edx, 8                        ; CVAR_CHEAT
+00133e22  call      [rax+0xa0]                    ; ResetFlaggedVariables(CVAR_CHEAT)
+00133e28  lea       rcx, [rip+0x1dc3a81]          ; RVA 0x1ef78b0
+00133e2f  call      0x83dac0
+</code></pre>
+<p>(<code>im.disasm</code>/<code>im.function</code> come from <code>tools/tnc_runtime_code.py</code>'s <code>Image</code> class,
+pointed at <code>re_probes/runtime_tno_186352</code> instead of the TNC snapshot — the
+class is title-agnostic, as the task brief says.) This matches the decompiled
+C in the Answer exactly and is the only place in the whole binary that calls
+<code>ResetFlaggedVariables</code> with <code>CVAR_CHEAT</code> (<code>8</code>) as the mask.</p>
+<h2 id="2-the-global-is-never-written--exhaustive-not-a-sample">2. The global is never written — exhaustive, not a sample</h2>
+<p><code>re_probes/tnocheatgate/find_gate_writes.py</code> scans every byte offset in
+<code>.text</code> (12 436 956 bytes) as a candidate RIP-relative displacement, for
+<strong>four</strong> possible "tail lengths" (0 = LEA/MOV-reg/CMP-reg forms, 1 =
+<code>CMP/MOV r/m,imm8</code>, 2 = unused here, 4 = <code>CMP/MOV r/m,imm32</code>), computes the
+referenced RVA for each, and classifies every hit whose computed RVA equals
+the target as a <code>read</code> or a <code>write</code> by its opcode+modrm byte. This matters:
+a first attempt only tried tail=0 and found 21 hits, <strong>all reads</strong>, and wrongly
+read that as "maybe this is written through an indirect pointer my scan can't
+see" — fixed by realizing <code>cmp dword ptr [addr], 0</code> (opcode <code>0x83 /7</code>, the
+actual Init-site instruction) has a trailing immediate byte that shifts the
+RIP-relative base by one, which tail=0 cannot find at all. With all four
+tails:</p>
+<pre><code>python re_probes/tnocheatgate/find_gate_writes.py 0x1df21c8
+...
+80 references, 0 of them writes
+</code></pre>
+<p>80 total read/compare sites (mostly the same <code>cmp dword ptr [RVA 0x1df21c8], 0</code>
+idiom, one lone <code>cmp ..., 1</code> at RVA <code>0x149e0f</code>), spread across roughly 20
+distinct functions — <strong>zero</strong> <code>mov [RVA],imm</code>, zero <code>mov [RVA],reg</code>, zero
+read-modify-write (<code>add/or/and/xor/sub [RVA], ...</code>) anywhere. Also checked and
+negative: a <code>mov r64, imm64</code> loading the absolute virtual address
+<code>0x7ff74c1821c8</code> anywhere in <code>.text</code> (would indicate an indirect/computed
+store this RVA-relative scan can't see) — 0 occurrences; the RVA <code>0x1df21c8</code>
+itself as a raw 4-byte value anywhere in the captured image (would indicate a
+lookup/descriptor table referencing it) — 0 occurrences. Also checked: the
+<code>.data</code> bytes backing this address in the <strong>live, running-process</strong> capture
+read back as <code>0x00000000</code> — i.e. this was measured not just absent-of-writes
+in the code, but actually zero while the real game was running.</p>
+<p><strong>This is the central, load-bearing claim of this report and the thing most
+worth independently re-checking</strong>: <code>python re_probes/tnocheatgate/
+find_gate_writes.py --self-check</code> re-runs the scan and asserts both that the
+<code>idCommonLocal::Init</code> gate site is still found and that the write count is
+still zero.</p>
+<h2 id="3-the-gate-sits-at-the-dispatchers-cvar-fallback-not-a-dedicated-command">3. The gate sits at the dispatcher's cvar-fallback, not a dedicated command</h2>
+<p><code>FUN_7ff74ad7e102</code> (RVA <code>0x9ee102</code>), decompiled in full:</p>
+<pre><code class="language-c">void FUN_7ff74ad7e102(longlong param_1)
+{
+  puVar1 = *(undefined8 **)(param_1 + 8);     // head of a hash bucket of registered commands
+  do {
+    if (puVar1 == 0) {                         // walked off the end -- no command matched
+      cVar2 = (**(code **)(*DAT_7ff74b94a110 + 0x78))();  // == FUN_7ff74ad6d810, per Ghidra's own
+                                                           // COMPUTED_CALL resolution at this call site
+      if (cVar2 == '\0') print &quot;Unknown command '%s'&quot;;
+      return;
+    }
+    if (name_matches(puVar1)) { call puVar1's handler; return; }
+    puVar1 = puVar1-&gt;next;
+  } while (true);
+}
+</code></pre>
+<p>So every exec'd/typed line is first tried against the <strong>registered command</strong>
+table (§4 of <code>r6_tnoconsole.md</code> already mined ~1150 of these: <code>kill</code>,
+<code>devmap</code>, <code>killMonsters</code>, ...), and <strong>only if that fails</strong> does it fall
+through to "try this as <code>cvarname value</code>" — which is exactly
+<code>FUN_7ff74ad6d810</code>, the gated handler from §1a. This answers one of <code>r6</code>'s own
+open framing questions more precisely than "commands have no flag at all":
+dedicated commands (the <code>idCmdSystem::AddCommand</code> table) are indeed
+structurally ungated (confirmed again, no <code>CMD_*</code> flag field read anywhere in
+this dispatch loop), but <strong>cvar assignment — which is what every
+<code>RETAIL_BLOCKED</code> entry in <code>wolfsdk/cvars.py</code> actually is — is not reached
+through a separate "set" command at all; it's the dispatcher's universal
+fallback</strong>, so there is exactly one gate for it, not one per cfg-reading
+command.</p>
+<h2 id="4-the-same-global-also-gates-70-sites-inside-gameplayphysics-code">4. The same global also gates ~70 sites inside gameplay/physics code</h2>
+<p><code>find_gate_writes.py 0x1df21c8</code> (or the raw numpy scan in §2) lists every read
+site's containing function. Besides the two load-bearing ones above, roughly
+70 more <code>cmp dword ptr [RVA 0x1df21c8], 0</code> sites sit inside a dense run of
+otherwise-unnamed functions, most densely clustered in two address ranges:
+<code>0x48dfc0</code>/<code>0x7905b0</code>/<code>0x792931</code>-<code>0x7b3da4</code> (a long, mostly-contiguous chain:
+<code>0x791830, 0x791c60, 0x7922a0, 0x792340, 0x7923b1, 0x792437, 0x7931ef,
+0x7936e0, 0x794520, 0x794740, 0x794fc0, 0x795510, 0x796530, 0x7a9808,
+0x7b3c30</code>, all taking a <code>longlong param_1</code> "this"-pointer and <code>float</code>
+parameters — consistent with <code>idPlayer</code>/<code>idPhysics_Player</code> movement code, the
+same subsystem <code>pm_noclipspeed</code>/<code>pm_autoSprint</code>/<code>pm_crouchspeed</code> etc. (all
+<code>RETAIL_BLOCKED</code>, all <code>pm_*</code>) live in). <strong>Not individually identified by name</strong>
+(no string/xref ties any one of these specifically to <code>noclip</code> or <code>god</code> — that
+would need either a build with debug symbols or dynamic tracing, neither
+available here) — flagged as INFERRED, not proven, below. The pattern strongly
+suggests each of these ~15 functions is one cheat-adjacent gameplay routine
+(noclip movement, god-mode damage skip, infinite ammo, etc.) with its own
+inlined <code>if (!DAT_7ff74c1821c8) return;</code>/early-out, <strong>in addition to</strong> the
+cvar-level gate in §1a — i.e. even if a <code>CVAR_CHEAT</code> cvar's <em>value</em> could
+somehow be forced to <code>1</code> by some other means, several of the gameplay effects
+it's supposed to drive would still independently no-op on the same always-zero
+global.</p>
+<h2 id="5-command-line-cvars-confirmed-sequence-exact-mechanism-still-open">5. Command-line cvars: confirmed sequence, exact mechanism still open</h2>
+<p><code>r6_tnoconsole.md</code> §2 already measured (from a real <code>qconsole.log</code>) that
+<code>+pm_autoSprint 1</code> etc. on the command line take effect <em>silently</em> (no
+<code>"CANNOT be set in retail!"</code>) but are then wiped by <code>"Resetting cheat cvar: %s"</code>
+— i.e. command-line cvars do <strong>not</strong> go through the §1a gate at assignment
+time, only through the §1b reset sweep afterward. This pass's decompile of
+<code>idCommonLocal::Init</code> <strong>confirms the ordering exactly</strong>: the reset-sweep call
+(§1b) sits right after the <code>"Command line is: %s\n"</code> log line and right before
+<code>default.cfg</code> is execed — consistent with command-line tokens having already
+been applied (via some earlier, separate mechanism, almost certainly before
+<code>idCommonLocal::Init</code> even runs, since the log line only <em>displays</em> the
+already-parsed command line rather than applying it) and then being reset here,
+<strong>before</strong> any cfg file — including <code>default.cfg</code> itself — gets a chance to
+touch them. One dead end this pass hit chasing this: the function called
+immediately after the log line (<code>FUN_7ff74a4c23a0</code>, called via
+<code>cVar5 = ...(); if (!cVar5) warn-dialog();</code>) was a promising-looking candidate
+for "the command-line parser", but decompiling it in full shows it is
+unrelated — a GPU driver version/compatibility check (<code>"found %s driver
+%d.%d.%d.%d (limited to %d.%d.%d.%d)"</code>, AMD/NVIDIA driver-version string
+parsing, a "Graphics Driver Warning" dialog). <strong>The actual routine that turns
+<code>+cvar value</code> command-line pairs into cvar assignments was not located this
+pass</strong> — it most plausibly runs even earlier (<code>WinMain</code>/engine bootstrap,
+before <code>idCommonLocal::Init</code>), which is consistent with every other reload
+mechanism here being read-only strings or statically-exported symbols rather
+than labelled functions. Flagged as an <strong>open question</strong> (§8) rather than
+guessed at further.</p>
+<h2 id="proven-this-track-decrypted-runtime-static-evidence--no-game-was-launched">PROVEN (this track, decrypted-runtime static evidence — no game was launched)</h2>
+<ul>
+<li><code>DAT_7ff74c1821c8</code> (RVA <code>0x1df21c8</code>, a 32-bit <code>.data</code> global) is read with a
+  plain <code>cmp dword ptr [addr], 0</code> at RVA <code>0x133e0a</code> inside <code>idCommonLocal::Init</code>
+  (<code>FUN_7ff74a4c3380</code>), gating a direct call to
+  <code>idCVarSystem::ResetFlaggedVariables(CVAR_CHEAT = 8)</code> through vtable slot
+  <code>+0xa0</code> of the cvar-system singleton at RVA <code>0x15ba110</code> — disassembled byte-
+  for-byte in §1b.</li>
+<li>The exact same global is read with the exact same idiom inside
+  <code>FUN_7ff74ad6d810</code> (RVA <code>0x9dd810</code>), gating whether a cvar carrying neither
+  <code>CVAR_INIT</code> (<code>0x4000</code>) nor <code>CVAR_ROM</code> (<code>0x8000</code>) nor <code>CVAR_NOCHEAT</code> (<code>0x10</code>)
+  can be assigned at all — else prints <code>"%s CANNOT be set in retail!"</code>
+  (RVA <code>0x10519f8</code>).</li>
+<li><code>FUN_7ff74ad6d810</code> is not a standalone "set" command: it is the fallback
+  branch of the command dispatcher (<code>FUN_7ff74ad7e102</code>, RVA <code>0x9ee102</code>),
+  reached for <strong>every</strong> token that fails to match a registered command name —
+  confirmed both by Ghidra's <code>COMPUTED_CALL</code> resolution at the call site and
+  by reading the dispatcher's own decompiled control flow (§3).</li>
+<li>Exhaustive scan of the full 12 436 956-byte <code>.text</code> section (every
+  RIP-relative operand, 4 possible trailing-immediate lengths, both absolute
+  <code>mov r64,imm64</code>-then-indirect-store and direct-displacement forms) finds
+  <strong>zero</strong> instructions anywhere that write <code>DAT_7ff74c1821c8</code> (<code>80</code> reads,
+  <code>0</code> writes) — <code>re_probes/tnocheatgate/find_gate_writes.py --self-check</code>.</li>
+<li>The live, running-process capture (<code>re_probes/runtime_tno_186352/module.bin</code>,
+  pid 186352) reads this address back as <code>0x00000000</code> at capture time.</li>
+<li><code>ResetFlaggedVariables</code>'s loop body (<code>FUN_7ff74ad6daa0</code>/<code>FUN_7ff74ad6dabc</code>,
+  byte-identical twins at adjacent <code>.pdata</code> entries) walks the cvar list head
+  <code>DAT_7ff74c286cf0</code>, matches <code>cvar-&gt;flags &amp; mask</code>, calls the cvar's own
+  reset-to-default accessor, clears/sets <code>CVAR_MODIFIED2</code> (<code>0x40000</code>), and logs
+  <code>"Resetting cheat cvar: %s\n"</code> — matching <code>r6</code>'s real <code>qconsole.log</code> excerpt
+  line for line.</li>
+<li>No <code>CMD_*</code> command-flag enum exists in the dispatcher itself (re-confirmed
+  by reading <code>FUN_7ff74ad7e102</code> directly this pass, not just by string
+  absence as in <code>r6</code>) — the dispatcher only ever checks "does this token's
+  name match a registered command", never a per-command cheat/expose bit.</li>
+</ul>
+<h2 id="inferred-plausible-not-measured-this-pass">INFERRED (plausible, not measured this pass)</h2>
+<ul>
+<li>The ~70 other <code>cmp [RVA 0x1df21c8], 0</code> sites in the <code>0x790000</code>–<code>0x7b4000</code>
+  function cluster are individual cheat-adjacent gameplay/physics routines
+  (plausibly <code>noclip</code> movement, god-mode damage bypass, etc. — the address
+  range overlaps where <code>pm_*</code> cvar-driven movement code would live) each with
+  their own inlined early-out on the same global — plausible from the
+  function signatures (<code>this</code>-pointer + <code>float</code> params, dense contiguous run)
+  and from <code>r6</code>'s independent finding that several <code>pm_*</code>/<code>g_*</code> cvars in this
+  same family are in <code>RETAIL_BLOCKED</code>, but <strong>no individual function in this
+  cluster was tied to a specific named command or cvar</strong> — would need either
+  symbol recovery or dynamic tracing to confirm.</li>
+<li>Command-line <code>+cvar value</code> pairs are applied through a code path that does
+  <strong>not</strong> call through <code>FUN_7ff74ad6d810</code> at all (only through this, consistent
+  with <code>r6</code>'s measured "command line passes silently, config files don't")
+  — inferred from the measured asymmetry plus confirmed call ordering in
+  <code>idCommonLocal::Init</code>, not from having located and read that parsing routine
+  itself (§5, §8).</li>
+</ul>
+<h2 id="failed-hypotheses--dead-ends-this-track">Failed hypotheses / dead ends (this track)</h2>
+<ul>
+<li><strong><code>FUN_7ff74a4c23a0</code> (the function called right after the
+  <code>"Command line is: %s\n"</code> log line) is the command-line argument parser.</strong>
+  Plausible from its position; decompiling it in full shows it is an unrelated
+  GPU driver version/compatibility check (AMD/NVIDIA driver string parsing, a
+  "Graphics Driver Warning" message-box flow) — a real, named dead end, not
+  silently dropped (§5).</li>
+<li><strong>A tail=0-only RIP-relative scan is sufficient to find every reference to a
+  given global.</strong> First attempt at §2 found 21 reads and 0 writes and
+  (wrongly, for one draft of this report) treated that as inconclusive /
+  possible-indirect-write evidence. Re-derived: <code>cmp dword ptr [addr], imm8</code>
+  (opcode <code>0x83 /7</code>, the actual gate instruction) has a trailing immediate
+  byte the RIP-relative effective address is computed <em>past</em>, which tail=0
+  cannot see at all; adding tail=1 (and tail=4 for <code>imm32</code> forms) found 59
+  more read sites immediately, including the exact <code>idCommonLocal::Init</code> gate
+  site itself. Fixed in <code>find_gate_writes.py</code>, which now tries all four tails
+  and is the version <code>--self-check</code> verifies.</li>
+<li><strong><code>CVAR_CHEAT</code>/<code>CVAR_NOCHEAT</code> as literal strings would lead to the flag
+  check via xrefs.</strong> Both strings exist in <code>.rdata</code> (confirmed, <code>r6</code> already
+  found them) but Ghidra reports zero code references to either — the actual
+  code never loads these name strings to test the flag, it tests the literal
+  immediate <code>8</code>/<code>0x10</code> directly (<code>r6</code>'s own strings-first approach could not
+  have found the gate this way even with decrypted <code>.text</code>; following the
+  <em>message</em> strings, as this pass did, was the only route that worked).</li>
+</ul>
+<h2 id="recipe-for-the-loader">Recipe for the loader</h2>
+<p><strong>There is no no-patch route for a cvar that is actually <code>CVAR_CHEAT</code>-flagged
+in retail</strong> (the 25 in <code>wolfsdk/cvars.py::RETAIL_BLOCKED</code>, measured, and now
+explained at the instruction level): the single global every code path checks
+is permanently zero and is written by nothing in the shipped binary, in any
+config file, any <code>exec</code>'d script, any command-line argument, or any DevGUI
+action — all of those are cvar/command <em>values</em>, and the gate is not a cvar.
+Concretely, for the loader's own feature set (<code>wolfsdk/mod.py</code> /
+<code>wolfsdk/cvars.py</code>):</p>
+<ol>
+<li><strong>Stop trying to deliver <code>RETAIL_BLOCKED</code> cvars through any file/exec/
+   command-line channel</strong> — <code>docs/limits.md</code> already measured this, and this
+   pass explains <em>why</em> it will never work: differently-sourced config lines,
+   <code>+set</code>, and <code>exec</code>'d cfgs all funnel through the one fallback in §3, and
+   command-line-applied values get wiped by the §1b sweep regardless of
+   source, before <code>default.cfg</code> even runs. This is not a gap in the loader's
+   routing — it is architecturally closed.</li>
+<li><strong>Non-cheat-flagged tweaks are unaffected</strong> and are exactly the ones
+   <code>wolfsdk/cvars.py</code> already ships outside <code>RETAIL_BLOCKED</code> — no change
+   needed there.</li>
+<li><strong>The one remaining, unproven lever is still <code>r6</code>'s script-VM route</strong>
+   (<code>setcvar</code>/<code>executeCommandText</code> callable from a map's <code>.script</code>, or a raw
+   <code>idTarget_Cvar</code> entity) — <strong>this report adds a concrete prediction for it</strong>:
+   if <code>executeCommandText("pm_autoSprint 1")</code> is queued from inside a loaded
+   map's script, it will be tokenized and executed through the <em>exact same</em>
+   <code>FUN_7ff74ad7e102</code> dispatcher described in §3, landing in the <em>exact same</em>
+   <code>FUN_7ff74ad6d810</code> gate described in §1a — i.e. <strong>it will almost certainly
+   be blocked identically</strong> ("CANNOT be set in retail!"), <em>unless</em> script-VM
+   command execution is proven to carry some other, unrelated privilege this
+   report found no trace of. This is a sharper, more pessimistic prediction
+   than <code>r6</code>'s "unproven, maybe privileged" framing — worth stating plainly so
+   effort isn't spent rebuilding a map chunk to test something this pass's
+   code reading suggests will fail the same way everything else does.</li>
+<li><strong>A real unlock needs the global itself to become nonzero</strong>, which (per §2)
+   requires something no config/exec/command-line/DevGUI channel can do:
+   writing 4 bytes directly into the running process's memory at
+   <code>base + 0x1df21c8</code>. That is binary/memory patching, explicitly out of
+   scope for this project (<code>docs/ghidra.md</code>'s own stated boundary: no
+   unpacker, no code patches), not a "no-patch route" by definition — stated
+   here only to close the question, not as a suggestion.</li>
+</ol>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li><strong>Where does the command-line <code>+cvar value</code> parser actually live?</strong> Not
+  found this pass (§5) — <code>FUN_7ff74a4c23a0</code> was a dead end (driver-version
+  check, §"Failed hypotheses"). Likely earlier than <code>idCommonLocal::Init</code>
+  (bootstrap/<code>WinMain</code>). Finding it would let someone confirm directly (by
+  reading its code, still no game launch needed) whether it really bypasses
+  <code>FUN_7ff74ad6d810</code>'s gate outright, or whether it goes through a <em>third</em>
+  code path not seen in this report.</li>
+<li><strong>What are the ~70 other <code>DAT_7ff74c1821c8</code>-gated functions, by name?</strong>
+  Listed by RVA in §4/§2 output, not identified — would need either partial
+  symbol recovery (none shipped in this binary) or dynamic step-tracing
+  (out of scope: no process attach permitted here).</li>
+<li><strong>Is <code>DAT_7ff74c1821c8</code> itself cross-referenced by name anywhere outside
+  code</strong> (a debug-symbol PDB, a leaked internal build, MachineGames' own
+  tooling)? Not searched for in this pass — out of scope (would require
+  sources this project does not have access to), noted only so a future pass
+  doesn't assume it was checked.</li>
+<li><strong>Does the script-VM route (<code>executeCommandText</code>) actually reach the
+  dispatcher the way §3 predicts?</strong> Still genuinely unproven either way
+  without building and loading a map chunk — this report only sharpens the
+  prediction (see Recipe §3), it does not resolve it.</li>
+</ul>
+<h2 id="smallest-in-game-test">Smallest in-game test</h2>
+<p><em>(Translated from German.)</em></p>
+<p>This finding is almost entirely secured by reading code (no
+game-start dependency any more for the core claim) — still, two tests that
+would cheaply settle the only remaining open practical point (section "Recipe" point 3),
+<strong>without</strong> having to build an extra map for it:</p>
+<ol>
+<li><strong>Check <code>docs/limits.md</code>'s own log once more, closely, for the order</strong>
+   (if the raw file is still available, <code>%USERPROFILE%\Saved Games\
+   MachineGames\Wolfenstein The New Order\base\qconsole.log</code>): do the
+   <code>"Resetting cheat cvar: ..."</code> lines appear <strong>before</strong> any <code>default.cfg</code>-related
+   line? That is exactly the order this report predicts from the
+   <code>idCommonLocal::Init</code> code (section 5) — if yes, a free
+   confirmation without any new game start.</li>
+<li><strong>If a TNO map with its own <code>.script</code> is built anyway</strong> (e.g.
+   for another purpose): add a line <code>executeCommandText( "pm_autoSprint 1" );</code>
+   and then check <code>qconsole.log</code> for <code>"pm_autoSprint CANNOT be set in
+   retail!"</code>. This report predicts that exactly this line
+   appears (not "works silently") — a single, clearly
+   falsifiable test for the central new prediction from section 3.</li>
+</ol>
+<p>No saves affected, no memory patch, no new mod needed for test 1.</p>
+<h2 id="reproducibility">Reproducibility</h2>
+<pre><code>python re_probes/tnocheatgate/find_gate_writes.py --self-check
+# reads/cmps found: 80  writes found: 0
+# idCommonLocal::Init gate site (rva 0x133e0c) present: True
+# self-check: OK
+
+python tools/decomp.py --strings &quot;CANNOT be set in retail&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py --strings &quot;Resetting cheat cvar&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py FUN_7ff74ad6d810 --xrefs --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py FUN_7ff74ad7e102 --xrefs --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py FUN_7ff74a4c3380 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf   # idCommonLocal::Init, long
+</code></pre>
+<hr />
+<h1 id="pass-2----no-patch-routes-to-the-console-and-to-cheat-cvars">Pass 2 -- no-patch routes to the console and to cheat cvars</h1>
+<p>Static only, same decrypted image (<code>re_probes/runtime_tno_186352</code>), nothing launched.
+Reproducibility: <code>python re_probes/tnocheatgate/pass2_scan.py</code> (self-checks P2.1-P2.4).
+Scratch: <code>D:/wolf-decomp/tmp/tnocheatgate2/</code>.</p>
+<h2 id="p20-answer">P2.0 Answer</h2>
+<ol>
+<li><strong>The console is not blocked by <code>com_allowConsole</code>.</strong> Nothing in the console code reads that
+   cvar. <code>idConsoleLocal::ProcessEvent</code> (<code>0x14f140</code>) opens the console on <strong>Ctrl + key 0x29
+   (grave / <code>^</code> / <code>~</code>)</strong>, with no cheat/retail test. A plain <code>~</code> (what pass 1 and <code>docs/limits.md</code>
+   assumed) does nothing, which looks exactly like "console disabled".</li>
+<li><strong>Cheat cvars are settable with no patch, because every typed cvar-setter path except one
+   bypasses the gate.</strong> The gate (<code>0x9dd810</code>) is only the <em>bare <code>name value</code> fallback</em> of the
+   command dispatcher. <code>toggle</code>, <code>cvarAdd</code>, <code>cvarRandom</code>, <code>addWrap</code>, <code>addClamp</code>, <code>cvarMultiply</code>
+   (registered commands, ungated), the script native <code>sys.setcvar</code>, the entity class
+   <code>idTarget_Cvar</code>, the SWF natives <code>setCVarString/Integer</code> and the DevGUI cvar rows all go through
+   <code>idCVarSystem</code> slot <code>+0x38</code> = <code>FUN 0x9dd710</code>, which calls Set with <code>force=1</code>.</li>
+<li><strong>Why F10 never opened the DevGUI:</strong> the stock bind is <code>bind "F10" "devgui 1"</code> (the maintainer's own
+   <code>wolfConfig.cfg</code>). <code>devgui 1</code> is a bare cvar assignment, gated, so "devgui CANNOT be set in
+   retail!". <code>devgui</code> is <em>cheat by default</em> (P2.2). A bind of <code>toggle devgui 0 1</code> takes the force
+   path. Separately, <code>debugmenu.txt</code> (the loader's WOLFSDK page) has <strong>no consumer</strong> in the exe
+   (P2.5), so even an open DevGUI would not show the loader page.</li>
+</ol>
+<h2 id="p21-the-force-path-decompiled">P2.1 The force path (decompiled)</h2>
+<pre><code>FUN_7ff74ad6d2d0 (rva 0x9dd2d0)  Set(cvar, value, force):
+  if (force == 0) { INIT(0x4000) -&gt; &quot;can only be set on the command line&quot;; ROM(0x8000) -&gt; &quot;is read only&quot;;
+                    if (DAT_1df21c8 == 0 &amp;&amp; !(flags &amp; 0x10)) -&gt; &quot;%s CANNOT be set in retail!&quot; }
+  (strcmpi old/new: unchanged value -&gt; return 0) ... assign, flags |= MODIFIED2
+FUN_7ff74ad6d710 (rva 0x9dd710) = vtable slot +0x38:  cvar = find(name); if (cvar) Set(cvar, value, 1);
+FUN_7ff74ad6d810 (rva 0x9dd810) = vtable slot +0x78:  the dispatcher fallback, gate inline (pass 1 §1a)
+slots +0x40/+0x48/+0x50 (0x9dcd30/0x9dcdb0/0x9dce30) = SetCVarBool/Int/Float(name,v):
+  format v to string, then (*vtbl+0x38)(name, str, 0)  -&gt; same force path
+FUN_7ff74ad6d480 (rva 0x9dd480) = idCVar::SetInteger(v, force) -&gt; Set(cvar, str, force)
+</code></pre>
+<p>Vtable of <code>idCVarSystem</code> = RVA <code>0x104f968</code> (slot <code>0x38</code> -&gt; <code>0x9dd710</code>, <code>0x78</code> -&gt; <code>0x9dd810</code>).
+Negative control: the only code that prints "CANNOT be set in retail" is <code>0x9dd810</code> and the
+<code>force==0</code> branch of <code>0x9dd2d0</code>. Measured control from <code>docs/limits.md</code>: <code>+exec file.cfg</code> (bare
+assignment) is blocked while <code>+toggle devgui</code> is accepted with no warning ("devgui = 1.000000"),
+which is what the decompile predicts.</p>
+<h2 id="p22-which-cvars-are-gated-cheat-is-the-default">P2.2 Which cvars are gated: cheat is the default</h2>
+<p><code>FUN_7ff74ad6ea10</code> (cvar constructor, rva <code>0x9dea10</code>; <code>test edi,0x1c010 / or edi,0x10 / or edi,8</code>):</p>
+<pre><code class="language-c">if ((flags &amp; 0x1c010) == 0) flags |= 8 /*CHEAT*/; else flags = (flags &amp; ~8) | 0x10 /*NOCHEAT*/;
+</code></pre>
+<p>Any cvar registered without NOCHEAT (0x10), INIT (0x4000), ROM (0x8000) or ARCHIVE (0x10000) is cheat.
+<code>com_allowConsole</code> is registered with flags=1 (BOOL) so it is cheat; <code>devgui</code> flags=2 so it is cheat.
+Archived cvars (graphics/audio options) are exempt, which is why <code>wolfConfig.cfg</code> lines such as
+<code>vt_pageImageSizeUnique "8192"</code> load fine.</p>
+<h2 id="p23-the-24-call-reg0x38-sites-after-a-load-of-the-cvar-system-singleton-0x15ba110">P2.3 The 24 <code>call [reg+0x38]</code> sites after a load of the cvar-system singleton (0x15ba110)</h2>
+<p><code>pass2_scan.py</code> finds 24 hits (pass 1's verifier said ~23). 3 are false positives (other object).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>site(s)</th>
+<th>what it is</th>
+<th>loader-reachable data?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x9ddd70</code>,<code>0x9dde08</code> (fn <code>0x9ddc00</code>)</td>
+<td>console command <strong><code>toggle</code></strong> (<code>commands.json</code> callback <code>0x9ddc00</code>)</td>
+<td>yes: any command text</td>
+</tr>
+<tr>
+<td><code>0x9ddfc1</code> (<code>0x9ddf00</code>)</td>
+<td><strong><code>cvarAdd</code></strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>0x9de13b</code> (<code>0x9ddff0</code>)</td>
+<td><strong><code>cvarRandom</code></strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>0x9de2a0</code> (<code>0x9de170</code>)</td>
+<td><strong><code>addWrap</code></strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>0x9de410</code> (<code>0x9de2e0</code>)</td>
+<td><strong><code>addClamp</code></strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>0x9de527</code> (<code>0x9de450</code>)</td>
+<td><strong><code>cvarMultiply</code></strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>0x97cc02</code> (helper <code>0x97cbe0</code>)</td>
+<td><strong>script native <code>sys.setcvar(name,value)</code></strong>: called from the script-VM native switch at <code>0x63f3</code> with args <code>[rsi+8]</code>,<code>[rsi+0x20]</code> (two strings); neighbours are the idSys natives <code>print 0x97cae0</code>, <code>println 0x97cb10</code>, <code>say 0x97cb40</code></td>
+<td>yes: <code>.script</code> is a plain-text <code>file</code> asset</td>
+</tr>
+<tr>
+<td><code>0x7a2deb</code> (fn <code>0x7a2d70</code>, slot <code>0x4c8</code> of the <code>idTarget_Cvar</code> vtable <code>0xc18c28</code>)</td>
+<td><strong><code>idTarget_Cvar</code></strong> entity: loops <code>keyVals</code> (stride 0x50, count at <code>+0x380</code>) and force-sets each name/value</td>
+<td>yes: <code>.entities</code> is a plain-text <code>file</code> asset; unused by all 25 retail maps (grep), <code>keyVals</code> text syntax not recovered</td>
+</tr>
+<tr>
+<td><code>0x26509d</code> (<code>0x265010</code>)</td>
+<td><strong>SWF <code>setCVarString(name,value)</code></strong> (vtable of <code>idSWFScriptFunction_setCVarString</code>, slot <code>+0x48</code>)</td>
+<td>only if a <code>.bswf</code> calls it; stock string pools name no cvar (<code>r3_swfui.md</code>); <code>.bswf</code> not authorable</td>
+</tr>
+<tr>
+<td><code>0x264fc7</code> (<code>0x264f50</code>, slot <code>0x48</code>)</td>
+<td><strong>SWF <code>setCVarInteger</code></strong></td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>0x98e80d</code> (<code>0x98e740</code>, slot <code>0x50</code>)</td>
+<td><strong>DevGUI slider row</strong> (SetCVarFloat)</td>
+<td>only inside an open DevGUI</td>
+</tr>
+<tr>
+<td><code>0x14c519</code>,<code>0x14c83b</code>; slot-0x40/0x48/0x50 sites <code>0x14c4a0..0x14c577</code>, <code>0x6c4f00..0x6c52f4</code></td>
+<td>video-capture code: fixed names <code>com_capturePath</code>, <code>com_fixedTic</code>, <code>r_postProcessHQ</code>, <code>vt_useMinLodTexture</code>, ...</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>0x223499</code>..<code>0x2235f5</code> (fn <code>0x223345</code>)</td>
+<td><code>cm_drawColor</code> (collision debug draw)</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>0x7e7785</code>,<code>0x7ef73b</code>,<code>0x7efaa8</code> (+ slot-0x50 <code>0x7ef792..0x7efb5f</code>)</td>
+<td><code>vehicle_follow</code> / <code>vehicle_cam_tag</code>, fixed names</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>0x6a2331</code> (<code>0x6a2310</code>, called from the native switch at <code>0xac7d</code>)</td>
+<td>a 3-string-arg script native (args 2,3 become name,value); event name not identified (only <code>setcvar</code>/<code>getcvar</code> carry "cvar" in <code>script_events.script</code>)</td>
+<td>would be script-reachable, identity open</td>
+</tr>
+<tr>
+<td><code>0x15f359</code>, <code>0x15fa4a</code>, <code>0x9505bc</code></td>
+<td><strong>false positives</strong>: cmdSystem slot <code>0x38</code> (<code>bind</code> arg completion) / another object</td>
+<td>--</td>
+</tr>
+</tbody>
+</table></div>
+<p>The wider set of typed setters (slots <code>0x40/0x48/0x50</code>, ~90 more sites) was sampled: all fixed-name
+engine code such as the demo-capture block; none reads a name from a decl.</p>
+<p>Negative control for the scan: <code>0x15f359</code> looked like a hit; the loads just before it show
+<code>[0x15ba108]</code> (cmdSystem) not <code>[0x15ba110]</code>, so it is <code>idCmdSystem</code> slot <code>0x38</code>.</p>
+<h2 id="p24-console-key-chain-decompiled">P2.4 Console: key chain (decompiled)</h2>
+<p><code>FUN_7ff74a4df140</code> (rva <code>0x14f140</code>, <code>idConsoleLocal</code> vtable <code>0xe6aeb8</code> + <code>0x28</code>) is the console's
+<code>ProcessEvent</code>:</p>
+<pre><code class="language-c">if (event.type == 1 /*key*/ &amp;&amp; event.key == 0x29 /*DIK_GRAVE*/) bVar1 = IsCtrlDown();   // func 0x15d650
+...
+if (bVar1) { key-down only (flags&amp;1, no repeat); if (!IsActive()) SetDisplayFraction(shift ? A : B); else Close(); return 1; }
+</code></pre>
+<p><code>0x15d650</code> = <code>keystate[0x1d] || keystate[0x9d]</code> (left/right Ctrl; table <code>0x1cc4dc0</code>; verified by
+<code>pass2_scan.py</code>). <code>0x15d630</code> is the Shift twin (<code>0x2a</code>/<code>0x36</code>) that picks the console height. The event
+pump (<code>idCommonLocal</code> main loop <code>0x13dff0</code>, call at <code>0x13fa2d</code>) hands every event to the console's slot
+<code>+0x28</code> first, with no cvar test around the call. Enter in the console (<code>0x14ed00</code>, keys <code>0x1c</code>/<code>0x9c</code>)
+echoes the line and calls <code>cmdSystem</code> slot <code>+0x48</code>, so the line goes to the normal dispatcher
+(commands ungated, bare cvar assignments gated). <code>idConsole</code> (vtable <code>0xe6aa38</code>) is an abstract
+interface (all slots <code>_purecall</code> <code>0xac16dc</code>); <code>idConsoleLocal</code> is statically constructed
+(<code>0xb78590</code> -&gt; ctor <code>0x153980</code>).</p>
+<p>Negative control, <code>com_allowConsole</code> (object <code>0x16b0ce0</code>): the <strong>only</strong> code reference to the object is
+<code>cmp dword [obj+0x28],0</code> at <code>0x86d6ee</code> in game-init <code>FUN_7ff74abfb8b0</code>, which stores <code>(value!=0)</code> in
+byte <code>[game+0x22bddc]</code> (getter vtable slot <code>0x5f8</code> = <code>0x850b10</code>); the getter's consumers are
+<code>FUN_7ff74a870070</code> ("Achievement unlock") and siblings. So <code>com_allowConsole</code> means "console
+used -&gt; no achievements"; it does not gate the console. A plain <code>~</code> without Ctrl falls through to
+<code>IsActive()==0 -&gt; return 0</code>.</p>
+<p>Console commands that exist (192, <code>re_probes/tnocommands/commands.json</code>): <code>map</code>, <code>devmap</code>, <code>cmap</code>,
+<code>devcmap</code>, <code>script</code>, <code>trigger</code>, <code>teleport</code>, <code>setviewpos</code>, <code>kill</code>, <code>killEntity</code>, <code>killAI</code>, <code>killMonsters</code>,
+<code>damage</code>, <code>freeze</code>, <code>exec</code>, <code>vstr</code>, <code>bind</code>, <code>unbind</code>, <code>toggle</code>, <code>cvarAdd</code>, <code>reset</code>, <code>restartmap</code>, ...
+<strong><code>god</code>, <code>noclip</code>, <code>notarget</code>, <code>give</code> do not exist</strong> in the table, so they print "Unknown command".
+The equivalents are cheat cvars (<code>g_permaGodMode</code>, <code>g_permaInfiniteAmmo</code>, <code>pm_*</code>) via <code>toggle</code>.
+Do those cvars then act? The value readers of <code>g_permaGodMode</code> (<code>0x9267fa</code>, <code>0x92f1a0</code>) and
+<code>g_permaInfiniteAmmo</code> (<code>0x8151f0</code>, <code>0x914968</code>, <code>0x9a5678</code>, <code>0x9a6050</code>, <code>0x9ac110</code>) contain <strong>no</strong> read
+of the cheat global <code>0x1df21c8</code> (same scan as pass 1 §2), so a force-set value takes effect.</p>
+<h2 id="p25-devgui-gating-row-execution-debugmenutxt">P2.5 DevGUI: gating, row execution, debugmenu.txt</h2>
+<ul>
+<li>Stock bind (the maintainer's <code>wolfConfig.cfg</code>, bindset 0): <code>bind "F10" "devgui 1"</code>. <code>devgui</code> is a <em>cvar</em>, not
+  one of the 192 commands, so it hits <code>0x9dd810</code> and is blocked (P2.2: flags=2, cheat by default).</li>
+<li>The DevGUI is compiled C++ (<code>idDevGuiMainPage_{Main,AI,Player,Weapon,Collision,Sound,QA,Render,
+  Performance}</code>, <code>idDevGuiChildPage_*</code>), constructed in game-init (<code>0x86d767</code> <code>new</code>, ctor <code>0x98cb30</code>, Init
+  <code>0x98da50</code> sets <code>obj[1]=1</code>) and drawn once per frame from the game render function
+  (<code>0x868e02</code> -&gt; <code>FUN_7ff74ad198c0</code>, rva <code>0x9898c0</code>).</li>
+<li>Draw/event gate <code>FUN_7ff74ad18fe0</code> (rva <code>0x988fe0</code>): open = <code>devgui&gt;0 &amp;&amp; obj[1]</code> <strong>and</strong> the game
+  object exists <strong>and</strong> <code>game[0x180ffd]==0</code> <strong>and</strong> a state counter (<code>vtbl+0x140</code>) <code>&lt;1</code>. When not
+  satisfied it <strong>force-resets <code>devgui</code> to 0</strong> (<code>FUN_ad6d480(&amp;devgui,0,1)</code>). So <code>devgui=1</code> set at the main menu
+  (the old <code>+toggle devgui</code> measurement pressed F8/F10 only there; <code>qconsole.log</code> ends at the menu) is zeroed by
+  the game itself; set it while a level runs. What <code>game[0x180ffd]</code> / <code>vtbl+0x140</code> mean is not resolved.</li>
+<li>Row execution: command rows call <code>cmdSystem</code> slot <code>+0x40</code> (<code>FUN_98e91c</code>, prints "DevGUI Command: %s"),
+  i.e. the dispatcher (commands ungated; their <code>toggle x 0 1</code> strings force-set); cvar slider rows call
+  <code>SetCVarFloat</code> (<code>0x98e80d</code>, slot <code>+0x50</code>, force). DevGUI buttons do not hit the gate.</li>
+<li><code>debugmenu.txt</code>: <strong>no consumer found.</strong> The exe has no string <code>debugmenu</code> (ASCII or UTF-16), and the
+  file's key names <code>cmd</code> (136 uses) and <code>res</code> (61 uses) do not exist as NUL-terminated strings.
+  What <em>is</em> present is the <strong>generator</strong> template (<code>0xfff59d</code>):
+  <code>{ 'tag' : '%s', 'title' : '%s', 'cmd' : 'si_spawnspot %s; si_devspawninventory 1; ... map %s', 'res' : '%s' },</code>
+  and <code>{ 'pageName' : '..', 'entries' : [</code>, i.e. the tool that wrote the Maps-Fe/Maps-Wy pages. <code>idDebugMenu</code>
+  has RTTI/typeinfo but no vtable. The loader's <code>devmenu.py</code> page is therefore very probably never read in
+  retail, and the loader cannot change the compiled DevGUI rows.</li>
+<li>The <code>debugmenu.txt</code> currently in the archive (22 419 B, 9 pages) contains no <code>WOLFSDK</code> page.</li>
+</ul>
+<h2 id="p26-doomscript">P2.6 DoomScript</h2>
+<ul>
+<li><code>script_main()</code> runs at every map start: <code>FUN_7ff74abf5440</code> (rva <code>0x865440</code>) creates the
+  <code>frameCommands</code> thread, looks up the function <strong><code>script_main</code></strong> (<code>0x975e40</code>), spawns and executes it
+  (<code>0x865e74</code>..<code>0x865ecd</code>); the file is <code>/script/script_main.script</code> (661 B plain text, string at
+  <code>0xffde00</code>), included before any level script.</li>
+<li><code>script_events.script</code> declares <code>scriptEvent void setcvar(string name, string value)</code> (line 3283),
+  <code>string getcvar(string)</code> (3286), <code>void executeCommandText(string command)</code> (3518), <code>void say(string)</code>
+  (3274). Retail <code>script_util.script:405</code> already calls <code>sys.setcvar("g_stopTime","1")</code>; five map
+  script sites call <code>sys.getcvar(...)</code>.</li>
+<li><code>sys.setcvar</code> -&gt; <code>0x97cbe0</code> -&gt; cvar slot <code>0x38</code> (force). <code>sys.executeCommandText</code> -&gt; <code>0x97e360</code> -&gt;
+  <code>cmdSystem</code> slot <code>+0x40</code> (typed-text executor <code>0x9ee190</code>, same dispatcher as the console); <code>sys.say</code>
+  (<code>0x97cb40</code>) formats <code>say "%s"</code> into the same slot. A bare cvar name inside <code>executeCommandText</code> is
+  gated; <code>toggle x 0 1</code> inside it is not.</li>
+<li>The <code>script</code> console command (<code>0x847db0</code>) compiles <code>void ConsoleFunctionN(){&lt;text&gt;;}</code> through the same
+  compiler, so <code>script sys.setcvar("devgui","1");</code> is a one-line console equivalent.</li>
+</ul>
+<h2 id="p27-ranked-routes">P2.7 Ranked routes</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>route</th>
+<th>needs</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Console: Ctrl+<code>^</code>, then <code>toggle &lt;cheatcvar&gt; 0 1</code>, <code>cvarAdd</code>, or <code>script sys.setcvar("x","v");</code></strong></td>
+<td>game running, nothing else</td>
+<td>full code chain (P2.4); never run in game</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Rebind F10</strong>: edit own <code>wolfConfig.cfg</code> <code>bind "F10" "devgui 1"</code> to <code>bind "F10" "toggle devgui 0 1"</code> (or type <code>bind F10 "toggle devgui 0 1"</code> in the console; <code>bind</code> marks the config dirty) and press it <strong>inside a level</strong></td>
+<td>route 1 or a text editor</td>
+<td>gate + force path decompiled; DevGUI visibility conditions partly unresolved</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong><code>script_main.script</code> hook</strong> (loader replaces the 661-B file): <code>sys.setcvar("g_permaGodMode","1")</code>, <code>sys.executeCommandText("toggle devgui 0 1")</code> run at every map start, no console, no keys</td>
+<td>loader <code>file</code> replace (rebuild path, per <code>r7_tnoscriptvm.md</code> §6)</td>
+<td>native handler + call site proven; added lines untested in game</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong><code>idTarget_Cvar</code> in a map <code>.entities</code></strong> + <code>trigger &lt;name&gt;</code></td>
+<td><code>keyVals</code> syntax unknown, spawn untested</td>
+<td>handler proven (force), spawn unproven</td>
+</tr>
+<tr>
+<td>5</td>
+<td>loader <code>debugmenu.txt</code> page</td>
+<td>--</td>
+<td>dead: no consumer (P2.5)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>SWF <code>setCVar*</code></td>
+<td><code>.bswf</code> authoring</td>
+<td>dead: not authorable, no cvar literals in stock pools</td>
+</tr>
+<tr>
+<td>-</td>
+<td>command line <code>+toggle x 0 1</code></td>
+<td>known to work</td>
+<td>measured (<code>limits.md</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="p28-smallest-in-game-test-for-the-maintainer">P2.8 Smallest in-game test (for the maintainer)</h2>
+<p><em>(Translated from German.)</em></p>
+<ol>
+<li>In the game (or main menu) press <strong>Ctrl + ^</strong> (the key left of the 1, with Ctrl held; <code>^</code> alone
+   does nothing). An input line should appear. <code>Ctrl + Shift + ^</code> as a control.</li>
+<li>Type: <code>toggle g_permaGodMode 0 1</code> + Enter. Expectation: a line with <code>g_permaGodMode</code>, <strong>no</strong>
+   "CANNOT be set in retail". For comparison <code>g_permaGodMode 1</code>: that should report "CANNOT be set in retail!".</li>
+<li>In a loaded level: <code>toggle devgui 0 1</code> -&gt; the DevGUI overlay should appear (arrow keys, Enter,
+   Esc). Afterwards bind F10 with <code>bind F10 "toggle devgui 0 1"</code>.
+If step 1 shows nothing: report which keyboard/key; then the <code>script_main.script</code> hook (route 3) is the next stage.</li>
+</ol>
+<h2 id="p29-what-stays-open">P2.9 What stays open</h2>
+<ul>
+<li>Nobody has pressed Ctrl+<code>^</code> in TNO: the chain is code-proven, not run. Not excluded: a window/focus
+  filter before the event pump (<code>0x13dff0</code> read only around the call site), or a keyboard layout whose
+  key does not produce DIK <code>0x29</code>.</li>
+<li>DevGUI visibility conditions (<code>game[0x180ffd]</code>, <code>vtbl+0x140</code>) unidentified; whether <code>devgui</code> sticks at 1
+  inside a level is unmeasured. The <code>debugmenu.txt</code> consumer absence is a string argument (no <code>cmd</code>/<code>res</code>
+  literal), not proof (a hashed-token parser would leave no strings).</li>
+<li><code>idTarget_Cvar</code> <code>keyVals</code> syntax and spawn; the 3-arg script native at <code>0xac65</code>/<code>0x6a2310</code>.</li>
+<li>Other cheat cvars were not individually checked for gate-free readers (only <code>g_permaGodMode</code>,
+  <code>g_permaInfiniteAmmo</code>); pass 1's ~15 gated gameplay functions are unidentified.</li>
+<li>The <code>script_main.script</code> edit grows the file past its compressed slot, so the loader's rebuild path is
+  needed (not run here).</li>
+</ul>
+<p>Related: <a href="Research-Report-R6-Tno-Console.html">Research Report: R6 Tno Console</a>, <a href="Research-Report-R3-Swfui.html">Research Report: R3 Swfui</a>, <a href="Research-Report-R7-Tno-Script-Vm.html">Research Report: R7 Tno Script Vm</a>, <a href="Research-Report-R8-Tno-Cvars.html">Research Report: R8 Tno Cvars</a>, <a href="Developer-Mode.html">Developer Mode</a>, <a href="Modding-Limits.html">Modding Limits</a>, <a href="Ghidra-Analysis.html">Ghidra Analysis</a>, <a href="TNO-CVar-Catalog.html">TNO CVar Catalog</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R7-Tno-Add-Entry.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Adding New Entries to TNO Archives: Format, Runtime Lookup, a Working Writer</a><a class="next" href="Research-Report-R7-Tno-Commands.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Console Commands: Registration, Flags, and What&#x27;s Reachable Right Now</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

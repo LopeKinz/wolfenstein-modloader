@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TNC Custom-Map Prototype: Current Status – Wolfenstein Modloader</title>
-<meta name="description" content="Status of a Wolfenstein II custom map prototype: a renamed copy of a DLC map plus an edited save.">
+<meta name="description" content="Status of custom maps in Wolfenstein II: the working dlc_0 route, brand-new map names, and the early prototype log.">
 <meta name="theme-color" content="#2d3134">
 <link rel="icon" href="../assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,17 +39,20 @@
 <a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/TNC-Custom-Map-Status"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
 </div></div>
 <div class="wrap docgrid">
-<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#what-is-installed">What is Installed</a></li><li><a href="#save-registration">Save Registration</a></li><li><a href="#testing">Testing</a></li><li><a href="#known-limitations">Known Limitations</a></li></ol></aside>
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#what-is-installed">What is Installed</a></li><li><a href="#save-registration">Save Registration</a></li><li><a href="#testing">Testing</a></li><li><a href="#known-limitations">Known Limitations</a></li><li><a href="#custom-map-route-today-the-dlcdlc_0-folder">Custom Map Route Today: the dlc/dlc_0 Folder</a></li><li><a href="#new-map-names-through-dlc_0-confirmed-in-game">New Map Names Through dlc_0 (Confirmed in Game)</a></li><li><a href="#what-a-new-tnc-map-name-needs">What a New TNC Map Name Needs</a></li><li><a href="#the-mod-test-map-gamewolfsdkmodtest">The Mod Test Map game/wolfsdk/modtest</a></li><li><a href="#the-box-map-gamewolfsdkbox">The Box Map game/wolfsdk/box</a></li><li><a href="#installing-extra-maps-with-the-loader">Installing Extra Maps with the Loader</a></li><li><a href="#error-messages-when-a-new-tnc-map-does-not-load">Error Messages When a New TNC Map Does Not Load</a></li></ol></aside>
 <div>
-<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p class="update"><b><span class="en">Update</span><span class="de">Aktualisierung</span></b> <span class="en">Newer than this page: the wiki&#x27;s start page now records custom maps as working and measured in The New Colossus – a dlc_0 folder takes over map c2v1, confirmed in game with a relit light layout and a normal mission start. The text below still shows the earlier state.</span><span class="de">Neuer als diese Seite: Die Startseite des Wikis führt eigene Karten in The New Colossus jetzt als funktionierend und gemessen – ein dlc_0-Ordner übernimmt die Karte c2v1, im Spiel bestätigt mit neu beleuchtetem Licht-Layout und normalem Missionsstart. Der Text unten zeigt noch den früheren Stand.</span></p><div class="en"><p class="lede">Status of a custom map prototype for Wolfenstein II (TNC). It installs a copy of the DLC map Gestapo Office (c2v1) under a new name as an extra <span class="t" data-t="dlc">DLC</span> bundle, and prepares an edited <span class="t" data-t="savegame">save file</span> to load it. The game starts stably with the bundle, but loading the map through the save has not been confirmed, and the world geometry is not replaced yet.</p><ul><li>The bundle contains all 6,985 original entries and shares the original textures.</li><li>Earlier save attempts showed &#x27;File Corrupt&#x27;; version 2 also fixes the map name inside checkpoint.dat.</li><li>According to this page, map and devmap report &#x27;unknown command&#x27; in the console.</li><li>A patch to show the map in the developer menu crashed the game at startup and was removed.</li><li>The original saves are backed up and can be restored at any time.</li></ul></div><div class="de"><p class="lede">Stand eines Prototyps für eigene Karten in Wolfenstein II (TNC). Er installiert eine Kopie der DLC-Karte Gestapo-Büro (c2v1) unter neuem Namen als zusätzliches <span class="t" data-t="dlc">DLC</span>-Paket und bereitet einen bearbeiteten <span class="t" data-t="savegame">Spielstand</span> vor, der sie laden soll. Das Spiel startet mit dem Paket stabil, aber das Laden der Karte über den Spielstand ist nicht bestätigt, und die Weltgeometrie ist noch nicht ersetzt.</p><ul><li>Das Paket enthält alle 6.985 Originaleinträge und nutzt die Original-Texturen mit.</li><li>Frühere Versuche zeigten „File Corrupt“; Version 2 korrigiert zusätzlich den Kartennamen in checkpoint.dat.</li><li>Laut dieser Seite melden map und devmap in der Konsole „unknown command“.</li><li>Ein Patch, der die Karte im Entwicklermenü zeigen sollte, ließ das Spiel beim Start abstürzen und wurde entfernt.</li><li>Die Original-Spielstände sind gesichert und jederzeit wiederherstellbar.</li></ul></div></section>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This page tracks custom maps for Wolfenstein II: The New Colossus (TNC). The working route, confirmed in game on 24 September 2026, is a <span class="t" data-t="dlc">DLC</span> folder named dlc_0 that takes over the map c2v1 of The Freedom Chronicles, episode 2; the loader&#x27;s Install map button sets it up. Since 2 October 2026 a map under a brand-new name, game/wolfsdk/modtest, also loads in game from the developer menu. The older prototype log (edited saves, &#x27;unknown command&#x27;) stays on the page with corrections.</p><ul><li>dlc_0 sorts before the retail dlc_2 folder, so its own map archive is used; a DLC folder can never take over a base campaign map.</li><li>A new map name needs only an entry in dlc_0&#x27;s map list, a textures.cache link and the map&#x27;s files renamed; no chapter data.</li><li>The mod test map copies the Gestapo office with 304 of 9,206 entities removed and adds 23 pickups and 8 enemies; it loads in game, enemy behaviour is not yet confirmed.</li><li>The box test map (an 8 × 8 × 4 m room with new geometry) is not yet confirmed in game.</li><li>Correction: map and devmap are registered, only hidden from the console; devmap runs from a developer menu entry.</li></ul></div><div class="de"><p class="lede">Diese Seite verfolgt eigene Karten für Wolfenstein II: The New Colossus (TNC). Der funktionierende Weg, im Spiel bestätigt am 24.09.2026, ist ein <span class="t" data-t="dlc">DLC</span>-Ordner namens dlc_0, der die Karte c2v1 aus The Freedom Chronicles, Episode 2, übernimmt; der Knopf „Install map“ des Loaders richtet ihn ein. Seit dem 02.10.2026 lädt auch eine Karte unter einem ganz neuen Namen, game/wolfsdk/modtest, im Spiel aus dem Entwicklermenü. Das ältere Prototyp-Protokoll (bearbeitete Spielstände, „unknown command“) bleibt mit Korrekturen auf der Seite.</p><ul><li>dlc_0 wird vor dem Original-Ordner dlc_2 einsortiert, daher wird sein eigenes Kartenarchiv genutzt; eine Karte der Hauptkampagne kann ein DLC-Ordner nie übernehmen.</li><li>Ein neuer Kartenname braucht nur einen Eintrag in der Kartenliste von dlc_0, eine textures.cache-Verknüpfung und die umbenannten Kartendateien; keine Kapiteldaten.</li><li>Die Mod-Testkarte kopiert das Gestapo-Büro, entfernt 304 von 9.206 Entitäten und fügt 23 Pickups und 8 Gegner hinzu; sie lädt im Spiel, das Gegnerverhalten ist noch nicht bestätigt.</li><li>Die Box-Testkarte (ein Raum von 8 × 8 × 4 m mit neuer Geometrie) ist im Spiel noch nicht bestätigt.</li><li>Korrektur: map und devmap sind registriert, nur vor der Konsole verborgen; devmap läuft aus einem Eintrag im Entwicklermenü.</li></ul></div></section>
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
-<article class="doc" data-autohint><h2 id="what-is-installed">What is Installed</h2>
+<article class="doc" data-autohint><blockquote>
+<p><strong>Update 2026-10-04.</strong> The sections from "What is Installed" to "Known Limitations" are the prototype log of September 2026; wrong statements in them are corrected inline. The current route and the new map names follow from "Custom Map Route Today" on.</p>
+</blockquote>
+<h2 id="what-is-installed">What is Installed</h2>
 <ul>
 <li>Target Game: Wolfenstein II: The New Colossus (TNC)</li>
 <li>Test Map: DLC2, <code>game/dlc/c02/c2v1</code> (Agent Silent Death / Gestapo Office)</li>
 <li>Alias: <code>game/dlc/c02/c2v1_custom</code></li>
-<li>Bundle: <code>dlc/dlc_4/base/chunk_22.resources</code></li>
+<li>Bundle: <code>dlc/dlc_4/base/chunk_22.resources</code> <em>(superseded: the loader now installs custom maps as <code>dlc/dlc_0</code>, see "Custom Map Route Today")</em></li>
 <li>Textures: Hardlink to DLC2 <code>chunk_22.texdb</code>, ensuring all unchanged texture keys remain valid.</li>
 <li>Current Probe Build: Complete hardlinks to Retail DLC2 Chunk 22 (6,985 entries), no longer the reduced 243-entry candidate.</li>
 <li>A targeted <code>devmapinfo.json</code> patch (<code>showInDevMenu=true</code>) was built in isolation but caused a crash on startup and has been discarded; the stable Full-Retail Bundle has been restored.</li>
@@ -63,15 +66,101 @@
 <p><code>re_probes/save_backups/SLOT0_before_c2custom</code> (additionally, <code>SLOT2_before_c2custom</code> remains intact)</p>
 <h2 id="testing">Testing</h2>
 <p>The process starts stably with the installed Bundle. The first attempt in Slot 3 resulted in "File Corrupt" due to the incorrect slot; the unchanged Slot 3 has been restored. A second attempt in Slot 1 with v1 also remained corrupt without <code>.verify</code>, because <code>checkpoint.dat</code> still contained the Retail path. v2 corrects this entry and passes <code>tools/savehash.py pruefen</code>; additionally, the current Full-Retail Probe Build uses correct <code>patchlevel</code>/<code>refchunks</code> and all chunk entries. The runtime test must still be confirmed by loading the top Gestapo Office save into Progression Slot 1. Success criteria: Load without Map-Not Found/Crash and visible entry into the map.</p>
-<p>The direct Developer Command Test is negative: both <code>map</code> and <code>devmap</code> report "unknown command" in the TNC Retail Build. A <code>devmapinfo</code> payload patch for <code>showInDevMenu=true</code> caused a startup crash and was removed from the game folder. The last Steam launch requirement additionally failed due to Steam's message "no licenses"; this is an external license state, not a Mod/Save error.</p>
+<p>The direct Developer Command Test is negative: both <code>map</code> and <code>devmap</code> report "unknown command" in the TNC Retail Build. <em>(Correction: both are registered, only not exposed to the console; <code>devmap</code> runs from the dev menu, confirmed in game: <a href="TNC-Dev-Menu.html">TNC Dev Menu</a>.)</em> A <code>devmapinfo</code> payload patch for <code>showInDevMenu=true</code> caused a startup crash and was removed from the game folder. The last Steam launch requirement additionally failed due to Steam's message "no licenses"; this is an external license state, not a Mod/Save error.</p>
 <h2 id="known-limitations">Known Limitations</h2>
 <ul>
-<li>The console does not know the <code>map</code> command.</li>
-<li><code>devmap</code> is also unknown in the Retail Command set; Developer Mode CVars do not activate the removed commands.</li>
+<li>The console does not know the <code>map</code> command. <em>(Correction: <code>map</code> is registered but not exposed to the console.)</em></li>
+<li><code>devmap</code> is also unknown in the Retail Command set; Developer Mode CVars do not activate the removed commands. <em>(Correction: <code>devmap</code> is in the full set of 234 commands; nothing was removed. It runs from a developer menu entry, confirmed in game.)</em></li>
 <li>The prototype does not yet replace world geometry; it validates the alternative map path and DLC bundle resolution.</li>
-<li>For a truly new Map ID, IDCL identity, internal asset references, save/menu registration, and potentially PVS/Navmesh must be adjusted together.</li>
+<li>For a truly new Map ID, IDCL identity, internal asset references, save/menu registration, and potentially PVS/Navmesh must be adjusted together. <em>(Superseded: a new map name loads, confirmed in game. It needs the name in dlc_0's spec, a <code>textures.cache</code> and the map-level entries under the new name; see "What a New TNC Map Name Needs".)</em></li>
 <li>The original saves can be restored at any time from the mentioned backup.</li>
-</ul></article></section>
+</ul>
+<hr />
+<h2 id="custom-map-route-today-the-dlcdlc_0-folder">Custom Map Route Today: the dlc/dlc_0 Folder</h2>
+<p><strong>Confirmed in game (2026-09-24).</strong> The engine walks <code>dlc/*</code> in name order and mounts the first folder whose <code>base/packagemapspec.json</code> lists a map. <code>dlc_0</code> sorts before the retail <code>dlc_2</code>, so a <code>dlc_0</code> that claims <code>game/dlc/c02/c2v1</code> serves its own <code>chunk_22.resources</code> instead of the retail one.</p>
+<p>Everything else the map needs (sound banks, virtual texture pages, intro video, <code>chunk_22.texdb</code>, <code>textures.cache</code>) is dlc_2's own file under a second name: a hardlink, no extra space. The loader's <em>Install map</em> button sets this up (<code>wolfsdk/mapinstall.py</code>), <em>Remove map</em> takes it out again. It needs the DLC <em>The Freedom Chronicles</em>, episode 2.</p>
+<p>A DLC folder cannot claim a base map: the base <code>packagemapspec.json</code> is searched first and wins.</p>
+<p>Keywords: custom map, install map, dlc_0, folder precedence, packagemapspec.json, c2v1, Freedom Chronicles, eigene Karte, Karte installieren</p>
+<h2 id="new-map-names-through-dlc_0-confirmed-in-game">New Map Names Through dlc_0 (Confirmed in Game)</h2>
+<p><strong>Confirmed in game (2026-10-02):</strong> a map under a brand-new name, <code>game/wolfsdk/modtest</code>, loads from the developer menu.</p>
+<p>Extra map names listed in <code>dlc/dlc_0/base/packagemapspec.json</code> load from dlc_0's own <code>chunk_22.resources</code>, next to c2v1. Retail does the same: dlc_2's chunk 22 holds c2v1, c2v2 and c2v3. A new map therefore costs no map slot, and c2v1 keeps its own content.</p>
+<p><strong>Inferred</strong> (code reading): no step limits map names to the retail list. The name lookup (<code>0xac5d10</code>) strips the extension and every leading <code>maps/</code>, then compares case-insensitively against each spec entry: no hash, no fixed list. The base spec comes first, then the DLC specs in folder order; the first hit wins.</p>
+<p>Start such a map with a developer menu entry that runs <code>devmap &lt;name&gt;</code> (<a href="TNC-Dev-Menu.html">TNC Dev Menu</a>); the plain console cannot run <code>devmap</code>.</p>
+<p>Keywords: new map name, new map ID, extra map, game/wolfsdk, modtest, add a map, neue Karte, neuer Kartenname</p>
+<h2 id="what-a-new-tnc-map-name-needs">What a New TNC Map Name Needs</h2>
+<ol>
+<li>The name in <code>dlc/dlc_0/base/packagemapspec.json</code>, with the same chunk entry as c2v1.</li>
+<li><code>base/maps/&lt;name&gt;/textures.cache</code> in dlc_0: a hardlink to c2v1's. Without it the engine warns <code>Failed to open</code>.</li>
+<li>The map-level entries under the new name in the container: <code>maps/&lt;name&gt;.entities</code>, <code>generated/buildgame/&lt;name&gt;.mapresources</code>, <code>_combo/&lt;name&gt;.proc</code>, <code>&lt;name&gt;.prockd</code>, <code>_world.tome</code>, <code>_world.bmodel</code>, <code>sky.bmodel</code>, <code>world.hkshape</code>, <code>_world.pvs</code>, <code>&lt;name&gt;.ambientsh</code>, <code>&lt;name&gt;.hknavmesh</code>, <code>devmapinfo.json</code>, the <code>mega*.decl</code> files and the static stream tree. Each light probe needs <code>maps/&lt;name&gt;/lightprobes/&lt;entity&gt;_row.bimage</code>.</li>
+</ol>
+<p>Not needed: chapter or variation data. Without a chapter part the player falls back to the <code>player</code> entityDef. A new name has no map sound banks: ambience is silent. Per-entity resources may keep c2v1's names, and <code>mega*.decl</code> keeps c2v1's virtual texture pages.</p>
+<p>Keywords: map requirements, textures.cache, mapresources, map-level entries, rename map, what files, Voraussetzungen, Dateien</p>
+<h2 id="the-mod-test-map-gamewolfsdkmodtest">The Mod Test Map game/wolfsdk/modtest</h2>
+<p><code>tools/build_modtestmap.py</code> copies the retail c2v1 map (the Gestapo office) under the new name, so geometry, baked lighting, 102 light probes, scene points and the navmesh (byte-identical) stay as retail made them.</p>
+<ul>
+<li>Removed: the mission, 304 of 9,206 entities (Kiscule scripts, hidden enemies and their spawners, alarms, triggers, positional sounds, retail pickups).</li>
+<li>Added: the start <code>modtest_start</code> in the armoury, 5 fill lights, 23 pickups (11 weapons plus ammo, health and armour), and 8 enemies of c2v1's own types in the office hall north of it, backs to the door.</li>
+<li>The world's dev loadout is <code>devinvloadout/code_referenced/default_sp_devloadout</code> (all 9 weapon families).</li>
+</ul>
+<p><strong>Confirmed in game (2026-10-02):</strong> the map loads from the dev menu entry "WolfSDK: Mod test map". <strong>Not yet confirmed in game:</strong> how the enemies behave, and whether the dev loadout is applied on the <code>devmap</code> path.</p>
+<p>Keywords: mod test map, modtest, test map, weapons and enemies, Gestapo office, Testkarte, Waffen, Gegner</p>
+<h2 id="the-box-map-gamewolfsdkbox">The Box Map game/wolfsdk/box</h2>
+<p><code>tools/build_boxmap.py</code> builds a closed grey room, inside 8 × 8 × 4 m, as a third map in dlc_0's chunk 22. It adds 29 entries to the kit level's container; c2v1 stays byte-identical.</p>
+<ul>
+<li>6 slabs with new <code>model</code> and box <code>cm</code> entries: cm contents with <code>| 0x18</code> (player and monster clip), <code>megatexturedModel = false</code>, material <code>textures/common/blockout_gray</code>.</li>
+<li>One warm point light and the start <code>player_start_1</code>.</li>
+<li>Dev menu entry "WolfSDK: Box".</li>
+</ul>
+<p><strong>Not yet confirmed in game.</strong> New <code>model</code>/<code>cm</code> entries have never been seen loading in game, and the room may look blotchy or dark (borrowed lightmap texels plus one dynamic light).</p>
+<p>Keywords: box map, test room, game/wolfsdk/box, blockout, new geometry, Testraum, Box-Karte</p>
+<h2 id="installing-extra-maps-with-the-loader">Installing Extra Maps with the Loader</h2>
+<p><code>wolfsdk/mapinstall.py</code>, behind <em>Install map</em>:</p>
+<ul>
+<li><code>check_container</code> lists every map the container carries besides c2v1. Each map has a <code>generated/buildgame/&lt;name&gt;.mapresources</code>.</li>
+<li><code>install</code> writes dlc_0's <code>packagemapspec.json</code> with <code>c2v1_custom</code>, <code>c2v1</code> and every extra name, hardlinks one <code>textures.cache</code> per extra name to c2v1's, and records everything in <code>wolfsdk_karte.json</code> for <em>Remove map</em>.</li>
+<li>The game must be closed. While mods are applied only the chunk swap is allowed; new files wait until <em>Revert</em>.</li>
+<li><strong>Bug found in game, fixed:</strong> a dlc_0 first set up by hand was taken over without rewriting its map list, so the extra maps were missing (<code>Map ... is not present in this package</code>). The loader now rewrites its own spec; one edited by hand afterwards stays, and the loader names the map it did not add. <code>tools/verify_mapinstall.py</code> covers it.</li>
+</ul>
+<p>The map files and their builders are not in the public WolfSDK package.</p>
+<p>Keywords: mapinstall, install map, remove map, extra maps, hand-made dlc_0, Karte installieren, Karte entfernen</p>
+<h2 id="error-messages-when-a-new-tnc-map-does-not-load">Error Messages When a New TNC Map Does Not Load</h2>
+<p><strong>Inferred</strong> from the existence check (<code>0xa7b330</code>) and the map loader. Read the log with <code>condump &lt;file&gt;</code> in the console.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Log line</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Map &lt;name&gt; is not present in this package</code></td>
+<td>the name is in no <code>packagemapspec.json</code></td>
+</tr>
+<tr>
+<td><code>map &lt;name&gt; is not installed</code></td>
+<td>the installed check failed</td>
+</tr>
+<tr>
+<td><code>The map &lt;name&gt; isn't present in the cache file</code></td>
+<td>no <code>.mapresources</code> for that name: an old chunk is still in dlc_0</td>
+</tr>
+<tr>
+<td><code>MountMemoryDatabase: Failed to open .../textures.cache</code></td>
+<td>the <code>textures.cache</code> link is missing</td>
+</tr>
+<tr>
+<td><code>[SOUND] No banks found for map '&lt;name&gt;'</code></td>
+<td>expected, harmless</td>
+</tr>
+<tr>
+<td><code>Failed to load player entityDef</code></td>
+<td>the player fallback broke</td>
+</tr>
+</tbody>
+</table></div>
+<p>Falling through the floor points at collision, a black room at lighting.</p>
+<p>Keywords: map error, not present in this package, not installed, cache file, Failed to open, condump, Fehlermeldung, Karte lädt nicht</p></article></section>
 <nav class="pager" aria-label="Pages"><a class="next" href="TNC-C3V1-Custom-Map-Prototype.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC c3v1_custom – Alias Prototype</a></nav>
 </div></div>
 </main>

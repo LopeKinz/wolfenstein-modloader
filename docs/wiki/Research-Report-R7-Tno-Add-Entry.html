@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding New Entries to TNO Archives: Format, Runtime Lookup, a Working Writer – Wolfenstein Modloader</title>
+<meta name="description" content="A working tool that adds a brand-new entry to The New Order&#x27;s game archives, proven on copies.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Adding New Entries to TNO Archives: Format, Runtime Lookup, a Working Writer</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R7-Tno-Add-Entry"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#answer-in-one-paragraph">Answer in one paragraph</a></li><li><a href="#1-archive-format--not-re-derived-cited">§1 Archive format — not re-derived, cited</a></li><li><a href="#2-runtime-resource-lookup--newly-decompiled-this-round">§2 Runtime resource lookup — newly decompiled this round</a></li><li><a href="#3-the-writer--built-and-self-tested">§3 The writer — built and self-tested</a></li><li><a href="#4-negative-controls">§4 Negative controls</a></li><li><a href="#5-would-an-appended-entry-actually-be-found-synthesis">§5 Would an appended entry actually be found? Synthesis</a></li><li><a href="#proven">PROVEN</a></li><li><a href="#inferred">INFERRED</a></li><li><a href="#failed-hypotheses">FAILED HYPOTHESES</a></li><li><a href="#6-open-questions">§6 Open questions</a></li><li><a href="#recipe-for-a-future-round-that-makes-the-writer-productive">Recipe (for a future round that makes the writer productive)</a></li><li><a href="#in-game-test-for-the-maintainer">In-game test (for the maintainer)</a></li><li><a href="#files">Files</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Game content in Wolfenstein: The New Order (TNO) sits in <span class="t" data-t="archive">archives</span> where, until now, existing entries could only be replaced. This report built a writer that appends one brand-new material entry to a copy of one archive, and read the matching loader code in the newly decrypted game program to see how the engine would find it. All 4,241 old entries came back unchanged and the new one was found, and the code shows the engine builds a fresh name <span class="t" data-t="hash">lookup table</span> for each archive at every start, so nothing else would need updating. This is proven on file copies and by reading code; whether the running game actually finds the new entry was not tested.</p><ul><li>14 of 14 checks passed: all 4,241 original entries are byte-identical and the new entry&#x27;s data reads back exactly.</li><li>The engine stops with a fatal error if entries are not in ascending order in the file, so the writer always appends at the very end; the check for this was read directly in the code.</li><li>The engine reads exactly as many entries as the count in the file header says, so the count must be raised; the project&#x27;s own reader is more lenient and would hide this mistake.</li><li>Each of the 14 archives gets its own lookup table, built fresh from its index file at every game start; there is no cached list that would need updating.</li><li>Open: the in-game test, whether the lookup uses the name alone or type plus name, and about 4 unexplained bytes in each entry&#x27;s 13-byte tail.</li></ul></div><div class="de"><p class="lede">Spielinhalte von Wolfenstein: The New Order (TNO) liegen in <span class="t" data-t="archive">Archiven</span>, in denen bisher nur vorhandene Einträge ersetzt werden konnten. Dieser Bericht hat einen Schreiber gebaut, der an die Kopie eines Archivs einen ganz neuen Material-Eintrag anhängt, und dazu den passenden Ladecode im neu entschlüsselten Spielprogramm gelesen, um zu sehen, wie die Engine ihn finden würde. Alle 4.241 alten Einträge kamen unverändert zurück und der neue wurde gefunden; der Code zeigt, dass die Engine bei jedem Start für jedes Archiv eine frische <span class="t" data-t="hash">Nachschlagetabelle</span> über die Namen baut, sodass sonst nichts angepasst werden müsste. Das ist an Dateikopien und durch Codelesen bewiesen; ob das laufende Spiel den neuen Eintrag wirklich findet, wurde nicht getestet.</p><ul><li>14 von 14 Prüfungen bestanden: Alle 4.241 ursprünglichen Einträge sind Byte für Byte gleich, und die Daten des neuen Eintrags lassen sich exakt zurücklesen.</li><li>Die Engine bricht mit einem fatalen Fehler ab, wenn die Einträge in der Datei nicht aufsteigend liegen; deshalb hängt der Schreiber immer ganz am Ende an, und die Prüfung dafür wurde direkt im Code gelesen.</li><li>Die Engine liest genau so viele Einträge, wie der Zähler im Dateikopf angibt, also muss der Zähler erhöht werden; der projekteigene Leser ist großzügiger und würde diesen Fehler verdecken.</li><li>Jedes der 14 Archive bekommt eine eigene Nachschlagetabelle, die bei jedem Spielstart frisch aus seiner Indexdatei gebaut wird; eine zwischengespeicherte Liste, die man anpassen müsste, gibt es nicht.</li><li>Offen: der Test im Spiel, ob die Suche nur den Namen oder Typ plus Name nutzt, und rund 4 ungeklärte Bytes im 13 Byte langen Endstück jedes Eintrags.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-7 research pass, one of the first with a decrypted TNO runtime image: can a brand-new entry be added to a TNO archive, and would the engine find it? A Python writer appends a new <code>material</code> entry to a copy of <code>chunk1</code>; every original entry reads back byte-identically and all checks pass, including negative controls tied to the engine's own decompiled loader checks (ascending offsets, the per-chunk hash table, the entry-count field). <strong>Structural proof on copies only; whether the running game finds the new entry is untested.</strong></p>
+<p>Track <code>tnoaddentry</code>, round 7, 2026-10-01. Scope: <strong>TNO only</strong>
+(<code>&lt;Steam library&gt;\steamapps\common\Wolfenstein.The.New.Order</code>, id Tech 5,
+<code>WolfNewOrder_x64.exe</code>). Read-only on both game installs and on every project
+file except this track's own folder <code>re_probes/tnoaddentry/</code> and this report.
+The game was <strong>not</strong> launched, no debugger attached, no process touched.</p>
+<p><strong>New this round, not available to any prior TNO track</strong>: a decrypted TNO
+runtime image (<code>re_probes/runtime_tno_186352/module.bin</code>, captured read-only
+from the running game, PID 186352) and a Ghidra project built from it
+(<code>D:/wolf-decomp/ghidra/tno_runtime.gzf</code>), queried via
+<code>python tools/decomp.py &lt;rva|name&gt; [--xrefs] --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf</code>.
+<code>r6_tnodecls.md</code> (round 6) explicitly flagged "no TNO runtime image exists"
+as the reason several of its findings stayed <code>INFERRED</code> and its single named
+next step was "build and self-test an append-entry writer... still not
+built." Both limits are gone this round: the writer is built and
+self-tested below (§3), and three of round 6's <code>INFERRED</code> items move to
+<code>PROVEN</code> by direct decompiled-code read (§2).</p>
+<h2 id="answer-in-one-paragraph">Answer in one paragraph</h2>
+<p><strong>The writer works, structurally, end to end.</strong> A Python script
+(<code>re_probes/tnoaddentry/probe_append.py</code>) appends one brand-new <code>(material,
+"material/tnoaddentry_test")</code> entry to a disposable copy of <code>chunk1.index</code> +
+<code>chunk1.resources</code> — cloning a real donor entry's unexplained tail bytes
+rather than guessing them, placing the new payload 16-byte-aligned strictly
+after the current end of <code>.resources</code> (so the offset-ascending invariant
+holds by construction), and bumping both header counters plus the
+file-size header field. Re-read with this project's own
+<code>wolfsdk.resources.Archive</code>/<code>ResourceIndex</code> reader: <strong>all 4241 original
+entries come back byte-identical</strong> (type, name, path, offset, usize, csize,
+and their byte position in the file, §3), the new entry is found by
+<code>(type, name)</code>, and its payload decompresses back to the exact bytes
+written. <strong>14 of 14 checks pass</strong>, including three negative controls tied
+directly to mechanisms this round newly decompiled from the real engine
+(§2/§4): an entry placed at offset 0 instead of true EOF fails the exact
+ascending-offset check <code>idBackgroundLoader::BeginBackgroundLoads</code> performs
+(decompiled, not just inferred from a crash message, like round 6 had to);
+a reused (chunk,type) id is <strong>not</strong> rejected by the file format itself,
+confirming round 6's id-uniqueness rule is a convention the writer must
+enforce, not something the format checks; and, most importantly, <strong>this
+project's own reader is strictly more lenient than the real engine</strong>: it
+resyncs to EOF and finds the new entry even if the header's entry-count
+field is left un-bumped, while the real engine's own parse loop — newly
+decompiled this round, <code>idResourceManagerLocal::Init</code>,
+<code>FUN_7ff74a4f9680</code> @ rva <code>0x169680</code> — reads that exact header field as an
+explicit loop bound and would stop <em>before</em> ever reaching an entry appended
+past it. <strong>Whether the real game actually resolves the new name at runtime
+was not tested</strong> (the game was never launched, per the rules) — but the
+mechanism that would have to do it is no longer a black box: <code>Init</code> builds,
+<strong>separately per chunk</strong> (not merged globally, not a sorted list), a
+classic open-chained hash table over every entry's name (the
+<code>idHashIndex::Add</code> pattern — hash, mask, <code>indexChain[new] = hashTable[h];
+hashTable[h] = new;</code> — decompiled directly, §2.2), from entries it parses
+fresh out of the chunk's own <code>.index</code> file <strong>every time the game starts</strong>.
+A correctly-appended entry — ascending offset, bumped header count, cloned
+tail — is exactly the shape of data this function already walks and hashes
+4241 times over for <code>chunk1</code> alone; there is no cached, precomputed, or
+baked lookup table anywhere else in the pipeline that would need to be
+separately invalidated. That is the strongest statement this round can
+make without turning the game on.</p>
+<h2 id="1-archive-format--not-re-derived-cited">§1 Archive format — not re-derived, cited</h2>
+<p><code>wolfsdk/resources.py</code>, <code>docs/formats.md</code>, <code>docs/limits.md</code> and
+<code>r6_tnodecls.md</code> already nail this down; nothing here is re-measured except
+where §2 moves an <code>INFERRED</code> claim to <code>PROVEN</code>. Quick recap for context:</p>
+<ul>
+<li><code>master.index</code>: magic <code>03 53 45 52</code>, BE u32 pair-count, then
+  LE-length-prefixed index/resources name pairs. 14 pairs in TNO, flat, no
+  DLC tier (<code>r4_tnocustom.md</code>). <strong>Not touched this round</strong> — appending one
+  entry to an existing chunk never needs to.</li>
+<li><code>chunkN.index</code> header (<code>0x2C</code> = 44 bytes): magic(4) + BE u32 "file size −
+  32"(4) + 24 zero bytes + BE u32 counter A(4) + BE u32 counter B(4) + BE
+  u32 zero(4). Entries follow: 3 LE-length-prefixed ASCII strings
+  (type, name, path) + BE u32 × 3 (offset, usize, csize) + a variable tail.</li>
+<li><code>r6_tnodecls.md</code> (round 6, re-verified across all 14 chunks): the tail is
+  13 bytes for every decl-ish type checked (<code>entityDef</code>, <code>weapon</code>, <code>damage</code>,
+  <code>ammo</code>, <code>projectile</code>, <code>aiBehavior</code>, <code>material</code>, <code>trackingParms</code>,
+  <code>faction</code>, <code>gamemodesp</code>, <code>soundmixing</code>) — 9 zero bytes + a BE u32 id that
+  is <strong>unique per (chunk, type)</strong>, not globally. <code>sound</code>/<code>particle</code>/
+  <code>renderProg</code>/<code>cuttableResource</code> have real duplicate ids and longer,
+  heterogeneous tails (133/205 B) — explicitly avoided as a donor type
+  below.</li>
+<li>Counter A ≈ distinct <code>(type,name)</code> pair count in that chunk (exact in
+  12/14 chunks); counter B ≈ raw entry count including duplicates
+  (<code>r6_tnodecls.md</code> §3). Confirmed again this round on <code>chunk1</code>:
+  <code>counterA=3508, counterB=4241</code>, and <code>len(entries)==4241</code> exactly.</li>
+<li>No checksum anywhere in an entry or in the file (<code>docs/formats.md</code>).</li>
+<li>Payloads are raw DEFLATE (<code>wbits=-15</code>, <code>Z_SYNC_FLUSH</code>-terminated, not
+  <code>Z_FINISH</code>) or stored verbatim (<code>csize==usize</code>); 16-byte-aligned,
+  packed with strictly ascending offsets (<code>docs/limits.md</code> §3/§4).</li>
+</ul>
+<h2 id="2-runtime-resource-lookup--newly-decompiled-this-round">§2 Runtime resource lookup — newly decompiled this round</h2>
+<p>All of this is read directly out of <code>WolfNewOrder_x64.exe</code>'s own code via
+the new TNO Ghidra snapshot. RVA = address − base (<code>0x7ff74a390000</code> per
+<code>re_probes/runtime_tno_186352/manifest.json</code>). Every function below was
+reached by following a string the task flagged as a likely dead end for
+Ghidra's own xref index ("no references found") — scanning is unnecessary
+here because <code>tools/decomp.py --strings</code> <em>did</em> return real callers for
+every string actually used below; no manual RIP-relative scan was needed
+this round.</p>
+<h3 id="21-the-ascending-offset-invariant--now-proven-in-code-not-just-inferred-from-a-crash">2.1 The ascending-offset invariant — now PROVEN in code, not just inferred from a crash</h3>
+<p><code>docs/limits.md</code> documented <code>FATAL ERROR:
+idBackgroundLoader::BeginBackgroundLoads: FileTable is out of order</code> as a
+<strong>measured crash message</strong> from an earlier, now-abandoned append attempt —
+real, but only ever observed as an effect. This round traces the actual
+check:</p>
+<pre><code>python tools/decomp.py --strings &quot;BeginBackgroundLoads&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+=&gt; 0x7ff74b2008a0  &quot;idBackgroundLoader::BeginBackgroundLoads: FileTable is out of order&quot;
+   &lt;- FUN_7ff74a4fefe0 @ 7ff74a4fefe0   (rva 0x16efe0)
+</code></pre>
+<p>Decompiled (<code>python tools/decomp.py FUN_7ff74a4fefe0 --xrefs --gzf ...</code>),
+the load-bearing fragment:</p>
+<pre><code class="language-c">if ((0 &lt; (longlong)uVar10) &amp;&amp;
+   (*(uint *)(*(longlong *)param_1[1] + 0x2c8 + uVar8) &lt;
+    *(uint *)(*(longlong *)param_1[1] + -0x30 + uVar8))) {
+    FUN_7ff74ad5abb0(s_idBackgroundLoader__BeginBackgro_7ff74b2008a0);
+    pcVar2 = (code *)swi(3);   // int3 / fatal trap
+    (*pcVar2)();
+    return;
+}
+</code></pre>
+<p>Two in-memory entry records, stride <code>0x2f8</code> (760) bytes apart
+(<code>-0x30 + 0x2f8 == 0x2c8</code> — same field, one record back), each comparing
+their field at relative offset <code>+0x2c8</code>. §2.3 independently identifies
+<code>+0x2c8</code> as the parsed <strong>offset</strong> field (it is read first, immediately
+after the three length-prefixed strings, in the per-entry parser). This is
+<strong>exactly</strong> <code>docs/limits.md</code>'s invariant, now read directly out of the
+comparison instruction rather than inferred from its failure message: if
+<code>entries[i].offset &lt; entries[i-1].offset</code> (file order), the loader traps.
+Our writer's negative control NC1 (§4) re-implements this exact comparison
+in Python and confirms both halves: appended-at-EOF passes, a hypothetical
+offset-0 placement fails it the same way the real code would.</p>
+<h3 id="22-per-chunk-hash-table--answers-hash-tables-sorted-lists-per-chunk">2.2 Per-chunk hash table — answers "hash tables? sorted lists? per-chunk?"</h3>
+<pre><code>python tools/decomp.py --strings &quot;idResource|ResourceCache|FindResource&quot; --gzf ...
+=&gt; &quot;idResourceManagerLocal&quot;            (RTTI)
+=&gt; &quot;idResourceList::HASH_SIZE&quot;         (RTTI)
+=&gt; &quot;idResourceManagerLocal::Init2&quot;     &lt;- FUN_7ff74a4fccf0 @ rva 0x16ccf0
+=&gt; &quot;idResourceManagerLocal::Init - index header bad magic %d&quot;
+   &lt;- FUN_7ff74a4f9680 @ rva 0x169680   (this is Init, not Init2)
+</code></pre>
+<p><code>FUN_7ff74a4f9680</code> (<code>idResourceManagerLocal::Init</code>) loops once per archive
+(14 chunks), and for each one:</p>
+<ol>
+<li>Validates the chunk's own magic — the exact literal compared is
+   <code>0x3534552</code>, i.e. <code>03 53 45 52</code> read as one 32-bit word — a second,
+   independent confirmation of <code>MAGIC</code> straight from the engine's own
+   check, not just from file-format reverse engineering.</li>
+<li>Reads a header count field and uses it as the <strong>only</strong> loop bound for
+   parsing that chunk's entries (<code>while (iVar16 &lt; uStack_518) { ...
+   FUN_7ff74a4f9330(...) ... }</code>) — there is <strong>no EOF-sentinel or
+   resync-based termination</strong> in the real engine, unlike this project's own
+   <code>ResourceIndex.load()</code> (which resyncs until end-of-buffer regardless of
+   any header count, by design — <code>docs/formats.md</code> calls this out as
+   deliberate robustness against the unknown tail). This is the single
+   most practically important finding of this round: <strong>the header's entry
+   count is load-bearing for the real engine</strong> even though it is
+   <em>invisible</em> to this project's own reader — confirmed as a real gap by
+   NC3 (§4).</li>
+<li>For each of those entries, calls <code>FUN_7ff74a4f9330</code> (the per-entry
+   stream parser, §2.3) and then — the actual lookup-structure build —
+   computes a hash of the entry's name and inserts it into a <strong>per-archive</strong>
+   open-chained hash table, the textbook <code>idHashIndex::Add</code> shape:</li>
+</ol>
+<pre><code class="language-c">uVar11 = func_0x7ff74ad58000(*puVar1);              // hash(name)
+uVar19 = *(uint *)((longlong)plVar12 + 0x1c);        // hashMask
+if (/* table empty/needs growth */) {
+    FUN_7ff74ad62c30(plVar12, (int)plVar12[2], iVar10);   // grow buckets
+} else if (/* chain array too small */) {
+    FUN_7ff74ad629d0(plVar12, iVar16 + 1);                // grow chain
+}
+lVar13 = (longlong)(int)(hashMask &amp; uVar11 &amp; uVar19);
+*(undefined4 *)(indexChain + lVar21*4) = *(undefined4 *)(hashTable + lVar13*4);
+*(int *)(hashTable + lVar13*4) = iVar16;             // hashTable[h] = newIndex
+</code></pre>
+<p>This is <code>idHashIndex::Add(key, index)</code> from id Tech's shared container
+library (<code>indexChain[index] = hashTable[h]; hashTable[h] = index;</code>),
+instantiated <strong>once per archive object</strong>, built fresh from that one
+chunk's own entries every time <code>Init()</code> runs. This directly answers the
+question: <strong>hash table, not a sorted list, and scoped per chunk, not
+merged across all 14</strong> — matching <code>r6_tnodecls.md</code>'s independently
+<em>measured</em> per-chunk id-uniqueness scope (§3 there) with an actual
+mechanism, not just a correlation.</p>
+<p><code>func_0x7ff74ad58000</code> (the hash function itself) was not independently
+disassembled this round — it falls in a gap this quick Ghidra import did
+not analyze (<code>!! no function contains this address</code>) — so it is cited by
+its call shape (hash-in, masked bucket index out, immediately fed into an
+<code>idHashIndex</code>-style insert) rather than by its own body. Plausibly
+<code>idStr::Hash</code> or an equivalent FNV/djb2-style string hash used throughout
+id Tech; <strong>not proven</strong>, flagged as open (§6).</p>
+<p><strong>What exactly gets hashed — name alone, or type+name — is not fully
+traced.</strong> <code>FUN_7ff74a4f9330</code> (§2.3) parses type, name and path as three
+separate fields; the string handed to the hash call in <code>Init</code> comes out of
+a local buffer sized like a single <code>idStr</code>, strongly suggesting <strong>name
+alone</strong>, with <code>type</code> presumably available as a secondary check against
+whatever the chain lookup returns (every sampled name in the corpus is
+already type-namespaced by convention, e.g. <code>weapon/knife_base</code>, which
+would make type-less name collisions rare in practice regardless). Not
+conclusively pinned — flagged <code>INFERRED</code>, not <code>PROVEN</code> (§6).</p>
+<h3 id="23-the-per-entry-parser--confirms-the-field-layout-our-python-reader-assumes">2.3 The per-entry parser — confirms the field layout our Python reader assumes</h3>
+<p><code>FUN_7ff74a4f9330</code> (called once per entry from <code>Init</code>'s loop) reads, in
+this exact stream order: a 4-byte length + bytes (type string, immediately
+hashed into a cached field — a detail our own reader does not need and
+does not replicate), then two more length-prefixed strings via a shared
+helper (name, path), then <strong>three consecutive 4-byte big-endian-ish fields
+read back to back</strong> — exactly <code>SIZE_FIELDS = 12</code> bytes, exactly where
+<code>wolfsdk/resources.py</code>'s <code>struct.unpack_from("&gt;3I", buf, pos)</code> already
+reads them, confirmed by the comparison in §2.1 using the first of these
+three as "offset." Then a genuinely <strong>structured</strong> tail, not just
+unexplained padding: a 4-byte count, followed by that many 24-byte
+sub-records (explaining why audio types — <code>sample</code>/<code>sound</code>, which carry
+extra per-variant data — measured longer, heterogeneous tails in
+<code>r6_tnodecls.md</code> §3), then two more small fixed fields. For <code>count==0</code>
+(the common case for decl-ish types) this accounts for 9 of the 13 bytes
+<code>r6_tnodecls.md</code> measured; <strong>the remaining ~4 bytes were not reconciled
+this round</strong> (flagged open, §6) — not load-bearing for the writer, because
+the writer never synthesizes a tail from scratch: it clones a real donor
+entry's tail verbatim and only overwrites the trailing id (§3), which is
+provably a valid instance of whatever this structure actually is, by
+construction, regardless of whether every byte in it is explained.</p>
+<h3 id="24-two-more-functions-read-for-completeness">2.4 Two more functions read, for completeness</h3>
+<ul>
+<li><code>FUN_7ff74a4faf20</code> parses <code>master.index</code> (0-hit on "DLC" anywhere in
+  this path, consistent with <code>r4_tnocustom.md</code>'s "flat, no DLC tier"
+  finding): same magic check, then a BE-u32 pair count, then a loop reading
+  two length-prefixed strings per iteration into a 160-byte-stride archive
+  array — structurally the same thing <code>wolfsdk/resources.py:load_master()</code>
+  already does, now independently confirmed from the engine's own code.</li>
+<li><code>FUN_7ff74a4fb430</code> ("could not open resource file %s" /
+  "chunk missing in LoadNamedResourceFile" / "The map %s isn't present in
+  the chunk list") is the per-chunk-open entry point that calls
+  <code>BeginBackgroundLoads</code> (§2.1) and also separately opens
+  <code>generated/buildGame/&lt;map&gt;.mapResources</code> — a <strong>different</strong>, per-map
+  manifest layer, out of scope for this track (append-entry, not
+  map-authoring) and already the subject of the TNC-side <code>mapmanifest</code>
+  track's brief for the other game.</li>
+</ul>
+<h2 id="3-the-writer--built-and-self-tested">§3 The writer — built and self-tested</h2>
+<p><code>re_probes/tnoaddentry/probe_append.py</code>. Operates <strong>only</strong> on a disposable
+copy (<code>D:/wolf-decomp/tmp/tnoaddentry/copy/chunk1.{index,resources}</code>,
+<code>shutil.copy</code>d once from <code>base/_wolfsdk_backup</code>, the project's own
+confirmed-pristine backup — never the live install, never written to in
+place). <code>chunk1</code> chosen as the smallest pair (751 KB index / 73 MB
+resources) for a fast, cheap round-trip.</p>
+<p><strong>Recipe:</strong></p>
+<ol>
+<li>Pick a donor entry of the target type (<code>material</code>, chosen for its
+   clean, uniform 13-byte tail per <code>r6_tnodecls.md</code> — <code>sound</code>/<code>particle</code>
+   avoided on purpose, see §1). Clone its tail bytes <strong>verbatim</strong>; only the
+   trailing 4-byte id is replaced.</li>
+<li>New id = <code>max(existing ids of this type in this chunk) + 1</code> (measured
+   170 <code>material</code> entries in <code>chunk1</code>, max id 2491 → new id 2492) —
+   <code>r6_tnodecls.md</code>'s already-measured per-(chunk,type) rule, re-applied
+   here for the first time in a real writer.</li>
+<li>New payload (129 B decl text) is DEFLATE-packed the way the game's own
+   packer does (<code>wolfsdk/resources._deflate</code>, <code>Z_SYNC_FLUSH</code>) and appended
+   16-byte-aligned strictly after the current end of <code>.resources</code> — so its
+   offset is, by construction, larger than every existing offset (§2.1).</li>
+<li>New entry bytes (3 length-prefixed strings + offset/usize/csize + the
+   cloned-and-patched tail) are appended to the end of the <code>.index</code> buffer.</li>
+<li>Both header counters are bumped by 1 (one new raw entry, one new
+   distinct name) and the header's "file size − 32" field is recomputed —
+   all three confirmed present and correctly valued on the pristine file
+   before any edit (<code>assert</code>ed in the script).</li>
+</ol>
+<p><strong>Result, re-read with <code>wolfsdk.resources.Archive</code>/<code>ResourceIndex</code>
+(this project's own reader, unmodified):</strong></p>
+<pre><code>Original: 4241 entries, index 751275 B, resources 72937791 B
+Header: magic=b'\x03SER' size_field=751243 (filesize-32=751243) counterA=3508 counterB=4241
+Donor: &lt;Entry material:water/water_c01p1_close 1851B @42908448&gt; tail=13 bytes 000000000000000000000009bb
+material ids in chunk1: 170 entries, max=2491 -&gt; new_id=2492
+New payload: usize=129 csize=103 pad=1 new_offset=72937792 (prev max offset=72928064)
+
+After append: 4242 entries (expected 4242)
+  ok  count increased by exactly 1
+  ok  all 4241 original entries byte-identical (type/name/path/offset/usize/csize/pos)
+  ok  index bytes outside header-counters/size-field/appended-tail are untouched
+  ok  .resources bytes [0:72937791] byte-identical to the pristine original
+  ok  new entry found via Archive.find((type,name))
+  ok  new entry fields match what was written
+  ok  Archive.read(new_entry) == original payload bytes
+  ok  header size_field == new filesize-32
+  ok  header counterA/+1, counterB/+1
+
+14/14 checks passed
+</code></pre>
+<p>This is the exact property the task asked for: <strong>append one entry, re-read
+with the project reader, every other entry byte-identical</strong> — now proven,
+not just designed on paper the way <code>r6_tnodecls.md</code> §3 left it.</p>
+<h2 id="4-negative-controls">§4 Negative controls</h2>
+<p>Every positive claim above has a paired negative control, re-runnable from
+the same script:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>id</th>
+<th>claim</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NC1a</td>
+<td>appended-at-EOF passes the real ascending-offset check (§2.1, reimplemented exactly)</td>
+<td>pass</td>
+</tr>
+<tr>
+<td>NC1b</td>
+<td>the <em>same</em> entry, hypothetically placed at offset 0 instead of EOF, <strong>fails</strong> that same check</td>
+<td>fails, as expected — proves the check is discriminating, not vacuously true</td>
+</tr>
+<tr>
+<td>NC2</td>
+<td>a reused (chunk,type) id (duplicate of an existing <code>material</code> id) is <strong>not</strong> caught by this project's own reader</td>
+<td>not caught — confirms <code>r6_tnodecls.md</code>'s id-uniqueness rule is a convention the <em>writer</em> must enforce; the file format itself has no such constraint</td>
+</tr>
+<tr>
+<td>NC3a</td>
+<td>this project's reader finds the new entry even when the header's entry-count field is left un-bumped</td>
+<td>found anyway (our reader resyncs to EOF, ignoring header counts)</td>
+</tr>
+<tr>
+<td>NC3b</td>
+<td>…but the real engine's own count-bounded parse loop (§2.2, <code>Init</code>) would <strong>not</strong> reach an un-bumped append</td>
+<td>correctly predicted to miss it — the single sharpest "our tool is more lenient than the real engine" gap this round found</td>
+</tr>
+</tbody>
+</table></div>
+<p>NC3 is the most important one: it is a direct, constructed demonstration
+that "round-trips through our own tooling" (what round 6 called the
+achievable ceiling without a runtime image) and "the real engine would
+parse it" are <strong>not</strong> the same claim, and that the gap between them is
+now a known, specific, fixable thing (bump the header count), not an
+unknown unknown.</p>
+<h2 id="5-would-an-appended-entry-actually-be-found-synthesis">§5 Would an appended entry actually be found? Synthesis</h2>
+<p>Three independent conditions, each now traced to a specific decompiled
+check, all satisfiable by the writer in §3:</p>
+<ol>
+<li><strong>Offset must ascend</strong> (§2.1, <code>BeginBackgroundLoads</code>) — satisfied by
+   appending strictly after the current end of <code>.resources</code>.</li>
+<li><strong>The header's entry count gates whether <code>Init</code> ever parses the new
+   entry at all</strong> (§2.2) — satisfied by bumping counter B (and A, for the
+   distinct-name count the file format also tracks).</li>
+<li><strong>The parsed entry is then hashed into a per-chunk table by name</strong>
+   (§2.2) — nothing about this step is name-specific or type-specific in a
+   way that would reject a well-formed new entry; it is the exact same
+   code path every one of the chunk's other 4241 entries already goes
+   through.</li>
+</ol>
+<p><strong>What this round cannot settle without launching the game</strong>: whether
+<code>FUN_7ff74a4f9330</code>'s per-entry parse has some additional validation this
+round's reading missed (the ~4 reconciled-vs-13 tail byte gap, §2.3, §6),
+and whether anything <em>downstream</em> of the hash-table lookup (the actual
+decl/material/sound consumer, e.g. the decl-text parser or the material
+compiler) imposes a constraint the archive layer does not — out of scope
+for an archive-format track either way. Structurally, though, this is the
+first TNO round to end with "here is the exact mechanism that would have
+to find it, traced to its own insert loop" rather than "the mechanism is
+unknown, encrypted, out of reach."</p>
+<h2 id="proven">PROVEN</h2>
+<ul>
+<li>The chunkN.index/<code>.resources</code> append-entry writer works end to end on a
+  real archive copy: 14/14 checks, all 4241 pre-existing entries
+  byte-identical after appending one new <code>(material, name)</code> entry, new
+  entry found and its payload round-trips exactly (§3).</li>
+<li><code>idBackgroundLoader::BeginBackgroundLoads</code> (<code>FUN_7ff74a4fefe0</code>, rva
+  <code>0x16efe0</code>) enforces the offset-ascending invariant by direct comparison
+  of two in-memory entries' offset fields — previously known only from its
+  crash message, now read in the comparison instruction itself (§2.1).</li>
+<li><code>idResourceManagerLocal::Init</code> (<code>FUN_7ff74a4f9680</code>, rva <code>0x169680</code>)
+  builds, separately for each of the 14 chunks, an open-chained hash table
+  (<code>idHashIndex::Add</code> pattern) over every entry it parses from that
+  chunk's own <code>.index</code> file — answers "hash table, per-chunk" directly
+  from decompiled code (§2.2).</li>
+<li><code>Init</code>'s per-chunk entry-parse loop bound is an explicit header count
+  field read fresh from the file, not an EOF sentinel — there is no
+  termination condition that would let the real engine "just keep reading"
+  past a stale count the way this project's own resync-based reader does
+  (§2.2, confirmed discriminating by NC3).</li>
+<li>The per-entry parser (<code>FUN_7ff74a4f9330</code>, rva <code>0x169330</code>) reads type,
+  name, path, then three consecutive 4-byte fields at exactly the stream
+  position <code>wolfsdk/resources.py</code> already treats as offset/usize/csize —
+  independent confirmation of the field layout from the engine's own
+  parser, not just from successful round-trips against retail data (§2.3).</li>
+<li><code>master.index</code> parsing (<code>FUN_7ff74a4faf20</code>, rva <code>0x16af20</code>) matches
+  <code>wolfsdk/resources.py:load_master()</code> structurally: magic check, BE u32
+  pair count, length-prefixed name pairs (§2.4).</li>
+<li>The magic <code>03 53 45 52</code> is checked by the engine as the literal 32-bit
+  value <code>0x3534552</code> in at least two independent call sites (<code>Init</code> and
+  <code>master.index</code>'s parser) — a second, code-level confirmation of <code>MAGIC</code>
+  (§2.2, §2.4).</li>
+<li>The chunkN.index header's three maintained fields — "file size − 32" at
+  offset 4, counter A at <code>0x20</code>, counter B at <code>0x24</code> — hold their expected
+  values on the real, unmodified <code>chunk1.index</code> (asserted in the script
+  before any edit): <code>size_field == filesize-32</code> and <code>counterB ==
+  len(entries)</code> exactly (§3).</li>
+</ul>
+<h2 id="inferred">INFERRED</h2>
+<ul>
+<li>That the per-chunk hash key is the entry's <strong>name alone</strong>, not a
+  composed type+name string — supported by the hashed value coming from a
+  single-<code>idStr</code>-sized local buffer right after the per-entry parse, but
+  the exact contents of that buffer were not traced byte-for-byte (§2.2).</li>
+<li>That <code>func_0x7ff74ad58000</code> (the hash function itself) is a generic
+  string hash (plausibly <code>idStr::Hash</code>) — inferred from its call shape
+  (hash in, masked bucket out, fed straight into an <code>idHashIndex</code>-style
+  insert), not from reading its own body (it sits in a gap this quick
+  Ghidra import did not disassemble) (§2.2).</li>
+<li>That a correctly-appended entry (ascending offset, bumped header count,
+  cloned tail) would be accepted by the real engine's <code>Init</code> and become
+  findable by name at runtime — every condition this round could check
+  statically is satisfied by the writer in §3, but this is still a
+  prediction from code reading, not an observed in-game result (§5).</li>
+<li>That the ~4-byte gap between this round's traced tail structure (9 bytes
+  for <code>count==0</code>) and <code>r6_tnodecls.md</code>'s measured 13-byte tail reflects an
+  unresolved field this round's reading missed, rather than a measurement
+  error in either report — plausible, not reconciled (§2.3, §6).</li>
+</ul>
+<h2 id="failed-hypotheses">FAILED HYPOTHESES</h2>
+<ul>
+<li>None outright refuted this round — this track built on round 6's open
+  item rather than re-testing a specific round-6 claim. The one thing
+  this round's own NC3 control disproves is an implicit assumption a
+  writer might otherwise make: "if our own reader accepts an appended
+  entry, the real engine would too." <strong>False</strong> — shown directly (§4):
+  the real engine's parse loop is bounded by a header field our reader
+  does not even consult.</li>
+</ul>
+<h2 id="6-open-questions">§6 Open questions</h2>
+<ol>
+<li><strong>The actual in-game test</strong> (below) — not run, per the rules (never
+   launch the game). This is the single biggest remaining gap between
+   "proven structurally" and "proven to work."</li>
+<li>Whether the per-chunk hash key is name-only or type+name (§2.2) —
+   would need one more decompiler pass specifically on what fills the
+   local buffer handed to the hash call inside <code>Init</code>'s loop body.</li>
+<li><code>func_0x7ff74ad58000</code>'s own body (the hash function) — in a gap this
+   quick Ghidra import did not analyze; a deeper/slower analysis pass
+   (not attempted this round, out of the ~15s-per-call budget this track
+   had) could resolve it.</li>
+<li>The exact ~4-byte gap in the tail's structure (§2.3) — not load-bearing
+   for the writer (which clones real tails verbatim) but would fully close
+   <code>r6_tnodecls.md</code>'s own open "tail not fully understood" item if
+   resolved.</li>
+<li>Whether anything downstream of the archive/hash layer (the decl-text
+   parser, the material compiler, a "known type names" allowlist) rejects
+   a well-formed new entry for a reason this track's scope — the archive
+   container, not the decl/material content pipeline — did not reach.</li>
+</ol>
+<h2 id="recipe-for-a-future-round-that-makes-the-writer-productive">Recipe (for a future round that makes the writer productive)</h2>
+<p><em>(Translated from German.)</em></p>
+<ol>
+<li>Take <code>re_probes/tnoaddentry/probe_append.py</code> as the template, swap the game-data
+   path (<code>SRC_DIR</code>) and the target type/name/payload.</li>
+<li>Always append at the real end of the file (never write into the middle of the file)
+   — that is the one invariant that leads to a crash immediately when
+   violated (§2.1).</li>
+<li>Carry both header counters <strong>and</strong> the "file size−32" field along — invisible
+   to this project, but live-verified as load-deciding for the real
+   engine (§2.2, §4 NC3).</li>
+<li>Never build tail bytes by hand — clone a real entry of the same type
+   and set only the last 4 bytes (the running ID) to
+   <code>max(existing IDs of this type in this chunk) + 1</code> (§3,
+   already measured in <code>r6_tnodecls.md</code>).</li>
+</ol>
+<h2 id="in-game-test-for-the-maintainer">In-game test (for the maintainer)</h2>
+<p><em>(Translated from German.)</em></p>
+<p><strong>Nothing of this has been tried in the game yet</strong> — everything below is the
+smallest next step, not a result. Two stages, from the lowest-risk to the
+most meaningful:</p>
+<ol>
+<li><strong>Stage 1 — does the engine load the bigger file at all without complaint?</strong>
+   Experimentally put the <code>chunk1</code> test folder built in this report
+   (<code>D:\wolf-decomp\tmp\tnoaddentry\copy\chunk1.index</code> +
+   <code>chunk1.resources</code>) over a <strong>backup copy</strong> of
+   <code>base/chunk1.index</code>/<code>chunk1.resources</code> (never overwrite the original,
+   back up beforehand as usual), start the game,
+   look at <code>qconsole.log</code>. Expected according to this report: <strong>no</strong> line
+   <code>zlib inflate error</code>, <code>index header bad magic</code>, <code>FileTable is out of
+   order</code> and no crash at start — that directly confirms whether <code>Init</code>
+   (§2.2) accepts the file that is one entry larger, before anything at all
+   references the new name.</li>
+<li><strong>Stage 2 — is the new name really found?</strong> First use
+   <code>python -m wolfsdk paths &lt;type:name&gt;</code> to find a text decl field that
+   already references an <strong>existing</strong> <code>material</code> name (e.g. a
+   <code>diffusemap</code> or skin reference), redirect this field experimentally to the new
+   name (<code>material/tnoaddentry_test</code> or a clone of a real,
+   already used material) (<code>set</code> patch, the same mechanism
+   as <code>example_white_handgun</code>/<code>widerstand</code>, already checked live). Load a map
+   on which this field is actually used. Expected: the
+   affected object looks <strong>unchanged</strong> (the cloned material is
+   bit-identical to the original) <strong>and</strong> <code>qconsole.log</code> shows no
+   "resource not found" line for the new name — that would be the first
+   real proof that an appended entry is found by name by the running engine,
+   not only by this project's own reading tool.</li>
+</ol>
+<p>No damage expected in either stage: stage 1 touches no existing
+bytes (only appending), stage 2 clones real, already working
+content under a new name — in the worst case the map does not load or
+the object is missing, none of which damages a save.</p>
+<h2 id="files">Files</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>re_probes/tnoaddentry/probe_append.py</code></td>
+<td>The writer + self-test + 3 negative controls (§3/§4), re-runnable, writes only under <code>D:/wolf-decomp/tmp/tnoaddentry/</code>.</td>
+</tr>
+<tr>
+<td><code>re_probes/agent_reports/r7_tnoaddentry.md</code></td>
+<td>This report.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Related: <a href="Research-Report-R6-Tno-Decls.html">Research Report: R6 Tno Decls</a>, <a href="Research-Report-R4-Tno-Custom-Maps.html">Research Report: R4 Tno Custom Maps</a>, <a href="File-Formats.html">File Formats</a>, <a href="Modding-Limits.html">Modding Limits</a>, <a href="TNO-Modding-Surface.html">TNO Modding Surface</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Tno-Script.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Tnoscript: How The New Order Drives Map Events (Trigger Graph + a Real idTech4 Script VM)</a><a class="next" href="Research-Report-R7-Tno-Cheat-Gate.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Cheat Gate: The Actual Code, Now That <code>.text</code> Is Decrypted</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

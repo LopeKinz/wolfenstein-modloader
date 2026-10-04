@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FX, Particle, Impact and Gore Effect Decls: Format, Reference Chains, and Two Decl-Only Mods – Wolfenstein Modloader</title>
+<meta name="description" content="How Wolfenstein II&#x27;s effect definitions (particles, impacts, gore) are built, plus two text-only effect mods.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>FX, Particle, Impact and Gore Effect Decls: Format, Reference Chains, and Two Decl-Only Mods</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Fx-Decls"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#pass-1-errors-fixed-this-round">Pass 1 errors (fixed this round)</a></li><li><a href="#answer-in-one-paragraph">Answer in one paragraph</a></li><li><a href="#1-the-twelve-fx-relevant-decl-types-fresh-census-this-round">1. The twelve FX-relevant decl types (fresh census, this round)</a></li><li><a href="#2-particle-size-color-count-lifetime-are-direct-fields">2. particle: size, color, count, lifetime are direct fields</a></li><li><a href="#3-fx-the-event-composition-and-a-proven-block-level-insert-trick">3. fx: the event composition, and a proven block-level insert trick</a></li><li><a href="#4-the-full-chain-weapon--ammo--projectile--impact--fx--particle">4. The full chain: weapon → ammo → projectile → impact → fx → particle</a></li><li><a href="#5-budget-does-an-edit-fit-without-a-34-gib-archive-rebuild">5. Budget: does an edit fit without a 3.4 GiB archive rebuild?</a></li><li><a href="#6-proven-vs-inferred">6. PROVEN vs. INFERRED</a></li><li><a href="#7-failed-hypotheses--dead-ends-recorded-not-repeated">7. Failed hypotheses / dead ends (recorded, not repeated)</a></li><li><a href="#8-two-concrete-decl-only-effect-mods">8. Two concrete decl-only effect mods</a></li><li><a href="#9-open-questions">9. Open questions</a></li><li><a href="#smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</a></li><li><a href="#files-touched-this-round">Files touched this round</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report surveys the effect <span class="t" data-t="decl">definitions</span> of Wolfenstein II: The New Colossus: particles, muzzle flashes, bullet impacts, blood streaks, gore wounds and explosions. A fresh count found 1,781 definitions in 12 types, all readable, and size, colour, particle count and lifetime are plain editable values; the chain from weapon to ammo, projectile, impact, effect and particle was followed on the pistol. Two small text-only mods, bigger grenade explosions and a blue muzzle flash, passed the loader&#x27;s real patch step. All new work here is static: whether the game actually uses an edited particle or effect definition is still open and was not tested in game, while in The New Order such particle edits were already measured to be ignored.</p><ul><li>1,781 definitions in 12 effect types (corrected from 1,861) all parse without error; 797 of them are particles and 265 are effect compositions.</li><li>Size, colour, count and lifetime edits read back correctly after editing, and whole sub-blocks can be replaced to add fields the original lacks.</li><li>Retail already mixes weapons: the pistol&#x27;s muzzle flash uses a battle-rifle texture and the shotgun uses SMG and battle-rifle particles, so new looks can reuse existing textures.</li><li>Most typical edits (22 of 25) fit into the existing <span class="t" data-t="archive">archive</span> space without a rebuild, and both mods ran through the loader&#x27;s real patch path with 0 errors.</li><li>Open: whether the game loads edited particle and effect definitions; the code structure points to yes, but nothing was tested in game, and in The New Order particle edits are proven to be ignored.</li></ul></div><div class="de"><p class="lede">Dieser Bericht untersucht die Effekt-<span class="t" data-t="decl">Definitionen</span> von Wolfenstein II: The New Colossus: Partikel, Mündungsfeuer, Einschläge, Blutspuren, Gore-Wunden und Explosionen. Eine frische Zählung ergab 1.781 Definitionen in 12 Typen, alle lesbar, und Größe, Farbe, Partikelanzahl und Lebensdauer sind einfache, änderbare Werte; die Kette von Waffe über Munition, Projektil, Einschlag und Effekt bis zum Partikel wurde an der Pistole nachverfolgt. Zwei kleine reine Text-Mods, größere Granatenexplosionen und ein blaues Mündungsfeuer, haben den echten Patch-Schritt des Loaders bestanden. Alle neue Arbeit hier ist statisch: Ob das Spiel eine geänderte Partikel- oder Effekt-Definition wirklich verwendet, ist noch offen und wurde nicht im Spiel getestet; in The New Order wurde dagegen schon gemessen, dass solche Partikeländerungen ignoriert werden.</p><ul><li>1.781 Definitionen in 12 Effekttypen (korrigiert von 1.861) lassen sich alle fehlerfrei einlesen; 797 davon sind Partikel, 265 Effekt-Zusammenstellungen.</li><li>Änderungen an Größe, Farbe, Anzahl und Lebensdauer werden nach dem Bearbeiten korrekt zurückgelesen, und ganze Unterblöcke lassen sich ersetzen, um Felder hinzuzufügen, die im Original fehlen.</li><li>Das Originalspiel mischt schon Waffen: Das Mündungsfeuer der Pistole nutzt eine Sturmgewehr-Textur, die Schrotflinte nutzt MP- und Sturmgewehr-Partikel; neue Looks können also vorhandene Texturen wiederverwenden.</li><li>Die meisten typischen Änderungen (22 von 25) passen ohne Neuaufbau in den vorhandenen <span class="t" data-t="archive">Archivplatz</span>, und beide Mods liefen mit 0 Fehlern durch den echten Patch-Weg des Loaders.</li><li>Offen: ob das Spiel geänderte Partikel- und Effekt-Definitionen lädt; die Codestruktur spricht dafür, aber im Spiel wurde nichts getestet, und in The New Order werden Partikeländerungen nachweislich ignoriert.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on TNC's effect decls — <code>fx</code>, <code>particle</code>, <code>projectileImpactEffect</code>, <code>ribbon</code>, <code>gorewounds</code>, <code>goreBehavior</code> and six smaller types — their text format, the reference chain from weapon to ammo, projectile, impact, fx and particle, and whether size, colour, count and lifetime can be changed with decl edits alone. A fresh census counts 1,781 decls in 12 types, all of which parse with <code>decl.py</code>, and the relevant values are plain editable fields; two decl-only mods (bigger grenade explosions, a recoloured muzzle flash) are designed and run through the loader's real patch path. <strong>Whether TNC actually loads an edited <code>particle</code>/<code>fx</code> decl at runtime is still open — nothing was tested in game.</strong></p>
+<p>Track <code>fxdecls</code>, round 6, 2026-10-01. Read-only against
+<code>&lt;Steam library&gt;/steamapps/common/Wolfenstein.II.The.New.Colossus</code> (TNC) and
+the project's existing static findings for
+<code>&lt;Steam library&gt;/steamapps/common/Wolfenstein.The.New.Order</code> (TNO, no runtime
+image available — see "TNO" section). All new code lives under
+<code>re_probes/fxdecls/</code>; nothing under <code>wolfsdk/</code>, <code>tools/</code>, <code>docs/</code>, or any
+other track's directory was touched. No game launch, no process attach.
+<code>wolfsdk/decl.py</code>, <code>wolfsdk/idcl.py</code>, <code>wolfsdk/mapcatalog.py</code>,
+<code>tools/extract_tnc.py</code> are imported and reused exactly as they are.</p>
+<p><strong>Builds on, does not repeat:</strong> <code>docs/moddingflaeche-tnc.md</code> (the TNC
+type census, the decl.py dialect/vector-bug measurement, the <code>csize</code>+gap
+budget numbers), <code>docs/moddingflaeche-tno.md</code> (the TNO type census and the
+<strong>proven</strong> "particle payload is frozen, particle <em>references</em> are not"
+result), <code>docs/engine-surface.md</code> (TNO per-type field summaries),
+<code>re_probes/agent_reports/r4_materials.md</code> (material/decal-family anatomy,
+reused verbatim), <code>re_probes/agent_reports/r3_newweapon.md</code> and
+<code>explosivpistole_diag.md</code> (the weapon→ammo→projectile reference chain and
+the <code>fx</code>/<code>fxDecl</code> field names), <code>re_probes/agent_reports/gore_runtime.md</code>
+(the one runtime data point this project has for a gore decl: full-file
+replacement of 24 <code>goreBehavior</code> decls parses but crashes the game; a
+surgical <code>set()</code> on existing scalar fields is the recommended next probe —
+not retested this round, no game launch allowed), <code>r2_newassets.md</code> /
+<code>r3_newassetsv.md</code> (the proven-but-prototype "append a brand-new
+<code>(type,name)</code> entry" technique, <code>re_probes/newassets/append_entry.py</code>).</p>
+<h2 id="pass-1-errors-fixed-this-round">Pass 1 errors (fixed this round)</h2>
+<p>A verifier re-ran every claim independently and refuted four of them —
+all arithmetic/labeling mistakes in an otherwise-reproducible pass 1, not
+wrong methodology. Fixed below, each re-derived independently this round,
+not just copied from the verifier's numbers:</p>
+<ol>
+<li><strong>Headline total was wrong.</strong> "1,861 decls total" didn't match pass 1's
+   own per-type table, which sums to <strong>1,781</strong> (the 12 types in §1) or
+   <strong>1,812</strong> (14, including <code>goreGraph</code>/<code>goreMannequin</code>). Re-summed
+   independently this round via <code>census.py types --all</code>: confirmed 1,781.
+   Fixed everywhere this number appeared.</li>
+<li><strong><code>projectileImpactEffect:default</code>'s per-surface table was undercounted.</strong>
+   Pass 1 said "28 named blocks"; a fresh count via <code>Decl.paths()</code> on the
+   live decl this round finds <strong>39</strong> top-level <code>edit.*</code> blocks, 35 of which
+   literally end in <code>Effect</code> (the other 4 are <code>hazardFire</code>, <code>hazardSteam</code>,
+   <code>ricketyMetal</code>, <code>ricketyWood</code>). Fixed in §4.</li>
+<li><strong>"63/154 damage decls carry <code>declGoreBehavior</code>" was an unlabeled raw
+   count.</strong> Re-verified independently: 63/154 is correct as <em>raw, non-
+   deduplicated archive entries</em> (154 total <code>damage</code> entries incl.
+   patch-layer duplicates), but the <em>unique-name</em> figure is 62/151. Both
+   numbers now stated explicitly with their methodology in §4, so they no
+   longer read as (and don't numerically collide with)
+   <code>projectileImpactEffect</code>'s unrelated 156/154 row.</li>
+<li><strong>Two cvars were displayed as one name with a parenthetical.</strong>
+   "r_particleFadeQualityMultiplier(Durango)" and
+   "r_particlesMinAlpha(Durango)" are two independently-registered cvar
+   names with no space or parens:
+   <code>r_particleFadeQualityMultiplierDurango</code> and
+   <code>r_particlesMinAlphaDurango</code>. Fixed in §6's cvar list, now with every
+   name spelled exactly as registered plus its flags/default/range.</li>
+</ol>
+<p>Also closed this round, raised by the verifier as "missed" rather than
+"wrong": the two §8 recipes are now run through the actual production
+code path (<code>wolfsdk.mod.Mod.load</code> + <code>wolfsdk.decl.apply_patch</code>, not just
+<code>Decl.set()</code> on a standalone script); a second, stronger cross-weapon
+particle-reuse example was found (<code>fx:weapons/shotgun</code>); a negative
+control for the TNO-style "frozen precompiled particle stream" hypothesis
+was run against the TNC install tree; <code>goreGraph</code>/<code>goreMannequin</code> got a
+field census; and a new static (Ghidra RTTI) data point was found for the
+central open question. All in §3/§4/§6/§8/§9 below.</p>
+<h2 id="answer-in-one-paragraph">Answer in one paragraph</h2>
+<p>TNC's FX surface is twelve TEXT decl types, all in the <code>key = value;</code>
+dialect (none affected by <code>decl.py</code>'s one known weakness, the "key value"
+list-as-punctuation misparse that only hits <code>material</code>/<code>renderParm</code>/
+<code>table</code>/<code>env</code>/<code>json</code>/<code>articulatedFigure</code>): <strong><code>fx</code></strong> (265, an <em>event
+composition</em> — FX_PARTICLE/FX_DECAL/FX_LIGHT/FX_SOUND/FX_RIBBON/
+FX_BLUR_GAUSSIAN events keyed to trigger strings like
+<code>FX_WEAPON_START_FIRE</code>, each with its own <code>size</code>/<code>duration</code>/<code>tagNames</code> and a
+reference to the next layer), <strong><code>particle</code></strong> (797, the actual multi-stage
+particle system — size, color, count and lifetime are direct scalar/vector
+fields on every stage), <strong><code>projectileImpactEffect</code></strong> (156, the per-surface
+material impact table — concrete/metal/wood/flesh/glass/... each with its
+own decal-texture array, decal size, particle refs and sound), <strong><code>ribbon</code></strong>
+(101, blood/smoke streaks — material, lifespan, two colors, two widths),
+<strong><code>gorewounds</code></strong> (383, inline RGB color + decal size + size + per-piece
+spawn/joint data for a wound type), <strong><code>goreBehavior</code></strong> (41, the probability
+table that <em>picks</em> a <code>gorewounds</code> entry), plus <code>explosion</code> (11),
+<code>envexplosion</code> (11, explosion <em>spread</em> composition), <code>propExplode</code> (4),
+<code>particleStage</code> (1), <code>flare</code> (9) and <code>ebolt</code> (2). <strong>Fresh census this
+round, all 12 types, 1,781 decls total (1,812 incl. the two
+not-fully-censused <code>goreGraph</code>/<code>goreMannequin</code> types, now field-censused
+too, §1/§9), 0 <code>DeclError</code> under <code>decl.py</code>.</strong>
+Size, color, particle/spawn count and lifetime are all <strong>directly
+editable scalar fields</strong> in <code>particle</code> and <code>gorewounds</code> (proven this round
+by parse→edit→reparse roundtrips, not just inspection); the whole
+weapon→projectile→impact→fx→particle chain is walkable string references
+(<code>projectileDecl</code>, <code>impactEffectTable</code>, <code>particle</code>, <code>declPrt</code>), confirmed
+end to end on the pistol. <strong>New effects from existing textures: yes, today,
+without the still-prototype "new decl name" tool</strong> — any <code>particle</code>/<code>fx</code>
+stage's <code>material</code>/<code>decalMtr</code>/<code>lightMtr</code> field is a plain string naming
+<em>any</em> already-loaded texture/material, and retail itself already
+cross-references weapons this way (the handgun's own muzzle flash reuses
+<code>textures/effects/particles/weapons/battleriflemuzzleflash_front</code>), so a
+full-body rewrite of an <em>existing</em> decl's content — the same <code>"file"</code>
+full-replace mechanism <code>gore_realistisch</code> already ships — can recompose any
+combination of existing materials into a "new" effect under a reused name.
+<strong>Not proven this round: that TNC actually loads an edited <code>particle</code>/<code>fx</code>
+decl at runtime</strong> (no game launch; <code>docs/moddingflaeche-tnc.md</code> already
+flagged this as open) — narrowed, not closed, by two new static findings
+(§6): TNC's RTTI shows <code>particle</code>/<code>fx</code>/<code>gorewounds</code>/etc. are handled by
+the <em>same generic</em> C++ decl template as already-runtime-proven types
+like <code>weapon</code>/<code>damage</code>, and TNC's install has no TNO-style precompiled
+<code>generated/*.bin</code> shadow tree that could explain a silent discard.
+<strong>Proven NOT to work in TNO</strong>: <code>particle</code> payload
+edits are silently discarded there (measured: <code>idFile_RingBuffer</code>
+skip-messages, 35 vs 0 baseline) — only the <em>reference</em> to which particle
+plays is editable in TNO.</p>
+<h2 id="1-the-twelve-fx-relevant-decl-types-fresh-census-this-round">1. The twelve FX-relevant decl types (fresh census, this round)</h2>
+<pre><code>python re_probes/fxdecls/census.py types --all
+</code></pre>
+<p>mounts all 24 <code>.resources</code> archives (<code>base</code>/chunks/<code>chunkbase_6</code>/
+<code>patch_1..4</code> + their <code>chunkbase_6</code> variants — the same "common" pool
+<code>r3_newweapon.md</code>'s <code>open_common()</code> and <code>docs/moddingflaeche-tnc.md</code> use;
+dlc archives live under a separate folder tree not covered by this pool,
+same scope limitation every prior TNC round has had):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>type</th>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">unique</th>
+<th style="text-align: right;">DeclError</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fx</code></td>
+<td style="text-align: right;">265</td>
+<td style="text-align: right;">263</td>
+<td style="text-align: right;">0 (1 entry is non-UTF8, matches <code>moddingflaeche-tnc.md</code> §2.1's "ein fx")</td>
+</tr>
+<tr>
+<td><code>particle</code></td>
+<td style="text-align: right;">797</td>
+<td style="text-align: right;">777</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>projectileImpactEffect</code></td>
+<td style="text-align: right;">156</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>gorewounds</code></td>
+<td style="text-align: right;">383</td>
+<td style="text-align: right;">383</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>goreBehavior</code></td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>ribbon</code></td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>explosion</code></td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>envexplosion</code></td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>propExplode</code></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>particleStage</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>flare</code></td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>ebolt</code></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Sum of these 12: 1,781</strong> — pass 1 misstated this as "1,861"; see "Pass 1
+errors" above.</p>
+<p>Two more gore-adjacent types, named in pass 1 but not field-censused
+there — field-censused this round (§9 has the field summary):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>type</th>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">unique</th>
+<th style="text-align: right;">DeclError</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>goreGraph</code></td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0 (fresh this round)</td>
+</tr>
+<tr>
+<td><code>goreMannequin</code></td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0 (fresh this round)</td>
+</tr>
+</tbody>
+</table></div>
+<p>(14-type sum incl. these two: 1,812.)</p>
+<p>Binary/not-editable neighbors, confirmed present but out of scope:
+<code>prtmeshdist</code> (483, binary particle mesh-distribution data),
+<code>staticParticleModel</code> (7, binary), <code>decalatlas</code> (903, binary — the baked
+decal texture atlas), <code>destructionmodeldata</code> (177, binary),
+<code>glassmodel</code> (136, binary).</p>
+<p><strong>Negative result:</strong> <code>glass</code>, <code>destructiblePiece</code>, <code>impactParticles</code> and
+<code>impactSounds</code> — all TEXT decl types in TNO (<code>docs/engine-surface.md</code>) —
+<strong>do not exist as decl types in TNC's common archive pool</strong> (checked via
+the full, unfiltered type listing, not a name guess). TNC's equivalent
+surface lives inside <code>breakable.edit.breakable.fx.*</code>
+(<code>brokenConnection</code>/<code>vaporize</code>/<code>vaporizeFire</code>/<code>vaporizeLaser</code>, each a
+<code>particleSystem</code> + <code>soundEvent</code> pair, 175 TNC <code>breakable</code> decls) and inside
+<code>projectileImpactEffect</code>'s per-material table — TNC folded TNO's several
+small impact/glass/destructible decl types into fewer, bigger ones.</p>
+<h2 id="2-particle-size-color-count-lifetime-are-direct-fields">2. <code>particle</code>: size, color, count, lifetime are direct fields</h2>
+<p><code>python re_probes/fxdecls/census.py fields particle</code> (797 decls, every
+scalar leaf, index positions normalized) shows <strong>two parallel particle
+systems</strong> living in the same decl type — an older CPU system that
+dominates the corpus, and a newer GPU system:</p>
+<p><strong>Legacy CPU system</strong> (<code>edit.stages.item[N].*</code>, by frequency):</p>
+<ul>
+<li><strong>Size</strong>: <code>size.size.size[M].val0</code>/<code>val1</code> (+ <code>variance</code>, <code>calcType</code>),
+  <code>size.aspectRatio.val0</code>/<code>val1</code></li>
+<li><strong>Color</strong>: <code>colorAttributes.baseColor.baseColor[M].val0</code>/<code>val1</code> (RGB, one
+  channel per <code>M</code>), <code>colorAttributes.fadeColor.{x,y,z}</code>,
+  <code>colorAttributes.brightness.val0</code>/<code>val1</code></li>
+<li><strong>Count</strong>: <code>systemProperties.totalParticles</code>,
+  <code>systemProperties.cycles</code></li>
+<li><strong>Lifetime</strong>: <code>systemProperties.particleLife.val0</code>/<code>val1</code>
+  (+ <code>.variance</code>), <code>systemProperties.deadTime.val0</code>/<code>val1</code>,
+  <code>maxSystemDuration</code> (top-level, the whole system's cap)</li>
+<li><strong>Texture</strong>: <code>systemProperties.material</code> — a plain string naming any
+  already-loaded texture/material, e.g.
+  <code>"textures/effects/particles/liquid/splash_lit"</code></li>
+<li>Also present: <code>gravity.gravity.val0</code>/<code>val1</code>, <code>acceleration.*</code>,
+  <code>speed.*</code>, <code>offset.*</code>, <code>texAnimation.{numColumns,numRows,rate,type}</code>
+  (sprite-sheet flipbook playback), <code>orientation.type</code>
+  (<code>POR_AIMED</code>/<code>POR_X</code>/…), <code>bounds.b.b[0/1].{x,y,z}</code> (the system's
+  reported AABB — grown bounds with grown size, else particles get
+  frustum-culled early, a real failure mode to watch for in a "bigger"
+  mod).</li>
+</ul>
+<p><strong>Newer GPU system</strong> (<code>systemPropertiesNEW</code>/<code>colorNEW</code>/<code>sizeNEW</code>/
+<code>gravityNEW</code>/<code>velocityFieldNEW</code>/<code>collisionNEW</code>, co-existing in the same
+corpus, example <code>textures/effects/particles/gpu_spark_add</code>):
+<code>systemPropertiesNEW.maxParticles</code>/<code>.maxGpuSpawnedParticles</code>/
+<code>.maxSpawnedParticles</code>/<code>.cpuSpawnRate</code>/<code>.lifeTime.val0</code>/<code>val1</code>/<code>.emissive</code>/
+<code>.bounds.{x,y,z}</code>, <code>colorNEW.initialColor</code>/<code>.finalColor</code>/<code>.opacity</code>/
+<code>.overbright</code>, <code>sizeNEW.size.val0</code>/<code>val1</code>.</p>
+<p><strong>Proven this round</strong> (<code>re_probes/fxdecls/census.py</code> + an ad-hoc roundtrip
+script, not kept as a separate file beyond the scratchpad): edited
+<code>particle:weapons/handgun/handgun_muzzleflash</code> — size ×3
+(<code>edit.stages.item[0].size.size.size[0].val0/val1</code> → 0.6),
+brightened color (<code>colorAttributes.baseColor.baseColor[1].val0</code> → 1.0),
+tripled count (<code>systemProperties.totalParticles</code> → 3) — <code>Decl.set()</code> then
+<code>.render()</code> then a fresh <code>Decl()</code> on the output: <strong>re-parses without
+error, every edited value reads back correctly.</strong> Same for
+<code>particle:weapons/grenades/frag/frag_explosion</code>'s <code>maxSystemDuration</code>.
+This proves the edits are <em>structurally</em> safe (same class of proof as the
+project's existing "1,432/1,432 roundtrip" test in
+<code>docs/moddingflaeche-tnc.md</code> §2.2, just scoped to this round's 3 types) —
+it does <strong>not</strong> prove the game loads them, see §6.</p>
+<h2 id="3-fx-the-event-composition-and-a-proven-block-level-insert-trick">3. <code>fx</code>: the event composition, and a proven block-level insert trick</h2>
+<p><code>fx</code> decls (<code>edit.editEvents.item[N]</code>) are the layer every weapon/breakable/
+cutscene points at. Fields seen across 264 parsed decls: <code>name</code>, <code>group</code>,
+<code>type</code> (<code>FX_PARTICLE</code>/<code>FX_DECAL</code>/<code>FX_LIGHT</code>/<code>FX_SOUND</code>/<code>FX_RIBBON</code>/
+<code>FX_BLUR_GAUSSIAN</code>/<code>FX_SCREEN_SHAKE</code> per TNO's <code>moddingflaeche-tno.md</code>
+§2.9), <code>duration</code>, <code>delay</code>, <code>fadeInTime</code>/<code>fadeOutTime</code>, <code>size</code> (yes — <code>fx</code>
+events carry their own <code>size</code> override, independent of the referenced
+particle's own size), <code>looping</code>, <code>tagNames</code> (joint names on the owning
+<code>.md6</code> model, e.g. <code>"muzzle"</code>, <code>"fx_righthand"</code>), <code>multiTagUseType</code>,
+<code>startCondition</code>/<code>stopCondition</code>/<code>suppressCondition</code> (arrays of trigger
+strings — <code>FX_WEAPON_START_FIRE</code>, <code>FX_WEAPON_START_FIRE_UPGRADE_1</code>,
+<code>FX_CINEMATIC_N</code>, <code>FX_GENERIC_N</code>, <code>FX_NONE</code>), <code>originType</code>/<code>rotationType</code>/
+<code>rotOffsetAngles</code>/<code>offset</code>, and one of four typed parameter blocks:
+<code>particleParms.declPrt</code> (→ <code>particle</code> decl), <code>decalParms.{decalMtr,depth,
+angle,isPersistent,priority}</code> (→ a <code>decals/...</code> material, per
+<code>r4_materials.md</code>), <code>lightParms.{radius,intensity,lightMtr}</code> (→ a
+<code>lights/...</code> material), <code>ribbonParms.{declRibbon,widthOverTime,
+alphaMultiplier,...}</code> (→ <code>ribbon</code> decl), <code>soundParms.startSoundEvent</code>.</p>
+<p><strong>Concrete, fully walked example — the pistol's muzzle flash:</strong></p>
+<pre><code>fx:weapons/handgun
+  editEvents.item[0]  name=muzzleflash  type=FX_PARTICLE  tagNames=[muzzle]
+                      startCondition=[FX_WEAPON_START_FIRE]
+                      particleParms.declPrt = &quot;weapons/handgun/handgun_muzzleflash&quot;
+  editEvents.item[8]  name=muzzlelight  type=FX_LIGHT  tagNames=[muzzle]
+                      startCondition=[FX_WEAPON_START_FIRE]
+                      color = { y=0.521  z=0.184 }           // x omitted (defaulted)
+                      lightParms.radius = { x=2 y=2 z=2 }
+                      lightParms.lightMtr = &quot;lights/gaus&quot;    // no explicit intensity
+  editEvents.item[9]  same, group=&quot;elephant&quot; (upgrade variant), has lightParms.intensity=3
+</code></pre>
+<p><code>particle:weapons/handgun/handgun_muzzleflash</code> itself is two stages
+(<code>"stage"</code>/<code>"stage1"</code>) whose <code>systemProperties.material</code> fields are
+<code>"textures/effects/particles/weapons/handgunmuzzleflash_side"</code> and —
+<strong>reused from a different weapon entirely</strong> —
+<code>"textures/effects/particles/weapons/battleriflemuzzleflash_front"</code>.
+This is organic, in-retail proof that cross-weapon material reuse in a
+particle stage is normal and safe, not a modded hack.</p>
+<p><strong>A stronger example, found this round:</strong> <code>fx:weapons/shotgun</code>'s own
+<code>editEvents</code> reference <em>whole particle decls that belong to other
+weapons</em>, not just a texture buried inside one particle's own material
+field —</p>
+<pre><code>fx:weapons/shotgun
+  editEvents.item[5].particleParms.declPrt = &quot;weapons/smg/smg_shell_ejection_smoke&quot;
+  editEvents.item[6].particleParms.declPrt = &quot;weapons/battlerifle/battlerifle_shell_ejection_sparks&quot;
+  editEvents.item[8].particleParms.declPrt = &quot;weapons/smg/overheat/shroud_heat_1&quot;
+</code></pre>
+<p>three of the shotgun's own <code>fx</code> events point at <code>smg</code>/<code>battlerifle</code>
+particle decls by name. Confirmed by reading the live decl's
+<code>particleParms.declPrt</code> paths directly this round. This is free,
+in-retail corroboration at the <code>fx</code>-layer (whole-decl reuse) on top of
+the <code>particle</code>-layer example above (one texture string inside a decl) —
+the engine itself never treats "weapon X's effect" as owned exclusively
+by weapon X.</p>
+<p><strong>New technical finding this round:</strong> <code>wolfsdk/decl.py</code>'s <code>Decl.set()</code>
+works on <em>any</em> addressable path, including a whole nested <strong>block</strong>, not
+just scalar leaves — because every path (scalar or <code>{...}</code> block) is
+recorded as a <code>Value</code> with its own byte span. Proven: replacing
+<code>fx:weapons/handgun</code>'s <code>edit.editEvents.item[8]</code> (the standard muzzle
+light, which has <strong>no</strong> <code>intensity</code> field and only a partial <code>color</code>) with
+a new block that adds <code>intensity = 40</code>, a full <code>color</code>, and <code>radius = 6</code>
+re-parses cleanly and reads back every new field correctly. <strong>This matters
+because <code>decl.py</code>'s surgical editor cannot otherwise add a field that
+isn't already present in the retail text</strong> (<code>set()</code> raises <code>DeclError</code> if
+the target path doesn't exist) — block-level replacement is the one way
+around that without falling back to a full-file <code>"file"</code> replace of the
+entire (possibly much larger) decl. It is the same <code>"file"</code> mechanism
+<code>gore_realistisch</code> already uses, just scoped to one sub-block instead of
+the whole document, which keeps the edit far inside the <code>csize</code>+gap
+budget (§5).</p>
+<h2 id="4-the-full-chain-weapon--ammo--projectile--impact--fx--particle">4. The full chain: weapon → ammo → projectile → impact → fx → particle</h2>
+<p>Walked on the pistol, every field read directly from the live archive:</p>
+<pre><code>weapon:weapon/player/sp/handgun_nomesh
+  initialAmmoDecl = &quot;ammo/player/sp/handgun&quot;
+ammo:ammo/player/sp/handgun
+  projectileDecl = &quot;projectile/player/pistol&quot;
+projectile:projectile/player/pistol        (inherits projectile/player/default)
+  impactEffectTable = &quot;handgun&quot;
+  damageDecl = &quot;damage/firearm/bullet_pistol&quot;
+projectileImpactEffect:handgun             (inherits bullet_base -&gt; default)
+  fleshEffect.ribbons.item[0].ribbon = &quot;weapon/battlerifle/impact/battlerifle_blood&quot;
+  (inherited from &quot;default&quot;): fleshEffect.particles.item[0].particle =
+    &quot;weapons/base/impacts/bullet/bullet_flesh&quot;; concreteEffect.decalMaterial =
+    [4 existing textures]; concreteEffect.decalSize = 0.2; ... (28 surface types total)
+ribbon:weapon/battlerifle/impact/battlerifle_blood
+  material = &quot;textures/effects/ribbons/weapons/blood_impact&quot;
+  lifespan = 0.5
+  ribbonSegment.colorOnSpawn/.colorOnDeath = { r g b }   // RGB
+  ribbonSegment.widthOnSpawn/.widthOnDeath = { min max }  // size
+fx:weapons/handgun
+  editEvents.item[0].particleParms.declPrt = &quot;weapons/handgun/handgun_muzzleflash&quot;
+particle:weapons/handgun/handgun_muzzleflash
+  stages.item[0/1].systemProperties.{material,totalParticles,particleLife}
+  stages.item[0/1].{size,colorAttributes}
+</code></pre>
+<p>Every link in this chain is a plain string field, independently
+<code>set()</code>-able. The <code>projectileImpactEffect</code> per-surface table
+(<code>defaultEffect</code>/<code>metalEffect</code>/<code>stoneEffect</code>/<code>fleshEffect</code>/<code>glassEffect</code>/
+...<strong>39 top-level <code>edit.*</code> blocks in <code>default</code></strong>, re-counted this round
+with <code>Decl.paths()</code> rather than eyeballed — pass 1 said "28", see "Pass 1
+errors" above; 35 of the 39 literally end in <code>Effect</code>, the rest are
+<code>hazardFire</code>/<code>hazardSteam</code>/<code>ricketyMetal</code>/<code>ricketyWood</code>) is the concrete
+"impact effect decl" the task asked for: each surface's <code>decalMaterial</code>
+is an <em>array</em> of existing decal textures the engine already picks
+randomly from, <code>decalSize</code> is a bare float, and <code>particles</code>/<code>ribbons</code> are
+arrays of <code>{groupName, particle|ribbon, translucencyScale, bind}</code>.</p>
+<p><strong>Blood/gore chain</strong>, walked on a disintegration wound
+(<code>gorewounds:fullbody/humanoid/disintegrate</code>):</p>
+<pre><code>damage:&lt;any firearm decl&gt;.declGoreBehavior = &quot;standard/pistol&quot;
+  (63/154 raw damage archive entries carry this field, 62/151 by unique
+   decl name — both re-verified this round; pass 1's bare &quot;63/154&quot; read
+   as, and numerically collided with, projectileImpactEffect's unrelated
+   156/154 row above, see &quot;Pass 1 errors&quot;)
+goreBehavior:standard/pistol
+  probability.item[N].{woundType, probability}      // picks a GORETYPE_*
+gorewounds:&lt;decl matching that woundType&gt;
+  visuals.goreSpray.sprayFX = &quot;FX_GORE_DISINTEGRATE&quot;          // engine enum string, not a decl ref — open, see §7
+  visuals.bloodPool.decalParms.item[0] = { decalMat, size={x,y}, priority }   // existing decal texture + direct size
+  visuals.disintegrate.color/.colorScale/.pieceInitialColor/.pieceFadeColor/.pieceColorScale   // inline RGB, no fx/particle indirection
+  spawning.spawnEntities.item[N].fxTagJoint = &quot;fx_hips&quot;        // joint tag the spawned gore piece's own fx binds to
+</code></pre>
+<p>So <code>gorewounds</code> carries its own inline color/size fields for disintegration
+effects — no separate fx/particle decl to edit for that specific visual;
+<code>bloodPool</code>'s decal (a literal blood-pool texture) is both size- and
+texture-swappable directly.</p>
+<h2 id="5-budget-does-an-edit-fit-without-a-34-gib-archive-rebuild">5. Budget: does an edit fit without a 3.4 GiB archive rebuild?</h2>
+<p>Not re-measured this round — cited from the project's own prior,
+reproducible measurement (<code>docs/moddingflaeche-tnc.md</code> §4.1,
+<code>python tools/survey_tnc.py --budget</code>), because it already covers exactly
+these two types with a real test-edit (every integer in the decl ×1000,
+re-Kraken'd):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>type</th>
+<th style="text-align: right;"><code>csize</code> median</th>
+<th style="text-align: right;">gap median</th>
+<th style="text-align: right;">fits in <code>csize</code> alone</th>
+<th style="text-align: right;">fits in <code>csize</code>+gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fx</code></td>
+<td style="text-align: right;">852 B</td>
+<td style="text-align: right;">48 B</td>
+<td style="text-align: right;">4/25</td>
+<td style="text-align: right;"><strong>22/25</strong></td>
+</tr>
+<tr>
+<td><code>particle</code></td>
+<td style="text-align: right;">2,633 B</td>
+<td style="text-align: right;">205 B</td>
+<td style="text-align: right;">0/25</td>
+<td style="text-align: right;"><strong>22/25</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>So ~88% of realistic size/color/count/lifetime edits land inside the
+existing payload slot + its zero-filled gap and patch in place with no
+archive rebuild (<code>idcl.plan_in_slot()</code>/<code>write_in_place()</code>, already the
+project's production writer). The ~3/25 oversized ones fall back to a
+Kraken recompress (§4.3: <strong>byte-identical to retail</strong>, 401/401 and 194/194
+measured) or a mode-0→2 switch (§4.2) — both already proven, not new work
+needed for this track. The <code>decl.py</code> "vector dialect" weakness (§2.3,
+2,242 decls project-wide, only <code>material</code>/<code>renderParm</code>/<code>table</code>/<code>env</code>/
+<code>json</code>/<code>articulatedFigure</code>/one <code>renderLayerDefinition</code>/one <code>entityDef</code>)
+<strong>does not include any of the 12 types in §1</strong> — consistent with this
+round's own 0-<code>DeclError</code> census.</p>
+<h2 id="6-proven-vs-inferred">6. PROVEN vs. INFERRED</h2>
+<p><strong>PROVEN (this round, static/structural):</strong></p>
+<ul>
+<li>All 1,781 decls across the 12 FX-relevant TNC types parse with
+  <code>decl.py</code>, 0 <code>DeclError</code> (fresh census, not cited from a prior round;
+  1,812 incl. <code>goreGraph</code>/<code>goreMannequin</code>, also 0 <code>DeclError</code>, §9).</li>
+<li><code>particle</code>'s size/color/count/lifetime fields and <code>fx</code>'s light
+  intensity/color/radius fields are <code>Decl.set()</code>-able scalars that
+  roundtrip (parse → edit → render → reparse → value matches) cleanly.</li>
+<li><code>Decl.set()</code> works at block granularity, not just scalar leaves — proven
+  by replacing <code>fx:weapons/handgun</code>'s <code>editEvents.item[8]</code> wholesale and
+  having the added <code>intensity</code> field read back correctly after reparse.</li>
+<li>The weapon→ammo→projectile→impact→fx→particle chain (§4) is real, not
+  inferred — every field and value was read directly off the live pistol
+  decls in this round, not copied from a prior report.</li>
+<li>Cross-weapon material reuse inside a <code>particle</code> decl's <code>systemProperties.
+  material</code> field is <strong>retail-native</strong> (handgun's own muzzleflash uses a
+  battlerifle texture), so authoring a "new" effect from only existing
+  textures needs no new tooling, just a full-body rewrite of an existing
+  decl's content.</li>
+<li><code>glass</code>/<code>destructiblePiece</code>/<code>impactParticles</code>/<code>impactSounds</code> are absent
+  from TNC's type list (checked against the unfiltered census, not a name
+  guess).</li>
+<li>The <code>fx:weapons/shotgun</code> cross-weapon reuse (§3) — three of its own
+  <code>fx</code> events point at <code>smg</code>/<code>battlerifle</code> particle decls by name, read
+  directly off the live decl this round.</li>
+<li><strong>Both §8 mod recipes run cleanly through the real production code
+  path</strong>, not just a standalone <code>Decl.set()</code> script: <code>wolfsdk.mod.Mod.
+  load()</code> accepts both manifests (passes <code>REQUIRED=('id','name')</code>,
+  <code>spiel='tnc'</code> is in <code>SUPPORTED_GAMES</code>), and <code>wolfsdk.decl.apply_patch()</code>
+  — the exact function <code>mod.py</code>'s <code>build_payloads()</code> calls — applies
+  every <code>"set"</code> edit in both recipes against the live retail decl text
+  with 0 <code>DeclError</code>: <code>particle:weapons/grenades/frag/frag_explosion</code>
+  (19,922→19,874 B), <code>envexplosion:weapons/grenades/frag_surface_
+  explosion</code> (308→309 B), <code>fx:weapons/handgun</code> (8,872→8,849 B),
+  <code>particle:weapons/handgun/handgun_muzzleflash</code> (4,454→4,406 B). Script:
+  <code>re_probes/fxdecls/verify_recipes.py</code>.</li>
+<li>TNO: <code>particle</code> payload edits are discarded at runtime
+  (<code>idFile_RingBuffer</code> skip, 35 vs 0 measured — cited from
+  <code>docs/moddingflaeche-tno.md</code> §6.1, not re-measured, no TNO runtime
+  image exists to re-measure against); the <em>reference</em> to a particle name
+  is editable in both <code>fx</code>, <code>md6Def</code>, and <code>breakable</code> decls there.</li>
+<li>14 TNC cvars under <code>r_decal*</code>/<code>r_particle*</code> are <code>exposed=true</code> (directly
+  console-settable, no <code>resourceExec -s</code> unlock needed), exact registered
+  names, defaults, flags and clamps (re-read from
+  <code>re_probes/cvartable/cvars_tnc_v2.json</code> this round; <code>min</code>/<code>max</code> blank
+  means the game enforces no explicit clamp beyond the type's own range):</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar (exact name)</th>
+<th style="text-align: right;">default</th>
+<th>flags</th>
+<th style="text-align: right;">min/max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_decalDistanceFadeMultiplier</code></td>
+<td style="text-align: right;">1.0</td>
+<td>FLOAT,NOCHEAT,LOCAL_SETTING,EXPOSE (<code>0x220014</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_decalFadeCulling</code></td>
+<td style="text-align: right;">2</td>
+<td>INTEGER,NOCHEAT,LOCAL_SETTING,EXPOSE (<code>0x220012</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_decalFilteringQuality</code></td>
+<td style="text-align: right;">2</td>
+<td>INTEGER,NOCHEAT,LOCAL_SETTING,EXPOSE (<code>0x220012</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_decalLifetimeMultiplier</code></td>
+<td style="text-align: right;">1.0</td>
+<td>FLOAT,NOCHEAT,LOCAL_SETTING,EXPOSE (<code>0x220014</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_imageAtlasDecalHeight</code></td>
+<td style="text-align: right;">8</td>
+<td>INTEGER,NOCHEAT,EXPOSE (<code>0x200012</code>)</td>
+<td style="text-align: right;">1–16</td>
+</tr>
+<tr>
+<td><code>r_imageAtlasDecalWidth</code></td>
+<td style="text-align: right;">8</td>
+<td>INTEGER,NOCHEAT,EXPOSE (<code>0x200012</code>)</td>
+<td style="text-align: right;">1–16</td>
+</tr>
+<tr>
+<td><code>r_particleFadeQualityMultiplier</code></td>
+<td style="text-align: right;">1.0</td>
+<td>FLOAT,NOCHEAT,LOCAL_SETTING,EXPOSE (<code>0x220014</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_particleFadeQualityMultiplierDurango</code></td>
+<td style="text-align: right;">0.8</td>
+<td>FLOAT,NOCHEAT,EXPOSE (<code>0x200014</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_particlesLightAtlasHeight</code></td>
+<td style="text-align: right;">2048</td>
+<td>INTEGER,NOCHEAT,LOCAL_SETTING,EXPOSE (<code>0x220012</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_particlesLightAtlasQuality</code></td>
+<td style="text-align: right;">1</td>
+<td>INTEGER,NOCHEAT,LOCAL_SETTING,EXPOSE (<code>0x220012</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_particlesLightAtlasWidth</code></td>
+<td style="text-align: right;">4096</td>
+<td>INTEGER,NOCHEAT,LOCAL_SETTING,EXPOSE (<code>0x220012</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_particlesMinAlpha</code></td>
+<td style="text-align: right;">16</td>
+<td>FLOAT,NOCHEAT,EXPOSE (<code>0x200014</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_particlesMinAlphaDurango</code></td>
+<td style="text-align: right;">32</td>
+<td>FLOAT,NOCHEAT,EXPOSE (<code>0x200014</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+<tr>
+<td><code>r_explosivesDebug</code></td>
+<td style="text-align: right;">0 (false)</td>
+<td>BOOL,NOCHEAT,ARCHIVE,EXPOSE (<code>0x210011</code>)</td>
+<td style="text-align: right;">—</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>r_particleFadeQualityMultiplierDurango</code> and <code>r_particlesMinAlphaDurango</code>
+  are two fully separate, independently-registered cvars (pass 1 wrote
+  them as one name with a "(Durango)" qualifier — fixed, see "Pass 1
+  errors"), not platform-conditional aliases of the base name; both are
+  set the same way (<code>SetCvar</code> in console, or <code>resourceExec</code> for the
+  <code>exposed=false</code> ones below), global quality/distance multipliers, not
+  per-effect size/color controls — a coarse, zero-risk complement to the
+  decl-only levers, not a substitute.
+- <code>TestFx</code>/<code>TestParticle</code>/<code>StepParticleTime</code>/<code>ai_startfx</code>/<code>ai_stopfx</code>
+  console commands are registered but <strong>not</strong> exposed (<code>exposed: false</code> in
+  <code>re_probes/cmdtable/commands.json</code>, re-confirmed this round) — same
+  <code>resourceExec &lt;file&gt; -s</code> unlock the TNC console-unlock memory already
+  proved would be needed to reach them.
+- <strong>New static data point on the central open question (below):</strong> TNC's
+  RTTI type-descriptor table (<code>docs/ghidra/rtti_tnc.json</code>, 5,783 classes)
+  has a C++ class for every one of 12 of these 14 decl types, and every
+  one is an instance of the <em>same generic template</em> the engine uses for
+  every other ordinary TEXT decl (<code>idDeclDamage</code>, <code>idDeclAmmo</code>,
+  <code>idDeclWeapon</code>, ...): <code>idDeclInfoTemplate&lt;VidDeclParticle&gt;</code>,
+  <code>&lt;VidDeclFX&gt;</code>, <code>&lt;VidDeclParticleStage&gt;</code>,
+  <code>&lt;VidDeclProjectileImpactEffect&gt;</code>, <code>&lt;VidDeclGoreWound&gt;</code>,
+  <code>&lt;VidDeclGoreBehavior&gt;</code>, <code>&lt;VidDeclGoreGraph&gt;</code>, <code>&lt;VidDeclGoreMannequin&gt;</code>,
+  <code>&lt;VidDeclRibbon&gt;</code>, <code>&lt;VidDeclExplosion&gt;</code>, <code>&lt;VidDeclEnvExplosion&gt;</code>,
+  <code>&lt;VidDeclFlare&gt;</code> are all present (<code>propExplode</code>/<code>ebolt</code>, the two
+  smallest types at 4 and 2 decls, have no matching RTTI entry — not
+  investigated further, possibly inlined/devirtualized for such a tiny
+  type). This is read-only, no game launch. It does not prove the engine
+  <em>re-reads</em> a decl's text after a mod edits it, but it is concrete
+  evidence against the one alternative this round could not otherwise
+  rule out — that TNC quietly routes <code>particle</code>/<code>fx</code> through a
+  TNO-style special-cased binary/precompiled path instead of the generic
+  decl pipeline every already-runtime-proven edit (weapon, damage, ammo —
+  see memory <code>tnc-decl-edits.md</code>) goes through.
+- <strong>Negative control for the "precompiled shadow stream" hypothesis.</strong>
+  TNO has <code>base/generated/decls/particle/*.bin</code>, a 1:1 compiled mirror of
+  every TNO particle decl, which is the actual mechanism that discards
+  edits there (§6, TNO row above). Checked this round whether TNC's
+  install tree has anything analogous: <code>find ... -iname '*generated*'</code> to
+  depth 4 under the TNC install root finds <strong>nothing</strong> (only
+  <code>base/{bink,maps,sound,_wolfsdk_tnc}</code>, <code>dlc/dlc_{0,1,2,3,5}</code>,
+  <code>virtualtextures/maps</code>). TNC's closest binary neighbors
+  (<code>prtmeshdist</code> 479 unique, <code>staticParticleModel</code> 7 unique, <code>decalatlas</code>
+  864 unique) don't 1:1-match <code>particle</code>'s 777 unique names the way
+  TNO's <code>generated/particle/*.bin</code> count matches TNO's particle decl
+  count. Doesn't prove TNC loads edits, but removes the one concrete
+  alternative mechanism this round could check for without a game
+  launch.</p>
+<p><strong>INFERRED, not proven (needs a real game launch this round could not
+do):</strong></p>
+<ul>
+<li>That TNC actually <em>loads</em> an edited <code>particle</code>/<code>fx</code> decl at runtime and
+  the visual changes. <code>docs/moddingflaeche-tnc.md</code> §7 already flagged this
+  exact gap ("particle... ob das Laden auch funktioniert: nicht geprüft" —
+  "particle... whether loading also works: not checked"),
+  and this round narrows it (generic <code>idDeclInfoTemplate</code> RTTI finding,
+  no <code>generated/*.bin</code>-style shadow directory, both above) without
+  closing it — this is still the single open item that decides whether
+  §2's entire size/color/count/lifetime lever works at all, or whether
+  TNC's particle system turns out to have the same frozen-binary-stream
+  behavior TNO's does. The balance of static evidence now leans toward
+  "loads like any other decl" (TNC's <code>particle</code>/<code>fx</code> decls are
+  unambiguously TEXT and parse cleanly, which TNO's binary <code>.bin</code> streams
+  never were; they go through the same generic C++ decl template as
+  already-runtime-proven types like <code>weapon</code>/<code>damage</code>/<code>ammo</code>; and TNC has
+  no TNO-style precompiled shadow tree) — but none of this is a load-path
+  trace, only structural analogy. The in-game test below is still the
+  only thing that actually answers it.</li>
+<li>That <code>visuals.goreSpray.sprayFX = "FX_GORE_DISINTEGRATE"</code> in a
+  <code>gorewounds</code> decl is a closed engine enum (not further editable/
+  listable) rather than a decl reference — read as a bare string, not
+  traced into compiled code this round (one <code>--strings</code> attempt at
+  related <code>FX_WEAPON_START_FIRE*</code> enum strings came back "no references
+  found" in the Ghidra xref search, likely because these are read from a
+  jump/string table rather than a direct <code>lea</code>+<code>cmp</code> call site — not
+  pursued further, see §7).</li>
+</ul>
+<h2 id="7-failed-hypotheses--dead-ends-recorded-not-repeated">7. Failed hypotheses / dead ends (recorded, not repeated)</h2>
+<ol>
+<li><strong>Runtime xref corroboration for the FX event dispatcher.</strong> Tried
+   <code>python tools/decomp.py --strings "FX_WEAPON_START_FIRE"</code> hoping for a
+   direct call-site xref the way <code>r4_materials.md</code> found one for
+   <code>ambientProgram</code> (RVA <code>0x2635db0</code>, read at <code>0x5B1D61</code>). Every
+   <code>FX_WEAPON_START_FIRE*</code> variant string came back "no references found"
+   — these enum-name strings are very likely read through an indirect
+   table (a string→enum lookup built once at startup) rather than inline
+   <code>lea</code>+<code>cmp</code>, so Ghidra's static xref pass doesn't see the use site.
+   One attempt, not repeated; recorded as a dead end rather than retried
+   with a different enum family, since it would cost ~15s × N without a
+   clear next string to try.</li>
+<li><strong>Naive explosion-decl name lookup.</strong> <code>envexplosion:weapons/grenades/
+   frag_surface_explosion</code>'s <code>effects.fuelCoreImpact = "grenades/
+   frag_explosion"</code> is <strong>not</strong> an <code>fx</code> decl name — <code>fx:grenades/
+   frag_explosion</code> does not exist. It is a <code>particle</code> decl name with a
+   <code>weapons/</code> prefix the field value itself omits
+   (<code>particle:weapons/grenades/frag/frag_explosion</code> is the real target).
+   One lookup miss, resolved immediately by checking the <code>particle</code> sample
+   list instead of guessing — recorded so a future generic
+   envexplosion→target resolver doesn't repeat the same wrong assumption.</li>
+<li><strong><code>glass</code>/<code>destructiblePiece</code>/<code>impactParticles</code>/<code>impactSounds</code> as TNC
+   decl types.</strong> Expected by analogy with TNO's <code>docs/engine-surface.md</code>
+   listing; absent from TNC's fresh, unfiltered type census (§1). Not a
+   search failure — the full type list was printed and checked, not
+   grepped for a guessed name.</li>
+</ol>
+<h2 id="8-two-concrete-decl-only-effect-mods">8. Two concrete decl-only effect mods</h2>
+<p>Both use the project's existing <code>mod.json</code> schema
+(<code>"&lt;type&gt;:&lt;name&gt;": {"set": {&lt;path&gt;: &lt;value&gt;}}</code> or <code>{"file": &lt;path&gt;}</code>,
+exactly as <code>gore_realistisch</code>/<code>tnc_gore_probe</code> already do) and both stay
+inside the §5 budget (scalar edits of existing fields keep the text the
+same length or shorter; the one block-replace in Mod B is ~140 bytes
+smaller than the original block, see §3). <strong>Both recipes below were run
+this round through the real production path</strong> — <code>wolfsdk.mod.Mod.load()</code>
+(manifest validation) then <code>wolfsdk.decl.apply_patch()</code> (the exact
+function <code>mod.py</code>'s <code>build_payloads()</code> calls) against the live retail
+decl text, 0 errors on all four target assets, see §6's new PROVEN entry
+and <code>re_probes/fxdecls/verify_recipes.py</code>. That is as far as this track
+can go without a game launch — neither has been <em>applied to an
+installation</em> or <em>tested in-game</em> this round.</p>
+<h3 id="mod-a--größere-explosionen-bigger-grenade-explosions">Mod A — "Größere Explosionen" (bigger grenade explosions)</h3>
+<p>Target: <code>particle:weapons/grenades/frag/frag_explosion</code> (11 stages: light
+flash, fireball, smoke, sparks, ...). Scale every stage's size up and
+stretch the system's lifetime; grow the top-level bounds to match (else
+the bigger particles risk getting frustum-culled, §2):</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;wolfsdk.fx_groessere_explosion&quot;,
+  &quot;name&quot;: &quot;Groessere Granatenexplosion&quot;,
+  &quot;spiel&quot;: &quot;tnc&quot;,
+  &quot;priority&quot;: 160,
+  &quot;assets&quot;: {
+    &quot;particle:weapons/grenades/frag/frag_explosion&quot;: {
+      &quot;set&quot;: {
+        &quot;edit.maxSystemDuration&quot;: &quot;4200&quot;,
+        &quot;edit.bounds.b.b[0].x&quot;: &quot;-24.25&quot;,
+        &quot;edit.bounds.b.b[0].y&quot;: &quot;-24.25&quot;,
+        &quot;edit.bounds.b.b[0].z&quot;: &quot;-24.25&quot;,
+        &quot;edit.bounds.b.b[1].x&quot;: &quot;24.25&quot;,
+        &quot;edit.bounds.b.b[1].y&quot;: &quot;24.25&quot;,
+        &quot;edit.bounds.b.b[1].z&quot;: &quot;24.25&quot;
+      }
+    },
+    &quot;envexplosion:weapons/grenades/frag_surface_explosion&quot;: {
+      &quot;set&quot;: {
+        &quot;edit.effectSpreadRadius&quot;: &quot;9&quot;,
+        &quot;edit.numEffectsSpawned&quot;: &quot;12&quot;,
+        &quot;edit.maxLifespan&quot;: &quot;6000&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p>(Per-stage <code>size.size.size[0].val0/val1</code> and <code>systemProperties.
+totalParticles</code> paths exist too but differ by stage index per decl —
+dump the specific decl with <code>python re_probes/fxdecls/census.py dump
+particle weapons/grenades/frag/frag_explosion</code> first and pick the stage(s)
+to scale; left out of this snippet to keep it copy-pasteable without a
+stage-by-stage dump in this report.)</p>
+<h3 id="mod-b--andere-mündungsfeuerfarbe-a-differently-colored-bigger-muzzle-flash--light">Mod B — "Andere Mündungsfeuerfarbe" (a differently-colored, bigger muzzle flash + light)</h3>
+<p>Target: the pistol's <code>fx:weapons/handgun</code> (block-replace the muzzle light
+event to add intensity it doesn't have in retail, §3) and
+<code>particle:weapons/handgun/handgun_muzzleflash</code> (scale + recolor the flash
+sprite itself):</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;wolfsdk.fx_blaues_muendungsfeuer&quot;,
+  &quot;name&quot;: &quot;Blaues Muendungsfeuer (Pistole)&quot;,
+  &quot;spiel&quot;: &quot;tnc&quot;,
+  &quot;priority&quot;: 160,
+  &quot;assets&quot;: {
+    &quot;fx:weapons/handgun&quot;: {
+      &quot;set&quot;: {
+        &quot;edit.editEvents.item[8]&quot;: &quot;{\n\t\t\t\tname = \&quot;muzzlelight\&quot;;\n\t\t\t\tgroup = \&quot;standard\&quot;;\n\t\t\t\ttype = \&quot;FX_LIGHT\&quot;;\n\t\t\t\tduration = 0.05;\n\t\t\t\tcolor = {\n\t\t\t\t\tx = 0.2;\n\t\t\t\t\ty = 0.4;\n\t\t\t\t\tz = 1.0;\n\t\t\t\t}\n\t\t\t\ttagNames = {\n\t\t\t\t\tnum = 1;\n\t\t\t\t\titem[0] = \&quot;muzzle\&quot;;\n\t\t\t\t}\n\t\t\t\tstartCondition = {\n\t\t\t\t\tnum = 1;\n\t\t\t\t\titem[0] = \&quot;FX_WEAPON_START_FIRE\&quot;;\n\t\t\t\t}\n\t\t\t\tstopCondition = {\n\t\t\t\t\tnum = 1;\n\t\t\t\t\titem[0] = \&quot;FX_NONE\&quot;;\n\t\t\t\t}\n\t\t\t\toffset = {\n\t\t\t\t\ty = 0.0299999993;\n\t\t\t\t}\n\t\t\t\tlightParms = {\n\t\t\t\t\tradius = {\n\t\t\t\t\t\tx = 6;\n\t\t\t\t\t\ty = 6;\n\t\t\t\t\t\tz = 6;\n\t\t\t\t\t}\n\t\t\t\t\tintensity = 40;\n\t\t\t\t\tlightMtr = \&quot;lights/gaus\&quot;;\n\t\t\t\t}\n\t\t\t}&quot;
+      }
+    },
+    &quot;particle:weapons/handgun/handgun_muzzleflash&quot;: {
+      &quot;set&quot;: {
+        &quot;edit.stages.item[0].size.size.size[0].val0&quot;: &quot;0.6&quot;,
+        &quot;edit.stages.item[0].size.size.size[0].val1&quot;: &quot;0.6&quot;,
+        &quot;edit.stages.item[0].colorAttributes.baseColor.baseColor[1].val0&quot;: &quot;0.2&quot;,
+        &quot;edit.stages.item[0].colorAttributes.baseColor.baseColor[1].val1&quot;: &quot;0.2&quot;,
+        &quot;edit.stages.item[0].colorAttributes.baseColor.baseColor[2].val0&quot;: &quot;1.0&quot;,
+        &quot;edit.stages.item[0].colorAttributes.baseColor.baseColor[2].val1&quot;: &quot;1.0&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p>This block-replace pattern (editing <code>edit.editEvents.item[8]</code> wholesale
+with a hand-written new block) is this round's own proven technique (§3) —
+the <code>color</code>/<code>lightParms.intensity</code>/<code>lightParms.radius</code> values above are
+exactly the values that round-tripped correctly in the test script.</p>
+<h2 id="9-open-questions">9. Open questions</h2>
+<ul>
+<li><strong>Does TNC load an edited <code>particle</code>/<code>fx</code> decl at all?</strong> The one
+  question that decides whether §2–§4's entire lever works (§6). Narrowed
+  this round (generic <code>idDeclInfoTemplate</code> RTTI match, no precompiled
+  shadow tree, §6) but not closed — still needs the in-game test below.</li>
+<li><strong><code>sprayFX = "FX_GORE_DISINTEGRATE"</code>-style enum strings in gorewounds</strong> —
+  closed vocabulary or further-editable? Not traced into compiled code
+  this round (§6/§7.1).</li>
+<li><strong><code>goreGraph</code> (21) and <code>goreMannequin</code> (10)</strong> — field-censused this
+  round (<code>python re_probes/fxdecls/census.py fields goreGraph</code>/
+  <code>goreMannequin</code>, §1): both 0 <code>DeclError</code>. <code>goreGraph</code> is a per-wound
+  gore-hit-decal table, structurally close to <code>gorewounds</code>' own
+  <code>bloodPool</code> block — <code>edit.object.impactSprayDecals.item[N].
+  {maxDistance, decals.item[N].{decalMat, dripMat, depth, size.{x,y},
+  dripSize.{x,y}, dripOffset.{y}, fadeInEndTime}}</code> — directly
+  size/texture-editable scalars, same lever as §4's gore chain.
+  <code>goreMannequin</code> is <strong>not</strong> an effect-size lever: <code>edit.model</code> (an <code>.lwo</code>
+  gib-piece mesh path) + <code>edit.partsSetup.item[N].{name, poseTag,
+  massProperties.{type,value}}</code> — a per-enemy gib-rig/physics skeleton
+  definition (which mesh part binds to which animation joint, with what
+  mass), no color/size/lifetime fields of the kind this track is about.</li>
+<li><strong>TNO's <code>fx</code>/<code>ribbon</code>/<code>gorewounds</code>-equivalent budget numbers</strong> — not
+  re-measured this round; <code>docs/moddingflaeche-tno.md</code> §4 has the general
+  method (<code>tools/survey_modding_surface.py --budget</code>-equivalent) but this
+  round didn't rerun it for the FX-specific types.</li>
+<li><strong><code>gore_runtime.md</code>'s open probe</strong> (surgical <code>set()</code> on
+  <code>goreBehavior:standard/pistol</code>'s two existing <code>probability</code> scalars,
+  <code>mods/tnc_gore_probe</code> already built) is still the right <em>first</em> in-game
+  test for the gore side specifically — this round didn't duplicate or
+  advance it, only connected it into the wider fx/particle picture.</li>
+</ul>
+<h2 id="smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</h2>
+<p><em>(Translated from German.)</em></p>
+<p>Order, because Mod B needs the least preparation and is the most
+conspicuous:</p>
+<ol>
+<li><strong>Mod B first</strong> (<code>wolfsdk.fx_blaues_muendungsfeuer</code>): apply the loader with
+   this one mod (plus <code>tnc_erste</code> as the base), do <strong>not</strong> let the game
+   start automatically — start it yourself via Steam as always. Use the
+   already-proven kit map (dlc_0, <code>c2v1</code> — the same one on which the
+   30-round magazine test and the explosive pistol ran), draw the pistol and
+   shoot once into a wall. <strong>Expectation on success:</strong> the muzzle
+   flash now briefly casts blue instead of orange light, and the flash itself
+   is visibly bigger. <strong>If nothing looks different:</strong> either TNC does not load
+   the edited <code>fx</code>/<code>particle</code> decl (the open question from
+   section 6), or the pistol in the kit level uses a different
+   <code>fx</code>/<code>weaponFX</code> assignment than <code>weapons/handgun</code> — then search the log for
+   <code>impactEffectTable</code>/<code>weaponFX</code> lines for the weapon actually
+   equipped there.</li>
+<li><strong>Then Mod A</strong> (<code>wolfsdk.fx_groessere_explosion</code>): throw a frag grenade
+   (should be available in the kit level) and watch the duration/size of the
+   fireball.</li>
+<li>With <strong>no</strong> visible change in either case: that confirms the
+   open question in section 6 (TNC possibly does not load edited <code>particle</code>/<code>fx</code> decls
+   at runtime) and makes it the next priority question for
+   the next round — with the same diagnostic path as
+   <code>explosivpistole_diag.md</code> (rule out load-order/<code>inherit</code> traps first,
+   only then doubt the decl itself).</li>
+</ol>
+<h2 id="files-touched-this-round">Files touched this round</h2>
+<ul>
+<li><code>re_probes/fxdecls/census.py</code> — the census/field-frequency/dump/chain
+  tool from pass 1, reused as-is this round (<code>types</code>/<code>fields</code> for
+  <code>goreGraph</code>/<code>goreMannequin</code>, plus a standalone recount of
+  <code>projectileImpactEffect:default</code>'s blocks and the <code>damage</code>/
+  <code>declGoreBehavior</code> raw-vs-unique counts, both done inline rather than
+  as new subcommands).</li>
+<li><code>re_probes/fxdecls/verify_recipes.py</code> — <strong>new this round</strong>: runs both
+  §8 mod recipes through the real production path
+  (<code>wolfsdk.mod.Mod.load</code> + <code>wolfsdk.decl.apply_patch</code>) against live
+  retail decl text; writes its two scratch <code>mod.json</code> fixtures under
+  <code>re_probes/fxdecls/tmp/</code> (gitignored scratch, like every other track's
+  folder), reads the retail archives, never writes to them.</li>
+<li><code>re_probes/agent_reports/r6_fxdecls.md</code> — this report, pass 2.</li>
+</ul>
+<p>No file under <code>wolfsdk/</code>, <code>tools/</code>, <code>docs/</code>, <code>mods/</code>, or any other track's
+<code>re_probes/</code> subfolder was modified. No file under the two game install
+directories or <code>&lt;user folder&gt;/Saved Games</code> was written. The <code>find
+-iname '*generated*'</code> negative control (§6) only read directory names
+under the TNC install root, nothing was written there.</p>
+<p>Related: <a href="Research-Report-R4-Materials.html">Research Report: R4 Materials</a>, <a href="Research-Report-R3-Newweapon.html">Research Report: R3 Newweapon</a>, <a href="Research-Report-Explosivpistole-Diag.html">Research Report: Explosivpistole Diag</a>, <a href="Research-Report-Gore-Runtime.html">Research Report: Gore Runtime</a>, <a href="Research-Report-R2-Newassets.html">Research Report: R2 Newassets</a>, <a href="Research-Report-R3-Newassetsv.html">Research Report: R3 Newassetsv</a>, <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>, <a href="TNO-Modding-Surface.html">TNO Modding Surface</a>, <a href="Engine-Modding-Surface.html">Engine Modding Surface</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Engine-Limits.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Engine Limits: Entities, AI, Lights, Map Size, Streaming, Decls, Physics, Strings</a><a class="next" href="Research-Report-R6-Photo-Camera.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Photocam: A Free Camera / Photo-Mode Cfg and Keybind Set for The New Colossus</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

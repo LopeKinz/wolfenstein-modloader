@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Map Loading in Code: Command Handlers, `Map_f`, Chunk Mounting, and a Working DLC-Extension Pipeline – Wolfenstein Modloader</title>
+<meta name="description" content="How The New Order&#x27;s code picks and loads a map, and a newly found DLC folder route for custom content.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Map Loading in Code: Command Handlers, <code>Map_f</code>, Chunk Mounting, and a Working DLC-Extension Pipeline</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R7-Tno-Map-Loading"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#question">Question</a></li><li><a href="#answer-short">Answer (short)</a></li><li><a href="#1-the-command-table-mapcmapdevmapdevcmapcheckmap-and-siblings">1. The command table: map/cmap/devmap/devcmap/checkmap and siblings</a></li><li><a href="#2-the-core-handler-idcommonlocalmap_f-rva-0x148ec0">2. The core handler: idCommonLocal::Map_f (RVA 0x148ec0)</a></li><li><a href="#3-masterindex-the-base-archive-mount-confirmed-from-code">3. master.index: the base-archive mount, confirmed from code</a></li><li><a href="#4-the-new-finding-tnos-dlc-content-package-mount-end-to-end-proven">4. The new finding: TNO&#x27;s DLC content-package mount, end to end, proven</a></li><li><a href="#5-mapinfos-vmtrchunknumber-a-decl-field-reflection-table-and-a-new-sibling-field">5. mapInfo&#x27;s vmtrChunkNumber: a decl-field reflection table, and a new sibling field</a></li><li><a href="#proven-vs-inferred">PROVEN vs INFERRED</a></li><li><a href="#ranked-routes">Ranked routes</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</a></li><li><a href="#reproducibility">Reproducibility</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report read the decrypted program code of Wolfenstein: The New Order (TNO) to see how map commands and archive mounting work. map, devmap and three related commands all run through one shared function, and in a normal retail launch a missing pre-built combo map file only causes a warning, not an abort. The biggest result: TNO scans a dlc folder next to base for subfolders with an info.txt, checks the listed app ID against Steam ownership, and adds that folder&#x27;s own archives to the game, which an earlier report thought did not exist. All of this is <span class="t" data-t="static">static code reading</span>; the dlc folder route has not been tried in the running game.</p><ul><li>map, cmap, devmap, devcmap and checkmap are real commands that all run through the same map-loading function.</li><li>In retail, a missing _combo .proc file only logs &#x27;You need to build the combo map&#x27;; what happens later during loading was not traced.</li><li>A <span class="t" data-t="dlc">DLC</span> subfolder with an info.txt (an appID owned on Steam, a dlcID from 1 to 16) gets its own master.index and chunks added to the 14 base chunk pairs; it adds content, it does not override existing content.</li><li>Using TNO&#x27;s own app ID 201810 so that the ownership check passes is a guess; mapInfo also has a previously unknown dlcId field.</li><li>Open and untested in game: whether the dlc scan runs in retail and whether the app ID check passes; a test with an empty test folder under dlc, then an info.txt, is described.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um zu sehen, wie Kartenbefehle und das Einbinden von Archiven funktionieren. map, devmap und drei verwandte Befehle laufen alle über eine gemeinsame Funktion, und bei einem normalen Start der Verkaufsversion führt eine fehlende vorgebaute Combo-Kartendatei nur zu einer Warnung, nicht zum Abbruch. Das wichtigste Ergebnis: TNO durchsucht einen dlc-Ordner neben base nach Unterordnern mit einer info.txt, prüft die dort eingetragene App-ID gegen den Steam-Besitz und bindet die eigenen Archive dieses Ordners ins Spiel ein, was ein früherer Bericht für nicht vorhanden hielt. Alles beruht auf <span class="t" data-t="static">statischem Codelesen</span>; der dlc-Ordner-Weg wurde im laufenden Spiel noch nicht ausprobiert.</p><ul><li>map, cmap, devmap, devcmap und checkmap sind echte Befehle, die alle über dieselbe Kartenlade-Funktion laufen.</li><li>In der Verkaufsversion schreibt eine fehlende _combo-.proc-Datei nur „You need to build the combo map“ ins Log; was danach beim Laden passiert, wurde nicht verfolgt.</li><li>Ein <span class="t" data-t="dlc">DLC</span>-Unterordner mit einer info.txt (eine auf Steam besessene appID, eine dlcID von 1 bis 16) bekommt seine eigene master.index und Chunks zu den 14 Basis-Chunk-Paaren hinzugefügt; er fügt Inhalte hinzu, überschreibt aber keine vorhandenen.</li><li>TNOs eigene App-ID 201810 zu nutzen, damit die Besitzprüfung besteht, ist eine Vermutung; mapInfo hat außerdem ein bisher unbekanntes Feld dlcId.</li><li>Offen und im Spiel ungetestet: ob der dlc-Scan in der Verkaufsversion läuft und ob die App-ID-Prüfung besteht; ein Test mit einem leeren Testordner unter dlc und danach einer info.txt ist beschrieben.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-7 research pass on how The New Order chooses and loads a map, read from decompiled code: <code>map</code>, <code>devmap</code> and three siblings share <code>idCommonLocal::Map_f</code>, whose retail-path check for a combo map is only a warning, and the <code>master.index</code> mount is confirmed from code. The main new result is that TNO scans <code>&lt;install-root&gt;\dlc\</code> for folders with an <code>info.txt</code>, checks an app ID against Steam ownership, and mounts that folder's own <code>master.index</code> — a DLC-extension route for custom content. <strong>Static evidence only; the folder-scan route is untested in game.</strong></p>
+<p>Track <code>tnomaploading</code>, round 7, 2026-10-01. First round with a <strong>decrypted TNO
+runtime image</strong> (<code>re_probes/runtime_tno_186352/module.bin</code>, pid 186352,
+base <code>0x7ff74a390000</code>, captured read-only from the running retail game) and a
+TNO-scoped Ghidra snapshot (<code>D:/wolf-decomp/ghidra/tno_runtime.gzf</code>, 50,884
+functions from <code>.pdata</code>, 2,369 RTTI vtables labelled, no curated function
+names). Every prior TNO round (<code>r4_tnocustom.md</code>, <code>r6_tnoconsole.md</code>,
+<code>r6_tnodecls.md</code>, <code>r6_tnomegatex.md</code>) explicitly stated TNO's <code>.text</code> was
+unreachable ("no TNO runtime image exists"); that is no longer true, and this
+round spends its whole budget on the one question that needed it most: how
+does TNO's own code choose and load a map, and what does that mean for a
+custom/modified map.</p>
+<p>Read-only throughout. Never launched the game, never attached a debugger.
+Queried <code>tools/decomp.py</code> (max 2 concurrent calls per the tool's own
+copy-on-open design) and, where Ghidra's string xrefs were empty/incomplete
+(stated explicitly below every time this happened, not glossed over),
+scanned <code>module.bin</code> directly for 8-byte pointer references, reusing
+<code>tools/tnc_runtime_code.py</code>'s own method (its <code>Image</code> class, pointed at the
+TNO snapshot directory instead of TNC's). New files live under
+<code>re_probes/tnomaploading/</code> (one script, <code>probe_maploading.py</code>, read-only,
+reproduces every string/offset cited below from scratch, with one negative
+control — run it yourself: <code>python re_probes/tnomaploading/probe_maploading.py</code>
+→ <code>20/20 known strings match</code>, <code>mapInfo field table OK</code>, <code>ALL OK</code>).</p>
+<h2 id="question">Question</h2>
+<p>How TNO chooses and loads a map in code: <code>map</code>/<code>devmap</code> command handlers (if
+they exist), chapter decls, <code>mapInfo.vmtrChunkNumber</code>, <code>master.index</code> chunk
+mounting, megatexture binding; what a custom or modified map needs; and the
+best route to load a modified or new map in TNO, building on <code>r4_tnocustom.md</code>.</p>
+<h2 id="answer-short">Answer (short)</h2>
+<p><strong><code>devmap</code> and four siblings (<code>map</code>, <code>cmap</code>, <code>devcmap</code>, <code>checkmap</code>) are real,
+registered console commands, all routed through one shared function this
+round identifies by its own embedded debug string as <code>idCommonLocal::Map_f</code></strong>
+(RVA <code>0x148ec0</code>). It parses <code>argv</code>, recognises flags <code>combo</code>/<code>dev</code>/<code>reset</code>/
+<code>check</code>/<code>nextMapDiscSwap</code>, and — <strong>the one finding this round ranks
+everything else under</strong> — in a normal production/retail launch its only
+map-existence check is whether <code>maps/&lt;name&gt;/_combo/&lt;name&gt;.proc</code> exists, and
+that check is <strong>advisory, not a hard gate</strong>: missing it only logs <code>"You need
+to build the combo map for: %s"</code> and the function still proceeds to start the
+map. The hard <code>"Can't find map '%s'"</code> abort (checking <code>maps/&lt;name&gt;.entities</code>
+directly) only fires on a <strong>non-production</strong> build path (see §2 — gated by a
+flag this round could identify but not fully pin down the write-site of).
+<code>master.index</code>'s own format is confirmed from code, not just static bytes:
+magic <code>"RE5"</code> + a version byte, a count, then per-chunk two filename reads,
+each opened through the filesystem singleton and appended to one growable
+array (§3).</p>
+<p><strong>The single biggest new result</strong>: that growable chunk array is <strong>not</strong> only
+filled from the base 14 <code>chunkN.index</code>/<code>chunkN.resources</code> pairs.
+<code>idSessionLocal</code>'s own <code>EnumerateDownloadableContent</code> (RVA <code>0x4ee2b0</code>, own
+debug string) genuinely <strong>scans <code>&lt;install-root&gt;\dlc\</code> on local disk for
+subfolders containing a valid <code>info.txt</code></strong>, reads an <code>appID</code> and a <code>dlcID</code>
+(must be <code>1..16</code>) out of it, checks <code>appID</code> against a Steamworks ownership
+call, and on success queues the folder; <code>OpenDLCFileHandles</code> (RVA <code>0x16d090</code>,
+own debug string) then opens <strong>that folder's own <code>master.index</code></strong> the exact
+same way as the base one and <strong>appends its chunk pairs into the same array</strong>
+— with a by-id "already loaded, skipping" guard. This is a real, working,
+code-confirmed extension point that r4_tnocustom's two rounds concluded did
+not exist for TNO ("no <code>dlc_0</code>-style route", ranked last, based on reading the
+<em>wrong game's</em> decompiler, since no TNO image existed yet). It is not the
+<em>same shape</em> as TNC's <code>dlc_0</code> precedence (this is pure <strong>addition</strong> of new
+chunk pairs, not an override of existing ones) — but it is a genuine,
+intended, always-live mounting path for a custom map's own archive, gated
+only by a Steam-ownership check this report shows is very likely satisfiable
+with the base game's own AppID (confirmed from the local Steam install:
+<strong><code>201810</code></strong>, <code>&lt;Steam library&gt;\steamapps\appmanifest_201810.acf</code>). This is now
+Route 1, replacing both of r4_tnocustom's untested/unsolved Routes 2 and 3.</p>
+<h2 id="1-the-command-table-mapcmapdevmapdevcmapcheckmap-and-siblings">1. The command table: <code>map</code>/<code>cmap</code>/<code>devmap</code>/<code>devcmap</code>/<code>checkmap</code> and siblings</h2>
+<p>Ghidra's static string xrefs were mostly empty for this binary (stated in
+every prior TNO round as a structural limitation of the quick import — "no
+command table for TNO yet"); <code>--strings</code> still lists the strings and, where a
+reference happened to resolve, names the containing function. Searching
+<code>"loads a combo map"</code> (the exact cvar/command description text
+<code>r6_tnoconsole.md</code>'s own mined table already found for <code>devmap</code>/<code>cmap</code>/
+<code>devcmap</code>/<code>checkmap</code>) hit exactly one function for every one of its five
+description variants:</p>
+<pre><code>python tools/decomp.py --strings &quot;loads a combo map&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+  &quot;loads a combo map&quot;                                        &lt;- FUN_7ff74a4c7950 (x2)
+  &quot;loads a combo map in developer mode&quot;                      &lt;- FUN_7ff74a4c7950 (x2)
+  &quot;loads a combo map in developer mode from checkpoint load&quot; &lt;- FUN_7ff74a4c7950
+</code></pre>
+<p>Decompiling <code>FUN_7ff74a4c7950</code> (RVA <code>0x137950</code>) shows it is <strong>the console
+command-registration block itself</strong>: 40+ consecutive calls through
+<code>idCmdSystemLocal</code>'s vtable (<code>+0x18</code>, confirmed by its own RTTI label
+<code>vtbl_idCmdSystemLocal</code> on a related call site, matching the already-known
+engine family) — each call is literally <code>AddCommand(name, handler,
+description, completionFn)</code>. Reading the raw command-name string operands
+(Ghidra doesn't label them, since nothing in the quick import's analyzer set
+resolves a bare <code>DAT_…</code> as a C string unless something else references it —
+read directly from <code>module.bin</code> instead, same method as everywhere else in
+this report):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>name string (VA)</th>
+<th>handler</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>map</code> (<code>0x7ff74b1f111c</code>)</td>
+<td><code>FUN_7ff74a4d9ff0</code> (RVA <code>0x149ff0</code>)</td>
+<td>"loads a combo map"</td>
+</tr>
+<tr>
+<td><code>cmap</code> (<code>0x7ff74b1f19a4</code>)</td>
+<td><code>FUN_7ff74a4d9ff0</code> (same)</td>
+<td>"loads a combo map"</td>
+</tr>
+<tr>
+<td><code>devmap</code> (<code>0x7ff74b1f19d4</code>)</td>
+<td><code>FUN_7ff74a4da050</code> (RVA <code>0x14a050</code>)</td>
+<td>"loads a combo map in developer mode"</td>
+</tr>
+<tr>
+<td><code>devcmap</code> (<code>0x7ff74b1f1a08</code>)</td>
+<td><code>FUN_7ff74a4da050</code> (same)</td>
+<td>"loads a combo map in developer mode"</td>
+</tr>
+<tr>
+<td><code>checkmap</code> (<code>0x7ff74b1f1a50</code>)</td>
+<td><code>FUN_7ff74a4da0c0</code> (RVA <code>0x14a0c0</code>)</td>
+<td>"loads a combo map in developer mode from checkpoint load"</td>
+</tr>
+<tr>
+<td><code>slowmap</code></td>
+<td><code>FUN_7ff74a4d9f70</code></td>
+<td>"loads a map using slow non-shipp[ing path]"</td>
+</tr>
+<tr>
+<td><code>restartmap</code></td>
+<td><code>FUN_7ff74a4dc960</code></td>
+<td>"restarts the current map"</td>
+</tr>
+<tr>
+<td><code>restartmaphere</code></td>
+<td><code>FUN_7ff74a4dcb30</code></td>
+<td>"restarts the current map and tel[eports]"</td>
+</tr>
+<tr>
+<td><code>nextmap</code></td>
+<td><code>FUN_7ff74a4da120</code></td>
+<td>"transitions to the next map"</td>
+</tr>
+</tbody>
+</table></div>
+<p>All five map-loading handlers (<code>map</code>/<code>cmap</code>/<code>devmap</code>/<code>devcmap</code>/<code>checkmap</code>)
+are thin wrappers: each prepends its own argv, appends one or two literal
+flag words, and calls the <strong>same</strong> core function, <code>FUN_7ff74a4d8ec0</code> (RVA
+<code>0x148ec0</code>):</p>
+<pre><code>FUN_7ff74a4d9ff0 (map, cmap)      : appends &quot;combo&quot;
+FUN_7ff74a4da050 (devmap, devcmap): appends &quot;dev&quot;, then &quot;combo&quot;
+FUN_7ff74a4da0c0 (checkmap)       : appends &quot;check&quot;
+</code></pre>
+<p>All three handlers verified directly against this report's own re-read
+strings (<code>re_probes/tnomaploading/probe_maploading.py</code> line-level checks).
+There is also a separate, standalone helper, <code>FUN_7ff74acb4350</code> (RVA
+<code>0x924350</code>), that formats a literal <code>"devmap %s\n"</code> string and feeds it
+through <code>idCmdSystemLocal</code>'s vtable <code>+0x48</code> (a <code>BufferCommandText</code>/
+<code>AppendCommandText</code>-shaped call, same vtable object as <code>AddCommand</code> above) —
+this is some menu/UI flow (unidentified — no xrefs to this helper either,
+Ghidra's import limitation again) directly injecting a <code>devmap &lt;name&gt;</code>
+command the same way a player typing it in the console would, i.e. a second,
+code-confirmed, non-console way <code>devmap</code> gets invoked.</p>
+<h2 id="2-the-core-handler-idcommonlocalmap_f-rva-0x148ec0">2. The core handler: <code>idCommonLocal::Map_f</code> (RVA <code>0x148ec0</code>)</h2>
+<p>This function's <strong>own embedded string proves its name</strong> — one of its error
+paths is literally <code>FUN_7ff74ad5a710(s_idCommonLocal__Map_f_map_doesnt_h...)</code>
+= <code>"idCommonLocal::Map_f map doesnt have valid data"</code>. This is the strongest
+possible identification this method can give (not a guess from shape or
+analogy — the function tells you its own class::method name).</p>
+<p><strong>Argument parsing</strong> (<code>param_1</code> is an <code>idCmdArgs</code>-shaped struct: an int32
+<code>argc</code> at offset 0, <code>argv[0]</code> not used here, <code>argv[1]</code> = the map name at
+offset <code>+4</code>, further <code>argv[N]</code> from offset <code>+6*4</code> onward stepping by two
+int32 slots): a loop from <code>argv[2]</code> onward checks each token case-sensitively
+against five literals — <code>"combo"</code>, <code>"dev"</code>, <code>"reset"</code>, <code>"check"</code>,
+<code>"nextMapDiscSwap"</code> — setting one local flag byte per hit. <code>"check"</code> sets
+<strong>two</strong> flags at once (its own flag, and the same bit <code>"combo"</code> sets) — so
+<code>checkmap</code>'s single appended <code>"check"</code> token reaches the identical downstream
+branch as <code>map</code>/<code>cmap</code>'s appended <code>"combo"</code>, and <code>devmap</code>/<code>devcmap</code> append
+<strong>both</strong> <code>"dev"</code> and <code>"combo"</code> explicitly. Net effect, re-derived from all
+five wrapper handlers together: <strong>all five player-facing map commands set
+the same "combo" flag one way or another</strong> — there is no map-loading
+command that skips the combo-flag branch in §2.2 below.</p>
+<h3 id="21-file-extension-entities-by-default-map-as-a-named-fallback">2.1 File extension: <code>.entities</code> by default, <code>.map</code> as a named fallback</h3>
+<p>Before any existence check, the function builds a default extension string
+<code>"map"</code>, then asks (via a second helper) whether the configured/queried
+extension resolves to <code>"entities"</code> — if so, swaps the extension string to
+<code>"entities"</code>. This is the parser-level confirmation (not just static-text
+inference, as in <code>r4_tnocustom.md</code>) that a map name is ultimately resolved
+to a <code>maps/&lt;name&gt;.&lt;ext&gt;</code> path with <code>ext</code> defaulting to <code>entities</code> — matching
+<code>file:maps/&lt;id&gt;.entities</code> exactly as <code>r4_tnocustom.md</code> found by reading decl
+text. The two extensions are not interchangeable at the call site: if the
+extension is <code>"entities"</code> <strong>and</strong> the existence check (next section) fails,
+an extra hint fires: <code>"Use the writeEntitiesFile command to convert the map
+to an entities file.\n"</code> (own string, <code>0x7ff74b1f7f20</code>) — i.e. the engine
+still recognises a raw, uncompiled <code>.map</code> (editor format) as a legitimate
+predecessor to the shipped <code>.entities</code>, consistent with the standard id Tech
+5 build pipeline (<code>.map</code> → <code>writeEntitiesFile</code> → <code>.entities</code>).</p>
+<h3 id="22-production-branch-the-_comboproc-check-is-a-warning-not-a-gate">2.2 Production branch: the <code>_combo/&lt;name&gt;.proc</code> check is a <strong>warning, not a gate</strong></h3>
+<p>A global flag (<code>DAT_7ff74c181dd8</code>) selects between two completely different
+bodies of logic. Strong circumstantial evidence for its meaning: the
+<strong>only</strong> other place in this image that writes to it is <code>FUN_7ff74a4faf20</code>
+(§3, the base-archive mount function), and it writes <code>0</code> there in the
+<strong>same few instructions</strong> as a logged call to <code>idLib::SetProduction(
+PROD_DEVELOPMENT )</code> — i.e. this flag reads as "is this a shipping/production
+run" (non-zero) vs. "development, no base archive could even be opened"
+(zero). <strong>INFERRED, not proven</strong> — this report did not find or trace the
+call that sets it to non-zero on a normal run, only the one call that zeros
+it in a degraded scenario.</p>
+<p>When the flag is <strong>non-zero</strong> (the expected state for any real, retail
+launch where <code>master.index</code> opened successfully — see §3):</p>
+<pre><code>maps/%s/_combo/%s.proc            &lt;- own string, 0x7ff74b1f7f70
+You need to build the combo map for: %s   &lt;- own string, 0x7ff74b1f7f88 (LOG ONLY)
+</code></pre>
+<p>The file-existence check (filesystem singleton's vtable <code>+0x88</code>, same call
+shape used everywhere else in this function) runs, and if it returns false,
+<strong>the function logs the warning and keeps going</strong> — there is no early return,
+no <code>goto</code>, nothing skipped; the very next lines unconditionally set up
+session-start fields (<code>"direct"</code>/<code>"topic"</code>/<code>"player_start"</code> substrings,
+own-string-confirmed at <code>0x7ff74b1f77f4</code>/<code>0x7ff74b1f77fc</code>/<code>0x7ff74b1f7ff8</code>)
+and call through to what is almost certainly <code>idSessionLocal::StartNewGame</code>
+(two further vtable calls on a second singleton, offsets <code>+0x98</code> then
+<code>+0x48</code>, immediately followed by two paired <code>FUN_7ff74a4d6060(5, …)</code> /
+<code>FUN_7ff74a4d6060(6, …)</code> calls that read exactly like a loading-screen
+push/pop pair). <strong>This is the single most actionable finding in this
+report</strong>: a map that ships <code>maps/&lt;name&gt;.entities</code> but has <strong>no</strong> baked
+<code>_combo/&lt;name&gt;.proc</code> at all is not rejected by <code>Map_f</code> — it only gets one
+log line, and the engine still attempts to start it.</p>
+<p>When the flag is <strong>zero</strong> (development/no-archive path), the function
+instead builds <code>maps/%s</code> (own string <code>0x7ff74b1f7ef0</code>), runs the <strong>same</strong>
+vtable <code>+0x88</code> existence check against <code>maps/&lt;name&gt;.&lt;ext&gt;</code> directly, and
+<strong>this one does gate</strong>: on failure it logs <code>"Can't find map '%s'\n"</code> (own
+string <code>0x7ff74b1f7ef8</code>), optionally appends the <code>writeEntitiesFile</code> hint
+(§2.1), and jumps straight to the function's cleanup/exit label — no session
+start happens at all. On success it instead checks for an optional
+<code>&lt;name&gt;_region.map</code> sibling file and, if present, logs <code>"Loading region map:
+%s\n"</code> and substitutes <code>&lt;name&gt;_region</code> for the rest of the call — a cosmetic
+per-region overlay feature, not required for a basic load.</p>
+<h3 id="23-what-this-means-for-what-does-a-custommodified-map-need">2.3 What this means for "what does a custom/modified map need"</h3>
+<p>Combining §2.1–§2.2, re-stated as a checklist, ranked by how hard each
+requirement actually is to satisfy, per this code (not per guesswork):</p>
+<ol>
+<li><strong>Not a hard requirement in production</strong>: <code>maps/&lt;name&gt;/_combo/&lt;name&gt;.proc</code>
+   existing. Missing it only logs a warning in <code>Map_f</code> itself. (What happens
+   later — whether the renderer/entity-spawn path that actually reads this
+   <code>.proc</code> file for geometry crashes or silently no-ops when it's absent —
+   is <strong>not traced this round</strong>; §2.2's own "proceeds anyway" behaviour is
+   proven only up to the <code>StartNewGame</code>-equivalent call, not past it. Flagged
+   as an open question, not glossed over.)</li>
+<li><strong>Needed only on the non-production code path</strong> (§2.2's <code>else</code> branch):
+   <code>maps/&lt;name&gt;.entities</code> (or <code>.map</code>) must exist, checked directly by path.
+   For a normal retail launch this check <strong>does not run at all</strong>.</li>
+<li>Chapter-select and the actual <code>mapInfo</code>/<code>vmtrChunkNumber</code> decl fields
+   (below, §4) were not found referenced anywhere in <code>Map_f</code> itself — this
+   function only cares about the map <strong>name</strong> string and the two files named
+   above; <code>mapInfo</code>/<code>vmtrChunkNumber</code> are read elsewhere (most likely at the
+   point the resource manager actually opens the content, downstream of
+   <code>Map_f</code> — not traced this round, time-boxed in favour of the DLC-mount
+   finding below, which this report ranks as far higher-value for "how do I
+   add a map").</li>
+</ol>
+<h2 id="3-masterindex-the-base-archive-mount-confirmed-from-code">3. <code>master.index</code>: the base-archive mount, confirmed from code</h2>
+<p><code>--strings "master.index"</code> resolves two containing functions. The first,
+<code>FUN_7ff74a4faf20</code> (RVA <code>0x16af20</code>), is the base-archive loader called once
+at startup:</p>
+<ol>
+<li>Opens <code>master.index</code> (two candidate names tried, <code>DAT_7ff74b9254f8</code> then
+   a fallback <code>DAT_7ff74b925500</code>, both resolved through the filesystem
+   singleton's vtable <code>+0xf8</code>, an "open file" call reused everywhere in this
+   report).</li>
+<li>On total failure (neither name opens): logs <code>idLib::SetProduction(
+   PROD_DEVELOPMENT )</code>, zeroes <code>DAT_7ff74c181dd8</code> (§2.2), and returns early —
+   <strong>no base chunks are mounted at all</strong> in this branch.</li>
+<li>On success: reads a 4-byte magic, compared against the constant
+   <code>0x03534552</code> — byte order <code>'R' 'E' '5' 0x03</code>, i.e. <code>"RE5"</code> + a version
+   byte, confirming <code>docs/formats.md</code>'s already-documented archive magic
+   directly from the mounting code, not just from static archive bytes.
+   Reads a 4-byte count (<code>N</code>), ensures array capacity for <code>N</code> entries, then
+   loops <code>N</code> times: reads <strong>two</strong> length-prefixed strings per entry (the
+   <code>.index</code> and <code>.resources</code> filenames for that chunk pair), opens each
+   through the same filesystem singleton (<code>+0xf8</code>), and stores both handles
+   plus a small int tag (read from a separate fixed-size array,
+   <code>DAT_7ff74b933820</code>, indexed by chunk number — plausibly <code>discNumber</code> or a
+   DLC-id slot, not traced further) into one growable array at
+   <code>param_1[2]</code>/<code>param_1[3]</code> (capacity/count fields at struct offsets
+   <code>+0x1c</code>/<code>+0x20</code>).</li>
+</ol>
+<p>This is the exact mechanism TNO's own 14 <code>chunkN.index</code>/<code>chunkN.resources</code>
+pairs get mounted by — now <strong>PROVEN from the mounting code itself</strong>, where
+every prior round only had the static <code>master.index</code> bytes and the project's
+own reader (<code>wolfsdk/resources.py</code>) to go on.</p>
+<h2 id="4-the-new-finding-tnos-dlc-content-package-mount-end-to-end-proven">4. The new finding: TNO's DLC content-package mount, end to end, proven</h2>
+<p>The second function referencing <code>"master.index"</code>, <code>FUN_7ff74a4fd090</code> (RVA
+<code>0x16d090</code>), carries its own debug string:
+<code>"OpenDLCFileHandles: %d packages mounted.\n"</code> (<code>0x7ff74b1ff5f0</code>). It:</p>
+<ol>
+<li>Asks a session-like singleton (<code>DAT_7ff74b936d10</code>, vtable <code>+600</code>=<code>+0x258</code>)
+   for a package count, then for each index <code>i</code> asks the <strong>same</strong> singleton
+   for a package id (vtable <code>+0x260</code>) and a package path string (vtable
+   <code>+0x268</code>).</li>
+<li>For each package: checks whether that id is <strong>already</strong> present in the
+   installation's chunk array (by the same per-entry int tag <code>OpenDLCFileHandles</code>
+   checks, at struct offset <code>+0x9c</code> of each chunk-array entry — the exact
+   field <code>FUN_7ff74a4faf20</code> populates from <code>DAT_7ff74b933820</code> for base
+   chunks too) — if so, logs <code>"...already loaded, skipping..."</code> and moves on.</li>
+<li>Otherwise builds <code>&lt;package path&gt;\master.index</code>, opens it through the
+   <strong>same</strong> filesystem singleton call used for the base mount, checks the
+   <strong>same</strong> <code>"RE5"</code> magic, reads a count and loops reading index/resources
+   filename pairs <strong>exactly like §3</strong> — and appends every resulting chunk
+   pair into <strong>the very same growable array</strong> the base 14 chunks live in
+   (<code>param_1[0x10]</code>/<code>param_1[0x18]</code>/<code>param_1[0x1c]</code>, the same struct <code>Map_f</code>
+   and the base mount both operate on via the installation object).</li>
+</ol>
+<p>Where does that package count/id/path come from? <code>--strings
+"OpenDLCFileHandles"</code> led to it; searching nearby led to the actual
+discovery function, <code>idSessionLocal::EnumerateDownloadableContent</code> (own
+string <code>"EnumerateDownloadableContent: %s\n"</code>, <code>0x7ff74b2ad1e8</code>,
+<code>FUN_7ff74a87e2b0</code>, RVA <code>0x4ee2b0</code>):</p>
+<ol>
+<li>Gets the filesystem's base path (vtable <code>+0x130</code>, arg <code>0</code>) and appends the
+   literal <code>"\dlc"</code> (own string <code>0x7ff74b2ad1e0</code>) — i.e. <strong><code>&lt;install
+   root&gt;\dlc</code></strong>, a sibling of <code>base\</code>, not inside it.</li>
+<li><strong>Lists the directory</strong> (<code>FUN_7ff74ada39c0</code>, given a <code>"/"</code>-shaped pattern
+   argument) — a genuine filesystem directory listing, confirmed by the
+   surrounding pure-filesystem call shapes, not a Steamworks call at this
+   step.</li>
+<li>For every entry found (name length <code>&gt; 2</code>): logs <code>"Found DLC '%s'..."</code>,
+   builds <code>&lt;entry&gt;/&lt;name&gt;/info.txt</code> via the template string <strong><code>"%s/%s/info.txt"</code></strong>
+   (<code>0x7ff74b2ad228</code>), checks existence (filesystem <code>+0x88</code>). Missing it logs
+   <code>"Error, found %s directory without info.txt!\n"</code> and the folder is
+   skipped — <strong>confirms <code>r4_tnocustom.md</code> §4's static <code>dlc\&lt;name&gt;\info.txt</code>
+   finding directly from the scanning code</strong>, not just from a string block.</li>
+<li>If present: reads the whole file (filesystem <code>+0xC8</code>/200, a
+   "read file into buffer" call), parses it with a dedicated parser
+   (<code>FUN_7ff74a8627c0</code>, own string context <code>"info.txt"</code>) into a <strong>dict-shaped
+   <code>dlcInfoVars</code></strong> structure (confirmed field-lookup pattern below) — on
+   parse failure: <code>"...FAILED to parse dlcInfoVars in info.txt (%s)."</code>
+   (<code>0x7ff74b2ad320</code>, <strong>exact string match for <code>r4_tnocustom.md</code>'s own
+   static citation of this dialect name</strong>).</li>
+<li>Looks up <strong><code>appID</code></strong> (own string <code>0x7ff74b2ad2a0</code>) as an integer. Calls a
+   global function-pointer getter (<code>DAT_7ff74af6ec38</code>) for what is, by every
+   contextual shape here (a lazily-fetched global interface, an integer
+   "app id" argument, and the very next log line), almost certainly a
+   Steamworks <code>ISteamApps</code>-equivalent accessor; if it returns null (no
+   Steamworks interface at all) <strong>or</strong> its vtable <code>+0x38</code> call (passed the
+   <code>appID</code>) returns false, the package is rejected outright:
+   <code>"\t\tUser does not own this DLC.\n"</code> (<code>0x7ff74b2ad300</code>) — <strong>this is the
+   code-level confirmation of <code>r4_tnocustom.md</code> §4's "Steam-ownership-gated"
+   read of the static <code>info.txt</code> block</strong>, now proven as an actual branch, not
+   inferred from the string's mere presence.</li>
+<li>On success: looks up <strong><code>dlcID</code></strong> (own string <code>0x7ff74b2ad2a8</code> —
+   resolving <code>r4_tnocustom.md</code>'s own counting caveat about this exact string
+   appearing once as a field name and once inside prose: that prose string,
+   <code>"Found invalid dlcID in info (%d)"</code> at <code>0x7ff74b2ad2d8</code>, is the <strong>range
+   check</strong> fired when the parsed <code>dlcID</code> integer is <strong>not in <code>1..16</code></strong>
+   inclusive (<code>iVar4 - 1U &lt; 0x10</code> as an unsigned-wraparound range check) —
+   confirmed from the actual comparison, not guessed from the message text
+   alone. On a valid 1–16 <code>dlcID</code>: logs <code>"\t\t...successfully mounted '%s.
+   ID: %d\n"</code> (<code>0x7ff74b2ad2b0</code>) and appends the parsed package (path +
+   id) to the session object's own growable DLC-package list (struct offset
+   <code>+0xec78</code>, the exact field <code>OpenDLCFileHandles</code> iterates later via the
+   vtable <code>+0x258</code>/<code>+0x260</code>/<code>+0x268</code> calls in §4 above — confirmed the two
+   functions operate on the same struct by this shared offset, not just by
+   being "nearby" in the binary).</li>
+</ol>
+<p><strong>Chain, stated as one sentence</strong>: a folder at <code>&lt;TNO install root&gt;\dlc\
+&lt;anything&gt;\</code> containing a valid <code>info.txt</code> with an <code>appID</code> the running
+Steam account owns and a <code>dlcID</code> in <code>1..16</code> gets its own <code>master.index</code> +
+chunk pairs mounted into the live installation on every normal launch,
+merged into the exact same chunk array the base 14 chunks live in — proven
+end to end through four functions (<code>EnumerateDownloadableContent</code> →
+<code>OpenDLCFileHandles</code> → the shared base-mount reader logic reused for the DLC
+<code>master.index</code> → <code>Map_f</code>'s own existence checks, which (§2.2) do not
+distinguish a base-chunk map from a DLC-chunk one at all).</p>
+<h3 id="41-why-appid--201810-is-the-obvious-low-risk-choice-to-test-with">4.1 Why <code>appID = 201810</code> is the obvious, low-risk choice to test with</h3>
+<p>TNO's own Steam AppID, read directly from this machine's own Steam library
+metadata (read-only, outside both forbidden game-install directories):</p>
+<pre><code>&lt;Steam library&gt;\steamapps\appmanifest_201810.acf
+  &quot;appid&quot;  &quot;201810&quot;
+  &quot;name&quot;   &quot;Wolfenstein: The New Order&quot;
+</code></pre>
+<p>Since the ownership check (§4 step 5) is almost certainly a
+"does this Steam account own app <code>&lt;id&gt;</code>"-style call, using TNO's <strong>own</strong>
+AppID as the <code>info.txt</code>'s <code>appID</code> value means the check is checking
+"does the player own the game they are currently running" — trivially true
+for anyone who can launch the game at all. <strong>This is INFERRED, not tested</strong>
+(no game was launched) — flagged honestly as the one load-bearing guess this
+whole route rests on, and it is exactly what the smallest in-game test below
+is designed to confirm or refute cheaply, before anything else is built on
+top of it.</p>
+<h2 id="5-mapinfos-vmtrchunknumber-a-decl-field-reflection-table-and-a-new-sibling-field">5. <code>mapInfo</code>'s <code>vmtrChunkNumber</code>: a decl-field reflection table, and a new sibling field</h2>
+<p><code>--strings "vmtrChunkNumber"</code> found the string but Ghidra's static xrefs were
+empty ("no references found" — the known import limitation, stated up
+front). Per the task's own fallback method, scanned <code>module.bin</code> directly
+for an 8-byte little-endian pointer to that string's address — <strong>exactly
+one</strong> hit anywhere in the whole 36 MB image, at file offset <code>0x127f758</code>.
+Reading the surrounding bytes as a repeating <code>0x48</code>-byte (9-qword) record
+(type-name pointer, an unidentified pointer, the field-name pointer — this
+is the slot the search found — a packed <code>(flags:u32 &lt;&lt; 32 | structOffset:u32)</code>
+value, and two more unidentified slots) gives three consecutive, clearly
+decl-field-registration-shaped records:</p>
+<pre><code>dlcId                          struct offset 0x68   (type &quot;int&quot;)
+vmtrChunkNumber                struct offset 0x6c   (type &quot;int&quot;)
+installChunkAllocationNumber   struct offset 0x70   (type &quot;int&quot;)
+</code></pre>
+<p>Re-derived from scratch, not hard-coded, by
+<code>re_probes/tnomaploading/probe_maploading.py</code> (<code>mapInfo field table OK</code>).
+<strong><code>vmtrChunkNumber</code>'s identity and <code>int</code> typing is now PROVEN from the
+engine's own field-reflection table</strong>, not just from parsing retail decl
+text as <code>r4_tnocustom.md</code> did. <strong>New, not in any prior report</strong>: the
+immediately-preceding field is <code>dlcId</code> — a <code>mapInfo</code>-decl member this
+project has never documented, sitting 4 bytes before <code>vmtrChunkNumber</code> in
+the parsed struct. No shipped retail <code>mapInfo:</code> decl was ever found setting
+a non-default <code>dlcId</code> (consistent with TNO shipping zero DLC content), but
+the field being real, typed, and reflected means <code>mapInfo</code> was built with
+DLC-sourced maps in mind from the start — and its name lines up exactly with
+§4's <code>dlcID</code> (the <code>info.txt</code> field, range <code>1..16</code>) and <code>OpenDLCFileHandles</code>'s
+own per-chunk id tag (struct offset <code>+0x9c</code>). <strong>INFERRED, not traced</strong>: that
+a <code>mapInfo</code> decl's <code>dlcId</code> is meant to be set to the same id a DLC package
+registers itself under in its own <code>info.txt</code>, as the mechanism that tells
+the engine which mounted chunk a given map's content lives in when more than
+one DLC is mounted. Not required to use Route 1 below (a single DLC package
+with its own self-contained chunk already works via <code>Installation</code>-style
+"search every mounted chunk" lookups, per <code>r6_tnodecls.md</code> §4's already-
+proven "patch every copy" code read) — flagged as a mechanism worth setting
+correctly by analogy, not as a blocking requirement.</p>
+<p>Megatexture binding itself (<code>landPageFile</code>/<code>vmtr.pages</code> reading) was already
+fully decoded by <code>r6_tnomegatex.md</code> from decl text and file format alone;
+this round did not re-derive it and found no code path in <code>Map_f</code> itself
+that touches it directly (consistent with megatexture data being resolved
+lazily by the renderer from the decl, not by the map-load command).</p>
+<h2 id="proven-vs-inferred">PROVEN vs INFERRED</h2>
+<p><strong>PROVEN (direct decompilation + own-string identification, this round):</strong></p>
+<ul>
+<li><code>map</code>, <code>cmap</code>, <code>devmap</code>, <code>devcmap</code>, <code>checkmap</code> are real, registered
+  <code>idCmdSystemLocal</code> commands; all five route through one shared function
+  this round identifies by its own embedded string as <code>idCommonLocal::Map_f</code>
+  (§1–§2).</li>
+<li>In the production/retail code path, <code>Map_f</code>'s only map-existence check
+  (<code>maps/&lt;name&gt;/_combo/&lt;name&gt;.proc</code>) is advisory — missing it only logs
+  <code>"You need to build the combo map for: %s"</code> and the function proceeds to
+  the session-start calls regardless (§2.2).</li>
+<li><code>master.index</code>'s magic (<code>"RE5"</code> + version byte), its count field, and its
+  per-entry two-filename-then-open structure, read directly from the mount
+  function, not from static archive bytes alone (§3).</li>
+<li>A genuine, always-live DLC content-package discovery and mount pipeline
+  exists and is wired end to end: <code>EnumerateDownloadableContent</code> (disk scan
+  of <code>&lt;install root&gt;\dlc\</code>, <code>info.txt</code>/<code>dlcInfoVars</code> parse, <code>appID</code>
+  Steam-ownership check, <code>dlcID</code> <code>1..16</code> range check) feeds
+  <code>OpenDLCFileHandles</code> (opens <code>&lt;package&gt;\master.index</code>, same magic, appends
+  chunk pairs into the same array the base 14 chunks live in, per-id dedup)
+  (§4). This directly refutes <code>r4_tnocustom.md</code>'s "no <code>dlc_0</code>-style route
+  exists for TNO" as a blanket statement — true for <em>precedence/override</em>
+  (still true, not challenged here), false for <em>addition</em>, which is a real,
+  shipped, always-running mechanism.</li>
+<li>TNO's own Steam AppID is <code>201810</code> (read from the local Steam library
+  metadata, <code>appmanifest_201810.acf</code>).</li>
+<li><code>mapInfo</code>'s field-reflection table: <code>dlcId</code> (new, struct offset <code>0x68</code>),
+  <code>vmtrChunkNumber</code> (struct offset <code>0x6c</code>), <code>installChunkAllocationNumber</code>
+  (struct offset <code>0x70</code>), all typed <code>int</code>, independently re-derivable by
+  scanning for the one pointer to <code>vmtrChunkNumber</code>'s string (§5,
+  <code>probe_maploading.py</code>).</li>
+<li>The default map-file extension is <code>entities</code>, selectable to <code>map</code>, exactly
+  matching <code>file:maps/&lt;id&gt;.entities</code> already found by reading decl text in
+  <code>r4_tnocustom.md</code> — now confirmed from the resolving code itself (§2.1).</li>
+</ul>
+<p><strong>INFERRED (plausible from context, not traced to a definite call target):</strong></p>
+<ul>
+<li><code>DAT_7ff74c181dd8</code>'s exact meaning ("is this a production/shipping run") —
+  based on it being zeroed in the same breath as a logged
+  <code>idLib::SetProduction( PROD_DEVELOPMENT )</code> call, in the one branch where no
+  base archive could be opened at all (§2.2, §3). The call that sets it
+  non-zero on a normal run was not found.</li>
+<li><code>DAT_7ff74af6ec38</code>'s getter and its vtable <code>+0x38</code> call being Steamworks
+  <code>ISteamApps</code>-shaped ownership checks (<code>BIsSubscribedApp</code>/
+  <code>BIsDlcInstalled</code>-equivalent) — based on the argument shape (one integer
+  "app id"), the surrounding log text ("User does not own this DLC"), and
+  the lazy-global-getter pattern, not from a resolved vtable/RTTI name.</li>
+<li>That using TNO's own AppID (<code>201810</code>) as a custom <code>dlc\*\info.txt</code>'s
+  <code>appID</code> would pass the ownership check (§4.1) — plausible, untested.</li>
+<li>That <code>mapInfo.dlcId</code> is meant to cross-reference a mounted DLC package's
+  own id (§5) — plausible from the matching field name and the shared
+  <code>1..16</code>/<code>+0x9c</code> id-tag shape, not traced into the code that actually reads
+  <code>mapInfo</code> at map-load time (not found, time-boxed).</li>
+<li>What happens downstream of <code>Map_f</code>'s <code>StartNewGame</code>-equivalent call if the
+  <code>_combo/&lt;name&gt;.proc</code> file genuinely does not exist (§2.3 point 1) — not
+  traced past that call.</li>
+</ul>
+<p><strong>FAILED HYPOTHESIS (refined from a prior round, not invented fresh):</strong></p>
+<ul>
+<li><code>r4_tnocustom.md</code> (both passes): "A <code>dlc_0</code>-style folder precedence route
+  does NOT exist for TNO" — concluded from <code>mapspec</code> being a 0-hit string
+  and no <code>(type,name)</code> ever being duplicated across TNO's 14 base chunks,
+  using the only decompiler available at the time (which indexed TNC's
+  runtime, not TNO's — explicitly flagged as a dead end in that report's own
+  §6). <strong>Still true as a precedence/override claim</strong> (nothing in this round
+  found a shadowing mechanism), but this round's §4 shows TNO has a
+  different, additive DLC-mount mechanism that is real, compiled in, and
+  runs on every launch — the earlier conclusion was correct about the
+  specific TNC-style mechanism it tested for, and silent about the one that
+  actually exists, because the tooling to find it did not exist yet.</li>
+</ul>
+<h2 id="ranked-routes">Ranked routes</h2>
+<h3 id="route-1--ship-a-dlc-content-package-with-its-own-masterindex--chunks--new-strongest-evidence-untested-in-game">Route 1 — ship a <code>dlc\&lt;name&gt;\</code> content package with its own <code>master.index</code> + chunk(s) — NEW, strongest evidence, untested in-game</h3>
+<p>Mechanism: fully proven end to end in code (§3–§4). Build a minimal archive
+pair (reusing <code>wolfsdk/resources.py</code>'s own writer/reader, already proven
+against TNO's real chunk format by <code>r6_tnodecls.md</code>/<code>r4_tnocustom.md</code>) with
+whatever <code>mapInfo</code>/<code>file:*.entities</code>/<code>chapter</code> decls are wanted — either
+copies of existing maps, edited copies, or (if a new, from-scratch
+<code>(type,name)</code> entry is wanted) new entries, which this format accepts far
+more readily than TNC's IDCL (<code>r6_tnodecls.md</code> §3: no checksum, no header
+hash chain, a resync-tolerant parser, and the append-id rule is now fully
+known: <code>max(existing ids of this type in this chunk) + 1</code>, though an actual
+append-writer was never built in any TNO round, this one included — still
+the single largest remaining engineering gap, not a research gap). Ship a
+<code>master.index</code> for just this package (magic <code>"RE5"</code> + version byte + count +
+filename pairs, §3) alongside an <code>info.txt</code> with <code>appID=201810</code> and a
+<code>dlcID</code> in <code>1..16</code> not already used. <strong>Never tested in-game</strong> — the
+ownership-check guess (§4.1) and the writer itself are both unbuilt/
+unverified this round; ranked first purely on code-evidence strength, not
+on having been run.</p>
+<h3 id="route-2--edit-an-existing-campaign-maps-own-chunk-in-place--unchanged-strongest-already-verified-evidence">Route 2 — edit an existing campaign map's own chunk in place — unchanged, strongest <em>already-verified</em> evidence</h3>
+<p>Everything <code>r4_tnocustom.md</code>/<code>r6_tnodecls.md</code>/<code>r6_tnomegatex.md</code> already
+proved end-to-end against the real write path is untouched by this round:
+<code>mods/supersoldaten_c15</code> (10/25 maps are genuinely in-place-rewritable,
+<code>c05_07_09</code> chosen as the smallest real example, 12/12 offline checks pass
+including negative controls). This round's §2.2 finding is actually good
+news for this route specifically: since the <code>_combo/&lt;name&gt;.proc</code> check is
+advisory, an in-place <code>.entities</code> edit that <strong>doesn't</strong> touch geometry (like
+<code>supersoldaten_c15</code>'s enemy-type swap) was never at any risk from that check
+in the first place — it only matters for a map whose <code>_combo</code> folder
+doesn't exist at all, i.e. Route 1's brand-new maps, not Route 2's edits of
+existing ones.</p>
+<h3 id="route-3--self-built-extra-chunk-pair-appended-directly-to-the-base-masterindex--superseded-by-route-1-not-recommended">Route 3 — self-built extra chunk pair appended directly to the base <code>master.index</code> — superseded by Route 1, not recommended</h3>
+<p><code>r4_tnocustom.md</code> listed this as untested/unmeasurable without a TNO runtime
+image. That image now exists, and this round found a better-evidenced way to
+get the identical technical effect (an extra chunk pair merged into the live
+installation) through a mechanism the retail binary already implements and
+runs unconditionally (Route 1) — hand-editing the base <code>master.index</code>'s own
+count/entry list would touch the one file every other mod and the base game
+itself depends on, for no benefit Route 1 doesn't already offer more safely.
+Not re-tested this round; superseded, not refuted.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Is <code>DAT_7ff74af6ec38</code>'s target genuinely Steamworks, and does
+  <code>appID=201810</code> actually pass its ownership check? The single most
+  important unresolved question this report produced — see the in-game test
+  below, which is designed to answer exactly this, cheaply, before anything
+  else is built.</li>
+<li>What happens after <code>Map_f</code>'s <code>StartNewGame</code>-equivalent call if
+  <code>_combo/&lt;name&gt;.proc</code> genuinely does not exist (§2.3) — does the renderer
+  silently skip world geometry, or crash later? Not traced.</li>
+<li>Where is <code>mapInfo</code>/<code>vmtrChunkNumber</code> actually read at map-load time (which
+  function resolves a map name to "which mounted chunk" via this field)? Not
+  found this round — <code>Map_f</code> itself never references it.</li>
+<li>Does a mounted DLC package's <code>mapInfo.dlcId</code> need to match its own
+  <code>info.txt</code>'s <code>dlcID</code> for anything to work, or is chunk search purely
+  content-based regardless of this field (as <code>r6_tnodecls.md</code> §4's "patch
+  every copy" code read would suggest)? INFERRED only (§5).</li>
+<li>An append-entry writer for a brand-new <code>(type,name)</code> decl inside a
+  from-scratch chunk — <code>r6_tnodecls.md</code>'s own open item, still unbuilt here
+  too; Route 1 does not strictly need it (copying/editing existing decls'
+  text into a new chunk works without ever appending a <em>new</em> entry type-name
+  pair, since the new chunk's own index is built fresh, not patched) — but
+  building it would let Route 1 also start from a genuinely blank slate
+  instead of copied retail content.</li>
+</ul>
+<h2 id="smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</h2>
+<p><em>(Translated from German. The example folder name has been changed to a neutral
+<code>mod_test</code>; any folder name works.)</em></p>
+<p><strong>Goal: check the one assumption this whole new route rests on as cheaply
+as possible — whether TNO's <code>dlc\</code> folder scan runs in retail at all,
+and whether the Steam ownership check passes with the game's own app ID —
+before anything bigger is built.</strong></p>
+<p>Step 1 (without any file, pure scan evidence):</p>
+<ol>
+<li>Create an <strong>empty</strong> folder <code>dlc\mod_test\</code> directly next to <code>base\</code>
+   (<code>&lt;Steam library&gt;\steamapps\common\Wolfenstein.The.New.Order\dlc\mod_test\</code>)
+   — no file in it, only the empty folder. Not a single original file is
+   touched.</li>
+<li>Start the game normally, then search the log file
+   (<code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein The New Order\base\qconsole.log</code>)
+   after the start.</li>
+<li>Expected, if the code path found in this report actually runs
+   in retail: a line <code>Found DLC 'mod_test'...</code> followed by
+   <code>Error, found mod_test directory without info.txt!</code> — that confirms
+   risk-free that the <code>dlc\</code> scan is active in the real retail build
+   (not only compiled in, but dead).</li>
+</ol>
+<p>Step 2 (only once step 1 shows the lines):</p>
+<ol>
+<li>Put an <code>info.txt</code> into the same folder with (raw dialect form, as
+   <code>r4_tnocustom.md</code> §4 already found statically — field names now
+   confirmed from the code, §4 above):</li>
+</ol>
+<p><code>appID    201810
+   dlcID    1</code>
+2. Restart the game, check <code>qconsole.log</code> again:
+      - Line <code>...successfully mounted 'mod_test.  ID: 1</code> → the
+     ownership check with the own app ID passes — that is the
+     confirmation this whole route is waiting for, and makes route 1 the
+     next sensible expansion stage (own <code>master.index</code> + map data
+     in this folder).
+      - Line <code>User does not own this DLC.</code> → the assumption from §4.1 is
+     refuted, the own app ID is not enough; then the next
+     step would be to try another, guaranteed-owned app ID
+     (e.g. another already installed Steam app ID from the same
+     account).
+      - Neither of the two lines, or a crash → the parser
+     (<code>dlcInfoVars</code>) expects a different format than assumed here; then
+     <code>"...FAILED to parse dlcInfoVars..."</code> would be the next line
+     to search for.</p>
+<p>Both steps are a pure folder/file-creation test outside any
+original file, nothing is overwritten, nothing has to be reset
+except deleting the folder <code>dlc\mod_test\</code> again.</p>
+<h2 id="reproducibility">Reproducibility</h2>
+<pre><code>python tools/decomp.py --strings &quot;loads a combo map&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py 0x148ec0 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf   # idCommonLocal::Map_f
+python tools/decomp.py 0x16af20 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf   # base master.index mount
+python tools/decomp.py 0x16d090 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf   # OpenDLCFileHandles
+python tools/decomp.py 0x4ee2b0 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf   # EnumerateDownloadableContent
+python re_probes/tnomaploading/probe_maploading.py
+  # 20/20 known strings match
+  # negative control ('doesNotExistTNO_xyz_marker'): not found (expected)
+  # mapInfo field table OK
+  # ALL OK
+</code></pre>
+<p>Related: <a href="Research-Report-R4-Tno-Custom-Maps.html">Research Report: R4 Tno Custom Maps</a>, <a href="Research-Report-R6-Tno-Console.html">Research Report: R6 Tno Console</a>, <a href="Research-Report-R6-Tno-Decls.html">Research Report: R6 Tno Decls</a>, <a href="Research-Report-R6-Tno-Megatexture.html">Research Report: R6 Tno Megatexture</a>, <a href="File-Formats.html">File Formats</a>, <a href="TNO-Maps.html">TNO Maps</a>, <a href="Asset-Loading-Paths.html">Asset Loading Paths</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R7-Tno-Limits.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Engine Limits from Decompiled Code: Entities, AI, Script VM, Physics, Decls, Audio, Render</a><a class="next" href="Research-Report-R7-Tno-Script-Vm.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Tnoscriptvm: The DoomScript VM, Read from the Decrypted TNO Runtime Image</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

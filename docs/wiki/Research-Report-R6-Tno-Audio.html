@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Sound Replacement: The Write Path, Round-Tripped – Wolfenstein Modloader</title>
+<meta name="description" content="How to replace a sound effect or a voice line in The New Order, proven by round trips on copies.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Sound Replacement: The Write Path, Round-Tripped</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Tno-Audio"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#question">Question</a></li><li><a href="#answer">Answer</a></li><li><a href="#evidence">Evidence</a></li><li><a href="#proven">PROVEN</a></li><li><a href="#inferred-not-runtime-proven--no-game-launch-per-the-rules">INFERRED (not runtime-proven — no game launch, per the rules)</a></li><li><a href="#failed-hypotheses">Failed hypotheses</a></li><li><a href="#re-runnable-checks">Re-runnable checks</a></li><li><a href="#next-step--recipe">Next step / recipe</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#in-game-test-for-the-maintainer">In-game test (for the maintainer)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report works out every step needed to swap a sound in Wolfenstein: The New Order (TNO): the small sound description in the <span class="t" data-t="archive">archive</span>, the pointer to where the audio sits in the big streamed sound file, and the <span class="t" data-t="ogg">Ogg Vorbis</span> audio itself. All steps were proven on copies: a bullet-impact sound and a voice line were replaced with bigger audio from other game sounds, and a brand-new 1.5-second beep made with ffmpeg fit in the same way. Neither the archive nor the sound file has a checksum; the only one is Ogg&#x27;s own per-page check, which a valid stream already carries. Nothing was written to the game install and nothing was tested in the running game, and the loader cannot yet apply or undo such changes by itself.</p><ul><li>Each sound has a 74-byte description; because it is binary it does not always fit its old place (51 to 51 bytes in one case, 59 to 60 in the other), so a full rebuild must be the fallback.</li><li>The audio container has no index of its own: new audio is simply appended at the end and the sound&#x27;s pointer is changed; nothing else has to move.</li><li>Voice lines need no special handling; they are normal sound entries stored in english.streamed instead of streamed.resources.</li><li>All checks passed for the impact-sound case, the voice-line case and the ffmpeg case, including deliberate damage tests that were correctly caught.</li><li>Open: whether the game really plays the new audio, what the unconfirmed hash/ID field means, and adding backup and undo for the two sound containers to the loader.</li></ul></div><div class="de"><p class="lede">Dieser Bericht erarbeitet jeden Schritt, um in Wolfenstein: The New Order (TNO) einen Sound auszutauschen: die kleine Sound-Beschreibung im <span class="t" data-t="archive">Archiv</span>, den Zeiger auf die Stelle in der großen Streaming-Sounddatei und die <span class="t" data-t="ogg">Ogg-Vorbis</span>-Audiodaten selbst. Alle Schritte wurden an Kopien bewiesen: Ein Einschlagsound und eine Sprachzeile wurden durch größere Audiodaten anderer Spielsounds ersetzt, und auch ein ganz neuer, mit ffmpeg erzeugter Piepton von 1,5 Sekunden passte auf dieselbe Weise hinein. Weder das Archiv noch die Sounddatei hat eine Prüfsumme; die einzige ist Oggs eigene Prüfung pro Seite, die ein gültiger Stream schon mitbringt. In die Spielinstallation wurde nichts geschrieben, im laufenden Spiel wurde nichts getestet, und der Loader kann solche Änderungen noch nicht selbst anwenden oder rückgängig machen.</p><ul><li>Jeder Sound hat eine 74-Byte-Beschreibung; weil sie binär ist, passt sie nicht immer an ihren alten Platz (in einem Fall 51 zu 51 Bytes, im anderen 59 zu 60), daher muss ein vollständiger Neuaufbau als Ausweichweg bereitstehen.</li><li>Der Audio-Container hat keinen eigenen Index: Neue Audiodaten werden einfach ans Ende angehängt und der Zeiger des Sounds umgestellt; sonst muss nichts verschoben werden.</li><li>Sprachzeilen brauchen keine Sonderbehandlung; es sind normale Sound-Einträge, die in english.streamed statt in streamed.resources liegen.</li><li>Für den Einschlagsound, die Sprachzeile und den ffmpeg-Fall bestanden alle Prüfungen, auch absichtliche Beschädigungstests, die korrekt erkannt wurden.</li><li>Offen: ob das Spiel die neuen Audiodaten wirklich abspielt, was das unbestätigte Hash/ID-Feld bedeutet, und Sicherung und Rückgängigmachen der beiden Sound-Container im Loader.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on replacing a sound effect and a voice line in The New Order: the full write path through the <code>bsnf</code> descriptor, the streamed-container offsets and sizes, the Ogg layer and its checksums. All four parts of the write path are proven by replacement round trips on copies — a sound-effect case that grows the container, a voice-line case, and a bonus case with genuinely new audio encoded with <code>ffmpeg</code> — with every check passing. <strong>Proven on copies only; nothing was written to the game install and nothing was tested in game.</strong></p>
+<p>Track <code>tnoaudio</code>, round 6, 2026-10-01. Builds directly on <code>docs/audio.md</code>
+(bsnf descriptor layout, §§2-3), <code>docs/streamed.md</code> (container internals,
+Ogg CRC, the 16384-byte block grid, the open "append past slot" question in
+its §7), <code>wolfsdk/tnoaudio.py</code> (the project's own shipped reader —
+<code>_bsnf()</code>, <code>_check_ogg()</code>, <code>_triples()</code> — reused unmodified throughout),
+<code>wolfsdk/resources.py</code>/<code>wolfsdk/patch.py</code> (the generic <code>.index</code>/<code>.resources</code>
+archive engine), and <code>tools/streamed.py</code> (the Ogg-layer reader: <code>read_page</code>,
+<code>page_crc_ok</code>, <code>vorbis_ident</code>). It also closes the one item
+<code>re_probes/agent_reports/r2_wwisereplace.md</code> explicitly left open for TNO
+("the texdb-style move [...] not yet built or tested"). Read-only on both
+game installs and on every project file outside <code>re_probes/tnoaudio/</code> and
+this report. Game never launched, no debugger. All mutation happened on
+copies under <code>D:\wolf-decomp\tmp\tnoaudio\</code> and <code>...\tnoaudio_custom\</code>
+(deleted again after each run — confirmed empty below); nothing under
+<code>&lt;Steam library&gt;\...</code> or <code>&lt;user folder&gt;\Saved Games</code> was opened for writing.
+The real TNO install is currently patched by the maintainer's existing mods (gore,
+widerstand, …; <code>base/_wolfsdk_backup/journal.json</code> lists them) — this track
+reads the <strong>pristine</strong> copies in <code>base/_wolfsdk_backup/</code> for the archive
+pairs, exactly the convention <code>wolfsdk/tnoaudio.py</code>'s own <code>_index_dir()</code>
+already uses, and reads <code>base/streamed.resources</code>/<code>base/english.streamed</code>
+straight from the live install, which no applied mod touches
+(<code>docs/audio.md</code> §6: nobody writes there today).</p>
+<pre><code>py -3.11 re_probes/tnoaudio/roundtrip.py        # the deliverable: SFX + VO, full checks
+py -3.11 re_probes/tnoaudio/custom_encode.py    # bonus: genuinely NEW audio via system ffmpeg
+</code></pre>
+<h2 id="question">Question</h2>
+<p>Building on <code>wolfsdk/tnoaudio.py</code>, <code>docs/audio.md</code>, <code>docs/streamed.md</code>: the
+full write path to replace a sound effect and a voice line (bsnf
+descriptors, streamed containers, offsets/sizes, Ogg/other codecs, any
+checksums), proved as a replacement round trip on a copy, plus the smallest
+in-game test.</p>
+<h2 id="answer">Answer</h2>
+<p><strong>The write path has four parts, and all four are now proven, not just
+read.</strong></p>
+<ol>
+<li>
+<p><strong>The archive-entry payload (the 74-byte <code>bsnf</code> descriptor)</strong> is an
+   ordinary decl-class entry — same entry shape as <code>entityDef</code>/<code>weapon</code>,
+   already proven patchable (memory: "TNC decl edits... decl value edits
+   work in game"). <code>wolfsdk.resources.Archive.rebuild()</code> (unmodified,
+   already shipped) rewrites it correctly. <strong>One caution found here that
+   the docs didn't call out:</strong> the descriptor is <strong>binary</strong>, so
+   <code>deflate_exact</code>'s comment-padding trick (which only works on text — it
+   refuses any payload with a <code>\x00</code> in its first 512 bytes, see
+   <code>wolfsdk/resources.py</code>) cannot place it in-slot on an exact-size match by
+   luck alone. Measured directly: one test case's compressed size happened
+   to stay 51→51 bytes, the other shifted 59→60. <strong>A real writer must always
+   be prepared to fall back to <code>rebuild()</code>; it cannot assume
+   <code>write_in_place()</code> will fit.</strong></p>
+</li>
+<li>
+<p><strong>The container offset/length fields</strong> live in the entry's "variable
+   tail", 20 and 24 bytes past the fixed offset/usize/csize triple
+   (<code>entry.pos + 32</code> / <code>entry.pos + 36</code>, both BE u32, for the common
+   single-language case where the tail's own count field is 1). This is
+   <strong>not</strong> managed by <code>wolfsdk/resources.py</code> at all — <code>ResourceIndex</code>/<code>Archive</code>
+   only ever touch the fixed 12-byte triple. Patching it is one
+   <code>struct.pack_into</code> directly into <code>Archive.index.buf</code>, which is already
+   exposed and already mutable, followed by the index's own <code>.save()</code> —
+   using existing, public surface, not a new file format reader.</p>
+</li>
+<li>
+<p><strong>The container itself grows by simple append</strong>, past its current end —
+   there is no slot table to grow into (unlike TNC's IDCL/DIDX, <code>r2_
+   wwisereplace.md</code>'s "in-place vs rebuild" story does not apply here: a
+   <code>.streamed</code>/<code>streamed.resources</code> file has <strong>no index of its own at all</strong>,
+   <code>docs/streamed.md</code> §2.1). Both test cases deliberately picked a donor
+   <strong>bigger</strong> than the target, forcing this growth path rather than the
+   easier same-size case. 16384-byte alignment was kept for the new block
+   (matching retail's own packing convention, <code>docs/streamed.md</code> §2.2) but
+   nothing in the format requires it — it is just hygiene.</p>
+</li>
+<li>
+<p><strong>New content can come from two places</strong>, and both are now proven:</p>
+<ul>
+<li><strong>Borrowed real bytes.</strong> TNO has no Vorbis encoder anywhere in this
+ project (same gap <code>r2_wwisereplace.md</code> found for TNC's Wwise Vorbis —
+ <code>wolfsdk</code> is stdlib-only). The direct, no-new-tooling route is to
+ relocate an <strong>already-shipped, already-valid</strong> Ogg Vorbis stream —
+ copy its bytes and its whole 74-byte descriptor verbatim into the
+ target's slot. Proven end to end for one SFX pair and one VO pair
+ (below).</li>
+<li><strong>Genuinely new content.</strong> The system already has <code>ffmpeg</code> installed
+ (a binary on <code>PATH</code>, not a pip package — <code>tools/streamed.py</code>'s own
+ <code>prove</code> command already shells out to it the same way). A 1.5 s tone
+ built with nothing but the Python stdlib <code>wave</code> module, encoded to
+ real Ogg Vorbis by <code>ffmpeg -c:a libvorbis</code>, splices into the exact same
+ slot with the exact same mechanism and round-trips byte-for-byte
+ through the project's own <code>tnoaudio._check_ogg()</code>. <strong>This means a
+ mod author is not limited to recombining existing game sounds — a
+ recorded or synthesized replacement is reachable too, at the cost of
+ one external (already-present) tool call, not a new Python
+ dependency.</strong></li>
+</ul>
+</li>
+</ol>
+<p><strong>Voice lines need no special handling.</strong> <code>sound/vo/english/...</code> entries are
+ordinary <code>sample</code>/<code>bsnd</code> entries — the same type, the same <code>bsnf</code> descriptor,
+the same tail layout, just addressed into <code>english.streamed</code> instead of
+<code>streamed.resources</code> (by path prefix, <code>docs/audio.md</code>/<code>tnoaudio.py</code>'s
+<code>_container()</code>). The VO test case below used <strong>exactly the same code path</strong>
+as the SFX one, with no VO-specific logic anywhere. The only difference
+observed: VO descriptors carry the literal language name (<code>"english"</code>) in
+the lang field where a non-VO sample carries an empty string — a parsing
+detail (see "Failed hypotheses"), not a format difference.</p>
+<p><strong>Checksums: there are none at the archive level.</strong> <code>wolfsdk/resources.py</code>'s
+own docstring states it plainly ("There is no checksum anywhere in an
+entry") and <code>docs/streamed.md</code> §2.1 confirms the container itself has no
+header, table, or checksum either — TNO's <code>\x03SER</code> format has nothing like
+TNC/IDCL's header+metadata hash (<code>idclhash.py</code>). <strong>The only checksum
+anywhere in this whole path is Ogg's own per-page CRC-32</strong>, part of the
+Vorbis stream format itself, checked by any Vorbis decoder (and by
+<code>tools/streamed.py</code>'s <code>ogg_crc</code>/<code>page_crc_ok</code>) — not by the engine's archive
+loader. It is real and it is strict (NEG1 below), but it only matters if you
+hand-corrupt a stream; relocating or re-encoding a complete, valid stream
+produces a file with correct CRCs automatically, nothing to compute by hand.</p>
+<h2 id="evidence">Evidence</h2>
+<h3 id="format-recap-both-proven-by-read-already-restated-because-the-write">Format recap (both proven by read already; restated because the write</h3>
+<h3 id="path-depends-on-the-exact-byte-offsets">path depends on the exact byte offsets)</h3>
+<pre><code>Archive entry (wolfsdk/resources.py):
+  ... LE-len name, LE-len path, BE u32 offset, BE u32 usize, BE u32 csize
+  variable tail starts at entry.pos + 12:
+    BE u32 count                 (= 1 for every sample this track touched)
+    per language: char[16] name, BE u32 container-offset, BE u32 length
+    -&gt; for count=1: offset @ entry.pos+32, length @ entry.pos+36
+
+bsnf descriptor (the entry's decompressed payload), single-language, 74 B:
+  &quot;bsnf&quot;(4) BE u32 count=1(4) char[16] lang
+  @24 BE u32 length        @28 BE u32 sub (=32, the WAVEFORMATEX sub-block's
+  @32 BE u32 hash/id (unconfirmed meaning, docs/audio.md)   absolute offset)
+  @36 BE u32 0              @40 BE u32 granule (PCM frame count)
+  @44 BE u32 0               @48 BE u32 length (repeat of @24)
+  @52 LE u16 tag(0x674F) LE u16 channels LE u32 rate LE u32 avgBytesPerSec
+  @64 LE u16 blockAlign  LE u16 bits  (2 B unidentified) @70 LE u32 frames
+</code></pre>
+<h3 id="case-sfx--imp_metal_01wav--imp_concrete_01wav-growth-path">Case SFX — <code>imp_metal_01.wav</code> ← <code>imp_concrete_01.wav</code> (growth path)</h3>
+<pre><code>target  sound/projectile/bullet_impacts/metal/imp_metal_01.wav
+        chunk0, entry.offset=3113632 csize=51 usize=74
+        tail: container@0x030000 (196608) length=11586
+        descriptor parses: channels=2 rate=48000 frames=20653
+
+donor   sound/projectile/bullet_impacts/concrete/imp_concrete_01.wav
+        chunk0, tail: container@0x000000 length=17619
+        descriptor parses: channels=2 rate=48000 frames=38822
+        LIVE container bytes verified first: 6 Ogg pages, 0 bad CRC,
+        chain ends exactly at length 17619, granule 38822 == descriptor
+
+AFTER (fresh Archive, re-read from disk, nothing held in memory):
+  descriptor bytes == donor's descriptor, byte for byte         True
+  tail -&gt; container@0x034000 (212992) length=17619               (matches)
+  bytes at new offset == donor's real bytes, byte for byte       True
+  tnoaudio._check_ogg(bytes, 38822)  [shipped validator]         True
+  independent page walk: 6 pages, 0 bad CRC, ends exactly at len True
+  donor's own original region: still byte-identical (untouched)  True
+  target's old bytes: still physically present at old offset,
+    now simply unreferenced (&quot;orphaned&quot;, not corrupted)          True
+  NEG1 one bit flipped in the new stream -&gt; a page CRC fails      True
+  NEG2 descriptor granule off by one -&gt; _check_ogg() = False      True
+  NEG3 10 bytes truncated off the end -&gt; _check_ogg() = False     True
+  NEG4 new descriptor != target's original (a real change)        True
+  CASE SFX ALL_CHECKS_OK = True
+</code></pre>
+<h3 id="case-vo--bj_center_c01_7071wav--ev_antiaircraftturretcontactcprwav">Case VO — <code>bj_center_c01_7071.wav</code> ← <code>ev_...antiaircraftturretcontactcpr...wav</code></h3>
+<pre><code>target  sound/vo/english/bj/bj_center_c01_7071.wav
+        chunk1, tail: container@0xF8C000 (16302080) length=15937
+        descriptor parses: channels=1 rate=48000 frames=46840
+
+donor   sound/vo/english/bj/ev/ev_c01_antiaircraftturretcontactcpr_bj_center.wav
+        chunk1, tail: container@0xFD0000 (16580608) length=195672
+        descriptor parses: channels=1 rate=48000 frames=758352
+        LIVE container bytes verified first: 47 Ogg pages, 0 bad CRC,
+        chain ends exactly at length 195672, granule 758352 == descriptor
+
+AFTER:
+  descriptor rewrite: csize 59 -&gt; 60 (NOT the same -- see Answer §1)
+  tail -&gt; container@0x1000000 (16777216) length=195672
+  every check in the SFX table above: also True (identical code path)
+  CASE VO ALL_CHECKS_OK = True
+</code></pre>
+<h3 id="bonus--genuinely-new-audio-via-the-systems-ffmpeg">Bonus — genuinely new audio via the system's <code>ffmpeg</code></h3>
+<pre><code>WAV built with nothing but Python's stdlib `wave` module: 1.5 s, stereo,
+48000 Hz, 16-bit, a two-tone beep (880 Hz then 1320 Hz) -- audibly not
+silence, not any shipped sample.
+
+ffmpeg -c:a libvorbis -qscale:a 4  -&gt;  9391 B real Ogg Vorbis
+  ffprobe:   codec_name=vorbis channels=2 sample_rate=48000 duration=1.5
+  page walk (project's own reader): 4 pages, 0 bad CRC, ends exactly at
+             length, granule=72000 (= 1.5 s * 48000 Hz, exact)
+
+Spliced into imp_metal_01's slot, using imp_metal_01's OWN original
+descriptor as the template (channels/rate/format fields untouched -- the
+synthetic WAV was deliberately built stereo/48000 to match), patching only
+length@24, granule@40, length-repeat@48, frames@70:
+
+  REREAD: descriptor parses (9391, 2, 48000, 72000)
+  bytes at new offset == ffmpeg's output, byte for byte           True
+  tnoaudio._check_ogg()                                           True
+  CUSTOM-ENCODE SPLICE ALL_CHECKS_OK = True
+</code></pre>
+<h3 id="scratch-cleanup-rule-copies-only-under-dwolf-decomptmp-deleted-after">Scratch cleanup (rule: copies only under <code>D:\wolf-decomp\tmp\&lt;track&gt;\</code>, deleted after)</h3>
+<pre><code>D:\wolf-decomp\tmp\tnoaudio          87 MB used during the run -&gt; removed
+D:\wolf-decomp\tmp\tnoaudio_custom    6 MB used during the run -&gt; removed
+Game install: zero bytes written (verified: both runs only ever opened
+&lt;Steam library&gt;\...\base\_wolfsdk_backup\* and &lt;Steam library&gt;\...\base\
+{streamed.resources,english.streamed} with mode &quot;rb&quot;).
+</code></pre>
+<h2 id="proven">PROVEN</h2>
+<ol>
+<li>The archive-entry side of a sample replacement is an ordinary
+   decl-class entry; <code>wolfsdk.resources.Archive.rebuild()</code> (existing,
+   unmodified) rewrites its 74-byte <code>bsnf</code> payload correctly, re-read with a
+   <strong>fresh</strong> <code>Archive</code> object afterward (not trusting in-memory state).</li>
+<li>The container-offset/length fields sit in the entry's "variable tail" at
+   <code>entry.pos+32</code>/<code>entry.pos+36</code> (single-language case) — confirmed by
+   direct byte patch + fresh re-read, for both <code>streamed.resources</code> and
+   <code>english.streamed</code>.</li>
+<li><code>streamed.resources</code>/<code>english.streamed</code> have no index, table, or
+   checksum of their own (<code>docs/streamed.md</code> §2.1, re-confirmed): appending
+   new, 16384-aligned bytes past the current end of the file and repointing
+   one entry's tail at them is sufficient — no other file needs to move,
+   confirmed by the regression check that the donor's own, untouched region
+   still reads identically.</li>
+<li>The growth path (new content bigger than the old, the case
+   <code>r2_wwisereplace.md</code> left untested for TNO) works for both a world SFX
+   and a VO line, via the identical code path — <strong>voice lines require no
+   special-casing beyond "which container"</strong>: they are <code>sample</code> entries
+   like any other.</li>
+<li>A genuinely new (not borrowed) Ogg Vorbis stream — built from a stdlib
+   <code>wave</code> WAV and the system's <code>ffmpeg</code> — splices in through the same
+   mechanism and round-trips through the project's own shipped reader.</li>
+<li>There is no checksum anywhere at the archive/container level
+   (<code>wolfsdk/resources.py</code>'s own docstring; <code>docs/streamed.md</code>); the only
+   checksum in the whole pipeline is Ogg's per-page CRC-32, and it is
+   genuinely sensitive to corruption (NEG1: one flipped bit fails exactly
+   one page's CRC).</li>
+<li><code>wolfsdk.patch.Installation</code> (the live apply/revert/journal machinery)
+   has <strong>zero</strong> code path for <code>streamed.resources</code>/<code>english.streamed</code> today:
+   <code>ensure_backup()</code>'s manifest only ever iterates
+   <code>load_master(self.base)</code> pairs (the 14 <code>chunkN.index</code>/<code>.resources</code>),
+   never the two streamed containers (read directly in <code>wolfsdk/patch.py</code>,
+   confirmed by inspection, not merely by <code>docs/audio.md</code>'s earlier
+   statement of the same gap). <strong>This write path is proven structurally,
+   but is not yet wired into the mod-apply pipeline</strong> — see "Next step".</li>
+</ol>
+<h2 id="inferred-not-runtime-proven--no-game-launch-per-the-rules">INFERRED (not runtime-proven — no game launch, per the rules)</h2>
+<ol>
+<li>That the engine actually plays the new content when it loads this
+   sample id, as opposed to rejecting it for some reason not visible in the
+   file format (e.g. an in-memory length limit, a streaming-pool size cvar
+   like <code>s_initStreamPoolSizeMB</code>-equivalent for TNO if one exists — not
+   found in this track). Structurally indistinguishable from every one of
+   the 23,565 real streams this format already carries (same magic, same
+   page/CRC/granule arithmetic, same descriptor shape) — but "indistinguishable
+   on disk" is not "confirmed in a running process".</li>
+<li>That duplicate entries of the same sample name across multiple chunks
+   (if any exist — not surveyed this pass) all share the same tail
+   offset/length and would all need patching identically, the way
+   <code>wolfsdk.patch.Installation.find()</code> already does for other asset types
+   via its multi-chunk <code>lookup</code> table. Plausible by analogy, not checked
+   for <code>sample</code> specifically.</li>
+<li>The hash/id field at descriptor offset 32 (docs/audio.md: "Bedeutung
+   unbestätigt", i.e. "meaning unconfirmed") was carried over as the donor's real value (SFX/VO cases)
+   or left as the template's value (custom-encode case) without being
+   independently derived. Both choices are defensible (see Answer), neither
+   is confirmed required or ignored by the engine.</li>
+<li>Whether a <code>voiceover</code>/<code>voicetrack</code> entry needs any companion edit for a
+   replaced VO line to look right (lip-sync/viseme timing). <code>docs/streamed.md</code>
+   §8 already found that <code>voicetrack</code>'s 310-byte-per-language blocks do
+   <strong>not</strong> point into these containers at all and are structurally decoupled
+   from the <code>sample</code> audio bytes — so a replaced line's <em>audio</em> plays
+   correctly regardless (proven above), but if its duration differs
+   noticeably from the original, mouth movement in a cutscene may not match
+   the new audio. Not a crash risk, not reached by this track (would need
+   <code>voicetrack</code>'s still-unparsed 310-byte block decoded first).</li>
+</ol>
+<h2 id="failed-hypotheses">Failed hypotheses</h2>
+<ol>
+<li><strong>"VO descriptors key by the empty-string language like world SFX do."</strong>
+   False — <code>_bsnf()</code> keys a VO sample's one language entry by the literal
+   string <code>"english"</code>, not <code>""</code>. Caught immediately by an assertion failure
+   on the first VO run; fixed by reading whichever single key the parsed
+   dict actually has, instead of assuming <code>""</code>. Cheap, not a dead end, but
+   worth recording since it is exactly the kind of assumption a future
+   writer would otherwise bake in silently.</li>
+<li><strong>"A same-length-ish binary payload edit will usually fit
+   <code>write_in_place()</code>."</strong> Not reliable — see Answer §1 (59→60 B observed).
+   A writer must always try <code>rebuild()</code> as the fallback, never assume the
+   cheap path.</li>
+</ol>
+<h2 id="re-runnable-checks">Re-runnable checks</h2>
+<pre><code>python re_probes/tnoaudio/roundtrip.py
+#  CASE SFX ALL_CHECKS_OK = True
+#  CASE VO  ALL_CHECKS_OK = True
+#  OVERALL ALL_CHECKS_OK = True   (exit code 0)
+
+python re_probes/tnoaudio/custom_encode.py
+#  CUSTOM-ENCODE SPLICE ALL_CHECKS_OK = True   (exit code 0; needs ffmpeg on PATH)
+</code></pre>
+<p>Both scripts read only <code>base/_wolfsdk_backup/*</code> (pristine archive pairs) and
+<code>base/{streamed.resources,english.streamed}</code> (live, never written to by any
+applied mod) under the real TNO install, and write only under
+<code>D:\wolf-decomp\tmp\tnoaudio*\</code>, which they do not delete themselves —
+confirmed removed by hand after each run (see Evidence).</p>
+<h2 id="next-step--recipe">Next step / recipe</h2>
+<p><strong>To replace one sound in a real mod</strong>, by hand, against the real install
+(none of this was done — no game launch, no install write, per the rules):</p>
+<ol>
+<li>Pick the target <code>sample</code> id and a donor id (or a freshly-encoded <code>.ogg</code>,
+   see step 2a) the same way <code>re_probes/tnoaudio/roundtrip.py</code> does:
+   <code>Archive.find("sample", name)</code> against <code>base/_wolfsdk_backup/</code> (or
+   <code>base/</code> if unpatched), read the tail offset/length at
+   <code>entry.pos+32/+36</code>, read the descriptor with <code>archive.read(entry)</code>.</li>
+<li>Build the replacement bytes:<ul>
+<li><strong>a.</strong> Borrow a real stream: read it from the live container at its
+ own tail offset/length, and reuse its whole descriptor verbatim (this
+ track's proven path), or</li>
+<li><strong>b.</strong> Encode something new: <code>ffmpeg -i input.wav -c:a libvorbis
+ out.ogg</code>, then clone a real descriptor of the <strong>same channel
+ count and sample rate</strong> as template and patch only
+ length@24/granule@40/length-repeat@48/frames@70 (this track's bonus
+ path) — channel/rate mismatches were not exercised; matching the
+ template is the safe choice until that is tested.</li>
+</ul>
+</li>
+<li><strong>Before touching the real game</strong>, extend <code>ensure_backup()</code>-equivalent
+   coverage by hand: copy <code>base/streamed.resources</code> and/or
+   <code>base/english.streamed</code> to a scratch location outside the Steam folder
+   (1.5 GB combined — fine on <code>D:</code>, not on the nearly-full <code>C:</code>) and record
+   their current sizes. This project's own <code>Installation._revert()</code> already
+   has the exact logic needed to undo a pure-append growth ("Older journals
+   grew the file by appending; trim that back", <code>wolfsdk/patch.py</code>) — it
+   just is not yet pointed at these two files. Until it is, revert is
+   manual: truncate the container back to the recorded size and restore the
+   one touched <code>chunkN.index</code>/<code>.resources</code> pair from
+   <code>base/_wolfsdk_backup/</code>.</li>
+<li>Append the new bytes to the (real) container, 16384-aligned, patch the
+   tail, rewrite the descriptor via <code>Archive.rebuild()</code>, <code>index.save()</code> —
+   identical to <code>roundtrip.py</code>'s write section, just against <code>base/</code>
+   instead of a scratch copy.</li>
+<li>Re-verify exactly as this track did: fresh <code>Archive</code>, re-read the
+   descriptor, re-read the container bytes at the new offset,
+   <code>tnoaudio._check_ogg()</code>, a full <code>tools/streamed.py walk</code> or <code>verify</code> run
+   over the touched container afterward as a global regression check (every
+   other stream must still resolve — <code>verify</code> already reports this as a
+   percentage).</li>
+<li>Only then start the game.</li>
+</ol>
+<p><strong>Wiring this into <code>wolfsdk.patch.Installation</code> properly</strong> (not done here —
+outside this track's writable scope) would mean: (a) add
+<code>streamed.resources</code>/<code>english.streamed</code> to the backup manifest with their
+pristine sizes, (b) extend <code>apply()</code>'s <code>payloads</code> concept so a <code>sample</code>
+payload can carry "new audio bytes" alongside "new descriptor bytes" and the
+apply loop appends+patches-tail instead of only rewriting the descriptor,
+(c) extend <code>revert()</code>'s existing append-trim logic (already written for
+<code>.resources</code> rebuilds) to also cover these two files. All three are small,
+precedented extensions of code that already exists for a near-identical
+case — not a new subsystem.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Does the engine enforce anything about descriptor consistency at load
+  time (channel/rate/format matching, a maximum stream length, a streaming
+  pool budget) that the file format alone does not show? Needs either a
+  disassembler against the (SteamStub-encrypted) <code>.text</code>, or an in-game
+  test — see below.</li>
+<li>Do any <code>sample</code> ids appear more than once across the 14 chunks? Not
+  surveyed this pass (INFERRED 2).</li>
+<li>What exactly is the descriptor's offset-32 "hash/id" field, and is it
+  checked? Still "Bedeutung unbestätigt" ("meaning unconfirmed") per <code>docs/audio.md</code>; this track
+  did not move that forward.</li>
+<li><code>voicetrack</code>'s 310-byte-per-language block — still unparsed
+  (<code>docs/streamed.md</code> §8); only its <em>decoupling</em> from the audio containers
+  was reused here, not its own content.</li>
+</ul>
+<h2 id="in-game-test-for-the-maintainer">In-game test (for the maintainer)</h2>
+<p><em>(Translated from German.)</em></p>
+<p>None of this was tried in the game — this track worked exclusively on
+copies, as required. Smallest test, in order of the lowest hurdle
+first:</p>
+<ol>
+<li><strong>Backup first, by hand, on D:</strong> copy <code>base/streamed.resources</code> (1.08 GB),
+   <code>base/chunk0.index</code> + <code>base/chunk0.resources</code> (151 MB) to
+   <code>D:\wolf-backup-audio\</code> — the existing <code>wolfsdk</code> backup does <strong>not</strong>
+   back up these two containers <strong>automatically</strong> (see "Next step",
+   point 3). Without this manual backup, a failure can only be healed via Steam's
+   file verification (1.08 GB re-download).</li>
+<li><strong>Rebuild the already-proven SFX case</strong>, do not decide anew:
+   <code>sound/projectile/bullet_impacts/metal/imp_metal_01.wav</code> (the
+   "metal impact" sound) gets the bytes and the descriptor of
+   <code>sound/projectile/bullet_impacts/concrete/imp_concrete_01.wav</code> (the
+   "concrete impact" sound) — exactly the steps from "Next step" 2a/4, only
+   against <code>base/</code> instead of against a copy. This pair is chosen on purpose:
+   both sounds are easy to trigger in the game (shoot at a metal surface)
+   and clearly distinguishable by ear — a failure is
+   immediately audible, no guesswork needed.</li>
+<li><strong>Start the game</strong> (always via <code>steam://rungameid/201810/...</code>, see
+   <code>README.md</code> — started directly via the EXE, part 1 exits immediately), optionally
+   with <code>+s_showSounds 1 +s_drawSounds 1</code> (both cvars present according to <code>docs/audio.md</code>
+   §5), to overlay the name of the sound actually played.</li>
+<li><strong>Shoot at a metal surface</strong> (e.g. a door, a barrel,
+   an industrial area). Three possible outcomes:<ul>
+<li>the <strong>concrete</strong> impact sound plays instead of the metal sound → the complete
+ write path works in the real game (INFERRED 1 confirmed);</li>
+<li>the normal metal sound keeps playing → the new entry was not
+ found or was discarded (a hint at a check this track
+ could not see);</li>
+<li>crash or noise/silence → one of the unconfirmed fields
+ (hash/ID, the two undecoded bytes at offset 68-69) is not
+ ignorable after all.</li>
+</ul>
+</li>
+<li><strong>Restore:</strong> copy the copies from step 1 back over <code>base/streamed.resources</code>,
+   <code>base/chunk0.index</code>, <code>base/chunk0.resources</code>, shoot at metal again,
+   confirm that the normal sound plays again — confirms
+   that the change really affected only this one sound.</li>
+</ol>
+<p>The VO case (<code>bj_center_c01_7071.wav</code> ← the ambient radio line) is
+structurally exactly the same write path (see Evidence) and needs no
+test of its own to prove the mechanism — only to see <em>when exactly</em>
+this one line plays in the game, which this track did not determine
+("Open questions"). For a first VO test it is simpler to take a line
+of which the maintainer already knows where it plays in the game, and to redirect it
+following the same recipe.</p>
+<p>Related: <a href="Research-Report-R2-Wwisereplace.html">Research Report: R2 Wwisereplace</a>, <a href="Audio.html">Audio</a>, <a href="Streamed-Audio-Containers.html">Streamed Audio Containers</a>, <a href="TNO-Modding-Surface.html">TNO Modding Surface</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Render-Plus.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNC Graphics Beyond Ultra: Non-Exposed Render and Streaming Cvars</a><a class="next" href="Research-Report-R6-Tno-Console.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Console and Cvars: Does the TNC Restriction Model Carry Over?</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

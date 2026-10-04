@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Player Systems: Movement, Perks, Contraptions, Dual Wield, Weapon Upgrade Kits – Wolfenstein Modloader</title>
+<meta name="description" content="How Wolfenstein II handles movement, perks, contraptions, dual wielding and weapon upgrade kits, plus three mod designs.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Player Systems: Movement, Perks, Contraptions, Dual Wield, Weapon Upgrade Kits</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Player-Systems"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#pass-1-errors-fixed-in-this-pass">Pass 1 errors (fixed in this pass)</a></li><li><a href="#answer-in-one-paragraph">Answer in one paragraph</a></li><li><a href="#1-method-and-corpus">1. Method and corpus</a></li><li><a href="#2-movement-cvars-not-decls--pm_-and-friends">2. Movement: cvars, not decls — pm_* and friends</a></li><li><a href="#3-health-armor-regen--decl-driven-proven-mechanism">3. Health, armor, regen — decl-driven, proven mechanism</a></li><li><a href="#4-dual-wielding--decl-mechanism-confirmed-now-with-runtime-backing">4. Dual wielding — decl mechanism confirmed, now with runtime backing</a></li><li><a href="#5-perks--18-stat-gated-chains-auto-activating-no-skill-points">5. Perks — 18 stat-gated chains, auto-activating, no skill points</a></li><li><a href="#6-weapon-upgrade-kits--separate-from-perks-same-upgrade-decl-type">6. Weapon upgrade kits — separate from perks, same upgrade decl type</a></li><li><a href="#7-contraptions--battle-walker-ram-shackles-constrictor-harness">7. Contraptions — Battle Walker, Ram Shackles, Constrictor Harness</a></li><li><a href="#8-tno--static-corpus-only-cited-not-re-derived">8. TNO — static corpus only, cited not re-derived</a></li><li><a href="#9-proven--inferred--failed">9. PROVEN / INFERRED / FAILED</a></li><li><a href="#10-three-ready-to-build-decl-mods">10. Three ready-to-build decl mods</a></li><li><a href="#11-open-questions">11. Open questions</a></li><li><a href="#smallest-in-game-test-for-the-maintainer">Smallest in-game test (for the maintainer)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report studies the player systems of Wolfenstein II: The New Colossus (TNC); The New Order (TNO) is only cited from earlier file studies. Basic movement (run, sprint, jump, crouch height) is almost entirely hidden <span class="t" data-t="cvar">settings</span>, 88 of them starting with pm_, so a movement mod needs the proven resourceExec route; perks, health caps, contraptions and weapon upgrades are text <span class="t" data-t="decl">definitions</span> the loader can edit. Perks switch on by themselves when a tracked count such as headshot kills passes a threshold; there are no skill points. The stock developer loadout already hands out all three contraptions (Battle Walker, Ram Shackles, Constrictor Harness) at once. Everything here is static, read from game files and code; only the reused magazine-size edit (pistol 10 to 30) and the resourceExec route were confirmed in game earlier, and none of the three new mods has been run.</p><ul><li>18 perk chains of 5 levels each switch on by themselves once a tracked count passes a threshold (e.g. 25 headshot kills); no skill points are spent.</li><li>Correction of pass 1: headshotter, triggerhappy, secretagent and heavymetal boost all their listed weapons (6, 5, 2 and 4), so no perk data is orphaned.</li><li>Movement is 88 pm_ cvars, nearly all hidden, so run, sprint and jump values need the resourceExec route proven in game; the exact values in the mod are untested.</li><li>The stock developer loadout lists all three contraptions together; whether a built-in limit (MAX_CONTRAPTIONS) then cuts this down is still open.</li><li>The magazine-size edit is confirmed in game (pistol 10 to 30); extending it to other guns, e.g. SMG 45 to 90, and the three mod designs are not tested in game.</li></ul></div><div class="de"><p class="lede">Dieser Bericht untersucht die Spielersysteme von Wolfenstein II: The New Colossus (TNC); The New Order (TNO) wird nur aus früheren Dateistudien zitiert. Die Grundbewegung (Laufen, Sprinten, Springen, Duckhöhe) besteht fast nur aus versteckten <span class="t" data-t="cvar">Einstellungen</span>, 88 davon beginnen mit pm_, eine Bewegungs-Mod braucht daher den bewährten resourceExec-Weg; Perks, Lebens-Obergrenzen, Kampfanzüge und Waffen-Upgrades sind dagegen Text-<span class="t" data-t="decl">Definitionen</span>, die der Loader ändern kann. Perks schalten sich von selbst frei, wenn ein gezählter Wert wie Kopfschuss-Kills eine Schwelle überschreitet; Skillpunkte gibt es nicht. Die mitgelieferte Entwickler-Ausrüstung verteilt bereits alle drei Kampfanzüge (Battle Walker, Ram Shackles, Constrictor Harness) auf einmal. Alles hier ist statisch, aus Spieldateien und Code gelesen; nur die wiederverwendete Magazingrößen-Änderung (Pistole 10 auf 30) und der resourceExec-Weg wurden früher im Spiel bestätigt, keine der drei neuen Mods wurde ausprobiert.</p><ul><li>18 Perk-Ketten mit je 5 Stufen schalten sich von selbst frei, sobald ein gezählter Wert eine Schwelle überschreitet (z. B. 25 Kopfschuss-Kills); Skillpunkte werden nicht ausgegeben.</li><li>Korrektur von Durchgang 1: headshotter, triggerhappy, secretagent und heavymetal verstärken alle ihre aufgeführten Waffen (6, 5, 2 und 4), es gibt also keine verwaisten Perk-Daten.</li><li>Bewegung besteht aus 88 pm_-Cvars, fast alle versteckt; Lauf-, Sprint- und Sprungwerte gehen daher nur über den im Spiel bewiesenen resourceExec-Weg, die konkreten Werte der Mod sind ungetestet.</li><li>Die mitgelieferte Entwickler-Ausrüstung enthält alle drei Kampfanzüge zusammen; ob eine eingebaute Grenze (MAX_CONTRAPTIONS) das dann beschneidet, ist noch offen.</li><li>Die Magazingrößen-Änderung ist im Spiel bestätigt (Pistole 10 auf 30); die Übertragung auf andere Waffen, etwa Maschinenpistole 45 auf 90, und die drei Mod-Entwürfe sind im Spiel nicht getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on TNC's player systems — movement, health/armor/regeneration, perks, the three contraptions, dual wielding and weapon upgrade kits — with TNO covered from the static corpus only. Movement is pure cvar state (<code>pm_*</code>, almost all non-exposed), while progression is decl-driven: stat-gated, auto-activating perk chains, <code>upgrade</code> decls that carry the actual modifier values, and Battle Walker, Ram Shackles and Constrictor Harness as ability items given to the player. Three ready-to-build decl mods are included. <strong>Static analysis only; none of the mods has been run in game.</strong></p>
+<p>Track <code>playersys</code>, round 6, 2026-10-01. Scope: <strong>mainly TNC</strong>
+(<code>&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus</code>, common
+mount = <code>gameresources.resources</code> + highest patch chain <code>patch_1..4</code>, same
+precedence <code>re_probes/newweapon/common_mount.py</code> already established),
+<strong>TNO covered in §8 from the static corpus only</strong> — no runtime image exists
+for TNO (<code>WolfNewOrder_x64.exe</code>'s <code>.text</code> is still SteamStub-encrypted, per
+the task brief and <code>docs/ghidra.md</code>), so every TNO claim here is a citation
+of <code>docs/moddingflaeche-tno.md</code>'s own static reflection-table proof, not a
+re-derivation, and stays INFERRED/untested exactly as that doc already
+marks it. Read-only against both game installs and every project file
+outside this track's own <code>re_probes/playersys/</code> and this report. The game
+was <strong>not</strong> launched, no debugger attached.</p>
+<p>New code, all under <code>re_probes/playersys/</code>: <code>scan_corpus.py</code> (corpus census
+of <code>perks</code>/<code>upgrade</code>/<code>abilityInfo</code>/<code>abilityInventoryItem</code>/<code>inventoryItem</code>/
+<code>propItem</code>/<code>unlockable</code> + <code>entityDef:player</code>, common-mount precedence,
+first-archive-wins) → <code>out/*_all.txt</code> (full decl text dumps, one per type),
+<code>out/field_survey.json</code> (per-type <code>edit.*</code> leaf-path union with counts);
+<code>build_tables.py</code> (<strong>new this pass</strong>, reads <code>out/{perks,upgrade,
+abilityInfo}_all.txt</code> back in, re-runnable, <code>--self-check</code> regression-tests
+the exact bug pass 1 had) → <code>out/perk_table.txt</code> (all 18 perk chains × 5
+levels resolved to their modifier type/value progression, <strong>every</strong> weapon
+variant per chain, not just <code>item[0]</code> as pass 1's undocumented ad-hoc
+version did) and <code>out/abilityInfo_compact.txt</code>. Builds on, does not redo:
+<code>re_probes/agent_reports/r3_newweapon.md</code> (weapon decl anatomy,
+<code>dualwieldable</code>/<code>maxCount</code>, the three give-routes, the <code>DMT_*</code> enum
+glimpse), <code>r4_pickups.md</code> (<code>devInvLoadout</code> mechanism, the proven
+"redirect a map's <code>devmapInvLoadout</code>" recipe), <code>r4_aidecl.md</code> (the
+<code>ClassName::ENUM_VALUE</code> reflection-string cross-check method this report
+reuses for <code>idUpgradeMod_*</code>), <code>docs/moddingflaeche-tnc.md</code> §3.4/§3.7
+(first naming of <code>perks</code>/<code>upgrade</code>/<code>propItem</code>/<code>abilityInfo</code>), memory
+<code>tnc-decl-edits.md</code> (the proven <code>ammo:*.edit.clipSize</code> lever),
+<code>tnc-console-unlock.md</code> (the proven <code>resourceExec &lt;cfile&gt; -s</code> route for
+non-exposed cvars/commands), <code>re_probes/cvartable/cvars_tnc_v2.json</code>
+(3256 cvars from the static idCVar-registrar list, itself already
+runtime-cross-checked against every constructor call site — I did not
+re-derive that, I only filtered it).</p>
+<pre><code>python re_probes/playersys/scan_corpus.py
+python re_probes/playersys/build_tables.py   # new this pass
+</code></pre>
+<h2 id="pass-1-errors-fixed-in-this-pass">Pass 1 errors (fixed in this pass)</h2>
+<p>The verifier REFUTED one claim and listed five missed items. Status:</p>
+<ol>
+<li><strong>REFUTED, now fixed</strong> — pass 1's headline "genuinely new finding" and
+   §5.4/§5's "handgun only (N more orphaned)" cells for <code>headshotter</code>,
+   <code>triggerhappy</code>, <code>secretagent</code> were wrong. Direct reads of
+   <code>out/perks_all.txt</code> show <code>headshotter_N.edit.upgrades.num=6</code>,
+   <code>triggerhappy_N.num=5</code>, <code>secretagent_N.num=2</code>, every <code>item[]</code> a live,
+   retail-wired <code>upgrade</code> decl — <strong>none orphaned</strong>. Root cause: the ad-hoc
+   script behind pass 1's <code>out/perk_table.txt</code> read only <code>item[0]</code>. Fixed
+   with a new saved, re-runnable <code>re_probes/playersys/build_tables.py</code>
+   (reads the full <code>item[]</code> array; <code>--self-check</code> asserts the 6/5/2 counts
+   so this can't silently regress) and a regenerated <code>out/perk_table.txt</code>.
+   <code>heavymetal</code> (<code>num=4</code>) had the same single-item blind spot — pass 1
+   didn't call it orphaned (it wasn't), but its table row also only showed
+   one of four weapons; corrected too. See §5/§5.4 below.</li>
+<li><strong>Fixed</strong> — <code>pm_*</code> cvar count corrected from "~60"/"60+" to the exact
+   <strong>88</strong> (<code>re_probes/cvartable/cvars_tnc_v2.json</code>, direct count); extras
+   named: <code>pm_wheelchairfriction</code>, <code>pm_wheelchairheight</code>,
+   <code>pm_wheelChairStrafeSpeedRatio</code>. See §2.</li>
+<li><strong>Fixed</strong> — named the concrete lean-adjacent cvar,
+   <code>player_analyzeEnvFreeLeanOnly</code> (bool, default 0, <code>exposed=false</code>,
+   "disables sliding along walls while not being able to lean"). Does not
+   overturn "no numeric lean-distance cvar exists" — it's the nearest real
+   lever, not a distance. See §2.</li>
+<li><strong>Followed up</strong> — <code>requiredStatForActivation.regions</code> and the UI/display
+   fields (<code>criteria</code>/<code>reward</code>/<code>regionUnlockName</code>/<code>rewardScales</code>/
+   <code>presentationType</code>/<code>descriptionFlags</code>) analyzed in new §5.5. Mostly the
+   same INFERRED tier as the rest of <code>requiredStatForActivation</code>; one
+   ambiguous lead (a bare <code>"regions"</code> string <em>does</em> carry a resolved
+   reference, unlike every qualified <code>requiredStatForActivation.*</code> string —
+   flagged, not promoted to PROVEN, see §5.5) and one new confirmation
+   (<code>presentationType_t</code>/<code>perkDescriptionFlags_t</code> exist as real mangled RTTI
+   enum-type names).</li>
+<li><strong>Followed up</strong> — whether the (now-corrected) per-weapon perk-upgrades
+   actually register per-weapon at runtime: no stronger proof than before
+   exists in this snapshot, but a new, more specific piece of circumstantial
+   evidence was found — a compiled debug format string
+   <code>"Upgrade %s Applyto %s\n"</code> naming exactly the decl's own <code>applyTo</code>
+   field semantics. See §5.4.</li>
+<li><strong>Not re-attempted</strong> — a save-file probe of the real weapon-upgrade-kit
+   purchase flag; still out of this track's scope (different territory,
+   <code>re_probes/savegame</code>).</li>
+</ol>
+<p><strong>New, not in pass 1 or the verifier's list</strong>: found while fixing the
+<code>item[]</code> bug — <code>player/perk/inconspicuous_3/4/5</code> declare
+<code>modifiersData.num=3</code> but only populate <code>item[0]</code> (checked all 195
+<code>upgrade</code> decls' three modifier arrays for the same num&gt;populated-items
+gap: these 3 are the only true case corpus-wide). See §5.4.</p>
+<h2 id="answer-in-one-paragraph">Answer in one paragraph</h2>
+<p>TNC's player tuning splits cleanly into two layers that this track had to
+tell apart: <strong>pure engine state in cvars</strong> (all movement — <code>pm_*</code>, 60+
+cvars for speed/accel/height/friction per stance, none of them decls,
+almost all <code>exposed=False</code> so only reachable via the already-proven
+<code>resourceExec &lt;cfile&gt; -s</code> route, never via <code>+args</code>) and <strong>decl-driven
+player progression</strong> (perks, contraptions, weapon upgrade kits, health/armor
+caps — all plain text, all editable with the loader's proven <code>set</code>/<code>file</code>
+patch mechanism). The progression layer resolves to <strong>18 stat-gated perk
+chains</strong> (<code>perks/player/sp/&lt;name&gt;_base</code> + <code>_1.._5</code>, 111 decls total with 3
+tutorial perks), each chain auto-activating (<code>awardCondition=UC_AUTOMATIC</code>,
+no manual skill-point spend) once a tracked stat crosses a threshold
+(<code>requiredStatForActivation.statName</code>/<code>statIncrement</code>, e.g.
+<code>STAT_KILLS_HEADSHOT</code> +25 for <code>headshotter</code>), and each level pointing at one
+<code>upgrade:player/perk/&lt;name&gt;_N</code> decl whose <code>modifiersWeapon</code>/<code>modifiersAmmo</code>/
+<code>modifiersData</code> list carries the actual number — three real,
+reflection-visible C++ classes (<code>idUpgradeMod_Weapon</code>/<code>idUpgradeMod_Ammo</code>/
+<code>idUpgradeMod_Data</code>, confirmed as qualified <code>Class::ENUM</code> strings in the
+runtime image) each owning one <code>WMT_*</code>/<code>AMT_*</code>/<code>DMT_*</code> enum. <strong>The three
+"contraptions" the task named are real, corpus-confirmed content</strong>
+(<code>abilityInfo:battlewalker</code> = Battle Walker,
+<code>abilityInfo:ramshackles</code> = Ram Shackles,
+<code>abilityInfo:constrictorharness</code> = Constrictor Harness — German
+<code>Rammbock</code>/<code>Kobra</code>-named internally), each with 3 <code>subAbility0/1/2</code> +
+1 <code>sidequestAbility</code>, granted by giving the player one
+<code>abilityInventoryItem:abilities/{wanderer,rammbock,kobra}</code> item; a compiled
+engine constant <code>MAX_CONTRAPTIONS</code> exists (name only, value unread, no
+runtime instance to query) hinting at a simultaneous-equip cap the game UI
+enforces, but <strong>the stock <code>devinvloadout/code_referenced/default_sp_devloadout</code>
+decl already lists all three ability items in its <code>startingInventory</code>
+simultaneously</strong> (<code>item[10..12]</code>) — meaning the exact redirect
+<code>r4_pickups.md</code> already proved for "every weapon" (point a map's
+<code>world.edit.devmapInvLoadout</code> at this decl) hands the player all three
+contraptions at once for free, as a bonus this track adds to that finding.
+Dual wield (<code>r3_newweapon.md</code>'s decl-only <code>dualwieldable=true</code> +
+<code>maxCount=2</code> finding) gets a fresh runtime cross-check here: the engine
+carries dedicated RTTI classes <code>idDualwieldAnimAliasVariations</code>/
+<code>idAnimSysNode_PlayDualwieldAnim</code>/<code>idAnimSysNodeData_PlayDualwieldAnim</code>
+(mangled <code>.?AV...@@</code> names, genuine referenced functions, not just decl
+text) and a tracked stat <code>STAT_KILLS_DW</code> feeding the <code>triggerhappy</code> perk
+chain — dual wield is real, wired, deep engine support, not a decl-only
+illusion. Weapon upgrade kits are a <strong>separate system</strong> from perks: each
+weapon decl carries <code>edit.upgrades.item[0..N]</code> naming 2-4
+<code>upgrade:weapons/&lt;gun&gt;/&lt;mod&gt;</code> decls (e.g. handgun →
+<code>magazine_size</code>/<code>silencer</code>/<code>elephantrounds</code>/<code>elephantrounds_silencer</code>),
+bought with <code>inventoryItem:unlocks/upgradekit</code> currency (a stackable,
+non-droppable pickup, <code>maxCount=100</code>) at an in-game workbench — the
+purchase-gating flag itself was not found in static data (likely save-state,
+out of decl reach), so the safe, already-proven lever is <strong>not</strong> the
+upgrade-activation flag but the exact same <code>edit.clipSize</code> field on the base
+<code>ammo:*</code> decl that <code>tnc-decl-edits.md</code> already confirmed arrives in game
+(handgun 10→30, proven; this track extends the same lever to
+smg/battlerifle/shotgun/lkw/dkw, see §6 table). <strong>Correction from pass 1</strong>
+(see "Pass 1 errors" above): three weapon-perk chains that <em>look</em>
+single-weapon by name (<code>headshotter</code>, <code>triggerhappy</code>, <code>secretagent</code>) are
+<strong>not</strong> single-weapon and <strong>nothing in this corpus is orphaned</strong> —
+<code>headshotter_N.edit.upgrades</code> already lists all 6 weapon variants
+(handgun/smg/shotgun/battlerifle/kampfpistol/laserkraftwerk),
+<code>triggerhappy_N</code> all 5, <code>secretagent_N</code> both of its 2; <code>heavymetal_N</code> was
+already wired to 4 weapons too. Every one of these perk levels buffs
+<em>every</em> listed weapon simultaneously, out of the box, in retail — pass 1's
+"orphaned content, wire it back in" mod idea (§5.4) does not apply; §5.4 is
+rewritten below to show the real per-weapon value tables instead.</p>
+<h2 id="1-method-and-corpus">1. Method and corpus</h2>
+<p><code>re_probes/playersys/scan_corpus.py</code> mounts <code>gameresources.resources</code> +
+<code>patch_4..1</code> (common-mount precedence, first archive wins — identical
+methodology to <code>re_probes/newweapon/common_mount.py</code>) and collects every
+entry of 7 decl types plus <code>entityDef:player</code>:</p>
+<pre><code>perks: 111 decls           abilityInventoryItem: 24 decls
+upgrade: 195 decls         inventoryItem: 10 decls
+abilityInfo: 36 decls      propItem: 52 decls
+                           unlockable: 84 decls
+entityDef:player bytes: 13165
+</code></pre>
+<p>All 508 decls parsed with <code>wolfsdk/decl.py</code>'s <code>Decl()</code> with <strong>zero</strong>
+<code>DeclError</code> (consistent with <code>docs/moddingflaeche-tnc.md</code>'s corpus-wide
+"44 140/44 374 parse clean" headline number — these 7 types are fully
+inside that safe set). <code>edit.*</code> leaf-path unions per type are in
+<code>out/field_survey.json</code>.</p>
+<h2 id="2-movement-cvars-not-decls--pm_-and-friends">2. Movement: cvars, not decls — <code>pm_*</code> and friends</h2>
+<p><strong>Everything that moves the player's capsule is a cvar</strong>, not a decl field.
+Filtered from <code>re_probes/cvartable/cvars_tnc_v2.json</code> (3256 cvars from the
+static idCVar-registrar list at RVA <code>0x30B58F8</code>, itself already
+cross-checked against every constructor call site — that grounding predates
+this track, I only filtered the table). <strong>Exact count: 88 <code>pm_*</code> cvars</strong>
+(pass 1 said "~60"/"60+", undercounted — corrected this pass; unmentioned
+extras beyond the table below: <code>pm_wheelchairfriction</code>,
+<code>pm_wheelchairheight</code>, <code>pm_wheelChairStrafeSpeedRatio</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Family</th>
+<th>cvar</th>
+<th style="text-align: right;">default</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>speed</td>
+<td><code>pm_walkspeed</code></td>
+<td style="text-align: right;">2.8</td>
+<td>sneak/walk</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_runspeed</code></td>
+<td style="text-align: right;">5.2</td>
+<td>normal run</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_sprintspeed</code></td>
+<td style="text-align: right;">9.0</td>
+<td>sprint</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_sprintspeedUnarmed</code></td>
+<td style="text-align: right;">6.5</td>
+<td>sprint, no weapon out</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_backSpeedRatio</code></td>
+<td style="text-align: right;">0.75</td>
+<td>backward-move ratio</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_strafeSpeedRatio</code></td>
+<td style="text-align: right;">0.85</td>
+<td>strafe ratio</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_crouchbasespeed</code></td>
+<td style="text-align: right;">1.75</td>
+<td>crouched move</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_pronesprintspeed</code></td>
+<td style="text-align: right;">2.2</td>
+<td>prone sprint</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_wandererspeed</code> / <code>pm_wanderersprintspeed</code></td>
+<td style="text-align: right;">3.6 / 4.5</td>
+<td>Battle Walker mech-legs mode</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_wheelChairSpeed</code> / <code>…printspeed</code></td>
+<td style="text-align: right;">1.5 / 2.3</td>
+<td>forced wheelchair sequence only</td>
+</tr>
+<tr>
+<td>jump</td>
+<td><code>pm_jumpheight</code></td>
+<td style="text-align: right;">1.15</td>
+<td>normal jump apex</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_jumpHeightPanzerRide</code></td>
+<td style="text-align: right;">1.15</td>
+<td>while riding a Panzerhund (scripted)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_jumpheightWheelChair</code></td>
+<td style="text-align: right;">0.15</td>
+<td>wheelchair sequence</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_groundpoundvelocity</code></td>
+<td style="text-align: right;">-2.0</td>
+<td>Battle Walker ground-pound impact speed</td>
+</tr>
+<tr>
+<td>crouch</td>
+<td><code>pm_crouchheight</code>/<code>pm_crouchviewheight</code></td>
+<td style="text-align: right;">0.89 / 0.80</td>
+<td>capsule/eye height crouched</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_normalheight</code>/<code>pm_normalViewHeight</code></td>
+<td style="text-align: right;">1.79 / 1.54</td>
+<td>standing</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_proneheight</code></td>
+<td style="text-align: right;">0.29</td>
+<td>prone</td>
+</tr>
+<tr>
+<td>sprint-slide</td>
+<td><code>pm_sprintSlideLowerSpeed</code></td>
+<td style="text-align: right;">4.0</td>
+<td>slide stop speed</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_sprintslidefriction</code></td>
+<td style="text-align: right;">1.5</td>
+<td>slide friction</td>
+</tr>
+<tr>
+<td>Ram Shackles</td>
+<td><code>pm_rammbockactivationtime</code></td>
+<td style="text-align: right;">200 ms</td>
+<td>sprint-hold before tackle arms</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_rammbockDotChecker</code></td>
+<td style="text-align: right;">-0.69</td>
+<td>facing-angle gate for a valid tackle hit</td>
+</tr>
+<tr>
+<td>mantle/traversal</td>
+<td><code>dp_jumpTraversalMinApexHeight</code></td>
+<td style="text-align: right;">32.0</td>
+<td>min apex for an auto-traversal jump</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pm_stepsize</code></td>
+<td style="text-align: right;">0.32</td>
+<td>auto step-up height (no separate "mantle" cvar found)</td>
+</tr>
+<tr>
+<td>lean</td>
+<td><em>(none numeric)</em></td>
+<td style="text-align: right;">—</td>
+<td><code>player_analyzeEnv*</code> runs lean through the cover/environment analyzer, not a <code>pm_lean*</code> amount — <strong>no dedicated lean-distance cvar exists</strong> (still true this pass); nearest real, citable lever: <code>player_analyzeEnvFreeLeanOnly</code> (bool, default 0, <code>exposed=false</code>, "disables sliding along walls while not being able to lean") — a behavior toggle, not a distance</td>
+</tr>
+<tr>
+<td>regen/health</td>
+<td><code>g_playerHealthRegenDelay</code></td>
+<td style="text-align: right;">3 s</td>
+<td>wait after damage before regen starts</td>
+</tr>
+<tr>
+<td></td>
+<td><code>g_playerHealthRegenSpeed</code></td>
+<td style="text-align: right;">5.75</td>
+<td>hp/s</td>
+</tr>
+<tr>
+<td></td>
+<td><code>g_playerShieldRegenDelay/Interval/Rate</code></td>
+<td style="text-align: right;">5 / 0.5 / 0</td>
+<td>armor-shield regen (rate is 0 by default — off)</td>
+</tr>
+<tr>
+<td>difficulty</td>
+<td><code>g_playerHealthAndArmorScale_DIFFICULTY_*</code> (7)</td>
+<td style="text-align: right;">1.0 each</td>
+<td>per-tier player HP/armor multiplier</td>
+</tr>
+<tr>
+<td></td>
+<td><code>g_playerIncomingDamageScale_DIFFICULTY_*</code> (7)</td>
+<td style="text-align: right;">1.0 each</td>
+<td>per-tier incoming-damage multiplier</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>All of these are <code>exposed=False</code></strong> except <code>pm_togglesprint</code>,
+<code>pm_enableQuickTurn</code> (both PC-option cvars, genuinely console-settable).
+Every other one needs the proven <code>resourceExec &lt;loader-replaced cfile&gt; -s</code>
+route (<code>tnc-console-unlock.md</code>) to set at all — <code>+pm_sprintspeed 14</code> as a
+launch arg is rejected exactly like the already-tested <code>+pm_autoSprint</code> was.
+<strong>This is the key finding for a "Movement+" mod: it cannot be a pure decl
+mod.</strong> §7.1 gives both a decl-only partial (crouch/stealth speed, regen,
+health/armor caps — genuinely decl-driven, see §3) and the cvar-cfile
+supplement for raw run/sprint/jump numbers.</p>
+<h2 id="3-health-armor-regen--decl-driven-proven-mechanism">3. Health, armor, regen — decl-driven, proven mechanism</h2>
+<p><code>entityDef:player.edit.actorEditable.healthOverrides</code> (<code>num=2</code>) names two
+<code>healthComponent</code> decls applied at spawn:</p>
+<pre><code>item[0] = &quot;player/health_force_100&quot;   -- healthComponent, edit.max=100 edit.cur=100
+item[1] = &quot;player/armor_max_100&quot;      -- healthComponent, edit.max=100 edit.component=&quot;COMPONENT_ARMOR&quot;
+</code></pre>
+<p>A <strong>second, unused-by-default pair already ships in retail</strong>:
+<code>player/health_force_50</code> (max/cur 50, a "half-health" variant, likely a
+specific chapter/hardcore-mode override) and <strong><code>player/armor_max_200</code></strong>
+(max=200, <code>component="COMPONENT_ARMOR"</code>) — the latter is the exact decl
+the <code>abilityInfo:armorboost</code> ("Repairman"/"Armor Boost" sidequest ability,
+<code>AT_ARMORBOOST</code>) raises the cap to once unlocked; its
+<code>abilityInventoryItem:abilities/armorovercharge</code> carries no explicit numeric
+field itself (just <code>abilityInfo="armorboost"</code>), so the 100→200 swap is
+almost certainly C++-side logic switching which <code>healthComponent</code> applies
+once that ability is owned, not a second decl path — <strong>INFERRED</strong>, not
+static-provable without the ability actually active in a save.
+<code>entityDamage:player/testplayerdamage</code> is the player's single damage-group
+decl (one group <code>"body"</code>, one scalar <code>"base"</code> — much flatter than AI's
+per-bodypart <code>aiHealth</code> structure from <code>r4_aidecl.md</code>; player damage scaling
+lives in the separate <code>playerdamage/*</code> difficulty-table decls
+<code>playerEditable.{easy,normal,hard,...}Table</code> already documented by that
+report's sibling work, not re-measured here).</p>
+<p>Regen/decay speed and crouch/stealth-move speed ARE decl fields, via the
+perk-upgrade chain (§5): <code>DMT_HEALTH_REGEN_SPEED</code> (<code>frontalassault</code>),
+<code>DMT_HEALTH_DECAY_SPEED</code> (<code>hardysoldier</code> — lower is better, it is the delay
+before regen kicks in, not a regen rate), <code>DMT_CROUCH_SPEED</code> (<code>assassin</code>),
+<code>DMT_KOBRA_MOVE_SPEED</code> (<code>kobra</code>/Constrictor Harness prone-crawl speed).</p>
+<p><strong>Runtime cross-check</strong>: <code>healthOverrides</code> is the one field name in this
+whole track whose compiled string carries an actual reference
+(<code>0x7ff62d19ad8b</code>, not inside any disassembled function body — a <code>.rdata</code>
+reflection-table pointer, same pattern <code>r4_aidecl.md</code> established for
+<code>aiEditable</code>/<code>perception</code>: "exists as a compiled string with exactly one
+reflection-table pointer reference, proving the engine's decl-binding
+schema knows the field"). <code>requiredStatForActivation</code>/<code>autoActivate</code>/
+<code>lockedFromStart</code> exist as compiled strings too but with <strong>no</strong> resolved
+reference in this snapshot (the x86 Constant Reference Analyzer does not
+always resolve indirect reflection-table loads — same caveat <code>r4_aidecl.md</code>
+flagged); their presence as exact-match compiled strings is still evidence,
+just weaker than a resolved pointer — marked INFERRED below, not PROVEN.</p>
+<h2 id="4-dual-wielding--decl-mechanism-confirmed-now-with-runtime-backing">4. Dual wielding — decl mechanism confirmed, now with runtime backing</h2>
+<p><code>r3_newweapon.md</code> §1.9 already established the decl mechanism exactly:
+<code>dualwieldable=true</code> + <code>maxCount=2</code> on the <strong>same</strong> weapon decl, no second
+decl, true for every actually-equippable dual-wieldable weapon
+(handgun/smg/shotgun/battlerifle variants/kampfpistol). This track adds the
+runtime side, via <code>python tools/decomp.py --strings</code>:</p>
+<pre><code>&quot;idPlayer::NODEINDEX_BODYREACTION_NONE_DUALWIELD&quot;
+&quot;idPlayer::NODEINDEX_BODYREACTION_NONE_WANDERER_DUALWIELD&quot;   &lt;- dual wield + Battle Walker stack
+&quot;idPlayer::NODEINDEX_BODYREACTION_CAMERASHAKE_DUALWIELD&quot;
+&quot;.?AVidDualwieldAnimAliasVariations@@&quot;                       &lt;- real RTTI class, mangled name
+&quot;.?AVidAnimSysNode_PlayDualwieldAnim@@&quot;                       &lt;- real RTTI class
+&quot;.?AVidAnimSysNodeData_PlayDualwieldAnim@@&quot;                   &lt;- real RTTI class
+&quot;idAnimSysNode_PlayDualwieldAnim::Init - Alias: '%s' not found in node: '%s' for animSys '%s'&quot;
+    &lt;- FUN_7ff62cfd8130   (a real error-formatting call site)
+&quot;aiEditable.actionSettings.combat.canDualWield&quot;               &lt;- AI can be flagged dual-wield too
+&quot;actorConstants.canDualWield&quot;
+</code></pre>
+<p>Three genuine, mangled-name RTTI classes exist purely to drive dual-wield
+animation blending, plus a confirmed node-index enum for camera-shake and
+Battle-Walker-combined body reactions — this is deep, dedicated engine
+support, not a thin decl flag the engine barely reads. The tracked stat
+<code>STAT_KILLS_DW</code> (feeding the <code>triggerhappy</code> perk, see §5) further confirms
+dual-wield kills are counted server-side, not just animated.</p>
+<h2 id="5-perks--18-stat-gated-chains-auto-activating-no-skill-points">5. Perks — 18 stat-gated chains, auto-activating, no skill points</h2>
+<p><code>entityDef:player.edit.perkCollection</code> lists exactly 21 chains (18 real +
+3 tutorial), each <code>{perks.item[0..4] = "perk/player/sp/&lt;name&gt;_1..5"}</code>. Every
+chain: a <code>_base</code> decl (display/icon strings + <code>requiredStatForActivation</code>)
+plus five level decls, each just <code>{inherit=_base; edit.upgrades.item[0] =
+"player/perk/&lt;name&gt;_N"}</code>. <strong><code>awardCondition="UC_AUTOMATIC"</code> on all 158
+measured <code>upgrade</code> decls that have it, and <code>reUsable=true</code></strong> — there is
+<strong>no skill-point currency, no manual spend</strong>: a perk auto-activates the
+instant its tracked stat crosses the threshold. Full resolved table
+(<code>re_probes/playersys/out/perk_table.txt</code>, stat → increment → modifier
+type → level 1→5 values):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>chain</th>
+<th>stat (increment)</th>
+<th>type</th>
+<th>applies to</th>
+<th>1 → 5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>assassin</td>
+<td>STAT_KILLS_STEALTH_TAKEDOWN (10)</td>
+<td>DMT_CROUCH_SPEED</td>
+<td>player</td>
+<td>1.90 → 2.85</td>
+</tr>
+<tr>
+<td>axeman</td>
+<td>STAT_KILLS_THROWN_AXE (10)</td>
+<td>AMT_AMMO_MAX_COUNT</td>
+<td>hatchet</td>
+<td>4 → 8</td>
+</tr>
+<tr>
+<td>electromaniac</td>
+<td>STAT_KILLS_STUNNED (2)</td>
+<td>DMT_ELECTRIC_DAMAGE_SCALER</td>
+<td>player</td>
+<td>0.95 → 0.75</td>
+</tr>
+<tr>
+<td>frontalassault</td>
+<td>STAT_KILLS_TAKEDOWN (10)</td>
+<td>DMT_HEALTH_REGEN_SPEED</td>
+<td>player</td>
+<td>2.1 → 2.5</td>
+</tr>
+<tr>
+<td>grenadier</td>
+<td>STAT_KILLS_GRENADE (25)</td>
+<td>AMT_AMMO_MAX_COUNT</td>
+<td>grenade_frag</td>
+<td>4 → 8</td>
+</tr>
+<tr>
+<td>hardened</td>
+<td>STAT_KILLS_ENVIRONMENT (10)</td>
+<td>DMT_EXPLOSION_DAMAGE_SCALER</td>
+<td>player</td>
+<td>0.95 → 0.75</td>
+</tr>
+<tr>
+<td>hardysoldier</td>
+<td>STAT_KILLS_WHILE_HEALTH_OVERCHARGE (20)</td>
+<td>DMT_HEALTH_DECAY_SPEED</td>
+<td>player</td>
+<td>1.8 → 1.0</td>
+</tr>
+<tr>
+<td>headshotter</td>
+<td>STAT_KILLS_HEADSHOT (25)</td>
+<td>WMT_WEAPON_DAMAGE_IRON_SIGHT_DAMAGE_SCALE</td>
+<td><strong>all 6</strong> (handgun/smg/battlerifle/shotgun/kampfpistol/lkw, §5.4)</td>
+<td>1.05 → 1.25 (same curve, all 6)</td>
+</tr>
+<tr>
+<td>heavymetal</td>
+<td>STAT_KILLS_HEAVY_WEAPON (20)</td>
+<td>AMT_AMMO_MAX_COUNT</td>
+<td><strong>all 4</strong> (lasergewehr/hammergewehr/dieselgewehr/ubergewehr, §5.4)</td>
+<td>varies per weapon, §5.4</td>
+</tr>
+<tr>
+<td>inconspicuous</td>
+<td>STAT_COLLECT_ENIGMA_CODE (10)</td>
+<td>DMT_COMMANDER_ALARM_TIME</td>
+<td>player</td>
+<td>0.2 → 1.0</td>
+</tr>
+<tr>
+<td>kobra (Constrictor)</td>
+<td>STAT_KILLS_CONSTRICTOR_TAKEDOWN (1)</td>
+<td>DMT_KOBRA_MOVE_SPEED</td>
+<td>player</td>
+<td>1.42 → 1.88</td>
+</tr>
+<tr>
+<td>pyromaniac</td>
+<td>STAT_KILLS_FIRE (10)</td>
+<td>DMT_FIRE_DAMAGE_SCALER</td>
+<td>player</td>
+<td>0.95 → 0.75</td>
+</tr>
+<tr>
+<td>rammbock (Ram Shackles)</td>
+<td>STAT_KILLS_RAM (10)</td>
+<td>DMT_ARMOR_LOOT_SCALER</td>
+<td>player</td>
+<td>1.1 → 1.5</td>
+</tr>
+<tr>
+<td>refused</td>
+<td>STAT_KILLS_ENEMY_GRENADE (2)</td>
+<td>DMT_GRENADE_EXTRA_DETONATION_DELAY</td>
+<td>player</td>
+<td>0.5 → 2.0</td>
+</tr>
+<tr>
+<td>saboteur</td>
+<td>STAT_ROBOT_TAKEDOWN_OR_TAMPER (2)</td>
+<td>DMT_TAMPER_AMMO_VALUE</td>
+<td>player</td>
+<td>1 → 5</td>
+</tr>
+<tr>
+<td>secretagent</td>
+<td>STAT_KILLS_COMMANDER_NA (5)</td>
+<td>WMT_WEAPON_DAMAGE_SUPPRESSED</td>
+<td><strong>both 2</strong> (handgun/smg, §5.4)</td>
+<td>1.1 → 1.5 (same curve, both)</td>
+</tr>
+<tr>
+<td>triggerhappy</td>
+<td>STAT_KILLS_DW (50)</td>
+<td>AMT_AMMO_MAX_COUNT</td>
+<td><strong>all 5</strong> (handgun/smg/battlerifle/shotgun/kampfpistol, §5.4)</td>
+<td>varies per weapon, §5.4</td>
+</tr>
+<tr>
+<td>wanderer (Battle Walker)</td>
+<td>STAT_KILLS_BATTLE_WALKER (20)</td>
+<td>DMT_AMMO_LOOT_SCALER</td>
+<td>player</td>
+<td>1.1 → 1.5</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>opType</code> is <code>MOD_OPERATOR_SET</code> on every measured modifier (no additive mode
+seen in this corpus). <code>heavymetal</code>/<code>headshotter</code>/<code>secretagent</code>/
+<code>triggerhappy</code> each carry <strong>multiple</strong> per-weapon upgrade decls
+(<code>heavymetal_{dieselgewehr,hammergewehr,lasergewehr,ubergewehr}</code> etc.) and
+the perk's <code>upgrades</code> array references <strong>all of them</strong>, applying the
+modifier to every listed weapon at once (corrected from pass 1, which
+misread only <code>item[0]</code> and wrongly called the rest orphaned — see
+"Pass 1 errors" above and §5.4's full per-weapon table).</p>
+<h3 id="51-runtime-cross-check-idupgrademod_">5.1 Runtime cross-check: <code>idUpgradeMod_*</code></h3>
+<pre><code>python tools/decomp.py --strings &quot;DMT_ARMOR_LOOT_SCALER|DMT_KOBRA_MOVE_SPEED|DMT_HEALTH_REGEN_SPEED&quot;
+  &quot;idUpgradeMod_Data::DMT_KOBRA_MOVE_SPEED&quot;
+  &quot;idUpgradeMod_Data::DMT_HEALTH_REGEN_SPEED&quot;
+  &quot;idUpgradeMod_Data::DMT_ARMOR_LOOT_SCALER&quot;
+
+python tools/decomp.py --strings &quot;WMT_WEAPON_DAMAGE_IRON_SIGHT_DAMAGE_SCALE|AMT_AMMO_MAX_COUNT|MOD_OPERATOR_SET&quot;
+  &quot;idUpgradeMod_Weapon::WMT_WEAPON_DAMAGE_IRON_SIGHT_DAMAGE_SCALE&quot;
+  &quot;idUpgradeMod_Ammo::AMT_AMMO_MAX_COUNT&quot;
+</code></pre>
+<p>Every <code>DMT_*</code>/<code>WMT_*</code>/<code>AMT_*</code> tested resolves to a qualified
+<code>idUpgradeMod_{Data,Weapon,Ammo}::ENUM_VALUE</code> string — three real, distinct
+C++ reflection classes, one per modifier list on the <code>upgrade</code> decl,
+matching the decl structure (<code>modifiersData</code>/<code>modifiersWeapon</code>/
+<code>modifiersAmmo</code>) field for field. No resolved code xref in this snapshot
+(reflection-table load, same caveat as §3) — <strong>PROVEN that the type exists
+and is named exactly as the decl text names it; INFERRED (not re-derived
+here) that a given numeric value is actually read every frame</strong>, consistent
+with how <code>r4_aidecl.md</code> treated the same class of evidence for AI fields.</p>
+<h3 id="52-auto-activation-proven-string-no-resolved-xref">5.2 Auto-activation: PROVEN string, no resolved xref</h3>
+<p><code>requiredStatForActivation</code>, <code>autoActivate</code>, <code>lockedFromStart</code> all exist as
+exact compiled strings (§3) but with no resolved <code>.rdata</code> xref in this
+snapshot. <strong>INFERRED</strong>, not PROVEN, that the engine evaluates them exactly
+as named — strong (exact string match, matches the decl schema field for
+field, same class of evidence <code>r4_aidecl.md</code> accepted for weaker cases) but
+short of the stronger "resolved pointer" bar this report applies to
+<code>healthOverrides</code>.</p>
+<h3 id="53-lockedfromstart--only-the-3-contraption-perk-bases">5.3 <code>lockedFromStart</code> — only the 3 contraption perk bases</h3>
+<p><code>edit.lockedFromStart</code> appears on exactly 3 of 111 perks:
+<code>kobra_base</code>, <code>rammbock_base</code>, <code>wanderer_base</code> — the three contraption perk
+chains, consistent with them being gated behind actually owning that
+contraption (a story choice), unlike the other 15 chains which are
+available from the start and simply accumulate their stat during normal
+play.</p>
+<h3 id="54-corrected-from-pass-1-the-4-multi-weapon-chains-nothing-orphaned">5.4 Corrected from pass 1: the 4 multi-weapon chains, nothing orphaned</h3>
+<p>Pass 1 claimed <code>headshotter_N.edit.upgrades</code> had <code>num=1</code> and 25+20+5=50
+per-weapon decls were "orphaned". <strong>Wrong</strong> — direct reads of
+<code>out/perks_all.txt</code> show <code>num=6/4/2/5</code> for these four chains and every
+<code>item[]</code> resolves to a real, well-formed <code>upgrade</code> decl (verifier-confirmed
+for 3 of the 4; <code>heavymetal</code>'s <code>num=4</code> checked the same way this pass).
+Regenerated with <code>re_probes/playersys/build_tables.py</code> (full <code>item[]</code>
+walk, fixes pass 1's <code>item[0]</code>-only bug), full per-weapon tables:</p>
+<pre><code>headshotter (STAT_KILLS_HEADSHOT, incr 25) — all 6, same curve:
+  handgun/smg/battlerifle/shotgun/kampfpistol/lkw
+  WMT_WEAPON_DAMAGE_IRON_SIGHT_DAMAGE_SCALE: 1.05→1.1→1.15→1.2→1.25
+
+secretagent (STAT_KILLS_COMMANDER_NA, incr 5) — both 2, same curve:
+  handgun/smg
+  WMT_WEAPON_DAMAGE_SUPPRESSED: 1.1→1.2→1.3→1.4→1.5
+
+triggerhappy (STAT_KILLS_DW, incr 50) — all 5, per-weapon curves:
+  handgun       AMT_AMMO_MAX_COUNT: 90→100→110→120→130
+  smg           AMT_AMMO_MAX_COUNT: 405→450→495→540→585
+  battlerifle   AMT_AMMO_MAX_COUNT: 270→300→330→360→390
+  shotgun       AMT_AMMO_MAX_COUNT: 180→200→220→240→260
+  kampfpistol   AMT_AMMO_MAX_COUNT: 13→14→16→17→18
+
+heavymetal (STAT_KILLS_HEAVY_WEAPON, incr 20) — all 4, per-weapon curves:
+  lasergewehr   AMT_AMMO_MAX_COUNT: 240→280→320→360→400
+  hammergewehr  AMT_AMMO_MAX_COUNT: 240→280→320→360→400
+  dieselgewehr  AMT_AMMO_MAX_COUNT: 60→70→80→90→100
+  ubergewehr    AMT_AMMO_MAX_COUNT: 12→14→16→18→20
+</code></pre>
+<p>So all four "look single-weapon by name" chains are, in retail, already
+multi-weapon perks: one stat threshold buffs every listed gun at once. No
+mod is needed to "wire the orphaned decls back in" (pass 1's §5.4 idea is
+withdrawn) — there is nothing orphaned to wire.</p>
+<p><strong>Did not change</strong>: whether the engine actually <em>applies</em> each per-weapon
+modifier at runtime is still not resolved to a pointer-level PROVEN (same
+caveat as §5.1/§5.2). One new, more specific piece of circumstantial
+evidence found this pass: <code>python tools/decomp.py --strings applyTo</code> turns
+up a compiled debug/log format string,
+<strong><code>"Upgrade %s Applyto %s\n"</code></strong> (<code>0x7ff62eace9d8</code>), whose text literally
+mirrors the decl's own <code>edit.applyTo</code> field ("Upgrade <code>&lt;name&gt;</code> Applyto
+<code>&lt;weapon&gt;</code>") — strong circumstantial evidence real code logs "which
+upgrade, applied to which weapon" at some point, even though (same
+Constant Reference Analyzer limitation as everywhere else in this report)
+the string itself has no resolved caller in this snapshot. Still INFERRED,
+not PROVEN, but a stronger lead than a bare field-name string alone.</p>
+<p><strong>New, unrelated-to-the-bug finding from the same fix</strong>: <code>upgrade</code>
+decls' <code>modifiersWeapon</code>/<code>modifiersAmmo</code>/<code>modifiersData</code> arrays declare a
+<code>num</code> and then enumerate <code>item[0..num-1]</code> — checked all 195 <code>upgrade</code>
+decls for cases where <code>num</code> exceeds the populated <code>item[]</code> count (the
+same shape of bug pass 1 had, now checked against the retail data itself,
+not just the parser): exactly 3 true cases, all in one chain —
+<code>player/perk/inconspicuous_3/4/5</code> each declare <code>modifiersData.num=3</code> but
+only populate <code>item[0]</code>; <code>item[1]</code>/<code>item[2]</code> are fully absent from the
+decl text (not just missing an optional sub-field, as 17 other <code>num</code>&gt;1
+decls in the corpus legitimately do by omitting only <code>type</code> on an
+otherwise-present <code>item[]</code>, e.g. <code>weapons/smg/silencer.item[0]</code> has no
+<code>type</code> but does have <code>data.valueDecl</code>). Whether the engine reads
+out-of-bounds, zero-fills, or simply ignores <code>item[1..2]</code> for these three
+<code>inconspicuous</code> levels is unverified — flagged, §11.</p>
+<h3 id="55-the-perk-_base-uidisplay-layer-and-requiredstatforactivationregions">5.5 The perk <code>_base</code> UI/display layer and <code>requiredStatForActivation.regions</code></h3>
+<p>Missed by pass 1, present in its own <code>field_survey.json</code>: every <code>_base</code>
+decl (18 real chains + 3 tutorial) also carries a UI/display field set
+parallel to the gameplay fields already covered — <code>criteria</code>, <code>reward</code>,
+<code>regionUnlockName</code> (all <code>#str_*</code> localization keys), <code>presentationType</code>
+(<code>"Percent"</code> on every chain checked), <code>descriptionFlags</code>
+(<code>"PKF_PLAYER_ABILITY"</code> on every chain checked), and <code>rewardScales</code>
+(a <code>num</code>-sized float array, always 5 entries, values like <code>[5,10,15,20,25]</code>
+for <code>headshotter</code>, matching the 5 perk levels — read as per-level
+percentage labels for a progress bar, e.g. "25% to next headshot perk
+level", <strong>cosmetic, not re-derived as gameplay-affecting</strong>). Separately,
+<code>requiredStatForActivation</code> carries a <code>regions</code> sub-array (<code>field_survey.json</code>
+confirms it on 19 of 21 <code>_base</code> decls) that pass 1's report never named —
+example, <code>headshotter_base</code>: <code>statIncrement=25</code> but
+<code>regions={num=5; item=[1,5,10,15,20]}</code>; other chains have <code>num</code> from 1 to 5
+and values up to ~40, always starting at 1. These are <strong>not</strong> chapter/level
+indices (too many/too irregular for TNC's actual campaign structure) —
+most likely sub-thresholds for the UI's own progress ticker (intermediate
+counts worth a HUD/journal notification before the full <code>statIncrement</code> is
+reached), but this is a naming-based guess, not verified against any UI
+code path.</p>
+<p>Runtime cross-check, <code>python tools/decomp.py --strings &lt;name&gt;</code>:</p>
+<pre><code>&quot;requiredStatForActivation.regions&quot;   -&gt; no references found   (qualified path, same as
+&quot;requiredStatForActivation.statName&quot;  -&gt; no references found    every other qualified
+&quot;requiredStatForActivation.statValue&quot; -&gt; no references found    requiredStatForActivation.*
+&quot;requiredStatForActivation.statIncrement&quot; -&gt; no references found  string, consistent with §5.2)
+&quot;requiredStatForActivation.statValueStart&quot; -&gt; no references found  (decl field, never seen
+                                                                     populated in this corpus)
+
+&quot;regions&quot; (bare, no prefix)  -&gt; ONE resolved reference: 0x7ff62d9e5a0c
+    (not inside any disassembled function body, same &quot;.rdata pointer, no
+    FUN_ label&quot; shape the report's healthOverrides finding already used)
+
+&quot;rewardScales&quot;/&quot;presentationType&quot;/&quot;descriptionFlags&quot;/&quot;regionUnlockName&quot;/
+&quot;criteria&quot;/&quot;reward&quot; (bare) -&gt; no references found
+
+&quot;presentationType_t&quot;  -&gt; no references found, BUT
+&quot;.?AW4presentationType_t@@&quot;      -&gt; real mangled RTTI enum-type name
+&quot;perkDescriptionFlags_t&quot; -&gt; no references found, BUT
+&quot;.?AW4perkDescriptionFlags_t@@&quot;  -&gt; real mangled RTTI enum-type name
+</code></pre>
+<p>Two results worth separating: <strong>(a)</strong> <code>presentationType_t</code> and
+<code>perkDescriptionFlags_t</code> exist as genuine mangled RTTI enum types
+(<code>.?AW4..@@</code>), the same "named C++ reflection class" evidence tier §5.1
+already uses for <code>idUpgradeMod_*</code> — this is real, typed engine support for
+the UI layer, not just raw decl text. <strong>(b)</strong> The bare <code>"regions"</code> string's
+single resolved reference looks, on its face, like the same proof tier that
+promoted <code>healthOverrides</code> to PROVEN in §3 — but it is <strong>not</strong> promoted
+here: <code>"regions"</code> is a generic word a reflection system could easily reuse
+for an unrelated field on a different decl type (string literals get
+interned/deduplicated by the compiler, so one address can back multiple,
+unrelated reflection-table entries), and the fully-qualified
+<code>"requiredStatForActivation.regions"</code> string — which <em>would</em> be
+unambiguous — itself has no reference. Recorded as an ambiguous lead, not a
+proof; a follow-up would need to find what structure actually points at
+<code>0x7ff62d9e5a0c</code> (data, not a function, so <code>decomp.py</code>'s function-level
+tools can't resolve it further) to disambiguate it from an unrelated
+system. Net effect: <code>regions</code>/<code>rewardScales</code>/<code>presentationType</code>/
+<code>descriptionFlags</code>/<code>criteria</code>/<code>reward</code>/<code>regionUnlockName</code> all stay
+INFERRED, same bucket as <code>requiredStatForActivation</code>/<code>autoActivate</code>/
+<code>lockedFromStart</code> in §5.2 — this pass adds detail, not a tier change.</p>
+<h2 id="6-weapon-upgrade-kits--separate-from-perks-same-upgrade-decl-type">6. Weapon upgrade kits — separate from perks, same <code>upgrade</code> decl type</h2>
+<p>Every weapon decl's own <code>edit.upgrades.item[0..N]</code> (2-4 entries) names
+<code>upgrade:weapons/&lt;gun&gt;/&lt;mod&gt;</code> decls, bought with
+<code>inventoryItem:unlocks/upgradekit</code> currency (<code>maxCount=100</code>, stackable,
+<code>usable=false</code> — pure currency, no direct-use item) at an in-game
+workbench. Example, handgun (<code>weapon/player/sp/handgun_nomesh.edit.upgrades</code>,
+<code>num=4</code>): <code>magazine_size</code>, <code>silencer</code>, <code>elephantrounds</code>,
+<code>elephantrounds_silencer</code>. Each upgrade decl carries <code>startActivated=true</code>
+and an <code>upgradeNum</code> ordinal (1/2/3) in <strong>every</strong> sample checked — this
+looks like "once purchased, active immediately, no extra toggle" rather
+than "active from a fresh save"; the actual purchase/owned-flag is almost
+certainly save-state, not found in any scanned decl — <strong>not claimed here</strong>.
+<code>toggable=true</code> appears only on <code>elephantrounds</code> (switchable ammo type once
+owned). <code>weapons/handgun/silencer.edit.modifiersWeapon</code> is a clean
+<code>WMT_WEAPON_SUPPRESSED</code> + two <code>WMT_WEAPON_HEAT_*</code> entries — confirms
+<code>tnc_waffe_explosivpistole</code>'s own finding that the silencer's suppression
+is a decl-level weapon-state flag, not hardcoded.</p>
+<p><strong>Safe, proven lever</strong> (reuses <code>tnc-decl-edits.md</code>'s exact field, not the
+unverified activation flag): <code>ammo:*.edit.clipSize</code>, before vs. each
+weapon's own <code>magazine_size</code> upgrade target:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>weapon</th>
+<th style="text-align: right;">retail <code>clipSize</code> (current install)</th>
+<th style="text-align: right;"><code>maxCount</code></th>
+<th style="text-align: right;">upgraded target (<code>AMT_AMMO_CLIP_SIZE</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>handgun</td>
+<td style="text-align: right;">30 <em>(already patched in this install, see note)</em></td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr>
+<td>smg</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">360</td>
+<td style="text-align: right;">90</td>
+</tr>
+<tr>
+<td>battlerifle</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">60</td>
+</tr>
+<tr>
+<td>shotgun</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">40</td>
+</tr>
+<tr>
+<td>lkw</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">200</td>
+</tr>
+<tr>
+<td>dkw</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">20</td>
+</tr>
+</tbody>
+</table></div>
+<p>Note: the live <code>&lt;Steam library&gt;\...\gameresources.resources</code> already reads
+<code>ammo/player/sp/handgun.edit.clipSize=30</code> — i.e. 10 (vanilla, per
+<code>tnc-decl-edits.md</code>'s own before/after) → 30, exactly the already-proven
+<code>tnc_waffe_explosivpistole</code> mod's value, meaning that mod (or an equivalent
+hand-edit) is still applied to this read-only install from a prior session.
+Flagged, not touched (read-only rule) — the other 5 rows above are this
+install's genuine, un-modified retail baseline.</p>
+<h2 id="7-contraptions--battle-walker-ram-shackles-constrictor-harness">7. Contraptions — Battle Walker, Ram Shackles, Constrictor Harness</h2>
+<p>Confirmed by name search across all 7 scanned types (§1):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>in-game name</th>
+<th><code>abilityType</code></th>
+<th><code>abilityInfo</code> decl</th>
+<th><code>subAbility0/1/2</code></th>
+<th><code>sidequestAbility</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Battle Walker</td>
+<td><code>AT_BATTLEWALKER</code></td>
+<td><code>battlewalker</code></td>
+<td>legextension, quickdraw, adrenaline</td>
+<td>healthy</td>
+</tr>
+<tr>
+<td>Ram Shackles</td>
+<td><code>AT_RAMSHACKLES</code></td>
+<td><code>ramshackles</code></td>
+<td>supertackle, steadyfeet, pitcher</td>
+<td>repairman</td>
+</tr>
+<tr>
+<td>Constrictor Harness</td>
+<td><code>AT_CONSTRICTHARNESS</code></td>
+<td><code>constrictorharness</code></td>
+<td>slither, silentfeet, wallflower</td>
+<td>holdbreath</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each DLC protagonist gets a character-reskinned variant with swapped
+sub-abilities, confirmed in the same decl type:
+<code>battlewalker_wilkins</code>→<code>AT_CHRONICLE_WILKINS</code> (subs: healthy_wilkins,
+adrenaline_wilkins, quickdraw_wilkins — "The Amazing Deeds of Captain
+Wilkins"), <code>silentfeet_shade</code>→<code>AT_CHRONICLE_SHADE</code> (subs: terrorbilly_shade,
+adrenaline_shade, quickdraw_shade — "The Diaries of Agent Silent Death"),
+<code>supertackle_joe</code>→<code>AT_CHRONICLE_JOE</code> (subs: steadyfeet_joe, repairman_joe,
+pitcher_joe — "The Adventures of Gunslinger Joe"). <code>watchtower</code>
+(<code>requirement="battlewalker"</code>) is a fourth, non-contraption ability chained
+off Battle Walker — not part of the three-choice itself.</p>
+<p>Grant mechanism, confirmed end to end:
+<code>propItem:ability/{kobra,rammbock,wanderer}</code> (world pickup prop, each
+<code>inventoryDecl</code> pointing at the matching <code>abilityInventoryItem</code>) →
+<code>abilityInventoryItem:abilities/{kobra,rammbock,wanderer}</code>
+(<code>inventoryClass="idAbilityInventoryItem"</code>, <code>abilityInfo="&lt;name&gt;"</code>) → the
+<code>abilityInfo</code> decl's <code>subAbility*</code> list becomes available. Giving the
+player the <code>abilityInventoryItem</code> directly (devInvLoadout route, §7.2) skips
+the world prop entirely — same mechanism class <code>r4_pickups.md</code> already
+proved for weapons.</p>
+<p>A compiled constant <code>MAX_CONTRAPTIONS</code> exists
+(<code>python tools/decomp.py --strings MAX_CONTRAPTIONS</code>, no resolved xref,
+string only) — <strong>INFERRED</strong>, not measured, that this caps simultaneous
+<em>active</em> contraptions at some number (presumably 2, matching the game's
+known "choose 2 of 3" late-game beat); it does <strong>not</strong> by itself prove
+owning all 3 ability items simultaneously is rejected, crashes, or silently
+caps — genuinely open, see §9/ingame_test.</p>
+<h3 id="71-all-three-are-already-co-present-in-retail-data">7.1 All three are already co-present in retail data</h3>
+<p><code>devinvloadout/code_referenced/default_sp_devloadout</code>
+(<code>startingInventory.num=21</code>) already lists, unconditionally:</p>
+<pre><code>item[10] = { item = &quot;abilities/kobra&quot;; }
+item[11] = { item = &quot;abilities/wanderer&quot;; }
+item[12] = { item = &quot;abilities/rammbock&quot;; }
+</code></pre>
+<p>— all three contraption ability items, together, in the stock decl the dev
+tools ship. This is the single strongest piece of evidence in this report
+that holding all three at once is not structurally rejected by the data
+layer (whether the <em>engine</em> enforces <code>MAX_CONTRAPTIONS</code> on top is still
+open, §9).</p>
+<h2 id="8-tno--static-corpus-only-cited-not-re-derived">8. TNO — static corpus only, cited not re-derived</h2>
+<p>No runtime image exists for TNO; every item below is
+<code>docs/moddingflaeche-tno.md</code>'s own already-published, already
+reflection-table-cross-checked finding (its own methodology note: field
+schemas read directly from static reflection tables at fixed file offsets,
+e.g. <code>idDeclGameModeSP</code>'s schema at <code>0xce6127</code>), marked there as
+"vermutlich/ungetestet" (game not launched) and kept that way here:</p>
+<ul>
+<li><strong>Health/armor start values</strong>: <code>gamemodesp:gamemode/campaign</code>
+  (<code>startingHealth=100</code>, <code>startingArmor=0</code>, no <code>gameModeFlags</code> field present
+  at all) vs. the four bonus modes, e.g. <code>gamemode/999</code>
+  (<code>startingHealth=999</code>, <code>FLAG_AMMOUNLIMITED|FLAG_NOOVERCHARGE</code>). Five-value
+  flag enum confirmed complete from the binary's string pool:
+  <code>FLAG_NONE/AMMOUNLIMITED/HIDEHUD/ONELIFE/NOOVERCHARGE/
+  HEALTHARMORREMOVED</code>. <code>startingHealth=999</code> on <code>campaign</code> needs a <code>file</code>
+  replace (field absent from that decl's own text, <code>set</code> cannot add it);
+  the cvar route (<code>g_infiniteAmmo</code>) is independently confirmed blocked in
+  retail (<code>wolfsdk/cvars.py::RETAIL_BLOCKED</code>), so the decl route is the
+  only one.</li>
+<li><strong>Movement-adjacent fields live partly in the player decl itself</strong>,
+  unlike TNC: <code>playerHealth.components.components[1].cur</code>,
+  <code>maxTimeUnderwater.value=50000</code>, <code>sprintAirReductionScale=1</code>,
+  <code>suffocationDamage</code> — all on the player entityDef, all unused by any
+  shipped mod in this repo yet. A real engine/decl split difference from
+  TNC worth noting: <strong>TNC moved almost all movement into cvars and kept
+  only the ability-modifier layer (<code>DMT_*</code>) in decls; TNO still keeps a
+  slice of movement tuning directly on the player decl.</strong></li>
+<li><strong><code>playerUpgradeAmmo</code></strong> (12 decls, <code>slots[N] = {type="AMMOTYPE_LIGHT";
+  amount=10;}</code>) — TNO's equivalent of TNC's <code>AMT_AMMO_MAX_COUNT</code> perk
+  levels, flat <code>set</code> edits.</li>
+<li><strong><code>weaponUpgrade</code>/<code>laserCutterUpgrade</code></strong> (17 decls) — TNO's equivalent of
+  TNC's per-weapon <code>upgrade:weapons/*</code> kits; <code>weaponToUpgrade</code> can be
+  re-pointed at a different weapon decl (a "mod transplant" exactly like
+  TNC's <code>valueDecl</code> swap technique).</li>
+<li><strong>Dual wield</strong>: <code>docs/modding.md</code> already shows the lever,
+  <code>edit.isDualWieldable=true</code> on any <code>weapon:*</code> decl (TNO's field name
+  differs from TNC's <code>dualwieldable</code>, otherwise the same idea) — no
+  per-weapon <code>maxCount=2</code> requirement documented for TNO, unconfirmed
+  whether TNO needs it too (not re-tested here, out of scope for this
+  TNC-focused track).</li>
+</ul>
+<h2 id="9-proven--inferred--failed">9. PROVEN / INFERRED / FAILED</h2>
+<p><strong>PROVEN</strong> (runtime-grounded, this track or an already-runtime-proven
+prior one):</p>
+<ul>
+<li><code>ammo:*.edit.clipSize</code> arrives in game (handgun 10→30,
+  <code>tnc-decl-edits.md</code>, user-confirmed screenshot).</li>
+<li><code>resourceExec &lt;loader-replaced cfile&gt; -s</code> executes non-exposed
+  commands/cvars (<code>tnc-console-unlock.md</code>) — the mechanism this report's
+  cvar-based Movement+ layer depends on.</li>
+<li><code>dualwieldable=true</code>+<code>maxCount=2</code> is the complete decl-level dual-wield
+  switch, no second decl needed (<code>r3_newweapon.md</code>, corpus-measured,
+  16/16 equippable weapons consistent).</li>
+<li><code>idUpgradeMod_{Data,Weapon,Ammo}</code> are real, named C++ reflection classes
+  matching the decl's <code>modifiersData</code>/<code>modifiersWeapon</code>/<code>modifiersAmmo</code>
+  structure field-for-field (this track, <code>--strings</code> on 5 enum values from
+  3 different modifier families, 5/5 hit).</li>
+<li>Dual wield has dedicated RTTI classes (<code>idDualwieldAnimAliasVariations</code>,
+  <code>idAnimSysNode(Data)_PlayDualwieldAnim</code>) and a node-index enum including
+  a Battle-Walker-combined state — genuine engine depth, not a decl-only
+  illusion (this track).</li>
+<li><code>healthOverrides</code> has a resolved <code>.rdata</code> reference (this track) — the
+  strongest cross-check tier this report reaches for a player-decl field.</li>
+<li>All 18 perk chains, their stat/increment/modifier-type/level values are
+  exactly as the corpus states them (pure static parse, no ambiguity —
+  "proven" in the sense of "correctly read", not "confirmed to fire in
+  game").</li>
+<li><code>devinvloadout/code_referenced/default_sp_devloadout</code> already contains
+  all 3 contraption ability items simultaneously, in retail, unmodified.</li>
+<li><strong>This pass</strong>: <code>headshotter</code>/<code>triggerhappy</code>/<code>secretagent</code>/<code>heavymetal</code>
+  each buff all of their listed weapons (6/5/2/4), not just one — direct
+  corpus read, regression-checked by <code>build_tables.py --self-check</code>
+  (corrects pass 1's refuted "orphaned decls" claim, §5.4).</li>
+<li><strong>This pass</strong>: exact <code>pm_*</code> cvar count is 88 (corrects pass 1's "~60").</li>
+<li><strong>This pass</strong>: <code>presentationType_t</code>/<code>perkDescriptionFlags_t</code> exist as
+  real mangled RTTI enum-type names (<code>.?AW4presentationType_t@@</code>,
+  <code>.?AW4perkDescriptionFlags_t@@</code>) — the perk UI/display layer has genuine
+  typed engine reflection support, not just raw decl text (§5.5).</li>
+</ul>
+<p><strong>INFERRED</strong> (name/schema match or reflection string exists, but no
+resolved runtime pointer, or not tested in a live save):</p>
+<ul>
+<li><code>requiredStatForActivation</code>/<code>autoActivate</code>/<code>lockedFromStart</code> are read
+  exactly as named (exact compiled strings, no resolved xref this run).</li>
+<li><code>armor_max_200</code> is what <code>AT_ARMORBOOST</code> swaps in (no explicit numeric
+  link found in any decl; inferred from naming + the ability's existence).</li>
+<li><code>startActivated=true</code> on upgrade-kit decls means "active once purchased,
+  no extra toggle" rather than "active from a fresh save" — the actual
+  purchase/owned flag was not located in any scanned decl (almost
+  certainly save-state).</li>
+<li><code>MAX_CONTRAPTIONS</code> caps simultaneous <em>active</em> contraptions (name only,
+  no value, no resolved xref) — does not by itself say what happens if a
+  mod hands the player all 3 ability items at once (the in-game test below
+  answers this for the maintainer).</li>
+<li>All TNO findings (§8) — static-only by project-wide constraint, not a
+  gap this track could close.</li>
+<li><strong>This pass</strong>: the per-weapon perk-upgrade modifiers (headshotter etc.)
+  actually apply at runtime per weapon — no resolved pointer either way,
+  but a compiled debug string <code>"Upgrade %s Applyto %s\n"</code> matching the
+  <code>applyTo</code> decl field's own semantics is new circumstantial support (§5.4).</li>
+<li><strong>This pass</strong>: <code>requiredStatForActivation.regions</code> and the perk <code>_base</code>
+  UI fields (<code>rewardScales</code>, <code>criteria</code>, <code>reward</code>, <code>regionUnlockName</code>) are
+  read as named — same tier as <code>requiredStatForActivation</code> itself; a bare
+  <code>"regions"</code> string's single resolved reference is flagged as an
+  ambiguous lead, not promoted (string interning could mean it belongs to
+  an unrelated reflection entry elsewhere in the engine), §5.5.</li>
+</ul>
+<p><strong>FAILED hypotheses, this track</strong>:</p>
+<ul>
+<li>Expected <code>requiredStatForActivation</code>/<code>autoActivate</code>/<code>lockedFromStart</code> to
+  resolve a <code>.rdata</code> xref the same way <code>healthOverrides</code> did (same search
+  pattern, same snapshot) — they did not; the Constant Reference Analyzer
+  simply doesn't resolve every reflection-table load, confirmed dead end,
+  not pursued further (budget).</li>
+<li>Expected <code>FUN_7ff62c491bd0</code> (referenced by the string <code>"PlayerDualWield"</code>)
+  to be the actual dual-wield gameplay check — it decompiles to a 4-line
+  stat/telemetry-label registration call (<code>FUN_7ff62d40b8c0(…,
+  s_PlayerDualWield…)</code>), not the mechanic itself; the real mechanic is in
+  the unlabeled <code>idAnimSysNode_PlayDualwieldAnim</code>-driven animation node
+  graph, not pursued further into its vtable (budget, out of scope for a
+  decl-focused track).</li>
+<li>Looked for a numeric <code>pm_lean*</code> cvar (expected, given <code>lean</code> controls
+  exist per the task's movement list) — none exists; lean is driven by the
+  <code>player_analyzeEnv*</code> cover/peek system, not a free, tunable lean amount.
+  Confirmed dead end (exhaustive <code>pm_</code>/<code>player_</code> substring filter over all
+  3256 cvars), recorded, not pursued into the <code>player_analyzeEnv*</code> decl
+  side (no decl type for it was in this track's scope).</li>
+</ul>
+<h2 id="10-three-ready-to-build-decl-mods">10. Three ready-to-build decl mods</h2>
+<p>All three reuse only already-proven mechanisms: <code>set</code> for existing paths
+(<code>tnc_waffe_explosivpistole</code> pattern), <code>file</code>-replace where a path must be
+<em>added</em> (<code>decl.set()</code> raises <code>DeclError("no such path")</code> on anything not
+already in the text — confirmed by reading <code>wolfsdk/decl.py</code> directly,
+so new <code>item[N]</code> entries always need a full-text <code>file</code>, <code>set</code> never
+suffices for growing a list), and the <code>resourceExec -s</code> cvar route only
+where no decl lever exists at all.</p>
+<h3 id="101-bewegung--überleben-movement--survival-decl-only-core--optional-cvar-layer">10.1 "Bewegung &amp; Überleben+" ("Movement &amp; Survival+"; decl-only core + optional cvar layer)</h3>
+<p>Pure <code>set</code> edits, every path already exists in retail text, lowest risk:</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;example.movement_plus&quot;,
+  &quot;spiel&quot;: &quot;tnc&quot;,
+  &quot;assets&quot;: {
+    &quot;healthComponent:player/health_force_100&quot;: { &quot;set&quot;: { &quot;edit.max&quot;: 250, &quot;edit.cur&quot;: 250 } },
+    &quot;healthComponent:player/armor_max_100&quot;:    { &quot;set&quot;: { &quot;edit.max&quot;: 300 } },
+    &quot;upgrade:player/perk/assassin_1&quot;:          { &quot;set&quot;: { &quot;edit.modifiersData.item[0].data.valueFloat&quot;: 4.0 } },
+    &quot;upgrade:player/perk/kobra_1&quot;:             { &quot;set&quot;: { &quot;edit.modifiersData.item[0].data.valueFloat&quot;: 2.2 } },
+    &quot;upgrade:player/perk/frontalassault_1&quot;:    { &quot;set&quot;: { &quot;edit.modifiersData.item[0].data.valueFloat&quot;: 4.0 } },
+    &quot;upgrade:player/perk/hardysoldier_1&quot;:      { &quot;set&quot;: { &quot;edit.modifiersData.item[0].data.valueFloat&quot;: 0.5 } }
+  }
+}
+</code></pre>
+<p>Effect: the moment each perk's (low) stat threshold is crossed once
+(<code>assassin</code> needs 10 stealth takedowns, <code>kobra</code> 1 constrictor takedown,
+<code>frontalassault</code> 10 takedowns, <code>hardysoldier</code> 20 overcharge kills — all
+<code>_1</code>, no grind to level 5), the player keeps max health/armor raised well
+past retail's 100/100 cap and gets stealth-crouch/prone speed, health
+regen rate and regen-delay all pushed past retail's own level-5 ceiling.
+<strong>Does not touch run/sprint/jump</strong> — those are cvars. Optional supplement,
+same mechanism <code>tnc-console-unlock.md</code> already proved for <code>God</code>/
+<code>g_infiniteAmmo</code>, a loader-replaced cfile run with <code>resourceExec &lt;file&gt; -s</code>
+containing e.g. <code>seta pm_sprintspeed "14"</code> / <code>seta pm_jumpheight "2.2"</code> /
+<code>seta pm_runspeed "9"</code> — the <em>mechanism</em> is proven, this <em>specific cvar
+set</em> is not yet tested, flag it to the maintainer as such.</p>
+<h3 id="102-alle-drei-kampfanzüge-all-contraptions">10.2 "Alle drei Kampfanzüge" (All Contraptions)</h3>
+<p>Zero new decl content needed — reuses <code>r4_pickups.md</code>'s exact proven
+recipe, with a bonus this track found:</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;example.all_contraptions&quot;,
+  &quot;spiel&quot;: &quot;tnc&quot;,
+  &quot;assets&quot;: {
+    &quot;entities:&lt;map&gt;.world&quot;: {
+      &quot;set&quot;: { &quot;world.edit.devmapInvLoadout&quot;: &quot;devinvloadout/code_referenced/default_sp_devloadout&quot; }
+    }
+  }
+}
+</code></pre>
+<p>(<code>&lt;map&gt;.world</code> stands for the specific map's <code>.entities</code> world block —
+exact target path per <code>r4_pickups.md</code>'s own proven <code>c2v1</code> recipe, not
+re-derived here.) <code>default_sp_devloadout</code> already carries
+<code>abilities/kobra</code>+<code>abilities/wanderer</code>+<code>abilities/rammbock</code> together
+(§7.1) — one proven redirect delivers every weapon (already proven) <em>and</em>
+all three contraptions (new finding) at once. Optional UI polish, same
+<code>resourceExec -s</code> cvar route: <code>seta journal_enable_contraption_tab_hack "1"</code>
+(a real <code>CHEAT</code>-flagged cvar with a resolved callback, <code>0xf515b0</code>) keeps
+the Journal's Contraption tab visible regardless of story progress.</p>
+<h3 id="103-waffen-kits-von-anfang-an-weapon-kits-from-the-start">10.3 "Waffen-Kits von Anfang an" ("Weapon kits from the start")</h3>
+<p>Two independent layers, both using only proven field paths:</p>
+<p><strong>(a) Immediate, decl-only — bump base ammo capacity directly</strong>
+(§6 table, exact same field <code>tnc-decl-edits.md</code> already confirmed in
+game):</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;example.weapons_preupgraded&quot;,
+  &quot;spiel&quot;: &quot;tnc&quot;,
+  &quot;assets&quot;: {
+    &quot;ammo:ammo/player/sp/smg&quot;:         { &quot;set&quot;: { &quot;edit.clipSize&quot;: 90 } },
+    &quot;ammo:ammo/player/sp/battlerifle&quot;: { &quot;set&quot;: { &quot;edit.clipSize&quot;: 60 } },
+    &quot;ammo:ammo/player/sp/shotgun&quot;:     { &quot;set&quot;: { &quot;edit.clipSize&quot;: 40 } },
+    &quot;ammo:ammo/player/sp/lkw&quot;:         { &quot;set&quot;: { &quot;edit.clipSize&quot;: 200 } },
+    &quot;ammo:ammo/player/sp/dkw&quot;:         { &quot;set&quot;: { &quot;edit.clipSize&quot;: 20 } }
+  }
+}
+</code></pre>
+<p><strong>(b) Give upgrade-kit currency at spawn</strong> (needs a <code>file</code>-replace on the
+devInvLoadout decl because the path <code>item[21]</code> does not exist in retail
+text — hand-author the full decl: copy <code>default_sp_devloadout</code>'s current
+21 items verbatim, append
+<code>item[21] = { item = "unlocks/upgradekit"; count = 20; forceCount = true; }</code>,
+set <code>startingInventory.num = 22</code>). Hands the player 20 kits to spend at the
+first workbench on silencer/elephant-rounds/scope/etc. — the "intended"
+route, avoids relying on the unverified <code>startActivated</code> activation
+semantics from §6.</p>
+<h2 id="11-open-questions">11. Open questions</h2>
+<ul>
+<li>Does giving the player all 3 <code>abilities/{kobra,wanderer,rammbock}</code>
+  items at once (10.2) actually let all 3 sub-ability trees function, or
+  does <code>MAX_CONTRAPTIONS</code> cap it to 2 silently? The stock devloadout
+  already does this (§7.1) but nobody has watched it play.</li>
+<li>Exact gating flag for a purchased weapon-upgrade-kit slot
+  (<code>upgradeNum</code>/<code>startActivated</code> semantics, §6) — save-state, likely
+  outside decl reach entirely; would need a save-file probe
+  (<code>re_probes/savegame</code>/<code>r4_savegame.md</code> territory, different track).</li>
+<li><code>armor_max_200</code>'s actual trigger condition (§3) — inferred from naming
+  only.</li>
+<li>Whether TNO's <code>isDualWieldable</code> also needs a <code>maxCount=2</code> sibling edit
+  like TNC's <code>dualwieldable</code> does (§8) — unconfirmed, TNO out of this
+  track's depth budget.</li>
+<li>Whether the per-weapon perk-upgrade modifiers (headshotter/triggerhappy/
+  secretagent/heavymetal, §5.4, corrected this pass) actually fire on
+  every listed weapon in a live save, or only the first — the decl side is
+  now resolved, the runtime side is still INFERRED (the <code>"Upgrade %s
+  Applyto %s"</code> debug string is a lead, not proof).</li>
+<li>What <code>player/perk/inconspicuous_3/4/5</code>'s <code>modifiersData.num=3</code> with only
+  <code>item[0]</code> populated actually does at runtime (§5.4) — ignored, zero-read,
+  or an authoring leftover; the only true num&gt;populated-items gap found in
+  all 195 <code>upgrade</code> decls.</li>
+<li>Whether <code>rewardScales</code>/<code>requiredStatForActivation.regions</code> on the perk
+  <code>_base</code> decls (§5.5) are purely UI/progress-bar cosmetics or feed any
+  gameplay logic — named and resolved-string-checked this pass, behavior
+  still unconfirmed; <code>regions</code>' one resolved bare-string reference is an
+  ambiguous lead (§5.5), not disambiguated from an unrelated system.</li>
+</ul>
+<h2 id="smallest-in-game-test-for-the-maintainer">Smallest in-game test (for the maintainer)</h2>
+<p><em>(Translated from German.)</em></p>
+<ol>
+<li><strong>Movement+ (decl part)</strong>: install <code>mods/example_movement_plus</code> (10.1, only the
+   four <code>upgrade</code> + two <code>healthComponent</code> edits, without the cvar part),
+   load a normal campaign map, do 10 stealth takedowns (triggers
+   <code>assassin_1</code>) and check in the pause menu/HUD whether the maximum
+   armor/health now shows above 100 (evidence for the <code>healthComponent</code>
+   edit) and whether BJ moves noticeably faster while crouching (evidence for
+   <code>DMT_CROUCH_SPEED</code>).</li>
+<li><strong>All contraptions</strong>: on the already-proven <code>dlc_0</code> custom-map route
+   (c2v1), redirect <code>devmapInvLoadout</code> to
+   <code>devinvloadout/code_referenced/default_sp_devloadout</code> (10.2),
+   load the map, open the Journal → contraption tab: are Battle Walker, Ram
+   Shackles AND Constrictor Harness listed as "owned" at the same time, or does
+   the game force a choice/show only two? That answers the
+   <code>MAX_CONTRAPTIONS</code> question directly.</li>
+<li><strong>Weapon kits</strong>: the same map, pick up the SMG, read the magazine display in the HUD
+   — does it show 90 instead of 45 (evidence for the <code>ammo.clipSize</code> edit from
+   10.3a, the same mechanism as the already-confirmed pistol magazine)?</li>
+</ol>
+<p>Related: <a href="Research-Report-R3-Newweapon.html">Research Report: R3 Newweapon</a>, <a href="Research-Report-R4-Pickups.html">Research Report: R4 Pickups</a>, <a href="Research-Report-R4-Ai-Decls.html">Research Report: R4 Ai Decls</a>, <a href="Research-Report-R4-Savegame.html">Research Report: R4 Savegame</a>, <a href="Ghidra-Analysis.html">Ghidra Analysis</a>, <a href="TNO-Modding-Surface.html">TNO Modding Surface</a>, <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>, <a href="TNC-Console-Unlock.html">TNC Console Unlock</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Physics.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Physics: Havok Parameters Reachable by Decl/Cvar in TNC and TNO</a><a class="next" href="Research-Report-R6-Render-Plus.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNC Graphics Beyond Ultra: Non-Exposed Render and Streaming Cvars</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

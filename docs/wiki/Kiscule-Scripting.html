@@ -39,9 +39,9 @@
 <a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Kiscule-Scripting"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
 </div></div>
 <div class="wrap docgrid">
-<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-executive-summary">0. Executive Summary</a></li><li><a href="#1-the-container-two-layers-both-active">1. The Container: Two Layers, Both Active</a></li><li><a href="#2-the-text-a-line-grammar-three-cases">2. The Text: A Line Grammar, Three Cases</a></li><li><a href="#3-the-graph">3. The Graph</a></li><li><a href="#4-the-205-node-types">4. The 205 Node Types</a></li><li><a href="#5-a-script-readable">5. A Script, Readable</a></li><li><a href="#6-map--script-the-rosetta-stone-holds">6. Map ↔ Script: The Rosetta Stone Holds</a></li><li><a href="#7-control-tests">7. Control Tests</a></li><li><a href="#8-what-a-mod-author-can-do-with-it">8. What a Mod Author Can Do With It</a></li><li><a href="#9-what-remains-open">9. What Remains Open</a></li></ol></aside>
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-executive-summary">0. Executive Summary</a></li><li><a href="#1-the-container-two-layers-both-active">1. The Container: Two Layers, Both Active</a></li><li><a href="#2-the-text-a-line-grammar-three-cases">2. The Text: A Line Grammar, Three Cases</a></li><li><a href="#3-the-graph">3. The Graph</a></li><li><a href="#4-the-205-node-types">4. The 205 Node Types</a></li><li><a href="#5-a-script-readable">5. A Script, Readable</a></li><li><a href="#6-map--script-the-rosetta-stone-holds">6. Map ↔ Script: The Rosetta Stone Holds</a></li><li><a href="#7-control-tests">7. Control Tests</a></li><li><a href="#8-what-a-mod-author-can-do-with-it">8. What a Mod Author Can Do With It</a></li><li><a href="#9-what-remains-open">9. What Remains Open</a></li><li><a href="#10-the-wolfsdk-studio-kiscule-script-and-mission-editor">10. The WolfSDK Studio Kiscule Script and Mission Editor</a></li><li><a href="#11-resizing-lists-in-the-kiscule-editor">11. Resizing Lists in the Kiscule Editor</a></li><li><a href="#12-saving-kiscule-edits-accumulating-saves-and-the-409-refusal">12. Saving Kiscule Edits: Accumulating Saves and the 409 Refusal</a></li><li><a href="#13-kiscule-editor-checks-and-in-game-status">13. Kiscule Editor Checks and In-Game Status</a></li></ol></aside>
 <div>
-<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede"><span class="t" data-t="kiscule">Kiscule</span> is the mission scripting system of Wolfenstein II (TNC): triggers, enemy waves, doors and audio are built as node graphs, like boxes connected by wires. The researchers decoded the file format completely and can read and write all 2,408 scripts back byte-for-byte identical. Modders can safely change numbers such as delays or trigger counts. Whether the game accepts rewritten scripts is not yet confirmed in the game.</p><ul><li>2,408 scripts with 70,274 nodes in 205 node types; every byte is explained.</li><li><span class="t" data-t="roundtrip">Round-trip</span>: 2,408 of 2,408 scripts written back identical, including compression.</li><li>All 205 node types match classes in the game program; 113 more exist but are never used.</li><li>30 of 2,408 original scripts contain small defects, such as 43 connections that point nowhere.</li><li>All 2,443 map references to scripts resolve.</li></ul></div><div class="de"><p class="lede"><span class="t" data-t="kiscule">Kiscule</span> ist das Missions-Skriptsystem von Wolfenstein II (TNC): Auslöser, Gegnerwellen, Türen und Audio sind als Knotengraphen gebaut, wie Kästchen, die mit Drähten verbunden sind. Die Forscher haben das Dateiformat vollständig entschlüsselt und können alle 2.408 Skripte byte-genau lesen und zurückschreiben. Zahlen wie Wartezeiten oder Auslöse-Zähler kannst du gefahrlos ändern. Ob das Spiel umgeschriebene Skripte annimmt, ist im Spiel noch nicht bestätigt.</p><ul><li>2.408 Skripte mit 70.274 Knoten in 205 Knotentypen; jedes Byte ist erklärt.</li><li><span class="t" data-t="roundtrip">Roundtrip</span>: 2.408 von 2.408 Skripten identisch zurückgeschrieben, inklusive Kompression.</li><li>Alle 205 Knotentypen entsprechen Klassen im Spielprogramm; 113 weitere existieren, werden aber nie benutzt.</li><li>30 von 2.408 Original-Skripten haben kleine Fehler, etwa 43 Verbindungen ins Leere.</li><li>Alle 2.443 Verweise von Karten auf Skripte lassen sich auflösen.</li></ul></div></section>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede"><span class="t" data-t="kiscule">Kiscule</span> is the mission scripting system of Wolfenstein II (TNC): triggers, enemy waves, doors and audio are built as node graphs, like boxes connected by wires. The researchers decoded the file format completely and can read and write all 2,408 scripts back byte-for-byte identical. Since WolfSDK 0.2.0 the Studio has a script and mission editor built on this, which saves edits as mods. Whether the game runs edited or added nodes is not yet confirmed in the game.</p><ul><li>2,408 scripts with 70,274 nodes in 205 node types; every byte is explained.</li><li><span class="t" data-t="roundtrip">Round-trip</span>: 2,408 of 2,408 scripts written back identical, including compression.</li><li>All 205 node types match classes in the game program; 113 more exist but are never used.</li><li>30 of 2,408 original scripts contain small defects, such as 43 connections that point nowhere.</li><li>All 2,443 map references to scripts resolve.</li><li>The Studio editor shows 3,010 scripts, can change parameters and add or remove nodes and connections, and passes 98 of 98 offline checks; not yet confirmed in game.</li></ul></div><div class="de"><p class="lede"><span class="t" data-t="kiscule">Kiscule</span> ist das Missions-Skriptsystem von Wolfenstein II (TNC): Auslöser, Gegnerwellen, Türen und Audio sind als Knotengraphen gebaut, wie Kästchen, die mit Drähten verbunden sind. Die Forscher haben das Dateiformat vollständig entschlüsselt und können alle 2.408 Skripte byte-genau lesen und zurückschreiben. Seit WolfSDK 0.2.0 hat das Studio darauf aufbauend einen Skript- und Missionseditor, der Änderungen als Mods speichert. Ob das Spiel bearbeitete oder neue Knoten ausführt, ist im Spiel noch nicht bestätigt.</p><ul><li>2.408 Skripte mit 70.274 Knoten in 205 Knotentypen; jedes Byte ist erklärt.</li><li><span class="t" data-t="roundtrip">Roundtrip</span>: 2.408 von 2.408 Skripten identisch zurückgeschrieben, inklusive Kompression.</li><li>Alle 205 Knotentypen entsprechen Klassen im Spielprogramm; 113 weitere existieren, werden aber nie benutzt.</li><li>30 von 2.408 Original-Skripten haben kleine Fehler, etwa 43 Verbindungen ins Leere.</li><li>Alle 2.443 Verweise von Karten auf Skripte lassen sich auflösen.</li><li>Der Studio-Editor zeigt 3.010 Skripte, ändert Parameter, fügt Knoten und Verbindungen hinzu oder entfernt sie und besteht 98 von 98 Offline-Prüfungen; im Spiel noch nicht bestätigt.</li></ul></div></section>
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
 <article class="doc" data-autohint><p>Kiscule is what drives the missions in Part 2: triggers, enemy waves, intermission sequences, doors, and audio. It is the id-tech-6 equivalent to the <code>.script</code> files from Part 1 — but not a text interpreter, rather a <strong>node graph</strong>, as drawn by an editor.</p>
@@ -663,9 +663,9 @@ The game was not started. Bit-exactness here means: identical bytes to Retail �
 </tr>
 </tbody>
 </table></div>
-<p><strong>Likely feasible but untested:</strong> bending edges. Bending an edge means adjusting <code>endNodeID</code>/<code>endConnectionPointID</code> at <em>both</em> ends — the mirror check in <code>--verify</code> catches it if you forget one. Adding nodes additionally requires a free <code>id</code> (32 bits, unique within the file) and matching connections; the signature table says what those are. <strong>Whether the engine accepts this: unverified.</strong></p>
+<p><strong>Likely feasible but untested:</strong> bending edges. Bending an edge means adjusting <code>endNodeID</code>/<code>endConnectionPointID</code> at <em>both</em> ends — the mirror check in <code>--verify</code> catches it if you forget one. Adding nodes additionally requires a free <code>id</code> (32 bits, unique within the file) and matching connections; the signature table says what those are. <strong>Whether the engine accepts this: unverified.</strong> <em>(Update 2026-10-04: the Studio editor now does both, checked structurally, not in game; see section 10.)</em></p>
 <p><strong>The path to the archive is not part of this tool.</strong> <code>--set --out</code> delivers the finished user data; getting it into <code>.resources</code> is the job of <code>wolfsdk/patch.py</code> / <code>tncpatch.py</code>, and patch precedence (which archive wins) remains open in the project — see
-<code>docs/moddingflaeche-tnc.md</code>, section 7.</p>
+<code>docs/moddingflaeche-tnc.md</code>, section 7. <em>(Update 2026-10-04: the Studio saves script edits as mods, and the loader writes them into every copy of the script, so the precedence question no longer decides what a mod changes; see <a href="Patch-Precedence.html">Patch Precedence</a> sections 8–9.)</em></p>
 <hr />
 <h2 id="9-what-remains-open">9. What Remains Open</h2>
 <ul>
@@ -673,11 +673,74 @@ The game was not started. Bit-exactness here means: identical bytes to Retail �
 <li><strong><code>properties</code>-Bits 1, 4, and 32.</strong> Bit 16 (List) is set; bit 8 is the default case — the remaining bits appear in 2583 of 155,538 connections and are unassigned.</li>
 <li><strong>The <code>id</code> of an edge.</strong> It is often, but not always, the same at both ends (149,620 : 28,896). What else it means: unknown. It is unnecessary for reading the graph.</li>
 <li><strong>43 dead edges in 29 Retail files, plus one file with duplicate connection IDs.</strong> Whether the engine silently skips them or if something is broken in the game there: unobservable without starting the game.</li>
-<li><strong>84 scripts are duplicated in the archive, all 84 with different content.</strong> (<code>--dump</code> reports this.) Which version wins depends on patch precedence and is immeasurable — the same open question as for Decls.</li>
+<li><strong>84 scripts are duplicated in the archive, all 84 with different content.</strong> (<code>--dump</code> reports this.) Which version wins depends on patch precedence and is immeasurable — the same open question as for Decls. <em>(Update: for mods it no longer matters. Since WolfSDK 0.2.0 the loader edits the newest patch copy and writes the result into every copy.)</em></li>
 <li><strong>150 Entity references without a target</strong> in maps (1.10%).</li>
 <li><strong>The 113 unused node classes.</strong> They exist in the EXE. Whether a script can load them: untested.</li>
 <li><strong><code>g_kisculeRuntimeTypeChecks</code></strong> ("If 1, Kiscule will log all its runtime check verification", WINDOWS/DEBUG only) would be the direct way to let the engine talk about its own scripts via them. Not used — the game was not started.</li>
-</ul></article></section>
+</ul>
+<hr />
+<h2 id="10-the-wolfsdk-studio-kiscule-script-and-mission-editor">10. The WolfSDK Studio Kiscule Script and Mission Editor</h2>
+<p>The Studio's <em>Scripts</em> tab (WolfSDK 0.2.0, added 2026-10-04) shows the 3,010 Kiscule scripts as node graphs, with all 205 node types and a mission filter. Edits are operations on one script (<code>wolfsdk/kiscule.py</code>, <code>apply_ops</code>):</p>
+<ul>
+<li><code>set</code>: a parameter; setting a list's <code>num</code> resizes the list (section 11);</li>
+<li><code>add_node</code>: a node of a catalogued type, built like a retail node of that type;</li>
+<li><code>remove_node</code>: the node and every edge end that touches it;</li>
+<li><code>add_edge</code>, <code>remove_edge</code>: output → input, event or variable at both ends.</li>
+</ul>
+<p>Every edge is written at both ends, as in retail. After the ops the text is parsed again and must not hold a broken edge end the original did not. A save becomes a mod: the <code>extkisclule</code> entry as a whole file, packed exactly as retail packs it. Scripts only in a DLC archive, and entries in archive mode 4, are refused.</p>
+<p><strong>Not yet confirmed in game.</strong></p>
+<p>Keywords: Kiscule editor, script editor, mission editor, Studio Scripts tab, node graph, edit script, Skript-Editor, Missionen bearbeiten</p>
+<h2 id="11-resizing-lists-in-the-kiscule-editor">11. Resizing Lists in the Kiscule Editor</h2>
+<p>Some node types grow or lose ports with a list. The rules (<code>kiscule.LISTS</code>) are measured over every retail node of these types:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Node type and list</th>
+<th>Ports when the list changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DynamicSwitch <code>weigths</code> (engine spelling)</td>
+<td>one <code>Case %d</code> output per item; <code>outputCount</code> follows the list (211/211)</td>
+</tr>
+<tr>
+<td>InputListener <code>conditions</code></td>
+<td><code>Cond %d Passed</code> and <code>Cond %d Stopped</code> per item (12/12)</td>
+</tr>
+<tr>
+<td>ActionMission <code>objectives</code></td>
+<td>fixed: the same 24 ports for 0 to 14 objectives (582/582)</td>
+</tr>
+<tr>
+<td>ActionSoundPostEvent <code>entities</code></td>
+<td>fixed (1864/1864)</td>
+</tr>
+</tbody>
+</table></div>
+<p>A new item starts as a retail item of the type; a new mission objective starts as <code>NULL</code>. Shrinking a list drops the cut ports and their edges at both ends. A list holds up to 256 items.</p>
+<p>Not resizable: FlowFlagCheck, FlowProgressionCheck, MidnightNotification and OpMidnightParametersControl name their ports after the items' contents.</p>
+<p>Keywords: resize list, add objective, remove objective, DynamicSwitch case, InputListener, ports, Missionsziel hinzufügen, Liste</p>
+<h2 id="12-saving-kiscule-edits-accumulating-saves-and-the-409-refusal">12. Saving Kiscule Edits: Accumulating Saves and the 409 Refusal</h2>
+<p>Which copy of the script a save edits:</p>
+<ul>
+<li><strong>A new mod:</strong> the game's copy, as the loader reads it from the archives (since 0.2.0 the newest patch copy, <a href="Patch-Precedence.html">Patch Precedence</a> section 8).</li>
+<li><strong>A Studio mod that already changes this script:</strong> that mod's own copy. Edits therefore accumulate over several saves into one mod, and the Studio shows the script as it is in the mod.</li>
+<li><strong>Refused (HTTP 409):</strong> a save based on the game's copy while an applied mod changes that script. The archives then hold that mod's version, and its changes would end up in yours. Reset the mods in the loader first. A save onto a Studio mod's own copy is not refused: that copy was made from a clean game copy.</li>
+</ul>
+<p>Known limit: two saves racing into the same mod folder keep only one of the edits.</p>
+<p>Keywords: save script, accumulate edits, 409, conflict, applied mod, reset mods first, speichern, Konflikt</p>
+<h2 id="13-kiscule-editor-checks-and-in-game-status">13. Kiscule Editor Checks and In-Game Status</h2>
+<p><code>tools/verify_studio_kiscule.py</code>: 98 of 98 checks pass, offline only (the game is not started). It checks:</p>
+<ul>
+<li>every installed script re-packs byte-identical;</li>
+<li>one save per operation kind, each changing exactly that one thing;</li>
+<li>invalid requests get an English error and write nothing;</li>
+<li>the list rules of section 11 on every retail node of those types, with the opposite rules refuted;</li>
+<li>accumulating saves and the 409 refusal.</li>
+</ul>
+<p><strong>Not yet confirmed in game:</strong> whether the engine runs edited or added nodes. The first edited scripts meant for the game are the 12 dev start scripts of the Dev Menu Map Loading mod (<a href="TNC-Dev-Menu.html">TNC Dev Menu</a>), also not yet confirmed in game.</p>
+<p>Keywords: verify_studio_kiscule, tests, checks, does it work in game, Kiscule status, Prüfung, getestet</p></article></section>
 <nav class="pager" aria-label="Pages"><a class="prev" href="Save-Games-and-Profiles.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Save Games and Profiles for Both Wolfenstein Titles</a><a class="next" href="Kiscule-Node-Reference.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Kiscule Node Reference</a></nav>
 </div></div>
 </main>

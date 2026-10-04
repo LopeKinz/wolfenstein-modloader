@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WolfSDK Studio – Wolfenstein Modloader</title>
+<meta name="description" content="Modder guide to the WolfSDK Studio 0.2.0: browse and export game assets, replace textures, texts and decls, edit Kiscule scripts.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
+<h1>WolfSDK Studio</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/WolfSDK-Studio"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#studio-what-the-wolfsdk-studio-is-modder-guide">Studio: what the WolfSDK Studio is (modder guide)</a></li><li><a href="#studio-download-and-requirements-wolfsdk-studio-020zip">Studio: download and requirements (WolfSDK-Studio-0.2.0.zip)</a></li><li><a href="#studio-open-the-studio-open-studio">Studio: open the Studio (Open Studio)</a></li><li><a href="#studio-the-tabs-maps-video-audio-textures-texts-models-scripts">Studio: the tabs (Maps, Video, Audio, Textures, Texts, Models, Scripts)</a></li><li><a href="#studio-walk-through-maps-in-3d-maps-tab">Studio: walk through maps in 3D (Maps tab)</a></li><li><a href="#studio-play-videos-and-sounds-video-and-audio-tabs">Studio: play videos and sounds (Video and Audio tabs)</a></li><li><a href="#studio-browse-and-export-textures-and-texts">Studio: browse and export textures and texts</a></li><li><a href="#studio-3d-model-viewer-models-tab">Studio: 3D model viewer (Models tab)</a></li><li><a href="#studio-export-a-3d-model-glb-gltf-obj">Studio: export a 3D model (GLB, glTF, OBJ)</a></li><li><a href="#studio-how-a-change-is-saved-as-a-mod-save-as-mod">Studio: how a change is saved as a mod (Save as mod)</a></li><li><a href="#studio-replace-a-texture-replace-with-png">Studio: replace a texture (Replace with PNG…)</a></li><li><a href="#studio-replace-a-normal-map-bc5-directx-green-channel">Studio: replace a normal map (BC5, DirectX green channel)</a></li><li><a href="#studio-replace-a-text-or-string-table-texts-tab-replace">Studio: replace a text or string table (Texts tab, Replace…)</a></li><li><a href="#studio-change-a-decl-weapon-damage-and-other-values">Studio: change a decl (weapon, damage and other values)</a></li><li><a href="#studio-custom-skin-on-a-3d-model-custom-skin">Studio: custom skin on a 3D model (Custom skin)</a></li><li><a href="#studio-kiscule-script-and-mission-editor-scripts-tab">Studio: Kiscule script and mission editor (Scripts tab)</a></li><li><a href="#studio-add-or-remove-mission-objectives-scripts-tab">Studio: add or remove mission objectives (Scripts tab)</a></li><li><a href="#studio-save-script-edits-as-a-mod-edits-accumulate">Studio: save script edits as a mod (edits accumulate)</a></li><li><a href="#studio-replacing-sounds-and-videos-held-back-in-020">Studio: replacing sounds and videos (held back in 0.2.0)</a></li><li><a href="#studio-what-is-confirmed-in-game-and-what-is-not-020">Studio: what is confirmed in game and what is not (0.2.0)</a></li><li><a href="#studio-limits-what-the-studio-cannot-do-yet">Studio limits: what the Studio cannot do yet</a></li><li><a href="#studio-troubleshooting-the-studio-does-not-open-or-refuses-a-replacement">Studio troubleshooting: the Studio does not open or refuses a replacement</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">The WolfSDK Studio is the modding tool in the Studio download of WolfSDK 0.2.0. It shows the maps, videos, sounds, textures, texts and 3D models of Wolfenstein II: The New Colossus and Wolfenstein: The New Order, and exports them, for example models as GLB, glTF or OBJ. Replaced textures, normal maps, texts and <span class="t" data-t="decl">decls</span>, and edits to <span class="t" data-t="kiscule">Kiscule</span> mission scripts, are never written into the game directly: each change is saved as a mod that the WolfSDK Loader applies. Replacing sounds and videos is built but held back in this release.</p><ul><li>Applying and reverting Studio mods through the Loader is confirmed in game.</li><li>The model viewer shows the 17,315 models of The New Colossus; the export is the base pose only, without skeleton or animations.</li><li>Normal maps (BC5) can be replaced if the PNG has exactly the texture&#x27;s size and a DirectX green channel; not yet confirmed in game.</li><li>The script editor opens the 3,010 Kiscule scripts of The New Colossus with all 205 node types and can add or remove mission objectives; not yet confirmed in game.</li><li>Replacing sounds and videos is held back because Revert does not yet restore them; models and scripts work for The New Colossus only.</li></ul></div><div class="de"><p class="lede">Das WolfSDK Studio ist das Modding-Werkzeug im Studio-Download von WolfSDK 0.2.0. Es zeigt Karten, Videos, Sounds, Texturen, Texte und 3D-Modelle von Wolfenstein II: The New Colossus und Wolfenstein: The New Order und exportiert sie, Modelle zum Beispiel als GLB, glTF oder OBJ. Ersetzte Texturen, Normal Maps, Texte und <span class="t" data-t="decl">Decls</span> sowie Änderungen an <span class="t" data-t="kiscule">Kiscule</span>-Missionsskripten schreibt es nie direkt ins Spiel: Jede Änderung wird als Mod gespeichert, die der WolfSDK Loader anwendet. Das Ersetzen von Sounds und Videos ist gebaut, in diesem Release aber zurückgehalten.</p><ul><li>Das Anwenden und Zurücksetzen von Studio-Mods über den Loader ist im Spiel bestätigt.</li><li>Der Modellbetrachter zeigt die 17.315 Modelle von The New Colossus; der Export enthält nur die Grundpose, ohne Skelett und Animationen.</li><li>Normal Maps (BC5) lassen sich ersetzen, wenn das PNG genau so groß wie die Textur ist und einen Grünkanal nach DirectX-Art hat; im Spiel noch nicht bestätigt.</li><li>Der Skript-Editor öffnet die 3.010 Kiscule-Skripte von The New Colossus mit allen 205 Knotentypen und kann Missionsziele hinzufügen oder entfernen; im Spiel noch nicht bestätigt.</li><li>Das Ersetzen von Sounds und Videos ist zurückgehalten, weil Revert sie noch nicht wiederherstellt; Modelle und Skripte gibt es nur für The New Colossus.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>🇬🇧 English · <a href="WolfSDK-Studio-DE.html">🇩🇪 Deutsch</a></p>
+<h1 id="wolfsdk-studio">WolfSDK Studio</h1>
+<h2 id="studio-what-the-wolfsdk-studio-is-modder-guide">Studio: what the WolfSDK Studio is (modder guide)</h2>
+<p>The WolfSDK Studio is the modding tool of WolfSDK 0.2.0. The Studio browses the assets of <em>Wolfenstein II: The New Colossus</em> and <em>Wolfenstein: The New Order</em>: maps, videos, audio, textures, texts and 3D models. In the Studio you view and export them, replace textures, normal maps, texts and decls, and edit Kiscule scripts and missions. The Studio never writes the game: each Studio change is saved as a mod that the <a href="WolfSDK-Loader.html">WolfSDK Loader</a> applies.</p>
+<p>Keywords: wolfsdk studio, studio, what is the studio, about the studio, studio explained, studio for modders, modding tool, asset browser, modder guide, was ist das studio, studio erklärt</p>
+<h2 id="studio-download-and-requirements-wolfsdk-studio-020zip">Studio: download and requirements (WolfSDK-Studio-0.2.0.zip)</h2>
+<p>Download <strong>WolfSDK-Studio-0.2.0.zip</strong> from the <a href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0">release page</a>. It contains the full Loader plus the Studio; the player package WolfSDK-Loader-0.2.0.zip has no Studio. Extract it into a normal folder and start <code>WolfSDK.cmd</code>, as for the Loader. Python is bundled.</p>
+<p>The Studio needs <em>Wolfenstein II: The New Colossus</em> (Steam version, Windows). It finds <em>The New Order</em> by itself if that is installed too.</p>
+<p>Keywords: studio download, studio zip, requirements, needs new colossus, install studio, studio herunterladen, voraussetzungen</p>
+<h2 id="studio-open-the-studio-open-studio">Studio: open the Studio (Open Studio)</h2>
+<ol>
+<li>Start the loader with <code>WolfSDK.cmd</code>.</li>
+<li>Go to the <strong>Studio</strong> tab and click <strong>Open Studio</strong>.</li>
+</ol>
+<p>The Studio is a local page, served by the loader on <code>127.0.0.1</code>; nothing goes online. It opens in its own full-screen window in Edge or Chrome, otherwise in your default browser, and runs as long as the loader window is open. Without the loader window: run <code>python\python.exe -m wolfsdk studio</code> in the extracted folder (Ctrl+C quits). <strong>Apply mods</strong>, <strong>Revert</strong> and <strong>Install map…</strong> close the Studio, because it keeps the game files open; open it again afterwards.</p>
+<p>Keywords: open studio, start studio, launch studio, studio window, browser, 127.0.0.1, studio öffnen, studio starten</p>
+<h2 id="studio-the-tabs-maps-video-audio-textures-texts-models-scripts">Studio: the tabs (Maps, Video, Audio, Textures, Texts, Models, Scripts)</h2>
+<p>The top bar has seven tabs:</p>
+<ul>
+<li><strong>Maps</strong>: the levels in 3D.</li>
+<li><strong>Video</strong>: cutscenes and other videos.</li>
+<li><strong>Audio</strong>: sounds and music.</li>
+<li><strong>Textures</strong>: every image.</li>
+<li><strong>Texts</strong>: decls, string tables and other text files.</li>
+<li><strong>Models</strong>: the 3D model viewer.</li>
+<li><strong>Scripts</strong>: the Kiscule script and mission editor.</li>
+</ul>
+<p><strong>TNC</strong> and <strong>TNO</strong> switch the game; Models and Scripts work for The New Colossus only. <strong>Fullscreen</strong> (F11) and <strong>Support</strong> are on the right. "Search …" filters the list.</p>
+<p>Keywords: studio tabs, studio interface, maps, video, audio, textures, texts, models, scripts, tnc, tno, studio oberfläche, reiter</p>
+<h2 id="studio-walk-through-maps-in-3d-maps-tab">Studio: walk through maps in 3D (Maps tab)</h2>
+<p>The <strong>Maps</strong> tab shows every level in 3D with textures. Pick a map from the list. <strong>Orbit</strong> turns around the map; <strong>Fly mode</strong> (F) moves with W A S D, Q/E down and up, Shift faster, Esc releases the mouse. <strong>Layers</strong> switch walls and furniture, movable objects, sky and collision on and off. <strong>Markers</strong> show entities; click one for its class, template and position. "Cut from above" slices the map so you can look inside. Keys: H panel, T textures or flat shaded, F11 fullscreen.</p>
+<p>Keywords: maps tab, 3d map viewer, fly through a map, level viewer, collision, markers, entities, karten ansehen, 3d karte, level ansehen</p>
+<h2 id="studio-play-videos-and-sounds-video-and-audio-tabs">Studio: play videos and sounds (Video and Audio tabs)</h2>
+<p><strong>Video</strong> plays the cutscenes with their sound in sync with the picture. <strong>Download video file</strong> saves the video, <strong>Audio as WAV</strong> its sound. <strong>Audio</strong> plays sounds with a waveform; <strong>Download</strong> saves the sound. Both tabs also show <strong>Replace…</strong>, but replacing sounds and videos is held back in 0.2.0: the Studio refuses it.</p>
+<p>Keywords: video, cutscenes, audio, sounds, music, play cutscene, download video, export sound, wav, zwischensequenzen, sounds anhören, musik</p>
+<h2 id="studio-browse-and-export-textures-and-texts">Studio: browse and export textures and texts</h2>
+<p><strong>Textures</strong> shows every image in a grid. Click one to look at it (Fit, 1:1, mouse wheel zooms, drag pans, ← / → browses); <strong>Download PNG</strong> saves it at full size. <strong>Texts</strong> shows decls, string tables and other text files, with "Search in text …", <strong>Copy all</strong>, <strong>Copy line</strong> and <strong>Download file</strong>. <strong>Export ZIP</strong> in the list exports every hit of a search and folder as one ZIP.</p>
+<p>Keywords: textures, export texture, download png, texts, strings, decls, export zip, extract assets, texturen exportieren, texte exportieren</p>
+<h2 id="studio-3d-model-viewer-models-tab">Studio: 3D model viewer (Models tab)</h2>
+<p>The <strong>Models</strong> tab shows the 17,315 models of The New Colossus with textures: weapons, enemies, characters, vehicles and props. Drag rotates, mouse wheel zooms, right mouse button pans, double-click fits, ↑/↓ browses. <strong>Surfaces</strong> switch parts on and off: <strong>All</strong>, <strong>None</strong>, or <strong>Default</strong> (as in the model's definition, with gore, gear and spare heads off). <strong>Wireframe</strong> shows the mesh. Models of The New Order are planned.</p>
+<p>Keywords: models, 3d viewer, model viewer, weapons, enemies, characters, surfaces, wireframe, 3d modelle, modell ansehen, modellbetrachter</p>
+<h2 id="studio-export-a-3d-model-glb-gltf-obj">Studio: export a 3D model (GLB, glTF, OBJ)</h2>
+<p>In the <strong>Models</strong> tab, under <strong>Export</strong>, pick a format and click <strong>Export</strong>:</p>
+<ul>
+<li><strong>GLB (one file)</strong>: glTF 2.0 binary with the textures inside, for Blender, 3D Viewer or Sketchfab.</li>
+<li><strong>glTF + PNG (ZIP)</strong>: .gltf, .bin and the textures as PNG.</li>
+<li><strong>OBJ + PNG (ZIP)</strong>: .obj, .mtl and the textures as PNG.</li>
+</ul>
+<p>The export holds exactly the surfaces that are switched on, with your custom skin if one of them wears it. Base pose only: skeleton, weights and animations are not exported. The file lands in the browser's download folder.</p>
+<p>Keywords: export model, glb, gltf, obj, blender, 3d export, sketchfab, modell exportieren, nach blender, 3d modell herunterladen</p>
+<h2 id="studio-how-a-change-is-saved-as-a-mod-save-as-mod">Studio: how a change is saved as a mod (Save as mod)</h2>
+<p>Every replacement in the Studio ends in <strong>Save as mod</strong>:</p>
+<ul>
+<li><strong>New mod</strong>: give it a name, and an author if you like.</li>
+<li><strong>Add to one of my Studio mods</strong>: puts the change into a mod the Studio made before.</li>
+</ul>
+<p>Click <strong>Save as mod</strong>. The message "Saved as mod: … Tick it in the loader under Mods and apply." follows. The mod is a new folder in the loader's <code>mods</code> folder. Then in the loader: Mods tab → <strong>Reload</strong> → tick the mod → <strong>Apply mods</strong> → <strong>Start game</strong>.</p>
+<p>Keywords: save as mod, studio mod, new mod, add to mod, mods folder, apply studio mod, als mod speichern, mod erstellen, eigene mod</p>
+<h2 id="studio-replace-a-texture-replace-with-png">Studio: replace a texture (Replace with PNG…)</h2>
+<ol>
+<li>In <strong>Textures</strong>, open the texture and click <strong>Replace with PNG…</strong>.</li>
+<li>Click <strong>Choose file…</strong> and pick an 8-bit RGB or RGBA PNG without interlacing, at most 8192 pixels a side.</li>
+<li>Compare "In the game" and "Yours", then save it as a mod.</li>
+</ol>
+<p>The New Colossus: BC1 colour and specular maps; a PNG of any size is scaled to the texture's size. Textures that ship only in a DLC archive, cube maps, and BC7, BC4 or BC6H images cannot be replaced yet. Textures that share the same data change together; "Also the blood variant" covers the bloody version. The New Order: the PNG is resized to the original's size.</p>
+<p>Keywords: replace texture, texture replacement, retexture, skin, png, bc1, own texture, textur ersetzen, eigene textur, skin erstellen</p>
+<h2 id="studio-replace-a-normal-map-bc5-directx-green-channel">Studio: replace a normal map (BC5, DirectX green channel)</h2>
+<p>Normal maps (BC5) are replaced like any other texture, with <strong>Replace with PNG…</strong>, but with stricter rules:</p>
+<ul>
+<li>The PNG must be <strong>exactly</strong> the texture's size, and both sides are powers of two (for example 1024 × 1024). Normal maps are not rescaled.</li>
+<li>The green channel uses the <strong>DirectX</strong> convention (green pointing down). From Blender or another OpenGL tool, invert the green channel first.</li>
+</ul>
+<p>Status: Not yet confirmed in game.</p>
+<p>Keywords: normal map, normalmap, bc5, green channel, directx, opengl, invert green, blender normal map, normal map ersetzen, grünkanal, grün invertieren</p>
+<h2 id="studio-replace-a-text-or-string-table-texts-tab-replace">Studio: replace a text or string table (Texts tab, Replace…)</h2>
+<ol>
+<li>In <strong>Texts</strong>, open the file and click <strong>Download file</strong>.</li>
+<li>Edit it in a text editor and save it as UTF-8.</li>
+<li>Click <strong>Replace…</strong>, then <strong>Choose file…</strong>, and pick your edited file. The dialog shows what changed.</li>
+<li>Save it as a mod.</li>
+</ol>
+<p>The text must parse: balanced braces, no stray characters, valid JSON for <code>.json</code> files. Unchanged text is refused. For The New Colossus only files in <code>base</code> can be replaced, not texts that ship only in a DLC. While an applied mod changes the same text, the Studio refuses: click <strong>Revert</strong> in the loader first.</p>
+<p>Keywords: replace text, edit strings, string table, translation, lang file, edit text, text ersetzen, übersetzung, texte ändern</p>
+<h2 id="studio-change-a-decl-weapon-damage-and-other-values">Studio: change a decl (weapon, damage and other values)</h2>
+<p>Decls (the definitions of weapons, damage, AI and more) are in the <strong>Texts</strong> tab, grouped by type. Replace them like a text: <strong>Download file</strong>, change the values, <strong>Replace…</strong>, save as mod. When you only change values, the mod stores just those values (<code>set</code>), so comments and everything else in the decl stay as they are. When you add, remove or move fields, the mod carries the whole file instead. The format of such mods is on <a href="Mod-Format.html">Mod Format</a>.</p>
+<p>Keywords: decl, edit decl, weapon values, damage values, change values, set, mod.json, decl ändern, waffenwerte, schaden ändern</p>
+<h2 id="studio-custom-skin-on-a-3d-model-custom-skin">Studio: custom skin on a 3D model (Custom skin)</h2>
+<p>In the <strong>Models</strong> tab, choose a surface under <strong>Custom skin</strong>, click <strong>Choose PNG…</strong> and see your picture on the model at once; <strong>Original</strong> takes it off again. <strong>Save as mod…</strong> saves it as a mod: the PNG replaces the colour map of that surface's material, with the same rules as Replace with PNG… for textures.</p>
+<p>Keywords: custom skin, weapon skin, skin preview, own skin, choose png, model skin, waffenskin, eigener skin, skin vorschau</p>
+<h2 id="studio-kiscule-script-and-mission-editor-scripts-tab">Studio: Kiscule script and mission editor (Scripts tab)</h2>
+<p>The <strong>Scripts</strong> tab opens the 3,010 Kiscule scripts of The New Colossus as node graphs, with all 205 node types. In the script editor you can:</p>
+<ul>
+<li>change the parameters of a node, and wire or remove connections;</li>
+<li>insert nodes with <strong>Add node</strong> (search the node types);</li>
+<li>find a node with "Find node …";</li>
+<li>show only the mission flow with <strong>Missions</strong>;</li>
+<li>undo with <strong>Undo</strong> (Ctrl+Z); Delete removes the selection.</li>
+</ul>
+<p>Scripts that ship only in a DLC archive are read-only. The New Order has no script editor. Background: <a href="Kiscule-Scripting.html">Kiscule Scripting</a>.</p>
+<p>Status: Not yet confirmed in game.</p>
+<p>Keywords: script editor, kiscule, mission editor, missions, node graph, scripts, nodes, visual scripting, skript editor, missionen bearbeiten</p>
+<h2 id="studio-add-or-remove-mission-objectives-scripts-tab">Studio: add or remove mission objectives (Scripts tab)</h2>
+<p>Mission nodes hold a list of objectives. Open the script in <strong>Scripts</strong>, click <strong>Missions</strong> to show only the mission and objective nodes, and select the mission node. In its parameters, <strong>+</strong> adds an objective to the list and <strong>−</strong> removes the last one. Mission nodes are amber; their roles are Mission start, Objective start, Objective complete and Active objective. Save with <strong>Save as mod…</strong>.</p>
+<p>Status: Not yet confirmed in game.</p>
+<p>Keywords: mission objectives, add objective, remove objective, quest, mission node, objectives list, missionsziel, ziel hinzufügen, ziel entfernen</p>
+<h2 id="studio-save-script-edits-as-a-mod-edits-accumulate">Studio: save script edits as a mod (edits accumulate)</h2>
+<p>Click <strong>Save as mod…</strong> in the Scripts tab. In "Save script as mod", choose <strong>New mod</strong> or <strong>Add to one of my Studio mods</strong>. The Studio checks every edit and refuses the whole save if one fails. Saving again into the same Studio mod adds the new edits to the copy in that mod, so edits accumulate over several saves. The <strong>Version</strong> picker shows a script "As in mod …", with the edits saved there.</p>
+<p>An applied mod that changes the same script blocks editing: click <strong>Revert</strong> in the loader first, then edit and save.</p>
+<p>Status: Not yet confirmed in game.</p>
+<p>Keywords: save script, script mod, edits accumulate, script blocked, applied mod changes this script, revert first, skript speichern, bearbeitung gesperrt</p>
+<h2 id="studio-replacing-sounds-and-videos-held-back-in-020">Studio: replacing sounds and videos (held back in 0.2.0)</h2>
+<p>Replacing sounds and videos is built but <strong>held back</strong> in this release. The Studio refuses it, because <strong>Revert</strong> does not yet restore replaced sound packs and video files. It comes in an update. You can still play and save them (<strong>Download</strong>, <strong>Audio as WAV</strong>, <strong>Download video file</strong>). For The New Order, replacing sounds and videos is not supported at all.</p>
+<p>Status: Held back.</p>
+<p>Keywords: replace sounds, replace audio, replace video, custom sounds, own music, wem, bink, held back, sounds ersetzen, eigene sounds, video ersetzen</p>
+<h2 id="studio-what-is-confirmed-in-game-and-what-is-not-020">Studio: what is confirmed in game and what is not (0.2.0)</h2>
+<ul>
+<li>Studio mods are applied and reverted by the Loader; applying and reverting mods is Confirmed in game.</li>
+<li>Replacing normal maps (BC5): Not yet confirmed in game.</li>
+<li>Kiscule script and mission editor: Not yet confirmed in game.</li>
+<li>Replacing sounds and videos: Held back.</li>
+<li>Replacing textures, texts and decls: the 0.2.0 release notes give no in-game status of their own for Studio-made mods.</li>
+</ul>
+<p>Keywords: studio status, confirmed, tested, what works, not tested, held back, studio bestätigt, getestet, was funktioniert</p>
+<h2 id="studio-limits-what-the-studio-cannot-do-yet">Studio limits: what the Studio cannot do yet</h2>
+<ul>
+<li>Sounds and videos cannot be replaced in 0.2.0 (held back).</li>
+<li>Textures: only BC1 images and BC5 normal maps of The New Colossus; no cube maps, no BC7, BC4 or BC6H images, nothing that ships only in a DLC archive.</li>
+<li>Models and Scripts work for The New Colossus only; the model export is the base pose only.</li>
+<li>No new assets: the Studio replaces existing ones.</li>
+<li>Planned: a map editor, map import from Blender (glTF), animations, the models of The New Order, and adding new assets.</li>
+</ul>
+<p>Keywords: studio limits, limitations, cannot, not supported, planned, roadmap, map editor, blender import, animations, grenzen, geplant</p>
+<h2 id="studio-troubleshooting-the-studio-does-not-open-or-refuses-a-replacement">Studio troubleshooting: the Studio does not open or refuses a replacement</h2>
+<ul>
+<li>The Studio tab says "The Studio is part of WolfSDK Studio…": you have the Loader ZIP. Download WolfSDK-Studio-0.2.0.zip.</li>
+<li>"Wolfenstein II: The New Colossus was not found": the Studio needs that game; choose its folder in the loader.</li>
+<li>The Studio closed after Apply mods, Revert or Install map…: open it again.</li>
+<li>"An applied mod changes this … right now": click <strong>Revert</strong> in the loader, then replace or edit.</li>
+<li>"… ships only in a DLC archive": the loader writes <code>base</code> only, so it cannot be changed.</li>
+</ul>
+<p>Keywords: studio does not open, studio error, replace refused, cannot be replaced, studio closed, studio öffnet nicht, ersetzen abgelehnt, fehler</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="WolfSDK-Loader-DE.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>WolfSDK Loader DE</a><a class="next" href="WolfSDK-Studio-DE.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>WolfSDK Studio DE</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

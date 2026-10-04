@@ -1,0 +1,1517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photocam: A Free Camera / Photo-Mode Cfg and Keybind Set for The New Colossus – Wolfenstein Modloader</title>
+<meta name="description" content="A free-camera and photo-mode setup for Wolfenstein II, built from hidden settings, carrier files and key binds.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Photocam: A Free Camera / Photo-Mode Cfg and Keybind Set for The New Colossus</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Photo-Camera"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#pass-1-errors-fixed-in-this-pass">Pass 1 errors (fixed in this pass)</a></li><li><a href="#question">Question</a></li><li><a href="#answer-short">Answer (short)</a></li><li><a href="#1-the-gate-in-one-paragraph-full-mechanism-r4r5">1. The gate, in one paragraph (full mechanism: r4/r5)</a></li><li><a href="#2-new-this-run-a-key-bound-to-a-non-exposed-command-does-not-work-directly">2. New this run: a key bound to a non-exposed command does not work directly</a></li><li><a href="#3-new-this-run-cfiledefaultcfg-already-has-a-built-automatic-delivery-path">3. New this run: cfile:default.cfg already has a built, automatic delivery path</a></li><li><a href="#4-tnc-photo-mode-cvars--the-full-confirmed-set">4. TNC photo-mode cvars — the full confirmed set</a></li><li><a href="#5-tnc-photo-mode-commands">5. TNC photo-mode commands</a></li><li><a href="#6-kiscule-cameracinematic-nodes">6. Kiscule camera/cinematic nodes</a></li><li><a href="#7-what-resourceexecthe-key-bind-workaround-does-not-reach">7. What resourceExec/the key-bind workaround does not reach</a></li><li><a href="#proven">PROVEN</a></li><li><a href="#inferred-plausible-not-independently-closed-this-run">INFERRED (plausible, not independently closed this run)</a></li><li><a href="#failed-hypotheses">Failed hypotheses</a></li><li><a href="#8-tno-id-tech-5--clearly-labelled-as-candidate-string-only">8. TNO (id Tech 5) — clearly labelled as candidate-string-only</a></li><li><a href="#9-the-recipe-best-possible-tnc-photo-mode-cfg--keybind-design">9. The recipe: best-possible TNC photo-mode cfg + keybind design</a></li><li><a href="#10-open-questions">10. Open questions</a></li><li><a href="#smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report collects everything in Wolfenstein II: The New Colossus that can serve as a photo mode: a hidden photomode switch, free-camera and time-freeze settings, depth of field, post effects, HUD hiding and screenshot quality. 16 of these settings already work from the normal <span class="t" data-t="console">console</span>; the rest are cheat-locked and need the proven resourceExec route. Reading the code showed that a key bound directly to a locked setting does not work, so the recipe binds keys to small resourceExec files instead, the same trick the sandbox_tools mod already uses for God mode. The resourceExec route itself is confirmed in game, but the photo-mode files and key binds are only <span class="t" data-t="static">static analysis</span> and have not been run.</p><ul><li>39 photo-mode settings were checked against the real list of 3,256 settings; 16 of them work from the normal console, such as g_fov, r_dof and g_showHud.</li><li>Key binds run at the locked level, so a key bound straight to g_freezeTime fails; bound to &#x27;resourceExec &lt;file&gt; -s&#x27; it works, as sandbox_tools already proves in game for God mode.</li><li>Recipe: F9 runs photomode_enter (photomode on, world frozen with a free camera, HUD and crosshair off), F10 runs photomode_exit.</li><li>No noclip, freecam, photomode or third-person command exists; the camera settings listed for The New Order are only unverified candidates from text strings.</li><li>Open: what g_setting_photomode 1 does on its own, whether the automatic default.cfg route works in game, and whether devgui 4 opens a window (the one in-game try showed none).</li></ul></div><div class="de"><p class="lede">Dieser Bericht sammelt alles in Wolfenstein II: The New Colossus, was als Fotomodus dienen kann: einen versteckten Fotomodus-Schalter, Einstellungen für freie Kamera und Zeitstopp, Tiefenschärfe, Nachbearbeitungseffekte, HUD-Ausblendung und Screenshot-Qualität. 16 dieser Einstellungen funktionieren schon in der normalen <span class="t" data-t="console">Konsole</span>; der Rest ist als Cheat gesperrt und braucht den bewährten resourceExec-Weg. Das Lesen des Codes zeigte, dass eine Taste, die direkt auf eine gesperrte Einstellung gelegt wird, nicht funktioniert; das Rezept legt Tasten deshalb auf kleine resourceExec-Dateien, derselbe Trick, den die Mod sandbox_tools schon für den Gottmodus nutzt. Der resourceExec-Weg selbst ist im Spiel bestätigt, die Fotomodus-Dateien und Tastenbelegungen sind aber nur <span class="t" data-t="static">statische Analyse</span> und wurden nicht ausgeführt.</p><ul><li>39 Fotomodus-Einstellungen wurden gegen die echte Liste mit 3.256 Einstellungen geprüft; 16 davon funktionieren in der normalen Konsole, etwa g_fov, r_dof und g_showHud.</li><li>Tastenbelegungen laufen auf der gesperrten Stufe, eine Taste direkt auf g_freezeTime scheitert also; auf &#x27;resourceExec &lt;Datei&gt; -s&#x27; gelegt funktioniert sie, wie sandbox_tools im Spiel für den Gottmodus schon beweist.</li><li>Rezept: F9 startet photomode_enter (Fotomodus an, Welt eingefroren mit freier Kamera, HUD und Fadenkreuz aus), F10 startet photomode_exit.</li><li>Einen Befehl noclip, freecam, photomode oder für die Third-Person-Ansicht gibt es nicht; die für The New Order gelisteten Kamera-Einstellungen sind nur ungeprüfte Kandidaten aus Textzeichenketten.</li><li>Offen: was g_setting_photomode 1 allein bewirkt, ob der automatische default.cfg-Weg im Spiel greift und ob devgui 4 ein Fenster öffnet (der eine Versuch im Spiel zeigte keins).</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on screenshots and machinima in The New Colossus: everything usable as a free camera or photo mode — commands, cvars, kiscule camera nodes and camera entities — and which of it a retail build can reach. The game ships a real, named photo-mode toolkit (<code>g_setting_photomode</code>, a free-camera/time-freeze cluster, depth-of-field, post-FX, HUD and screenshot-quality cvars); some of these cvars are already exposed to the plain console, the rest are cheat-flagged and need the already-proven <code>resourceExec &lt;cfile&gt; -s</code> route. A key bound directly to a non-exposed command does not work, so the recipe binds keys to <code>resourceExec</code> carrier cfgs instead. <strong>Static analysis only; the cfg and keybind set has not been run in game.</strong></p>
+<p>Read-only on the game installs and on every project file outside this track's
+own folder (<code>re_probes/photocam/</code>) and this report. Builds on, and does not
+redo, <code>re_probes/agent_reports/r4_consolecmds.md</code> (the restriction-level gate,
+the <code>resourceExec</code> level-0 window, the DevGUI call-graph) and
+<code>r5_kisculecmd.md</code> (kiscule <code>idKisculeNodeCommand</code>'s Exec path, the per-frame
+drain). Ground truth for every cvar/command claim below is
+<code>re_probes/cvartable/cvars_tnc_v2.json</code> (3256 cvars, live-snapshot-verified)
+and <code>re_probes/cmdtable/commands.json</code> (234 commands) — not the string-mined
+candidate lists in <code>docs/cvars-tnc.md</code>/<code>docs/cvars_tnc.json</code>, which that doc's
+own header says are only ~10% real names. New disassembly this track did
+itself: RVA <code>0xaa8780</code> (key-bind execution) via <code>tools/decomp.py</code>, cross-checked
+against <code>re_probes/runtime_87400/module.bin</code>. No game was launched, no
+debugger attached. Every cvar/command/node fact cited below is re-derived and
+asserted by <code>re_probes/photocam/verify.py</code> (run: <code>python
+re_probes/photocam/verify.py</code>, prints <code>ALL OK</code>) straight from the ground-truth
+JSON tables and <code>docs/ghidra/rtti_tnc.json</code> — a mismatch there is this
+report's own negative control.</p>
+<h2 id="pass-1-errors-fixed-in-this-pass">Pass 1 errors (fixed in this pass)</h2>
+<p>The verifier found 8 real problems and 2 missed items in pass 1. Fixed here,
+each re-asserted mechanically by the updated <code>re_probes/photocam/verify.py</code>
+(<code>ALL OK</code>):</p>
+<ol>
+<li><strong>Headline gap: <code>g_setting_photomode</code> was never in the recipe.</strong> The
+   report's own best-named discovery was absent from <code>photomode_enter.cfg</code>/
+   <code>exit.cfg</code> and from the in-game test plan. Fixed: added to both cfg files
+   and to §12 as its own isolated "Ziel 0" test (test it alone first, since
+   its effect beyond its own description is unproven).</li>
+<li><strong>Recipe no-op</strong>: <code>photomode_enter.cfg</code> set <code>pmec_ForceShowThirdPersonBody
+   0</code>, which is that cvar's own documented default — a dead line. Fixed:
+   flipped to <code>1</code> (a real change, untested effect), <code>pmec_EnableThirdPersonBody</code>
+   left alone at its own default.</li>
+<li><strong>TNO candidate <code>g_debugCam</code> was fabricated</strong> — no such name exists in
+   <code>tno_cmdtable.json</code>, the report's own cited source. Fixed: replaced with
+   the one real entry, <code>ai_debugCam</code>. (Re-checked the verifier's own
+   suggested addition, <code>debugCam</code> as a "kind=cmd" entry — it does not exist
+   in <code>tno_cmdtable.json</code> either, under any case; dropped rather than
+   re-added unverified.)</li>
+<li><strong>TNO thirdperson family misspelled</strong>: written as
+   <code>pm_thirdPerson_Height</code>/<code>_Angle</code>/<code>_Clip</code> (implying an underscore); the
+   real mined names have none — <code>pm_thirdPersonHeight</code>/<code>Angle</code>/<code>Clip</code>.
+   Fixed, with each entry's own actual mined confidence
+   (Height=high, Angle=low, Clip=low), kept separate from the correctly-named
+   <code>pm_thirdPersonRange</code>.</li>
+<li><strong>Negative-control overclaim</strong>: "<code>god</code> (lowercase) ... absent ... under
+   any case" is false under a literal reading — capitalized <code>God</code> is a real,
+   non-exposed command. The report's own body text already treats <code>God</code>
+   correctly elsewhere (§1/§2/PROVEN, non-exposed, resourceExec-only, same
+   as <code>Notarget</code>) — the verifier's framing that <code>God</code> is "EXPOSEd" is itself
+   wrong (<code>commands.json</code>: <code>God.exposed == False</code>). Fixed: reworded to state
+   what was actually checked (no <em>separate</em> lowercase/synonym command), and
+   <code>verify.py</code> now asserts this case-insensitively instead of only by exact
+   string.</li>
+<li><strong><code>0xf515b0</code> scope undercount</strong>: reported as shared by "three unrelated
+   BOOL cvars"; a full-table scan shows 1136 of the engine's 1138 total
+   bool-type cvars share it. Fixed: §2 and PROVEN now state the real scope
+   (which <em>strengthens</em> the "generic validator" conclusion), <code>verify.py</code>
+   now asserts the full-table count.</li>
+<li><strong><code>verify.py</code> coverage gap</strong>: 10 cvars cited in §4's own tables
+   (<code>g_setting_hudNotifications</code>, <code>g_setting_hud_show</code>, <code>g_showPlayerInfo</code>,
+   <code>p_allowPlayerWeaponFarDOF</code>, <code>r_chromaticAberrationLimit</code>,
+   <code>r_cutsceneRender</code>, <code>r_dofDebug</code>, <code>r_motionBlurQuality</code>,
+   <code>r_screenshotTag</code>, <code>view_dofBlendIn</code>) were missing from <code>verify.py</code>'s own
+   list, so "re-derives and asserts every fact" was an overclaim. Fixed:
+   added (all 10 matched the report's stated values — no factual error, just
+   a coverage gap).</li>
+<li><strong>105-vs-113 kiscule unused-class inconsistency</strong>, flagged but not
+   resolved in pass 1: diffing RTTI's <code>idKisculeNode*</code> classes (excluding
+   the per-node <code>*Parameters</code>/<code>*Parameter</code> companion structs, which are not
+   node types) against <code>catalogue.json</code>'s used(205)+<code>unused_node_classes</code>(105)
+   sets finds exactly 8 real node classes present in RTTI but missing from
+   both — the <code>idKisculeNodeParameterListOperator*</code> family (<code>GetIndexInt</code>/
+   <code>Bool</code>/<code>String</code>/<code>EntityReference</code>, <code>AddItemInt</code>/<code>Bool</code>/<code>String</code>/
+   <code>EntityReference</code>). 105 + 8 = 113: <code>docs/kiscule.md</code>'s figure was right,
+   <code>catalogue.json</code>'s own field undercounts by exactly these 8 (not fixed —
+   outside this track's read-only scope; §6 now states this precisely
+   instead of silently citing 113).</li>
+<li><strong>Missed</strong>: the DevGUI route's one real in-game data point. Project
+   memory <code>tnc-console-unlock.md</code> already recorded, from the one actual
+   resourceExec test, "devgui 4 showed no window (open)" — <code>photomode_extras.cfg</code>'s
+   <code>toggle devgui 0 4</code> comment presented the "~50 buttons" route as working
+   without surfacing this. Fixed: added as an explicit caveat in the cfg file
+   and §9/§10.</li>
+<li><strong>Missed</strong>: the TNO <code>ScreenShot</code> (CamelCase) candidate's mined
+    description (<code>"toggle r_showSkel 0 1 2"</code>) is an unrelated string-mining
+    pairing artifact, not a real screenshot-command description — flagged
+    now in §8 as a data-quality caveat on that table, since this report
+    leans on exact description overlap as its TNO corroboration method.</li>
+</ol>
+<p>Not changed: the verifier's <code>f515b0</code>/<code>113-vs-105</code>/<code>god</code> observations were
+independently re-derived above and matched (where the verifier's own stated
+premise was itself slightly off, e.g. <code>God</code>'s exposed flag, this section
+says so rather than copying it).</p>
+<h2 id="question">Question</h2>
+<p>TNC screenshots/machinima: everything usable as a free camera or photo mode —
+camera-related commands/cvars (timescale/pause/freeze, third person, free
+fly, detach view, viewpos setters like teleport/setviewpos, HUD/viewmodel/
+crosshair off, DOF control), kiscule camera/cinematic nodes and camera
+entities. What works in the retail build (registered + reachable via
+<code>resourceExec -s</code> or kiscule), and the best possible photo-mode cfg set +
+key binds.</p>
+<h2 id="answer-short">Answer (short)</h2>
+<p><strong>The retail build already ships a real, named photo-mode toolkit — it is
+just locked behind the same console gate <code>r4_consolecmds.md</code> already broke.</strong>
+<code>g_setting_photomode</code> ("enable/disable photomode"), a <code>g_stopTime</code>/
+<code>g_freezeTime</code>/<code>g_runFrames</code>/<code>g_freeCamSpeed</code>/<code>cam_cutsceneFreecam</code> free-camera
+cluster, a full depth-of-field cluster (<code>r_dof*</code> plus a manual
+<code>com_overrideDOF</code>/<code>com_override_dof_*</code> focus-plane override), a post-FX
+cluster (<code>r_motionblur</code>, <code>r_vignette</code>, <code>r_filmGrainRatio</code>,
+<code>r_chromaticAberration</code>, <code>r_hdrShutterSpeed</code>/<code>r_hdrAutoExposure*</code>), a
+HUD/crosshair/GUI-visibility cluster, and a screenshot-quality cluster
+(<code>com_captureSamples</code>/<code>com_captureTGA</code>/<code>image_screenshotQuality</code>/
+<code>r_screenshotBatchSize</code>) all exist as real, registered cvars (full tables in
+§4, cross-checked against the 3256-cvar runtime table). <strong>A good number of
+them are already <code>EXPOSE</code>d</strong> (<code>g_fov</code>, <code>r_dof</code>, <code>r_dofTAA</code>, <code>r_motionblur</code>,
+<code>r_motionBlurQuality</code>, <code>r_filmGrainRatio</code>, <code>r_chromaticAberration</code>,
+<code>r_hdrShutterSpeed</code>, <code>g_showHud</code>, <code>g_showGuis</code>, <code>hud_disableAll</code>,
+<code>g_showPoiInfo</code>, <code>com_captureFilename/Path/Samples/TGA</code> — 16 cvars, §4
+marks each <strong>direct</strong>) and work from the plain, unmodified console today, no
+mod needed. <strong>The rest — the free-camera cluster itself,
+<code>g_setting_photomode</code>, crosshair, <code>r_vignette</code>, DOF overrides, screenshot
+quality, <code>devgui</code>, <code>timescale</code> — are <code>CHEAT</code>-flagged and non-exposed</strong>, so they need
+the already-proven <code>resourceExec &lt;cfile&gt; -s</code> route (project memory
+<code>tnc-console-unlock.md</code>: <em>runtime-proven</em> 2026-10-01, <code>God</code>/<code>Notarget</code>/
+<code>g_infiniteAmmo 1</code>/<code>snapEdit_devMode 1</code> all executed from a loader-replaced
+<code>snapdemo.cfg</code>). <code>mods/sandbox_tools/mod.json</code>, already in this repo,
+demonstrates the exact pattern a photo-mode keybind needs and is itself
+proven in game: <code>bind F6 "resourceExec snapdemo.cfg -s"</code> — God/infinite ammo
+confirmed working from a single keypress, no console typing at the moment of
+the press.</p>
+<p><strong>This track's own contribution, new this run:</strong> (1) disassembled the
+key-bind execution function (RVA <code>0xaa8780</code>) and found it <strong>forces the
+restriction level to 1</strong> for the duration of queuing a bound key's command —
+unlike kiscule's <code>idKisculeNodeCommand</code> (r5), a key bound straight to a
+non-exposed cvar will <em>not</em> work; it only works when the bound command is
+itself exposed, or is <code>resourceExec &lt;file&gt; -s</code> (itself exposed, and which
+internally re-opens level 0 for its own file — exactly what <code>sandbox_tools</code>
+already relies on). (2) Found that <code>wolfsdk/mod.py</code>'s <code>with_tnc_tweaks()</code> /
+<code>cvars.split_tnc()</code> already implement a <strong>second, automatic</strong> delivery route
+for every one of these cvars: append them as plain lines to <code>cfile:
+default.cfg</code>, which the engine itself <code>resourceExec</code>s at init at level 0
+(<code>idCommonLocal::Init()</code>, r5 §3) — built, round-trip-verified in copies
+(<code>tools/verify_tnc_tweaks.py</code>, 17/17), but <strong>not yet confirmed in a running
+game</strong> (<code>TODO.md</code>, 2026-10-01: "im Spiel unbestätigt", i.e. "unconfirmed in game"). (3) Confirmed the
+cfile AES-128-CBC encryption is fully solved (<code>wolfsdk/tnccrypt.py</code>,
+<code>re_probes/agent_reports/cfilekey2.md</code>) and a from-scratch carrier with
+arbitrary text content and an arbitrary resource name is already built and
+verified (<code>tools/build_exec_carrier.py</code>) — a photo-mode cfg is not limited to
+reusing the two unused stock files <code>sandbox_tools</code> found. (4) Surveyed
+kiscule's camera-adjacent node types (<code>idKisculeNodeActionTeleport</code> 126×,
+<code>ActionFadeView</code> 55×, <code>ActionRumbleCam</code> 35×, <code>ActionGlobalCameraShake</code> 1×,
+the <code>ActionMidnightControl</code>/<code>OpMidnightParametersControl</code> cutscene-camera
+system 958× each) and TNC's compiled-in camera <em>entity</em> classes
+(<code>idFreeCamera</code>, <code>idUtilityCamera</code>, <code>idSpringCamera</code>, <code>idCinematicCamera</code>,
+<code>idDeclCameraTrigger</code>, …) — real, RTTI-confirmed, but <strong>map/entity placement
+of these is untested</strong>, out of this track's scope. (5) TNO (id Tech 5) has
+no runtime image; its camera cvars below are <strong>string-mined candidates only</strong>
+from a sibling, in-progress track (<code>re_probes/tnoconsole/tno_cmdtable.json</code>),
+cross-validated only by exact name/description overlap with TNC's <em>proven</em>
+real cvars — presented clearly labelled, nothing claimed as proven for TNO.</p>
+<h2 id="1-the-gate-in-one-paragraph-full-mechanism-r4r5">1. The gate, in one paragraph (full mechanism: r4/r5)</h2>
+<p>One process-wide integer, the "restriction level" (RVA <code>0x41244d8</code>,
+<code>idCmdSystemLocal</code>/<code>idCVarSystemLocal</code> shared field <code>+0x200b8</code>). Level <code>0</code> =
+dispatcher (<code>0x1265150</code>) searches all 234 commands/3256 cvars; level <code>1</code> =
+only the 34 exposed commands/304 exposed cvars. It rests at <code>0</code> almost all of
+the time; the console, <code>+args</code>, <code>exec</code>, and the key-bind executor (§2, new
+this run) each force it to <code>1</code> for the duration of one line/keystroke, then
+restore it. <strong><code>resourceExec &lt;cfile&gt; -s</code></strong> (itself one of the 34 exposed
+commands) is the one reachable command that forces it to <code>0</code> <strong>for the
+duration of the whole file</strong>, so every line inside that file — command or
+cvar, exposed or not — resolves against the full catalogue. Runtime-proven
+(project memory <code>tnc-console-unlock.md</code>): a loader-replaced <code>snapdemo.cfg</code>
+run with <code>resourceExec snapdemo.cfg -s</code> printed <code>godmode ON for player 0</code> /
+<code>notarget ON for player 0</code>, no "Unknown command", for names absent from the
+34-exposed list.</p>
+<h2 id="2-new-this-run-a-key-bound-to-a-non-exposed-command-does-not-work-directly">2. New this run: a key bound to a non-exposed command does <em>not</em> work directly</h2>
+<p>The task asked specifically for <em>key binds</em>, which neither r4 nor r5 settled
+(r5 explicitly left "does a bound key execute like a kiscule node, or like
+console input" open). Found it: RVA <code>0xaa8780</code> (<code>tools/decomp.py 0xaa8780</code>,
+called from only one place, <code>0x11bbe90</code>/<code>0x11bc25f</code>+<code>0x11bc278</code> — a large
+input-event function) is the key-bind lookup-and-execute function. Its body:</p>
+<pre><code class="language-c">iVar3 = DAT_7ff6303344d8;              // save old restriction level
+... set DAT_7ff6303344d8 = 1 ...       // RVA 0x41244d8 -- the SAME level global r4/r5 use
+iVar4 = FUN_7ff62ccb4650(param_1, param_2, param_3);   // resolve key -&gt; binding-table index
+for (bound-command list at that index) {
+    if (bindset byte matches param_4) {
+        if (bound command string is non-empty) {
+            AppendCommandText(bound_text);   // via the same devirt-inline pattern as r5 S2
+            AppendCommandText(&quot;\n&quot;);
+            ...
+        }
+        break;
+    }
+}
+...
+DAT_7ff6303344d8 = iVar3;              // restore old restriction level
+</code></pre>
+<p><code>DAT_7ff6303344d8</code> is confirmed to be exactly RVA <code>0x41244d8</code>
+(<code>0x7ff6303344d8 - 0x7ff62c210000 = 0x41244d8</code>, the live snapshot's image
+base). <strong>This is the identical save/set(1)/restore bracket r4 found for
+console input, <code>+args</code>, and <code>exec</code></strong> — not the unbracketed-at-ambient-level
+pattern r5 found for kiscule Command nodes and DevGUI. <strong>Consequence: a key
+bound with <code>bind &lt;key&gt; "&lt;text&gt;"</code> executes <code>&lt;text&gt;</code> at level 1 when pressed</strong>,
+so it only reaches the 34 exposed commands / 304 exposed cvars directly.
+Binding a key straight to <code>g_freezeTime 1</code> (non-exposed) will print "Unknown
+command" the moment the key is pressed, exactly as if it had been typed at
+the console.</p>
+<p><strong>The workaround is the one <code>mods/sandbox_tools</code> already uses and already
+proved in game</strong>: bind the key to <code>resourceExec &lt;file&gt; -s</code> instead.
+<code>resourceExec</code> <em>is</em> exposed, so it passes the key-bind's level-1 window; its
+own callback (r4 §3, re-confirmed by r5 §2.1) then force-sets level <code>0</code> for
+the duration of <code>&lt;file&gt;</code>, so every line inside that file — however
+non-exposed — executes. <code>mods/sandbox_tools/mod.json</code>'s own description: <em>"F6
+toggles God mode, Notarget and infinite ammo [...] God and infinite ammo are
+confirmed in game."</em> This is the mechanism §9's recipe is built on.</p>
+<p>(<code>0xf515b0</code>, the <code>callback_rva</code> that <code>g_setting_photomode</code>, <code>g_freezeTime</code>,
+<code>g_debugRenderForceDepthTest</code> all share in the cvar table, turned out to be
+the generic <code>CVAR_BOOL</code> value-validator, not a "photomode-changed"
+side-effect handler: its disassembly only compares the new value string
+against <code>"0"</code>/<code>"1"</code>. <strong>Correction (pass 1 said "three unrelated BOOL
+cvars"; a full scan of all 1138 bool-type cvars in the table shows 1136 of
+them — 99.8% — share this exact <code>callback_rva</code>.</strong> It is not a coincidental
+3-way share, it is the near-universal BOOL validator; the three named above
+are unremarkable members of that set. This <em>strengthens</em> the "generic
+validator, not photomode-specific" conclusion rather than weakening it.
+Ruled out as a lead, recorded so a later track does not re-walk it.)</p>
+<h2 id="3-new-this-run-cfiledefaultcfg-already-has-a-built-automatic-delivery-path">3. New this run: <code>cfile:default.cfg</code> already has a built, automatic delivery path</h2>
+<p><code>wolfsdk/mod.py</code> (<code>with_tnc_tweaks</code>, <code>TNC_DEFAULT_CFG</code>, <code>_tnc_tweaks_cfile</code>)
+and <code>wolfsdk/cvars.py</code> (<code>split_tnc</code>, <code>blocked_for("tnc", key)</code> against
+<code>docs/cvars_tnc_exposed.json</code>, the same 304-name set as
+<code>cvars_tnc_v2.json</code>'s <code>exposed=True</code> rows) already implement: read the
+retail <code>cfile:default.cfg</code> (decryptable — see below), append every
+non-exposed tweak as a plain <code>name value</code> line after the retail text, re-wrap
+and re-encrypt, deploy as one more mod asset. Because the engine itself execs
+<code>default.cfg</code> at level 0 inside <code>idCommonLocal::Init()</code> (r5 §3, confirmed
+disassembly), <strong>every line added this way runs unfiltered, automatically, at
+every single launch — no console typing, no key press.</strong> This is already
+wired into WolfSDK Studio's generic TNC cvar-tweak page (<code>_tnc_catalog()</code>
+loads every name from <code>docs/cvars_tnc.json</code> by prefix; <code>g_</code>→"Game &amp; Cheats",
+<code>r_</code>→"Renderer", etc. — <strong>every cvar in this report's tables is settable
+there today</strong>, though that page's own default-value labels come from the
+unreliable mined candidate list, not the verified table this report uses).</p>
+<p><strong>Caveat, stated plainly</strong>: this specific route (<code>cfile:default.cfg</code>
+auto-applied tweaks) is <em>built and round-trip-verified on copies</em>
+(<code>tools/verify_tnc_tweaks.py</code>, 17/17 cvars, bit-exact archive round trip,
+negative control: an all-exposed tweak set never touches the archive) but
+<strong>"im Spiel unbestätigt"</strong> (<code>TODO.md</code>, 01.10.2026) — not yet confirmed in an
+actual running game, unlike the <code>resourceExec &lt;file&gt; -s</code>-at-runtime route
+(§1/§2), which <em>is</em> runtime-proven. The two routes share the same underlying
+mechanism (an engine-exec'd cfile at level 0) and the same crypto, so a
+failure in one would be surprising given the other works — but this track did
+not launch the game to close that gap itself (out of scope, read-only).</p>
+<p>The crypto itself (<code>wolfsdk/tnccrypt.py</code>, <code>re_probes/agent_reports/cfilekey2.md</code>,
+not this track's own work but load-bearing for the recipe below): <code>cfile</code>
+payload = <code>u32 declen | 12B salt | 16B IV | AES-128-CBC ciphertext (PKCS7) |
+32B HMAC-SHA256 tag</code>; <code>digest = SHA256(salt || "swapTeam\n\x00" || resource
+name)</code>, AES key = <code>digest[:16]</code>, HMAC key = <code>digest</code>. Solved and round-trip
+proven against all 67 retail <code>cfile</code> payloads. <code>tools/build_exec_carrier.py</code>
+already builds and verifies a <strong>brand-new</strong> named <code>cfile</code> resource
+(<code>wolfsdk_test.cfg</code>, arbitrary text <code>"map game/dlc/c02/c2v1_custom\n"</code>) in a
+synthetic DLC chunk that <code>resourceExec</code> would find — so a photo-mode <code>.cfg</code>
+is not limited to the two unused stock files (<code>snapdemo.cfg</code>/<code>snapedit.cfg</code>)
+<code>sandbox_tools</code> reuses; it can be its own, clearly-named resource.</p>
+<h2 id="4-tnc-photo-mode-cvars--the-full-confirmed-set">4. TNC photo-mode cvars — the full confirmed set</h2>
+<p>All 39 rows below exist in <code>re_probes/cvartable/cvars_tnc_v2.json</code> (live
+19-process-snapshot, 3256/3256 cross-checked against <code>listCvars</code>), not the
+unreliable mined list. "Route" = how the value reaches the game: <strong>direct</strong> =
+already exposed, works from the plain console/<code>+arg</code> today; <strong>resourceExec</strong>
+= needs §1's level-0 window (one-off via console, or automatically via §3's
+<code>default.cfg</code> route for a value that should hold for the whole session).</p>
+<h3 id="41-free-camera--time-control">4.1 Free camera / time control</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>flags</th>
+<th>exposed</th>
+<th>default</th>
+<th>description</th>
+<th>route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g_setting_photomode</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td><strong>"enable/disable photomode"</strong></td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>g_stopTime</code></td>
+<td><code>0xa</code> INT|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td>1 = stop entity updating, player still runs around; <strong>2 = stop all entity updating, including player — uses free cam</strong></td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>g_freezeTime</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td><strong>1 = stop all game time and go into free camera mode</strong></td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>g_runFrames</code></td>
+<td><code>0xa</code> INT|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td>step N frames while <code>g_stopTime</code> is set, then stop again — single-frame advance</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>g_freeCamSpeed</code></td>
+<td><code>0xc</code> FLOAT|CHEAT</td>
+<td>no</td>
+<td><code>0.015</code></td>
+<td>how fast the free cam moves</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>cam_cutsceneFreecam</code></td>
+<td><code>0xa</code> INT|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td>0 = normal debug free cam, 1 = use the cutscene camera to set up camera effects (DOF etc.) while in freecam, 2 = cutscene setup excluding FOV &amp; DOF</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>g_cameraPlayerHack</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td>force player 0 for camera (useful in a multi-actor/spectator context)</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>timescale</code></td>
+<td><code>0xc</code> FLOAT|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>scales time; <strong>clamped <code>0.1</code>–<code>10.0</code></strong> in the cvar record itself</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>g_debugPlayer</code></td>
+<td><code>0xa</code> INT|CHEAT</td>
+<td>no</td>
+<td><code>-1</code></td>
+<td>"Player for debug commands like noclip. If -1, uses the local player"</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>pm_noclipspeed</code></td>
+<td><code>0xc</code> FLOAT|CHEAT</td>
+<td>no</td>
+<td><code>10.0</code></td>
+<td>noclip movement speed — the cvar exists, confirming a noclip <em>mode</em> is compiled in, but no <code>noclip</code> <strong>command</strong> exists (r4, re-confirmed §8); how it is toggled is an open question</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>pm_noclipfriction</code></td>
+<td><code>0x200c</code> FLOAT|CHEAT|NETWORKSYNC</td>
+<td>no</td>
+<td><code>12.0</code></td>
+<td>noclip friction</td>
+<td>resourceExec</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="42-third-person-body">4.2 Third-person body</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>flags</th>
+<th>exposed</th>
+<th>default</th>
+<th>description</th>
+<th>route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pmec_EnableThirdPersonBody</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>enable the 3rd-person body</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>pmec_ForceShowThirdPersonBody</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td>always draw the 3rd-person body</td>
+<td>resourceExec</td>
+</tr>
+</tbody>
+</table></div>
+<p>No <code>pm_thirdPerson</code>/<code>pm_thirdPersonRange</code>-style full third-person <em>camera</em>
+cvar was found registered in TNC (unlike TNO, §8) — these two only govern
+whether the player's own body mesh is rendered (useful for shadow/reflection
+correctness and for a photo where the player must be visible), <strong>not</strong>
+necessarily a behind-the-shoulder camera mode. Whether TNC has a genuine
+third-person camera mode at all is an open question (§11).</p>
+<p><strong>Recipe note (pass 1 fixed a no-op here, §9)</strong>: <code>pmec_ForceShowThirdPersonBody</code>'s
+own default is <code>0</code>, so a recipe line setting it to <code>0</code> does nothing. The
+useful flip for a detached free camera (<code>g_stopTime 2</code>) that should be able
+to see the player's own body is <code>pmec_ForceShowThirdPersonBody 1</code> —
+<code>photomode_enter.cfg</code> now sets this; <code>pmec_EnableThirdPersonBody</code> is left at
+its own default (<code>1</code>, already enabled). Whether this actually makes the body
+visible to the free cam is untested (INFERRED, §10/§12).</p>
+<h3 id="43-hud--crosshair--gui-visibility">4.3 HUD / crosshair / GUI visibility</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>flags</th>
+<th>exposed</th>
+<th>default</th>
+<th>description</th>
+<th>route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g_showHud</code></td>
+<td><code>0x210011</code> BOOL|NOCHEAT|ARCHIVE|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>1</code></td>
+<td>enables drawing of HUD elements</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>g_showGuis</code></td>
+<td><code>0x210011</code> …|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>1</code></td>
+<td>enables drawing of GUI elements other than HUD</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>hud_disableAll</code></td>
+<td><code>0x210011</code> …|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>0</code></td>
+<td>disables HUD rendering outright</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>g_showPoiInfo</code></td>
+<td><code>0x210011</code> …|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>0</code></td>
+<td>POI/objective markers (leader, base, flag)</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>g_showCrosshair</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>if true, draw the crosshair</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>g_showPlayerInfo</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>player name/health HUD elements</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>g_setting_hud_show</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>show/hide the HUD (a second, apparently redundant switch to <code>g_showHud</code>)</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>g_setting_hudNotifications</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>HUD notifications</td>
+<td>resourceExec</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="44-depth-of-field">4.4 Depth of field</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>flags</th>
+<th>exposed</th>
+<th>default</th>
+<th>description</th>
+<th>route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_dof</code></td>
+<td><code>0x220012</code> INT|NOCHEAT|LOCAL_SETTING|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>1</code></td>
+<td>0 disabled, 1 enabled, 2 enable DOF near field</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_dofTAA</code></td>
+<td><code>0x220011</code> …|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>1</code></td>
+<td>DOF temporal AA</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_dofHalfRes</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>0 full res, 1 half res</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>r_dofDebug</code></td>
+<td><code>0xa</code> INT|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td>1 = show DoF debug info</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>com_overrideDOF</code> / <code>com_override_dof</code></td>
+<td><code>0x9</code> BOOL|CHEAT (×2, likely one stale/one live)</td>
+<td>no</td>
+<td><code>0</code> / <code>1</code></td>
+<td><strong>manual override switch</strong> for a fixed focus plane instead of gameplay auto-DOF</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>com_override_dof_near_start/_near_end/_far_start/_far_end/_intensity</code></td>
+<td><code>0xc</code> FLOAT|CHEAT</td>
+<td>no</td>
+<td><code>2</code>/<code>1</code>/<code>50</code>/<code>100</code>/<code>1.0</code></td>
+<td>the manual focus-plane distances and strength</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>view_skipDof</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td>don't use the view DOF lerpers</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>view_dofBlendIn</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>blend DOF in via bokeh disc radius instead of moving the focus plane</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>p_allowPlayerWeaponFarDOF</code>/<code>_NearDOF</code>/<code>p_enablePlayerWeaponDof</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code>/<code>0</code>/<code>1</code></td>
+<td>DOF applied to the player's own weapon/viewmodel</td>
+<td>resourceExec</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="45-fov-and-post-fx">4.5 FOV and post-FX</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>flags</th>
+<th>exposed</th>
+<th>default</th>
+<th>description</th>
+<th>route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g_fov</code></td>
+<td><code>0x210012</code> INT|NOCHEAT|ARCHIVE|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>90</code>, <strong>clamped 10–120</strong></td>
+<td>camera field of view</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_motionblur</code></td>
+<td><code>0x220012</code> …|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>1</code></td>
+<td>0/1</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_motionBlurQuality</code></td>
+<td><code>0x220012</code> …|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>2</code></td>
+<td>2 high / 1 medium / 0 low</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_filmGrainRatio</code></td>
+<td><code>0x220014</code> FLOAT|…|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>1.0</code></td>
+<td>film-grain strength override</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_chromaticAberration</code></td>
+<td><code>0x220012</code> …|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>1</code></td>
+<td>enable chromatic aberration</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_chromaticAberrationLimit</code></td>
+<td><code>0xc</code> FLOAT|CHEAT</td>
+<td>no</td>
+<td><code>1.0</code></td>
+<td>its intensity limit</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>r_vignette</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>enable vignetting</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>r_hdrShutterSpeed</code></td>
+<td><code>0x200014</code> FLOAT|NOCHEAT|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>10.0</code></td>
+<td>"set camera shutter speed"</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_hdrAutoExposureBase/Ratio/Speed/Instant</code></td>
+<td><code>0xc</code>/<code>0x9</code> CHEAT</td>
+<td>no</td>
+<td><code>0.01</code>/<code>1.0</code>/<code>1.0</code>/<code>0</code></td>
+<td>"helpful for screenshots and fine-tuning automated exposure" (its own description)</td>
+<td>resourceExec</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="46-screenshot--capture-quality">4.6 Screenshot / capture quality</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>flags</th>
+<th>exposed</th>
+<th>default</th>
+<th>description</th>
+<th>route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>com_captureFilename</code></td>
+<td><code>0x200010</code> NOCHEAT|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>""</code></td>
+<td>optional filename override</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>com_capturePath</code></td>
+<td><code>0x200010</code> …|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>""</code></td>
+<td>optional output path, appended to <code>screenshots/</code></td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>com_captureSamples</code></td>
+<td><code>0x200012</code> INT|…|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>1</code></td>
+<td>supersample count for <code>TakeScreenshot</code></td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>com_captureTGA</code></td>
+<td><code>0x200012</code> …|<strong>EXPOSE</strong></td>
+<td><strong>yes</strong></td>
+<td><code>0</code></td>
+<td>0 = JPG, 1 = TGA</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>image_screenshotQuality</code></td>
+<td><code>0xa</code> INT|CHEAT</td>
+<td>no</td>
+<td><code>75</code></td>
+<td>JPEG quality, 100 = best</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>r_screenshotBatchSize</code></td>
+<td><code>0xa</code> INT|CHEAT</td>
+<td>no</td>
+<td><code>8</code>, clamped 0–16</td>
+<td>screenshot job batch size</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>r_screenshotTag</code></td>
+<td><code>0x8</code> CHEAT (STRING)</td>
+<td>no</td>
+<td><code>""</code></td>
+<td>text stamped on captured screenshots</td>
+<td>resourceExec</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="47-cutscene--cinematic-rendering-state">4.7 Cutscene / cinematic rendering state</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>flags</th>
+<th>exposed</th>
+<th>default</th>
+<th>description</th>
+<th>route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>devgui</code></td>
+<td><code>0xa</code> INT|CHEAT, clamped <code>0</code>–<code>5</code></td>
+<td>no</td>
+<td><code>0</code></td>
+<td>0 off … 4 ImGui with custom windows (r4 §4.6: one-time set, then ~50 non-exposed buttons/toggles run unbracketed)</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>snapEdit_devMode</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td><strong>"sets dev mode on match parms. This will give the player ALL THE THINGS"</strong> — already runtime-proven settable via <code>resourceExec</code> (project memory), its actual in-game effect not traced into code</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>hud_skip_cinematics</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>1</code></td>
+<td>skips intro cinematics after load</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>com_frameLockHz</code></td>
+<td><code>0xa</code> INT|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td>"set when game is running a pre-rendered cutscene in idStudio. Overrides any tick related cvars"</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>r_cutsceneRender</code></td>
+<td><code>0x9</code> BOOL|CHEAT</td>
+<td>no</td>
+<td><code>0</code></td>
+<td>marks that a cutscene is being rendered — renderer avoids changing cvars underneath it</td>
+<td>resourceExec</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="5-tnc-photo-mode-commands">5. TNC photo-mode commands</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>command</th>
+<th>exposed</th>
+<th>description</th>
+<th>route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getviewpos</code></td>
+<td><strong>yes</strong></td>
+<td>prints the current view position</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>where</code></td>
+<td><strong>yes</strong></td>
+<td>same as <code>getviewpos</code></td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>bind</code>/<code>unbind</code>/<code>unbindAll</code>/<code>listBinds</code></td>
+<td><strong>yes</strong></td>
+<td>key binding, including binding a key to <code>resourceExec ... -s</code> (§2/§9)</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>vstr</code></td>
+<td><strong>yes</strong></td>
+<td>inserts a cvar's current value as command text — still runs at whatever level is ambient at that moment, so it does <strong>not</strong> bypass the gate on its own</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>TakeScreenshot</code></td>
+<td><strong>yes</strong></td>
+<td>the screenshot command itself</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>exec</code> / <code>resourceExec</code></td>
+<td><strong>yes</strong></td>
+<td><code>exec</code> reads a loose disk file at level 1; <code>resourceExec &lt;name&gt; -s</code> reads a resource at level 0 — the gate's only reachable bypass (§1)</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>activateConsole</code> / <code>listCmds</code> / <code>writeConfig</code></td>
+<td><strong>yes</strong></td>
+<td>console toggle, list commands, dump a cfg</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>teleport</code></td>
+<td>no</td>
+<td>"teleports the player to an entity location"</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>teleportposition</code></td>
+<td>no</td>
+<td>teleports to an explicit (X,Y,Z) + yaw</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>setviewpos</code></td>
+<td>no</td>
+<td><strong>"sets the current view position"</strong> — the direct viewpos setter the task asked about</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>centerview</code></td>
+<td>no</td>
+<td>centers the view (pitch = 0)</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>resetViewParms</code></td>
+<td>no</td>
+<td>resets the current view render parms</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>freeze</code></td>
+<td>no</td>
+<td>"freezes the game for a number of seconds" (time-based, distinct from the <code>g_stopTime</code>/<code>g_freezeTime</code> cvar switches)</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>envshot</code></td>
+<td>no</td>
+<td>"takes an environment shot" (cubemap-probe-style capture, not a player screenshot)</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>snapEdit</code></td>
+<td>no</td>
+<td>enters the (otherwise editor-only) SnapMap/level-editor mode — has its own free-fly camera and a <code>snapEdit_*</code> cvar family (§4.7, <code>snapEdit_cameraDistanceLimit</code>, <code>snapEdit_fpsAccelerationTime</code>, …); genuinely promising as a second free-camera system, entirely untested in game by this track</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>toggle</code></td>
+<td>no</td>
+<td>generic cvar toggler (<code>toggle &lt;cvar&gt; [values...]</code>) — this is what each tiny resourceExec carrier in §9 uses internally</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>killMonsters</code> / <code>clearInventory</code></td>
+<td>no</td>
+<td>useful for clearing a frame of enemies/combat clutter before a shot</td>
+<td>resourceExec</td>
+</tr>
+<tr>
+<td><code>mdnt_pause</code> / <code>mdnt_play</code> / <code>mdnt_list_active</code> / <code>mdnt_list_paused</code></td>
+<td>no</td>
+<td>pause/resume a playing <strong>Midnight</strong> (TNC's scripted-camera cutscene system, §6) by name — the way to freeze a cutscene mid-shot for a screenshot</td>
+<td>resourceExec</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Negative control, re-confirmed and reworded (pass 1 fix)</strong>: the real
+god-mode command is capitalized <code>God</code> — registered, <strong>non-exposed</strong>
+(<code>commands.json</code>: <code>flags_decoded ["BIT21_CHEAT?"], exposed: False</code>, same
+shape as <code>Notarget</code>), reachable only via <code>resourceExec</code> and already
+runtime-proven working that way (§1/PROVEN). There is <strong>no separate</strong>
+lowercase/synonym god-mode command: a case-insensitive lookup over all 234
+registered commands maps <code>god</code> to that one real <code>God</code> entry and nothing
+else — <code>verify.py</code> now asserts this case-insensitively, not just by exact
+string. <code>noclip</code>, <code>spawn</code>, <code>give</code>, <code>freecam</code>, <code>photomode</code>, <code>thirdperson</code>,
+<code>spectator</code>, <code>debugcam</code> are genuinely <strong>absent</strong> under any case (checked the
+full 234-name list, case-folded). Camera control in TNC is <strong>cvar-driven</strong>,
+not command-driven, except for the view-position setters above and <code>God</code>
+itself.</p>
+<h2 id="6-kiscule-cameracinematic-nodes">6. Kiscule camera/cinematic nodes</h2>
+<p>Retail usage counts from <code>re_probes/kisculeref/catalogue.json</code> (full
+survey, 2408 scripts, 70274 nodes, 205 types — <code>docs/kiscule.md</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>node type</th>
+<th style="text-align: right;">retail count</th>
+<th style="text-align: right;">scripts</th>
+<th>what it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idKisculeNodeActionMidnightControl</code></td>
+<td style="text-align: right;">958</td>
+<td style="text-align: right;">647</td>
+<td>Play/Pause/Resume/Stop/Reset/SkipToNextScene a <strong>Midnight</strong> (<code>declMdnt</code> decl path) — TNC's dedicated scripted-camera/cutscene system, separate from kiscule itself; <code>Started</code>/<code>Interrupted</code>/<code>Finished</code>/<code>BlendOutStarted</code>/<code>Skipped</code>/<code>Failed</code> notifications</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeOpMidnightParametersControl</code></td>
+<td style="text-align: right;">958</td>
+<td style="text-align: right;">647</td>
+<td>builds the parameter block (<code>previewSetup</code> groups: <code>Director</code>, <code>PlayerBody</code>, <code>Player</code>, …) a Midnight is played with</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeMidnightNotification</code></td>
+<td style="text-align: right;">244</td>
+<td style="text-align: right;">158</td>
+<td>named sub-events inside a running Midnight (<code>EnterDone</code>, <code>LeverActivated</code>, …)</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeActionTeleport</code></td>
+<td style="text-align: right;">126</td>
+<td style="text-align: right;">62</td>
+<td>teleport an entity to a named destination/location, with position/rotation offset and alignment — the kiscule-side equivalent of the <code>teleport</code> console command</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeActionFadeView</code></td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">27</td>
+<td>fade the view to a colour over <code>fadeTime</code> ms — the scripted screen-fade primitive</td>
+</tr>
+<tr>
+<td><code>idKisculeNodeActionRumbleCam</code></td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">15</td>
+<td>start/stop a named <code>screenviewshake/*</code> camera-shake + controller rumble, with <code>scale</code>/<code>fadeOutTime</code>/<code>durationOverride</code></td>
+</tr>
+<tr>
+<td><code>idKisculeNodeActionGlobalCameraShake</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td>barely used (one script) global camera-shake enable/disable</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>113 kiscule node classes exist in the EXE but are never used in any retail
+script</strong> (<code>docs/kiscule.md</code> §4), including camera-adjacent ones:
+<code>idKisculeNodeActionCutsceneEvents</code>, <code>idKisculeNodeActionSetOrientation</code>,
+<code>idKisculeNodeAddOrientation</code>/<code>InterpolateOrientation</code>/<code>InvertOrientation</code>/
+<code>ScaleOrientation</code>/<code>SubOrientation</code>, <code>idKisculeNodeMidnightLink</code>,
+<code>idKisculeNodeActionMidnightMoveAIToScene</code>. Whether the engine accepts one of
+these if hand-added to a script is <strong>untested</strong> (the game was not started) —
+same caveat <code>docs/kiscule.md</code> already states for all 113.</p>
+<p><strong>Pass-1 correction — the "113" figure's own source reconciled</strong>: the
+verifier found that this project's own ground truth disagreed with itself:
+<code>docs/kiscule.md</code> says 113, but <code>re_probes/kisculeref/catalogue.json</code>'s own
+<code>unused_node_classes</code> field lists only 105 names. Resolved this run: diffing
+RTTI's <code>idKisculeNode*</code>-prefixed classes (excluding the per-node
+<code>*Parameters</code>/<code>*Parameter</code> companion structs, which describe a node's
+parameter block and are not node types themselves) against
+<code>catalogue.json</code>'s used(205) and <code>unused_node_classes</code>(105) sets finds
+exactly 8 real node classes present in the EXE's RTTI but listed in
+<em>neither</em> set: the <code>idKisculeNodeParameterListOperator*</code> family
+(<code>GetIndexInt</code>/<code>Bool</code>/<code>String</code>/<code>EntityReference</code>,
+<code>AddItemInt</code>/<code>Bool</code>/<code>String</code>/<code>EntityReference</code> — generic list/array
+operators, not camera-related). <code>105 + 8 = 113</code>: <code>docs/kiscule.md</code>'s figure
+was correct all along; <code>catalogue.json</code>'s <code>unused_node_classes</code> field itself
+undercounts by exactly these 8 (a builder-script gap this track did not fix,
+being outside its read-only scope — flagged here for whoever next touches
+<code>re_probes/kisculeref/build_catalogue.py</code>). <code>verify.py</code> asserts this
+reconciliation mechanically.</p>
+<p><strong>Practical read for a camera shot inside an existing/custom map</strong>: a
+<code>Trigger_Volume</code> → <code>ActionFadeView</code>/<code>ActionRumbleCam</code>/<code>ActionTeleport</code>
+Command chain works today in retail scripts (r5's proven Exec path covers
+Command nodes specifically; these three are plain Action nodes and were not
+individually re-traced for their own level handling this run — they run
+through the normal entity/game-logic call path, not through
+<code>idCmdSystemLocal</code> at all, so the restriction-level gate does not apply to
+them in the first place).</p>
+<h3 id="61-camera-entity-classes-rtti-confirmed-map-placement-untested">6.1 Camera entity classes (RTTI-confirmed, map-placement untested)</h3>
+<p><code>docs/ghidra/rtti_tnc.json</code> lists real, compiled-in camera-entity classes
+beyond kiscule's node graph: <code>idFreeCamera</code>, <code>idUtilityCamera</code>,
+<code>idSpringCamera</code>, <code>idRotatableCamera</code>, <code>idCinematicCamera</code>,
+<code>idSlowMotionCamera</code>, <code>idInteractionCamera</code>, <code>idSpectatorCamera</code>,
+<code>idAnimCamera</code>, <code>idEntityCamera</code>, <code>idAIDebugCamera</code>, and a <strong>decl-driven</strong>
+<code>idDeclCameraTrigger</code> (its own <code>idDeclInfoTemplate&lt;idDeclCameraTrigger&gt;</code>
+exists too, implying a dedicated <code>.decl</code> file type for camera triggers,
+separate from both kiscule and the entity/map format). <strong>None of this is
+tested</strong> — no track has placed one of these as an <code>entityDef</code> in a custom
+map (the already-proven <code>dlc_0</code>-precedence route could carry it) or checked
+whether the resource/decl loader accepts a hand-written <code>camera_trigger</code>
+decl. Flagged as the most promising untested avenue for a <em>scripted</em>,
+reusable camera rig, as opposed to this report's cvar/keybind-driven
+<em>manual</em> photo mode.</p>
+<h2 id="7-what-resourceexecthe-key-bind-workaround-does-not-reach">7. What <code>resourceExec</code>/the key-bind workaround does <strong>not</strong> reach</h2>
+<p>Three negative results, each confirmed by absence from the live 234-command
+table (<code>verify.py</code> asserts the first three by name): no <code>noclip</code>, <code>spawn</code>,
+<code>give</code>, <code>god</code> (lowercase), <code>freecam</code>, <code>photomode</code>, <code>thirdperson</code>, or
+<code>spectator</code> <strong>commands</strong> exist at all — a decl/entity-placement or
+code-patch route would be needed, both out of this track's scope. The
+<code>pm_noclipspeed</code>/<code>pm_noclipfriction</code> cvars prove a noclip <em>mode</em> exists in
+the engine, but this track did not find what toggles it (open question,
+§11) — most plausibly a DevGUI button (r4 §4.6 found ~15 DevGUI pages this
+track did not individually string-dump) or an internal dev-only key-bind
+never exposed to <code>AddCommand</code> at all.</p>
+<h2 id="proven">PROVEN</h2>
+<ul>
+<li>The restriction-level gate, the 234/34 and 3256/304 splits, and
+  <code>resourceExec</code>'s level-0 window: <code>r4_consolecmds.md</code>, re-used here, not
+  re-derived.</li>
+<li><code>idKisculeNodeCommand</code>'s unbracketed Exec path (ambient level, usually 0):
+  <code>r5_kisculecmd.md</code>, re-used here.</li>
+<li><code>0xaa8780</code> (key-bind execute) saves the restriction level, forces it to
+  <code>1</code>, appends the bound command text via the same devirtualized
+  <code>AppendCommandText</code> pattern r5 documented, then restores the old level —
+  full disassembly read and cross-checked this run (<code>DAT_7ff6303344d8</code> ==
+  RVA <code>0x41244d8</code> verified numerically against the live snapshot's image
+  base).</li>
+<li><code>0xf515b0</code> is a generic <code>CVAR_BOOL</code> validator — checked its disassembly
+  (compares the incoming value string against the literals <code>"0"</code>/<code>"1"</code>
+  only), not a "photomode changed" callback. <strong>Corrected scope (pass 1
+  undercounted this)</strong>: a full scan of the live table shows it is shared by
+  1136 of the engine's 1138 total bool-type cvars (99.8%), not merely the 3
+  named examples — it is the near-universal BOOL validator.</li>
+<li>All cvars and commands named in §4/§5 are real, registered entries in the
+  live-verified <code>cvars_tnc_v2.json</code>/<code>commands.json</code> tables, with the exact
+  <code>exposed</code>/<code>flags</code>/<code>default</code> shown — <code>verify.py</code> now individually checks 51
+  cvar names (41 originally + the 10 pass-1 found missing from its own
+  coverage) and 33 command names, <code>ALL OK</code>.</li>
+<li><code>God</code> is a real, registered, <strong>non-exposed</strong> command (same shape as
+  <code>Notarget</code>) — confirmed directly in <code>commands.json</code>
+  (<code>exposed: False</code>). No <em>separate</em> lowercase/synonym god-mode command
+  exists; <code>noclip</code>, <code>spawn</code>, <code>give</code>, <code>freecam</code>, <code>photomode</code>, <code>thirdperson</code>,
+  <code>spectator</code>, <code>debugcam</code> do not exist as commands under any case —
+  case-insensitively re-confirmed this pass (<code>verify.py</code>).</li>
+<li>The docs/kiscule.md "113 unused node classes" vs <code>catalogue.json</code>'s own
+  105-entry <code>unused_node_classes</code> field inconsistency is resolved: the
+  missing 8 are the <code>idKisculeNodeParameterListOperator*</code> family, present in
+  RTTI but listed in neither <code>catalogue.json</code> set — <code>105 + 8 = 113</code>,
+  <code>docs/kiscule.md</code>'s figure was correct, <code>catalogue.json</code>'s field
+  undercounts — asserted mechanically by <code>verify.py</code>.</li>
+<li>TNO: <code>ai_debugCam</code> (not <code>g_debugCam</code>, which does not exist) and
+  <code>pm_thirdPersonHeight</code>/<code>Angle</code>/<code>Clip</code>/<code>Range</code> (no underscore before the
+  suffix) are confirmed present with these exact spellings in
+  <code>re_probes/tnoconsole/tno_cmdtable.json</code> — asserted mechanically by
+  <code>verify.py</code>.</li>
+<li>The kiscule node usage counts in §6 (<code>idKisculeNodeActionTeleport</code> 126×,
+  <code>ActionFadeView</code> 55×, <code>ActionRumbleCam</code> 35×, <code>ActionGlobalCameraShake</code> 1×,
+  <code>ActionMidnightControl</code>/<code>OpMidnightParametersControl</code> 958× each) are exact
+  retail counts from the full <code>kisculeref</code> survey — asserted by <code>verify.py</code>.</li>
+<li><code>wolfsdk/tnccrypt.py</code>'s cfile AES-128-CBC scheme and
+  <code>tools/build_exec_carrier.py</code>'s from-scratch, arbitrary-name carrier are
+  pre-existing, checked-in, and self-verifying (own <code>--pruefen</code> pass) — read
+  and cited, not redone by this track.</li>
+<li><code>mods/sandbox_tools</code> (<code>bind F6 "resourceExec snapdemo.cfg -s"</code>) is
+  confirmed working in an actual running game for non-exposed commands
+  (project memory <code>tnc-console-unlock.md</code>): this is the exact mechanism §9's
+  recipe generalizes.</li>
+<li>The RTTI camera-entity class list in §6.1 and the <code>idFreeCamera</code>/
+  <code>idUtilityCamera</code>/<code>idSpringCamera</code>/<code>idCinematicCamera</code>/
+  <code>idDeclCameraTrigger</code>/<code>idSpectatorCamera</code> names exist in
+  <code>docs/ghidra/rtti_tnc.json</code> — asserted by <code>verify.py</code>.</li>
+</ul>
+<h2 id="inferred-plausible-not-independently-closed-this-run">INFERRED (plausible, not independently closed this run)</h2>
+<ul>
+<li>That the automatic <code>cfile:default.cfg</code>-tweaks route (§3) works in a real
+  running game the same way the manual <code>resourceExec &lt;file&gt; -s</code> route is
+  proven to — both share the same engine-exec-at-level-0 mechanism and the
+  same crypto, but this specific route is explicitly flagged
+  "im Spiel unbestätigt" ("unconfirmed in game") in the project's own <code>TODO.md</code>.</li>
+<li>That <code>g_stopTime 2</code> and <code>g_freezeTime 1</code> both really do enter a working
+  free-fly camera, and that they are either redundant or complementary — both
+  cvar descriptions independently claim "free camera mode," but this was not
+  traced into the code that reads them, and no in-game test has run yet.</li>
+<li>That <code>cam_cutsceneFreecam 1</code>/<code>2</code> meaningfully changes what the free
+  camera from <code>g_stopTime 2</code> looks like (per its own description, "use the
+  cutscene camera to set up camera effects... FOV &amp; DOF") — plausible from
+  the description, not traced into code.</li>
+<li>That <code>snapEdit</code> (the command) and its <code>snapEdit_*</code> cvar family amount to a
+  second, independent free-camera/editor-mode system reachable in a shipped
+  retail session — plausible from the cvar descriptions
+  (<code>snapEdit_cameraDistanceLimit</code>, <code>snapEdit_fpsAccelerationTime</code>,
+  <code>snapEdit_findCameraDistance</code>, <code>snapEdit_noClipOffset</code>), not run.</li>
+<li>That the camera entity classes in §6.1 can be placed in a custom map via
+  the already-proven <code>dlc_0</code> entity/map-override route and will actually
+  spawn/function — plausible by analogy with every other <code>dlc_0</code>-override
+  success in this project, not tested for these specific classes.</li>
+<li>That <code>pm_noclipspeed</code>/<code>pm_noclipfriction</code> are driven by a DevGUI toggle
+  this track did not individually find (r4 already flagged ~15 unexamined
+  DevGUI pages) rather than an entirely unreachable internal switch.</li>
+</ul>
+<h2 id="failed-hypotheses">Failed hypotheses</h2>
+<ol>
+<li><strong>"The shared <code>callback_rva</code> on <code>g_setting_photomode</code>/<code>g_freezeTime</code> is a
+   photomode-specific side-effect handler."</strong> Refuted by disassembly (§2):
+   it is the generic BOOL validator, re-confirmed by a third, unrelated cvar
+   (<code>g_debugRenderForceDepthTest</code>) sharing the exact same address.</li>
+<li><strong>"A key bound to a non-exposed cvar/command works the way a kiscule
+   Command node does (ambient level, usually 0)."</strong> Refuted: the key-bind
+   executor (<code>0xaa8780</code>) explicitly brackets to level 1, unlike kiscule's
+   Exec path. Binding straight to <code>toggle g_freezeTime</code> or <code>God 1</code> would
+   fail; binding to <code>resourceExec &lt;file&gt; -s</code> is the correct, already-proven
+   pattern.</li>
+<li><strong>"TNC has a <code>pm_thirdPerson</code>-style full third-person camera cvar like
+   TNO's."</strong> Not found: the full 3256-cvar table has no <code>pm_thirdPerson*</code>/
+   <code>g_thirdPerson*</code> entry, only <code>pmec_EnableThirdPersonBody</code>/
+   <code>pmec_ForceShowThirdPersonBody</code>, which read as body-mesh visibility
+   switches, not a camera-position switch. Left open rather than claimed
+   either way (§11).</li>
+</ol>
+<h2 id="8-tno-id-tech-5--clearly-labelled-as-candidate-string-only">8. TNO (id Tech 5) — clearly labelled as candidate-string-only</h2>
+<p><strong>No runtime image exists for TNO</strong> (computed task brief, re-confirmed:
+<code>docs/ghidra/</code> only has static RTTI/pdata for <code>WolfNewOrder_x64.exe</code>, whose
+<code>.text</code> is still SteamStub-encrypted — nothing here was decompiled or
+disassembled). A sibling, in-progress track (<code>tnoconsole</code>,
+<code>re_probes/tnoconsole/tno_cmdtable.json</code>, 5026 string-mined entries with a
+per-entry <code>confidence</code> the mining script itself assigned) owns TNC's console/
+cvar-gate equivalent for TNO; this section only lists camera-relevant
+<em>candidate names</em>, read-only, for completeness against the "both games"
+framing of this round, and defers the actual gate/reachability question to
+that track's own report.</p>
+<p>Cross-validation available without a runtime image: many of these candidate
+names/descriptions are <strong>character-for-character identical</strong> to TNC's
+independently-proven-real cvars above (<code>g_showHud</code>, <code>com_captureSamples</code>,
+<code>com_capturePath</code>, <code>com_captureTGA</code>, <code>pm_noclipspeed</code>, <code>win_pauseOnAltTab</code>,
+<code>g_cameraPlayerHack</code>, <code>image_screenshotQuality</code>, <code>g_freeCamSpeed</code>-adjacent
+<code>g_freeCam</code>) — since TNC is id Tech 6 built on id Tech 5's codebase, this
+overlap is circumstantial but real corroboration, not proof.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>candidate (TNO, mined, unverified)</th>
+<th>confidence</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g_freeCam</code></td>
+<td>high</td>
+<td><strong>"enable debug camera (free move) 0 = disable/normal, 1 = enable, 2 = lock camera completely"</strong> — a single three-state freecam switch, more direct than TNC's <code>g_stopTime</code>/<code>g_freezeTime</code> pair</td>
+</tr>
+<tr>
+<td><code>pm_thirdPerson</code></td>
+<td>high</td>
+<td><strong>"enables third person view"</strong></td>
+</tr>
+<tr>
+<td><code>pm_thirdPersonRange</code></td>
+<td>low</td>
+<td>"camera distance from player in 3rd person"</td>
+</tr>
+<tr>
+<td><code>pm_thirdPersonHeight</code></td>
+<td>high</td>
+<td>"height of camera from normal view height in 3rd person"</td>
+</tr>
+<tr>
+<td><code>pm_thirdPersonAngle</code></td>
+<td>low</td>
+<td>"direction of camera from player in 3rd person in degrees (0 = behind player, 180 = in front)"</td>
+</tr>
+<tr>
+<td><code>pm_thirdPersonClip</code></td>
+<td>low</td>
+<td>"clip third person view into world space" — TNO appears to have the full third-person camera TNC seems to lack (§7). <strong>Pass-1 fix</strong>: these four have no underscore before the suffix (<code>pm_thirdPersonHeight</code>, not <code>pm_thirdPerson_Height</code>) — corrected from pass 1's shorthand, each confidence now matches the real mined entry instead of one blended "high/low"</td>
+</tr>
+<tr>
+<td><code>g_showHud</code></td>
+<td>high</td>
+<td>enables drawing of HUD elements (identical name+text to TNC's real cvar)</td>
+</tr>
+<tr>
+<td><code>com_captureSamples</code>/<code>com_capturePath</code>/<code>com_captureTGA</code></td>
+<td>high</td>
+<td>screenshot supersampling/path/format (identical to TNC's real cvars, TGA adds a <code>2 = PNG</code> option in this candidate's text)</td>
+</tr>
+<tr>
+<td><code>image_screenshotQuality</code></td>
+<td>—</td>
+<td>JPEG screenshot quality</td>
+</tr>
+<tr>
+<td><code>screenshot</code>/<code>rawscreenshot</code></td>
+<td>high</td>
+<td>screenshot commands, including a raw-framebuffer dump variant TNC's table does not have. <strong>Data-quality caveat</strong>: a third, differently-cased entry, <code>ScreenShot</code> (CamelCase), also exists at <code>high</code> confidence but its mined description reads <code>"toggle r_showSkel 0 1 2"</code> — an unrelated string-mining pairing artifact (the miner paired this name with the wrong neighbouring literal), not a real description of a screenshot command. Excluded from this table; noted because this section leans on exact name/description overlap as its only TNO corroboration method, so the mining script's own pairing errors matter</td>
+</tr>
+<tr>
+<td><code>timescale</code></td>
+<td>low</td>
+<td>"scales the time"</td>
+</tr>
+<tr>
+<td><code>freeze</code></td>
+<td>high</td>
+<td>"freezes the game for a number of seconds" (identical text to TNC's real command)</td>
+</tr>
+<tr>
+<td><code>cine_cam_debug</code>/<code>cine_captureFrames</code></td>
+<td>high/low</td>
+<td>cinematic-camera debug / "set to 1 to capture the cinematic frames to jpgs/tgas"</td>
+</tr>
+<tr>
+<td><code>springCam_*</code> (12 entries)</td>
+<td>mixed</td>
+<td>the same spring-camera family TNC has, debug/force-mode switches</td>
+</tr>
+<tr>
+<td><code>g_cameraPlayerHack</code></td>
+<td>low</td>
+<td>identical text to TNC's real cvar</td>
+</tr>
+<tr>
+<td><code>ai_debugCam</code></td>
+<td>low</td>
+<td>"enable debug camera" — <strong>pass-1 fix</strong>: the cited name was <code>g_debugCam</code>, which does not exist anywhere in <code>tno_cmdtable.json</code> (the report's own source); the one real entry is <code>ai_debugCam</code>. (A <code>debugCam</code> entry, suggested as a replacement, was checked too and also does not exist in this table under any case — dropped rather than re-added unverified)</td>
+</tr>
+<tr>
+<td><code>g_drawPlayerViewPos</code>/<code>g_tracePlayerViewPos</code></td>
+<td>low/high</td>
+<td>view-position HUD overlay / console trace</td>
+</tr>
+<tr>
+<td><code>getviewpos</code>/<code>setviewpos</code>/<code>teleport</code></td>
+<td>high</td>
+<td>identical names to TNC's real commands</td>
+</tr>
+<tr>
+<td><code>g_dragEntity</code></td>
+<td>low</td>
+<td>identical text to TNC's real cvar</td>
+</tr>
+<tr>
+<td><code>win_pauseOnAltTab</code></td>
+<td>low</td>
+<td>identical text to TNC's real cvar</td>
+</tr>
+</tbody>
+</table></div>
+<p>TNO also has the same camera <strong>entity</strong>-class family in RTTI
+(<code>docs/ghidra/rtti_tno.json</code>): <code>idFreeCamera</code>, <code>idSpectatorCamera</code>,
+<code>idCinematicCamera</code>, <code>idUtilityCamera</code>, <code>idSpringCamera</code>,
+<code>idRotatableCamera</code>, <code>idDeclCameraTrigger</code>, plus TNO-only
+<code>idDeathCamera</code>/<code>idRaceCamera</code>/<code>idTrailerCamera</code>/<code>idThrownCamera</code>/
+<code>idTarget_CameraShake</code>/<code>idTarget_GlobalCameraShake</code> (the <code>idTarget_*</code> naming
+matches idTech4/5's classic directly-spawnable <code>target_*</code> entity
+convention). <strong>Nothing about TNO's reachability (exposed/blocked, a
+<code>resourceExec</code>-equivalent, key-bind semantics) is known</strong> — that is squarely
+the <code>tnoconsole</code> track's question, not re-derived or guessed at here.</p>
+<h2 id="9-the-recipe-best-possible-tnc-photo-mode-cfg--keybind-design">9. The recipe: best-possible TNC photo-mode cfg + keybind design</h2>
+<p>Two tiers, both built on already-proven mechanisms, nothing here needs a new
+loader feature:</p>
+<p><strong>Tier A — baked into <code>cfile:default.cfg</code> via WolfSDK's existing "Cheats &amp;
+QoL" cvar-tweak pipeline</strong> (<code>split_tnc</code>/<code>with_tnc_tweaks</code>, already wired into
+Studio's generic TNC cvar page), for settings that are safe to hold for the
+<em>entire session</em> and should need zero interaction: <code>image_screenshotQuality
+100</code>, <code>r_screenshotBatchSize 16</code>, <code>com_captureSamples</code> raised (this one is
+already exposed, so it can go as a plain <code>+arg</code> too), <code>hud_skip_cinematics</code>
+left at its default. <strong>Caveat</strong>: per §3, this specific route is unconfirmed
+in an actual game session — the smallest in-game test in §12 settles it with
+one line before relying on it for anything.</p>
+<p><strong>Tier B — two resourceExec carriers bound to two keys</strong>, for the actual
+"enter/exit photo mode" action, generalizing <code>mods/sandbox_tools</code>'s
+proven pattern. Sample content (written this run, <code>re_probes/photocam/
+photomode_enter.cfg</code> / <code>photomode_exit.cfg</code> / <code>photomode_extras.cfg</code> — text
+only; turning them into real encrypted <code>cfile</code> resources and a DLC/loader
+mod is the next, in-game-testing step, using <code>wolfsdk/tnccrypt.py</code>/
+<code>tools/build_exec_carrier.py</code>, both already built):</p>
+<pre><code>// photomode_enter.cfg  (bind to e.g. F9:  resourceExec photomode_enter.cfg -s)
+g_setting_photomode 1   // the headline cvar itself; effect beyond its own
+                         // description is unproven, see S10/S12 &quot;Ziel 0&quot;
+g_stopTime 2            // stop all entity updating, free cam (per its own description)
+g_freeCamSpeed 6         // faster than the 0.015 default, tune to taste
+g_showCrosshair 0
+g_showHud 0
+g_showGuis 0
+pmec_ForceShowThirdPersonBody 1   // pass-1 fix: was &quot;0&quot;, a no-op (already
+                                  // the default) -- &quot;1&quot; actually forces the
+                                  // player's body visible to the detached
+                                  // free cam; untested whether it does
+r_vignette 0
+com_captureTGA 1         // lossless capture while composing
+com_captureSamples 4     // supersampled TakeScreenshot
+
+// photomode_exit.cfg  (bind to e.g. F10)
+g_setting_photomode 0
+g_stopTime 0
+g_showCrosshair 1
+g_showHud 1
+g_showGuis 1
+pmec_ForceShowThirdPersonBody 0
+r_vignette 1
+</code></pre>
+<p>(<code>re_probes/photocam/photomode_enter.cfg</code>/<code>exit.cfg</code> carry the exact, current
+text; this block mirrors them after the pass-1 fixes above.)</p>
+<p>Both binds are set once, from the normal restricted console (<code>bind</code> is
+exposed, §5), and persist across sessions (<code>mods/sandbox_tools</code>'s own
+description: "binds are saved"):</p>
+<pre><code>bind F9  &quot;resourceExec photomode_enter.cfg -s&quot;
+bind F10 &quot;resourceExec photomode_exit.cfg -s&quot;
+</code></pre>
+<p>Everything already-exposed can be bound directly, no carrier file needed:</p>
+<pre><code>bind F6  &quot;TakeScreenshot&quot;
+bind PGUP &quot;toggle g_fov 70 90 110&quot;     // not exposed command? -- 'toggle' itself is NOT
+                                        // exposed (S5): this line needs the resourceExec
+                                        // route too (or 'g_fov' cycled via repeated direct
+                                        // +/- sets, since g_fov itself IS exposed/direct)
+</code></pre>
+<p>(<code>toggle</code> the <em>command</em> is not exposed, §5 — a key meant to cycle an already-
+exposed cvar like <code>g_fov</code> still needs either its own tiny resourceExec
+carrier containing <code>toggle g_fov 70 90 110</code>, or two direct binds to fixed
+<code>g_fov &lt;value&gt;</code> lines instead of one cycling bind.)</p>
+<p><strong>Extra one-off carriers</strong> (<code>photomode_extras.cfg</code>, one <code>resourceExec</code>
+target per independent live action — each needs its own file since
+<code>resourceExec</code> runs the whole named file, not a parametrized line):
+single-frame step (<code>g_runFrames 1</code>, useful while <code>g_stopTime</code> is active, to
+hunt the exact mid-explosion frame), <code>devgui</code> toggle (<code>toggle devgui 0 4</code> —
+after that, r4 §4.6's ~50 non-exposed DevGUI buttons/toggles would work for
+the rest of the session with no further <code>resourceExec</code> call, including a
+dedicated <strong>TimeScale</strong> DevGUI child page — <strong>pass-1 caveat, missed before</strong>:
+project memory <code>tnc-console-unlock.md</code> already recorded, from the one actual
+in-game <code>resourceExec</code> test that tried this exact line, "devgui 4 showed no
+window (open)"; treat the "~50 buttons" route as unconfirmed, not disproven,
+and retest it specifically before relying on it), and a manual-DOF pair
+(<code>com_overrideDOF 1</code> + fixed near/far/intensity vs <code>com_overrideDOF 0</code>) for
+a deliberately staged focus plane instead of gameplay auto-DOF.</p>
+<p><strong>For a cutscene screenshot</strong>: <code>mdnt_pause &lt;name&gt;</code> (non-exposed, same
+<code>resourceExec</code> route) freezes a running Midnight mid-playback;
+<code>mdnt_list_active</code> finds its name first.</p>
+<h2 id="10-open-questions">10. Open questions</h2>
+<ul>
+<li><strong>What <code>g_setting_photomode 1</code> alone visibly does</strong> — the report's own
+  headline discovery ("enable/disable photomode") was, in pass 1, never
+  actually isolated and tested; its effect beyond that one description
+  string is not traced into code. Highest-value single-line test: a tiny
+  <code>resourceExec</code> carrier containing only <code>g_setting_photomode 1</code>, run by
+  itself (§12 "Ziel 0"), before trusting it bundled into the full recipe.</li>
+<li>Does <code>cfile:default.cfg</code>'s automatic tweak route actually apply in a real
+  running game (§3's one open caveat — the single highest-value next check,
+  since it would make Tier A's settings need zero console interaction ever).</li>
+<li>Do <code>g_stopTime 2</code> and <code>g_freezeTime 1</code> produce the same free-camera
+  behaviour, different ones, or need to be combined? Does <code>g_runFrames</code>
+  actually single-step while either is active?</li>
+<li>What <code>cam_cutsceneFreecam 1</code>/<code>2</code> visibly changes about the free camera.</li>
+<li>Whether <code>pm_noclipspeed</code>/<code>pm_noclipfriction</code> are reachable from any DevGUI
+  page this track did not individually dump, or are dead cvars with no live
+  toggle at all.</li>
+<li>Whether TNC has any genuine third-person <em>camera</em> mode, or only the two
+  third-person-<em>body</em> visibility switches in §4.2.</li>
+<li>Whether <code>snapEdit</code> (command) opens a usable second free-camera/editor mode
+  in a shipped retail session, and what its <code>snapEdit_*</code> cvar family (§5,
+  §4.7) actually controls once inside it.</li>
+<li>Whether any of the camera entity classes in §6.1 (<code>idFreeCamera</code>,
+  <code>idUtilityCamera</code>, <code>idDeclCameraTrigger</code>, …) can be placed via a custom
+  map's entity list and will spawn/function — and what a hand-written
+  <code>idDeclCameraTrigger</code>-type decl needs to look like.</li>
+<li>Whether any of kiscule's 113 unused node classes (§6, including the
+  camera-orientation ones) load if hand-added to a script.</li>
+<li>Whether <code>pmec_ForceShowThirdPersonBody 1</code> actually makes the player's body
+  visible to a detached free camera (<code>g_stopTime 2</code>) — the recipe now sets
+  it (§9, pass-1 fix), but this is INFERRED from the cvar's description
+  alone, not traced into the rendering code or tested in game.</li>
+<li>Whether <code>devgui 4</code> ever opens a visible window in a real session at all —
+  the one existing in-game data point (<code>tnc-console-unlock.md</code>) says it did
+  not, which §9's extras carrier now states as a caveat rather than treating
+  the DevGUI route as a working given.</li>
+<li>Everything in §8 (TNO) — deferred to the <code>tnoconsole</code> track by design.</li>
+</ul>
+<h2 id="smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</h2>
+<p><em>(Translated from German.)</em></p>
+<p><strong>Goal 0 — test <code>g_setting_photomode</code> in isolation (pass-1 gap, before
+everything else, one line):</strong> This cvar ("enable/disable photomode") was not
+in the recipe at all in the first version and was never tested. Build a tiny
+<code>resourceExec</code> carrier file with <strong>only</strong> the one line <code>g_setting_photomode
+1</code> (same route as <code>photomode_enter.cfg</code>), put it on a free key via <code>bind</code>,
+press it and look closely: does anything change visibly at all
+(HUD, camera, any overlay)? <strong>Whatever happens</strong> — the
+result (nothing visible / something specific visible) is itself the
+finding this report does not have so far, and should be noted before goal 2,
+before the cvar is trusted blindly bundled with the other seven lines in
+<code>photomode_enter.cfg</code>.</p>
+<p><strong>Goal 1 — confirm or reject the automatic path from section 3 (highest value, one line):</strong>
+In WolfSDK Studio, set <code>image_screenshotQuality</code> to <code>100</code> in the TNC cvar tweaks
+and apply (it is non-exposed, so it goes via the
+<code>cfile:default.cfg</code> route). Start the game normally, enter <code>TakeScreenshot</code> in the
+console, then look at the generated file under <code>screenshots/</code>.
+<strong>Confirmed</strong> if the file is visibly higher quality/larger than before
+(75 % JPEG) — that would be the first in-game confirmation of the automatic
+<code>default.cfg</code> route, so far only checked on copies.</p>
+<p><strong>Goal 2 — the actual photo-mode chain:</strong></p>
+<ol>
+<li>Bring in <code>photomode_enter.cfg</code>/<code>photomode_exit.cfg</code> (contents in
+   <code>re_probes/photocam/</code>) as new <code>cfile</code> resources via the already-
+   proven dlc_0/mod route (same pattern as
+   <code>mods/sandbox_tools</code>, which already works).</li>
+<li>Once, in the normal (restricted) console:
+   <code>bind F9  "resourceExec photomode_enter.cfg -s"
+   bind F10 "resourceExec photomode_exit.cfg -s"</code></li>
+<li>Press F9 <strong>without</strong> opening the console. <strong>Confirmed</strong> if the game
+   freezes (no more enemy movement), crosshair and HUD disappear,
+   and the camera can be moved freely (<code>g_stopTime 2</code>) — that would be the
+   evidence that a directly pressed keybind reaches the same
+   non-exposed catalogue via <code>resourceExec</code> as <code>mods/sandbox_tools</code> has already
+   shown for <code>God</code>/<code>Notarget</code>, only this time for the camera cvars
+   of this report.</li>
+<li>Press F10: the game continues, HUD/crosshair are back.</li>
+<li>Control (must NOT work): as an experiment, put the same keybind directly
+   on <code>"g_freezeTime 1"</code> instead of on <code>"resourceExec ... -s"</code> and
+   press it. According to section 2, <strong>nothing</strong> may change (the keybind
+   forces level 1, <code>g_freezeTime</code> is not exposed) — if the game reacts
+   anyway, the chain documented in this report is wrong or
+   incomplete.</li>
+</ol>
+<p>Related: <a href="Research-Report-R4-Console-Commands.html">Research Report: R4 Console Commands</a>, <a href="Research-Report-R5-Kiscule-Command.html">Research Report: R5 Kiscule Command</a>, <a href="Research-Report-Cfilekey2.html">Research Report: Cfilekey2</a>, <a href="TNC-CVar-Catalog.html">TNC CVar Catalog</a>, <a href="Kiscule-Scripting.html">Kiscule Scripting</a>, <a href="TNC-Console-Unlock.html">TNC Console Unlock</a>, <a href="Kiscule-Node-Reference.html">Kiscule Node Reference</a>, <a href="Developer-Mode.html">Developer Mode</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Fx-Decls.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>FX, Particle, Impact and Gore Effect Decls: Format, Reference Chains, and Two Decl-Only Mods</a><a class="next" href="Research-Report-R6-Physics.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Physics: Havok Parameters Reachable by Decl/Cvar in TNC and TNO</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>
