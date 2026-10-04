@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Developer Map for Testing Mods (`game/wolfsdk/modtest`) – Wolfenstein Modloader</title>
+<meta name="description" content="A test map for mods in Wolfenstein II: a copy of a DLC map under a new name, with weapons and enemies.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>A Developer Map for Testing Mods (<code>game/wolfsdk/modtest</code>)</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R10-Modtest-Map"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result">Result</a></li><li><a href="#design-choice-retail-c2v1-geometry-not-a-kitgltf-room">Design choice: retail c2v1 geometry, not a kit/glTF room</a></li><li><a href="#what-is-placed-where">What is placed where</a></li><li><a href="#checks-build_logtxt-79-ok-0-fail">Checks (build_log.txt: 79 OK, 0 FAIL)</a></li><li><a href="#not-proven-in-game-worst-first">Not proven in game (worst first)</a></li><li><a href="#install-game-closed-freedom-chronicles-installed">Install (game closed; Freedom Chronicles installed)</a></li><li><a href="#in-game-test">In-game test</a></li><li><a href="#open-skipped-for-this-version-per-the-coordinator">Open (skipped for this version, per the coordinator)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p class="update"><b><span class="en">Update</span><span class="de">Aktualisierung</span></b> <span class="en">Newer than this page: the TNC Dev Menu and TNC Custom Map Status pages record that this map loads from the developer menu, confirmed in game on 2026-10-02. How the enemies behave and whether the developer loadout applies are still not confirmed.</span><span class="de">Neuer als diese Seite: Die Seiten TNC Dev Menu und TNC Custom Map Status verzeichnen, dass diese Karte aus dem Entwicklermenü lädt, im Spiel bestätigt am 02.10.2026. Wie sich die Gegner verhalten und ob die Entwickler-Ausrüstung greift, ist noch nicht bestätigt.</span></p><div class="en"><p class="lede">This round-10 report builds a developer map for trying out mods in Wolfenstein II: The New Colossus, named game/wolfsdk/modtest. Instead of a new room it copies the retail Gestapo office map (c2v1), because that already has working collision, lighting and the walkable <span class="t" data-t="navmesh">navmesh</span> enemies need; the mission is removed and test content is added. The build keeps every existing entry byte-identical and passes 79 of 79 checks. The report itself lists everything as not yet proven in game.</p><ul><li>304 of 9,206 entities are removed (mission scripts, hidden enemies, triggers, alarms, retail pickups); 8,902 stay unchanged.</li><li>The armoury gets 23 pickups (11 weapons plus ammo, health and armour) and 5 lights; the office hall gets 8 enemies with their backs to the door.</li><li>The new name needs 18 map-level files and 102 light-probe images copied; 120 entries are added to the archive.</li><li>The LKW and DKW weapons and grenades have no pickup in the game; they can only come from the developer loadout, which may not apply on the devmap path.</li><li>Not proven in game at the time: enemies without a spawner, collision of 91 shared shapes, pickup heights and the light probes; a robot enemy and respawns were left out.</li></ul></div><div class="de"><p class="lede">Dieser Bericht aus Runde 10 baut eine Entwicklerkarte zum Ausprobieren von Mods in Wolfenstein II: The New Colossus, mit dem Namen game/wolfsdk/modtest. Statt eines neuen Raums kopiert er die Gestapo-Büro-Karte (c2v1) der Verkaufsversion, weil sie schon funktionierende Kollision, Beleuchtung und das begehbare <span class="t" data-t="navmesh">Navmesh</span> hat, das Gegner brauchen; die Mission ist entfernt und Testinhalt hinzugefügt. Der Build lässt jeden vorhandenen Eintrag byte-genau unverändert und besteht 79 von 79 Prüfungen. Der Bericht selbst führt alles als im Spiel noch nicht bewiesen.</p><ul><li>304 von 9.206 Entitäten werden entfernt (Missionsskripte, versteckte Gegner, Auslöser, Alarme, Original-Pickups); 8.902 bleiben unverändert.</li><li>Die Waffenkammer bekommt 23 Pickups (11 Waffen plus Munition, Gesundheit und Rüstung) und 5 Lichter; die Bürohalle bekommt 8 Gegner, die mit dem Rücken zur Tür stehen.</li><li>Der neue Name braucht 18 kopierte Dateien der Kartenebene und 102 Lightprobe-Bilder; 120 Einträge kommen ins Archiv.</li><li>Die Waffen LKW und DKW sowie Granaten haben im Spiel kein Pickup; sie kämen nur aus der Entwickler-Ausrüstung, die auf dem devmap-Weg vielleicht nicht greift.</li><li>Damals im Spiel nicht bewiesen: Gegner ohne Spawner, die Kollision von 91 geteilten Formen, Pickup-Höhen und die Lightprobes; ein Robotergegner und Respawns wurden weggelassen.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-10 pass: a developer map for testing mods, built on retail c2v1 geometry and added as a further map to the same <code>dlc_0</code> chunk that already holds the kit level and the box map. The build keeps every kit-level entry byte-identical and passes all its checks. <strong>Not proven in game; the report lists what is unproven, worst first, and gives the install steps and the in-game test.</strong></p>
+<p>Date: 2026-10-02. The game was not started. Nothing was written under
+<code>&lt;Steam library&gt;</code> or <code>Saved Games</code>; the install was only read. Builds went only
+to <code>D:/wolf-decomp/tmp/modtestmap/</code>. New files: <code>tools/build_modtestmap.py</code> and
+this report. No other file was changed. <code>tools/build_boxmap.py</code> and
+<code>wolfsdk/mapinstall.py</code> were reused without edits.</p>
+<h2 id="result">Result</h2>
+<p><code>python tools/build_modtestmap.py</code> (about 8 minutes; <code>--once</code> skips the
+determinism builds) writes:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>D:/wolf-decomp/tmp/modtestmap/modtest/dlc_0/base/chunk_22.resources</code></td>
+<td><strong>166,267,606 B, sha256 <code>7c030b2a0c2c52605a87790c82f5edbcc422be5fee4c0488cc5c0b07b31c06be</code></strong>. Contains kit level H (c2v1, all 7,130 entries byte-identical), the box (29 entries, unchanged), and modtest (120 added entries).</td>
+</tr>
+<tr>
+<td><code>.../modtest/dlc_0/base/packagemapspec.json</code></td>
+<td>c2v1_custom, c2v1, game/wolfsdk/box, game/wolfsdk/modtest (what <code>mapinstall.install</code> writes for this chunk)</td>
+</tr>
+<tr>
+<td><code>.../modtest/dlc_0/dlcinfo.json</code></td>
+<td><code>{"dlcid": 4}</code></td>
+</tr>
+<tr>
+<td><code>.../modtest/side_files.json</code></td>
+<td>The 14 dlc_2 side files, plus 2 textures.cache links (box, modtest) → dlc_2's c2v1 <code>textures.cache</code></td>
+</tr>
+<tr>
+<td><code>.../modtest/devmenu_entry.txt</code></td>
+<td>The dev menu item (below)</td>
+</tr>
+<tr>
+<td><code>.../modtest/manifest.json</code></td>
+<td>Hashes, dropped classes, every new block with its donor and position, added entries and rows, check results</td>
+</tr>
+<tr>
+<td><code>.../modtest/../box/</code></td>
+<td>The stage: <code>build_boxmap.run()</code> output (H + box, sha <code>1fc43560…</code>, its own 31 checks)</td>
+</tr>
+<tr>
+<td><code>D:/wolf-decomp/tmp/modtestmap/build_log.txt</code></td>
+<td>The full run: 79 OK, 0 FAIL</td>
+</tr>
+</tbody>
+</table></div>
+<p>How it composes with the box: <code>build_modtestmap.run()</code> calls
+<code>build_boxmap.run()</code> (H → H + box, all box checks), then adds modtest's
+entries to that chunk with the same <code>build_kitmap.rebuild()</code> and
+<code>idclwrite.finalize()</code>. Nothing in the box code is duplicated (<code>maplevel()</code>,
+<code>ENGINE_NAMES</code>, <code>DEVMENU</code> and <code>clone</code> logic are imported).</p>
+<h2 id="design-choice-retail-c2v1-geometry-not-a-kitgltf-room">Design choice: retail c2v1 geometry, not a kit/glTF room</h2>
+<p><strong>Chosen: copy the RETAIL c2v1 map (dlc_2's chunk_22) under the new name.</strong>
+The mission is removed and our test content is added.</p>
+<p>Why:</p>
+<ul>
+<li><strong>Enemies need a navmesh.</strong> One cannot be generated (<code>r3_navdata.md</code> §6: no
+  encoder; the engine only cuts holes, it never adds surface). A kit or glTF
+  room has no navmesh under it, so AI would stand still at best. Retail c2v1
+  ships <code>c2v1.hknavmesh</code>. The build copies it byte-identical (gated) and checks
+  every enemy against it.</li>
+<li><strong>Collision is solved there.</strong> The player walks on retail's playerclip
+  carrier mesh (<code>memory: tnc-custom-map-route</code>, variant D analysis). New kit
+  geometry needed the <code>| 0x18</code> cm workaround and still had stair problems.</li>
+<li><strong>Lighting is solved there.</strong> Baked lightmaps (<code>.proc</code>), 102 light probes,
+  408 retail lights and the Umbra tome/pvs/shadows all match the geometry they
+  were baked for. The kit/glTF route borrows single lightmap texels (r9 risk 5:
+  "blotchy or dark").</li>
+<li><strong>Scene points can stay.</strong> The 176 combat, 54 roam, 41 search and 10
+  traversal scene points belong to the retail geometry. Enemies keep cover and
+  search behaviour. A new room has none (<code>r2_ainav.md</code> §5).</li>
+<li><strong>Precedent:</strong> a retail-based c2v1 container served from dlc_0 loaded and
+  played in game on 2026-09-24 (relit lights, normal mission start, memory
+  <code>tnc-custom-map-route</code>). The kit/glTF route has no in-game AI evidence.</li>
+</ul>
+<p>Cost: the map is the Gestapo office, not a clean white room. The test area
+uses two of its rooms (below). The rest of the building stays walkable and
+empty.</p>
+<h3 id="what-the-new-name-needs-and-gets">What the new name needs (and gets)</h3>
+<ul>
+<li><strong>18 map-level entries of retail c2v1, copied under the new name:</strong><ul>
+<li><code>.entities</code> and <code>.mapresources</code> (both our own payload);</li>
+<li><code>_combo/modtest.proc</code>, <code>modtest.prockd</code>;</li>
+<li><code>_world.tome</code> + <code>-metadata.json</code>, <code>_world.bmodel</code>, <code>sky.bmodel</code>,
+<code>world.hkshape</code>, <code>_world.pvs</code>, <code>_world.bshadows</code>;</li>
+<li><code>modtest.ambientsh</code>, <code>modtest.hknavmesh</code>, <code>devmapinfo.json</code>;</li>
+<li><code>mega.decl</code>, <code>megatrans.decl</code>, <code>megafoliagetrans.decl</code>;</li>
+<li><code>generated/staticstreamtree/game/wolfsdk/modtest.bsstree</code>.</li>
+</ul>
+</li>
+</ul>
+<p>These are retail bytes. H's modified tome and hkshape are not used, and H's
+  removed <code>_world.bshadows</code> is taken from retail.
+- <strong>102 light-probe images</strong> under <code>maps/game/wolfsdk/modtest/lightprobes/&lt;entity&gt;_row.bimage</code>.
+  The engine builds that name from the map name (<code>'maps/%s/lightprobes/%s_row.bimage'</code>, r9 #7).
+  The box has no probes, so it did not need this; modtest keeps all 102 <code>LIGHT_PROBE</code> entities.
+- <strong>All 15 engine-derived names exist under the new name:</strong> the box's 14
+  format strings plus <code>_combo/_world.bshadows</code>.
+- <strong>Per-entity resources stay under c2v1's names.</strong> These are the 90
+  trigger/volume/collision-only cms; the text names them explicitly
+  (<code>clipModelName</code>). Every such reference is checked to resolve.
+- <strong><code>mega*.decl</code></strong> keeps <code>landpagefile</code> on c2v1's VT pages (r9 #9).
+- <strong><code>textures.cache</code></strong> is one more hardlink, <code>dlc_0/base/maps/game/wolfsdk/modtest/textures.cache</code>.
+  <code>mapinstall.install</code> already creates it for every extra map.</p>
+<h3 id="what-was-taken-out-of-retail-c2v1">What was taken out of retail c2v1</h3>
+<p>8,902 of 9,206 entities are kept verbatim. 304 are dropped:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Removed</th>
+<th style="text-align: right;">n</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>idKisculeEntity</td>
+<td style="text-align: right;">33</td>
+<td>mission scripts</td>
+</tr>
+<tr>
+<td>idAI2, idTarget_AISpawn, idScenePoint_Spawn</td>
+<td style="text-align: right;">44, 9, 9</td>
+<td>the mission's hidden enemies and their spawn chain</td>
+</tr>
+<tr>
+<td>idAlarm, idAlarmSystem</td>
+<td style="text-align: right;">11, 2</td>
+<td>their reinforcement spawners are gone</td>
+</tr>
+<tr>
+<td>idTrigger, idTrigger_Hurt, idWorldMarker</td>
+<td style="text-align: right;">48, 1, 8</td>
+<td>mission triggers, hurt volume, objective markers</td>
+</tr>
+<tr>
+<td>idSoundClip, idEnvironmentSpeaker</td>
+<td style="text-align: right;">38, 29</td>
+<td>positional sound from c2v1's banks; no bank loads for a new map name (r9 #10)</td>
+</tr>
+<tr>
+<td>idPlayerStart</td>
+<td style="text-align: right;">2</td>
+<td>replaced by <code>modtest_start</code></td>
+</tr>
+<tr>
+<td>idProp2 <code>prop/pickup/*</code></td>
+<td style="text-align: right;">67</td>
+<td>retail pickups and collectibles (collectibles count as DLC progress)</td>
+</tr>
+<tr>
+<td>challenge-layer-only</td>
+<td style="text-align: right;">2</td>
+<td><code>layer/dlc/c2v1_challenge1</code></td>
+</tr>
+<tr>
+<td>bound to a dropped entity</td>
+<td style="text-align: right;">1</td>
+<td>Hans's cigarette (<code>bindInfo.bindParent</code> → the boss)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Five kept entities lost references to dropped ones (<code>drop_refs</code>):</p>
+<ul>
+<li>the 4 automap images lose their loot-reveal reference to the map collectible;</li>
+<li>the group manager loses its 2 <code>alarmSystem</code> references.</li>
+</ul>
+<p>The world keeps everything except <code>devmapInvLoadout</code>. It changes from
+<code>devinvloadout/dlc/c2v1</code> to <code>devinvloadout/code_referenced/default_sp_devloadout</code>
+(all 9 weapon families, r4_pickups §5.2).</p>
+<p>Kept: geometry, lights, probes, props, doors, glass, decals, scene points,
+volumes and the group manager.</p>
+<p>The kept layered entities, 54 in all, are all in <code>layer/dlc/c2v1</code> (gated):</p>
+<ul>
+<li>46 door props;</li>
+<li>3 idAnimated;</li>
+<li>4 idInfo;</li>
+<li>1 idVolume.</li>
+</ul>
+<h2 id="what-is-placed-where">What is placed where</h2>
+<p>Floor z = 0 in both rooms. The positions come from the retail collision grid
+(<code>re_probes/viewer/collision.json</code> via <code>design_kitmap.retail_grid</code>).</p>
+<p><strong>Armoury:</strong> the room the retail challenge start is in (x 23..35, y −66..−78).</p>
+<ul>
+<li><strong>Start:</strong> <code>modtest_start</code> at (29, −73), facing north toward the one door
+  into the hall, which is at (29, −65.5).</li>
+<li><strong>5 white fill lights</strong> (<code>modtest_light_*</code>), each a clone of the hall
+  chandelier <code>c2v1_lights_lights_light_point_1603252612</code> (point_frac40):<ul>
+<li>2 over the pickup rows: z 3, radius 6, intensity 5;</li>
+<li>3 down the hall's centre aisle: z 4.5, radius 10, intensity 4.</li>
+</ul>
+</li>
+</ul>
+<p><strong>23 pickups, all on the armoury floor.</strong> Each is a deep copy of a retail
+placement of the same inherit. Ammo is next to its weapon:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>x, y</th>
+<th>Pickup (inherit)</th>
+<th>Gives (<code>useableComponentDecl</code>)</th>
+<th>Donor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>24.6, −70.5</td>
+<td><code>prop/pickup/weapons/handgun/handgun</code></td>
+<td><code>weapon/sp/handgun</code> (Pistole)</td>
+<td>c0v2</td>
+</tr>
+<tr>
+<td>25.8, −70.5</td>
+<td><code>prop/pickup/ammo/handgun/medium</code></td>
+<td><code>ammo/sp/handgun/medium</code></td>
+<td>c2v1</td>
+</tr>
+<tr>
+<td>24.6, −71.5</td>
+<td><code>prop/pickup/weapons/smg/smg</code></td>
+<td><code>weapon/sp/smg</code> (MP)</td>
+<td>c0v2</td>
+</tr>
+<tr>
+<td>25.8, −71.5</td>
+<td><code>prop/pickup/ammo/smg/medium</code></td>
+<td><code>ammo/sp/smg/medium</code></td>
+<td>c0v2</td>
+</tr>
+<tr>
+<td>24.6, −72.5</td>
+<td><code>prop/pickup/weapons/shotgun/shotgun</code></td>
+<td><code>weapon/sp/shotgun</code> (Schockhammer)</td>
+<td>c1v3</td>
+</tr>
+<tr>
+<td>25.8, −72.5</td>
+<td><code>prop/pickup/ammo/shotgun/medium</code></td>
+<td><code>ammo/sp/shotgun/medium</code></td>
+<td>c07p2</td>
+</tr>
+<tr>
+<td>24.6, −73.5</td>
+<td><code>prop/pickup/weapons/battlerifle/battlerifle</code></td>
+<td><code>weapon/sp/battlerifle</code> (Sturmgewehr)</td>
+<td>c11p1</td>
+</tr>
+<tr>
+<td>25.8, −73.5</td>
+<td><code>prop/pickup/ammo/battlerifle/medium</code></td>
+<td><code>ammo/sp/battlerifle/medium</code></td>
+<td>c07p2</td>
+</tr>
+<tr>
+<td>24.6, −74.5</td>
+<td><code>prop/pickup/weapons/kampf/kampf</code></td>
+<td><code>weapon/sp/kampf</code> (Kampfpistole)</td>
+<td>c1v3</td>
+</tr>
+<tr>
+<td>25.8, −74.5</td>
+<td><code>prop/pickup/ammo/kampfpistol/medium</code></td>
+<td><code>ammo/sp/kampf/medium</code></td>
+<td>c07p2</td>
+</tr>
+<tr>
+<td>33.4, −70.5</td>
+<td><code>prop/pickup/weapons/lasergewehr</code></td>
+<td><code>weapon/sp/lasergewehr</code> (heavy)</td>
+<td>c06p1d1</td>
+</tr>
+<tr>
+<td>32.2, −70.5</td>
+<td><code>prop/pickup/ammo/lkw/battery_medium</code></td>
+<td><code>ammo/sp/lkw/battery_medium</code> (LKW)</td>
+<td>c06p1d1</td>
+</tr>
+<tr>
+<td>33.4, −71.5</td>
+<td><code>prop/pickup/weapons/dieselgewehr</code></td>
+<td><code>weapon/sp/dieselgewehr</code> (heavy)</td>
+<td>c07p2</td>
+</tr>
+<tr>
+<td>32.2, −71.5</td>
+<td><code>prop/pickup/ammo/dkw/diesel_medium</code></td>
+<td><code>ammo/sp/dkw/medium</code> (DKW)</td>
+<td>c06p1d1</td>
+</tr>
+<tr>
+<td>33.4, −72.5</td>
+<td><code>prop/pickup/weapons/hammergewehr</code></td>
+<td><code>weapon/sp/hammergewehr</code> (heavy)</td>
+<td>c09p2</td>
+</tr>
+<tr>
+<td>33.4, −73.5</td>
+<td><code>prop/pickup/weapons/ubergewehr</code></td>
+<td><code>weapon/sp/ubergewehr</code> (heavy)</td>
+<td>c09p2</td>
+</tr>
+<tr>
+<td>33.4, −74.5</td>
+<td><code>prop/pickup/weapons/axe/axe</code></td>
+<td><code>weapon/sp/hatchet</code></td>
+<td>bonusmap01</td>
+</tr>
+<tr>
+<td>32.2, −74.5</td>
+<td><code>prop/pickup/weapons/knife</code></td>
+<td><code>weapon/sp/knife_throw</code></td>
+<td>c2v1</td>
+</tr>
+<tr>
+<td>32.2, −72.5</td>
+<td><code>prop/pickup/armor/helmet/soldier</code></td>
+<td><code>armor/helmet/soldier</code></td>
+<td>c0v2</td>
+</tr>
+<tr>
+<td>27.6, −70.5</td>
+<td><code>prop/pickup/health/kits/medium</code></td>
+<td><code>health/medium</code></td>
+<td>c07p2</td>
+</tr>
+<tr>
+<td>30.4, −70.5</td>
+<td><code>prop/pickup/armor/medium</code></td>
+<td><code>armor/medium</code></td>
+<td>c09p1</td>
+</tr>
+<tr>
+<td>27.6, −75.5</td>
+<td><code>prop/pickup/health/kits/large</code></td>
+<td><code>health/large</code></td>
+<td>c07p2</td>
+</tr>
+<tr>
+<td>30.4, −75.5</td>
+<td><code>prop/pickup/armor/large</code></td>
+<td><code>armor/large</code></td>
+<td>c1v3_venus</td>
+</tr>
+</tbody>
+</table></div>
+<p>How the donors were chosen:</p>
+<ul>
+<li>Each donor is the first retail placement without a layer that has
+  <code>isStatic = false</code>, so physics settles it. If no such placement exists, it
+  is the first placement without a layer. The scan runs over <code>base/*.resources</code>,
+  then <code>dlc_1</code>..<code>dlc_3</code>, in name order.</li>
+<li>Static pickups get z + 0.03 (retail rests them at 0.02–0.04 in c2v1).
+  Dynamic ones get z + 0.10 and drop onto the floor.</li>
+</ul>
+<p>Not available as pickups:</p>
+<ul>
+<li><strong>LKW and DKW:</strong> there is no pickup entityDef, and no map in the corpus places
+  one (r4_pickups). The world's dev loadout should give them; their ammo is
+  above.</li>
+<li><strong>Grenades:</strong> there is no <code>prop/pickup/weapons/grenade*</code> entityDef.</li>
+</ul>
+<p><strong>Range:</strong> the two-storey office hall north of the armoury (x 21..37,
+y −35..−65). It has a centre aisle, two side aisles, cubicle desks and
+partitions. The retail chandeliers and wall lamps stay.</p>
+<p>8 enemies, all of c2v1's own types:</p>
+<ul>
+<li>each is a deep copy of the first retail c2v1 placement of that inherit;</li>
+<li><code>flags.hide = false</code>;</li>
+<li>roam target (<code>targets</code>) removed;</li>
+<li>facing north, with their backs to the door.</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Inherit</th>
+<th>x, y</th>
+<th style="text-align: right;">From start</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>modtest_ai_soldier</td>
+<td><code>ai/dlc/silentdeath/soldier/generic/soldier_light</code></td>
+<td>29, −60</td>
+<td style="text-align: right;">13.0 m</td>
+</tr>
+<tr>
+<td>modtest_ai_nailgun</td>
+<td><code>ai/dlc/silentdeath/soldier/generic/soldier_nailgun</code></td>
+<td>22.5, −56</td>
+<td style="text-align: right;">18.2 m</td>
+</tr>
+<tr>
+<td>modtest_ai_heavy</td>
+<td><code>ai/dlc/silentdeath/soldier/generic/soldier_heavy</code></td>
+<td>35.5, −56</td>
+<td style="text-align: right;">18.2 m</td>
+</tr>
+<tr>
+<td>modtest_ai_elite</td>
+<td><code>ai/dlc/silentdeath/elite/generic/elite_heavy</code></td>
+<td>29, −50</td>
+<td style="text-align: right;">23.0 m</td>
+</tr>
+<tr>
+<td>modtest_ai_supersoldier</td>
+<td><code>ai/supersoldat/generic/supersoldat_lasergewehr</code></td>
+<td>35.5, −48</td>
+<td style="text-align: right;">25.8 m</td>
+</tr>
+<tr>
+<td>modtest_ai_commander</td>
+<td><code>ai/dlc/silentdeath/commander/generic/commander_handgun</code></td>
+<td>22.5, −43</td>
+<td style="text-align: right;">30.7 m</td>
+</tr>
+<tr>
+<td>modtest_ai_dog</td>
+<td><code>ai/kampfhund/generic/kampfhund</code></td>
+<td>35.5, −41</td>
+<td style="text-align: right;">32.7 m</td>
+</tr>
+<tr>
+<td>modtest_ai_ubersoldat</td>
+<td><code>ai/dlc/silentdeath/ubersoldat/ubersoldat_cannon</code></td>
+<td>29, −37.5</td>
+<td style="text-align: right;">35.5 m</td>
+</tr>
+</tbody>
+</table></div>
+<p>Their <code>groupName</code> values come from the donors and are kept groups of the
+retained <code>idEncounterGroupMgr</code> (FirstArea/SecondArea/ThirdArea/Commander), so
+an alerted group shares awareness.</p>
+<p><strong>Mapresources:</strong></p>
+<ul>
+<li>retail c2v1's 20,832 rows, with the 120 map-named rows renamed;</li>
+<li>plus 34 always-load rows: every row a donor's own map lists for that donor's
+  values (entityDef, propItem, model/cm, modelAsset, md6Def, propHealth) that
+  c2v1 lacks. Example: shotgun, battlerifle-ammo and armour models.</li>
+</ul>
+<h2 id="checks-build_logtxt-79-ok-0-fail">Checks (<code>build_log.txt</code>: 79 OK, 0 FAIL)</h2>
+<p><strong>Container</strong></p>
+<ul>
+<li>Before finalize, <code>probe_idclhash</code> rejects the file (negative control).</li>
+<li>Finalize moves the data hash of exactly the 120 added entries.</li>
+<li>Entry count is 7,159 + 120.</li>
+<li>Every H + box entry is unchanged: payload, version, flags, dependencies.</li>
+<li><strong>Every one of H's 7,130 entries is byte-identical</strong>, compared directly against
+  <code>re_probes/kitmap/variants/H/chunk_22.resources</code>.</li>
+<li>The 120 entries are each present once, as written.</li>
+<li><code>probe_datahash</code> reports <code>+0x50 7278/7278</code> (the 1 mode-4 entry is skipped, as
+  in every build). <code>probe_idclhash</code> reports <code>+0x08 1/1 +0x20 1/1</code>.</li>
+</ul>
+<p><strong>New name complete</strong></p>
+<ul>
+<li>18 map-level and 102 light-probe entries were copied.</li>
+<li><code>naming_problems()</code> returns <code>[]</code>. It checks:<ul>
+<li>every retail map-named entry has a copy;</li>
+<li>every <code>LIGHT_PROBE</code> entity has its image under the new name;</li>
+<li>no mapresources row still names an old map-named resource;</li>
+<li>every such row exists renamed, and the map list is the new name;</li>
+<li>every quoted <code>maps/game/dlc/c02/c2v1/...</code> value in modtest's texts names an
+existing per-entity resource, never a map-named one;</li>
+<li>the only exception is <code>mega*.decl</code>.</li>
+</ul>
+</li>
+<li>All 15 engine-derived names exist under the new name.</li>
+<li>c2v1 and the box keep their own entries.</li>
+<li>No map-named row is unresolved.</li>
+</ul>
+<p>Controls, each of which fails as it should:</p>
+<ul>
+<li><strong>A:</strong> <code>modtest.ambientsh</code> left under the old name only;</li>
+<li><strong>B:</strong> <code>_world.bshadows</code> left under the old name only;</li>
+<li><strong>C:</strong> one light-probe image left under the old name only;</li>
+<li><strong>D:</strong> a mapresources row left on the old name;</li>
+<li><strong>E:</strong> the text names c2v1's own <code>.proc</code>;</li>
+<li><strong>F:</strong> the text names a nonexistent c2v1 cm;</li>
+<li><strong>G:</strong> the navmesh is missing → the engine-name check fails.</li>
+</ul>
+<p><strong>.entities</strong></p>
+<ul>
+<li>The authored text reads back unchanged and round-trips byte-exact.</li>
+<li><code>build_custom_map.check</code> finds nothing: no dangling references, and every
+  <code>inherit</code> is among the 996 mounted entityDefs. Control: a fake inherit fails.</li>
+<li>Every new block's donor is a retail block of the same inherit and class.</li>
+<li>Every new block has its donor's exact field set. Only the documented edits
+  differ: orientation, <code>lightColor</code>, <code>targets</code>, a foreign <code>groupName</code>.
+  Control: an extra field fails.</li>
+<li><strong>Every decl, model and entityDef value resolves</strong> in the mounted archives
+  (<code>kit.json</code> mount with our chunk). This covers the new blocks and the world's
+  new loadout. A field counts as a decl reference when the retail donor's value
+  there resolves. Control: a fake <code>useableComponentDecl</code> fails.</li>
+<li>Kept retail blocks are verbatim except the world and the 5 with dropped
+  references.</li>
+<li>No mission class or retail pickup is left.</li>
+<li>Every enemy has <code>hide = false</code>, no roam target, and a valid group.</li>
+<li>Every kept layered entity is in <code>layer/dlc/c2v1</code>.</li>
+</ul>
+<p><strong>Placement</strong></p>
+<ul>
+<li>The modtest navmesh is byte-identical to retail's.</li>
+<li>The start and the 23 pickups stand on retail-clear floor over the start's
+  navmesh component, inside the armoury. The pickups are ≥ 1 m apart.</li>
+<li>Each enemy:<ul>
+<li>has a navmesh disc in the start's component (radius 0.6 m, 0.9 m for the
+supersoldier, 1.2 m for the Übersoldat);</li>
+<li>stands on clear floor;</li>
+<li>has clear sight down its aisle from the hall's south cross aisle (no solid
+1.3–1.8 m above the floor).</li>
+</ul>
+</li>
+<li>Sight straight from the door is 72–100 % (reported).</li>
+</ul>
+<p>Placement controls, each of which fails as it should:</p>
+<ul>
+<li>a point in the hall wall fails the enemy test;</li>
+<li>the sight test across the cubicle partitions fails.</li>
+</ul>
+<p><strong>Mapresources</strong></p>
+<ul>
+<li>Retail rows are kept in order, the map-named ones renamed, plus the 34 rows.</li>
+<li>Every added row resolves.</li>
+<li>Every new entityDef is preloaded.</li>
+</ul>
+<p><strong>Install side</strong></p>
+<ul>
+<li><code>mapinstall.check_container</code> returns <code>['game/wolfsdk/box', 'game/wolfsdk/modtest']</code>.</li>
+<li><code>tools/verify_mapinstall.py</code> passes ("Alles in Ordnung").</li>
+</ul>
+<p><strong>Determinism:</strong> two builds give the same sha256, and the box stage passes its
+own determinism check.</p>
+<h2 id="not-proven-in-game-worst-first">Not proven in game (worst first)</h2>
+<ol>
+<li>The dev menu command branch (<code>tnc_devmenu_fix</code>), <code>devmap</code> with a non-retail
+   name, and the box itself have never run (r9 "Not proven" 1–2). modtest
+   depends on the same chain.</li>
+<li><strong>Enemies placed with <code>hide = false</code> and no spawner</strong> have no in-game
+   evidence yet. The precedents are the kit map and a c2v2 debug dummy. They
+   should idle and then fight, using the retail scene points, but this is
+   unseen.</li>
+<li>Campaign mode with no chapter part makes the player the generic <code>player</code>.
+   Whether <code>devmapInvLoadout</code> (all weapons) is applied on the <code>devmap</code> path is
+   still open (r4_pickups open question 1). The pickups work either way.</li>
+<li><strong>Collision of 91 shared cms:</strong> H's variant-D fix ORed <code>0x18</code> into 91
+   model-named cms that retail c2v1 also uses. Those cms are shared by name and
+   cannot change without changing c2v1. Retail static instances with these
+   models (floors, walls, caps, bookcases, chairs) now also block the player
+   and AI.<ul>
+<li>Expected effect: none on the floors.</li>
+<li>Possible effect: snagging on stairs. The test area has none.</li>
+</ul>
+</li>
+<li><strong>Pickup heights.</strong> A static pickup from another map may float or sink a
+   few centimetres. Its rest height was taken from c2v1's measurements.</li>
+<li><strong>Sound.</strong> There are no map sound banks: expect the warning
+   <code>[SOUND] No banks found for map 'game/wolfsdk/modtest'</code>. Ambience is
+   silent; weapons and VO use global banks.</li>
+<li><strong>Light probes.</strong> The probes' images are byte copies under the new name. That
+   the engine finds them there is read, not seen.</li>
+</ol>
+<h2 id="install-game-closed-freedom-chronicles-installed">Install (game closed; Freedom Chronicles installed)</h2>
+<ol>
+<li><strong>Revert the mods</strong> in the loader (or <code>python -m wolfsdk revert</code>). While mods
+   are applied, mapinstall may only swap the chunk; the new textures.cache link
+   is a new file.</li>
+<li>Install the chunk:
+   <code>python -m wolfsdk map-install D:\wolf-decomp\tmp\modtestmap\modtest\dlc_0\base\chunk_22.resources</code>
+   This writes dlc_0's packagemapspec with all four maps, hardlinks both new
+   textures.cache names, and records everything for uninstall.</li>
+<li><strong>Dev menu:</strong> add the item below to <code>devmenuoption/main</code> in
+   <code>tools/build_devmenu_fix.py</code> (another agent owns that file). It goes after
+   the box item: num 4 → 5. Without the box, use <code>item[3]</code> and num 3 → 4.</li>
+</ol>
+<p>As a dict next to <code>BOX_ITEM</code>:</p>
+<p><code>python
+   MODTEST_ITEM = {"devMenuDisplayName": "WolfSDK: Mod test map",
+                   "cmds": ['si_spawnspot "modtest_start"', 'si_nextlayeractive "layer/dlc/c2v1"', 'si_filllayeractive ""',
+                            'si_devprogression ""', 'si_checkpointName ""', "si_gamemode 0", "devmap game/wolfsdk/modtest"]}</code>
+   Then rebuild that mod.
+4. Apply the mods again and start the game.</p>
+<p>Undo: <code>python -m wolfsdk map-uninstall</code>, or install the H or box chunk again.</p>
+<h2 id="in-game-test">In-game test</h2>
+<ol>
+<li>Dev menu → "WolfSDK: console test" must show <code>g_debugLayerChanges</code> = 1.
+   Otherwise the command branch is broken and nothing below means anything.</li>
+<li>Dev menu → "WolfSDK: Mod test map".<ul>
+<li><strong>Pass:</strong> you stand in a lit room with weapons, ammo, health and armour on
+ the floor to the left and right. A door to the north leads into an office
+ hall with 8 enemies standing with their backs to you.</li>
+</ul>
+</li>
+<li>Pick up each weapon. Open the weapon wheel and check whether all weapons,
+   including LKW/DKW, are there from the start (the loadout question).</li>
+<li>Walk through the door and shoot:<ul>
+<li>the soldier at 13 m;</li>
+<li>the elite at 23 m;</li>
+<li>the Übersoldat at the far end at 35 m.</li>
+</ul>
+</li>
+</ol>
+<p>Do they react, take cover behind the desks, and come after you?
+   God mode from <code>cheats_gamemode</code> helps.
+5. <code>condump modtest1.txt</code> and send the file.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Log line</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Map game/wolfsdk/modtest is not present in this package</code></td>
+<td>the spec is not installed</td>
+</tr>
+<tr>
+<td><code>The map ... isn't present in the cache file</code></td>
+<td>the old chunk is still in dlc_0</td>
+</tr>
+<tr>
+<td><code>MountMemoryDatabase: Failed to open ...modtest/textures.cache</code></td>
+<td>the link is missing</td>
+</tr>
+<tr>
+<td><code>[SOUND] No banks found for map 'game/wolfsdk/modtest'</code></td>
+<td><strong>expected</strong></td>
+</tr>
+<tr>
+<td><code>Failed to load player entityDef</code></td>
+<td>the player fallback broke</td>
+</tr>
+<tr>
+<td>lines naming <code>lightprobes/..._row.bimage</code></td>
+<td>the probe lookup does not use the map name the way it was read</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="open-skipped-for-this-version-per-the-coordinator">Open (skipped for this version, per the coordinator)</h2>
+<ul>
+<li><strong>Robot enemy (panzerhund):</strong> built and checked once, then left out as
+  experimental.<ul>
+<li>It is retail c2v3 data in the same chunk, with the same mounts.</li>
+<li>It needs the donor from c2v3's text plus 365 preload rows matched by name
+from c2v3's list. Every one of those rows resolved.</li>
+<li><code>ROBOT</code> in the builder is the ready entry: append it to <code>ENEMIES</code> and rebuild.</li>
+<li>Its spot (24, −36.5) passed the 1.2 m navmesh-disc check.</li>
+</ul>
+</li>
+<li><strong>Enemy respawn/reset:</strong><ul>
+<li><strong>Not built.</strong> No retail evidence says an <code>idTarget_AISpawn</code> can fire twice
+(r4_aispawnwaves §3).</li>
+<li>A new kiscule decl entry is unproven.</li>
+<li>Reloading the dev menu item is the reset.</li>
+</ul>
+</li>
+<li><strong>Laserhund or other robots, and a second wave behind a trigger:</strong> not
+  attempted.</li>
+<li><strong>LKW/DKW as world pickups:</strong> none exist in the game. They are only reachable
+  through the dev loadout.</li>
+</ul>
+<p>Related: <a href="Research-Report-R3-Navdata.html">Research Report: R3 Navdata</a>, <a href="Research-Report-R2-Ainav.html">Research Report: R2 Ainav</a>, <a href="Research-Report-R4-Pickups.html">Research Report: R4 Pickups</a>, <a href="Research-Report-R4-Ai-Spawn-Waves.html">Research Report: R4 Ai Spawn Waves</a>, <a href="Research-Report-R9-Box-Map.html">Research Report: R9 Box Map</a>, <a href="Research-Report-R9-Dev-Starts.html">Research Report: R9 Dev Starts</a>, <a href="TNC-Custom-Map-Status.html">TNC Custom Map Status</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="Research-Report-R2-Ainav.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>AI and Navigation for a Custom TNC Map</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

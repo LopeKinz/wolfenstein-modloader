@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Dynamic Lights: Classes, Fields, Budgets, and Whether They Can Light New Kit Geometry – Wolfenstein Modloader</title>
+<meta name="description" content="How dynamic lights are built in Wolfenstein II and whether a new light can brighten the custom kit map.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNC Dynamic Lights: Classes, Fields, Budgets, and Whether They Can Light New Kit Geometry</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Dynamic-Lights"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#pass-1-errors-verifier-round-fixed-here">Pass 1 errors (verifier round, fixed here)</a></li><li><a href="#answer-in-one-paragraph">Answer in one paragraph</a></li><li><a href="#1-entity-classes-rtti-confirmed-corpus-measured">1. Entity classes (RTTI-confirmed, corpus-measured)</a></li><li><a href="#2-fields-corpus-wide">2. Fields, corpus-wide</a></li><li><a href="#3-light-materials-and-falloffprojection-images">3. Light materials and falloff/projection images</a></li><li><a href="#4-castshadows-and-the-shadow-pipeline">4. castShadows and the shadow pipeline</a></li><li><a href="#5-budgetslimits-found-in-code-cvars-re_probescvartablecvars_tnc_v2json-3256-cvars-live-read-flagsdefaultsranges">5. Budgets/limits found in code (cvars; re_probes/cvartable/cvars_tnc_v2.json, 3,256 cvars, live-read flags/defaults/ranges)</a></li><li><a href="#6-dynamic-light-vs-baked-lightmap-relationship-not-replacement">6. Dynamic light vs. baked lightmap: relationship, not replacement</a></li><li><a href="#7-recipe-the-kit-maps-12-lights-via-the-existing-builders">7. Recipe: the kit map&#x27;s 12 lights, via the existing builders</a></li><li><a href="#8-a-much-cheaper-in-game-test-console-light-commands-new-this-round">8. A much cheaper in-game test: console light commands (new this round)</a></li><li><a href="#proven-vs-inferred">PROVEN vs INFERRED</a></li><li><a href="#failed-hypotheses--dead-ends-this-round">Failed hypotheses / dead ends (this round)</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#re-runnable-checks">Re-runnable checks</a></li><li><a href="#in-game-test-for-the-maintainer">In-game test for the maintainer</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report studied the dynamic lights of Wolfenstein II: The New Colossus: one engine class covers every light type (point, spot, probe, area and others), and the look of a light comes from one reusable light <span class="t" data-t="material">material</span>. Reading the game&#x27;s data and settings suggests that a new light adds its glow on top of the baked lighting of walls and furniture instead of being ignored by it. The custom kit map already has 12 new lights built and installed, and a much cheaper test with the hidden addLight command is proposed. Everything here is <span class="t" data-t="static">static analysis</span>: the counts and file checks are proven, but the main claim is only inferred and no light was seen in the running game.</p><ul><li>All 13,406 placed lights on 39 maps use one engine class; the light type is just one text field (5,903 spot, 4,413 point, 2,529 probe lights).</li><li>133 existing light materials can be reused with a plain text edit; whether a brand-new light image can be added is still open.</li><li>No setting caps the total number of lights; the budgets are a light grid of 3,072 cells (16 x 8 x 24), per-frame culling and throttled shadow updates. Correction: 9 light settings, not 2, have no cheat flag.</li><li>The kit map&#x27;s 12 lights (9 point, 3 spot) are copies of two real game lights; the built file is installed but has not been loaded in the game yet.</li><li>Open: whether a new light really reaches surfaces with baked lighting; the hidden addLight command, run via resourceExec in any level, is a cheap first test that has not been run.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat die dynamischen Lichter von Wolfenstein II: The New Colossus untersucht: Eine einzige Engine-Klasse deckt jeden Lichttyp ab (Punkt, Spot, Probe, Fläche und andere), und das Aussehen eines Lichts kommt aus einem wiederverwendbaren Licht-<span class="t" data-t="material">Material</span>. Das Lesen der Spieldaten und Einstellungen spricht dafür, dass ein neues Licht seinen Schein zusätzlich auf die vorberechnete Beleuchtung von Wänden und Möbeln legt, statt von ihr ignoriert zu werden. Die eigene Kit-Karte hat bereits 12 neue Lichter, gebaut und installiert, und ein viel günstigerer Test mit dem versteckten Befehl addLight wird vorgeschlagen. Alles hier ist <span class="t" data-t="static">statische Analyse</span>: Die Zählungen und Dateiprüfungen sind bewiesen, die Hauptaussage ist aber nur abgeleitet, und im laufenden Spiel wurde kein Licht gesehen.</p><ul><li>Alle 13.406 platzierten Lichter auf 39 Karten nutzen eine Engine-Klasse; der Lichttyp ist nur ein Textfeld (5.903 Spot-, 4.413 Punkt-, 2.529 Probe-Lichter).</li><li>133 vorhandene Lichtmaterialien lassen sich per einfacher Textänderung wiederverwenden; ob sich ein ganz neues Lichtbild hinzufügen lässt, ist noch offen.</li><li>Keine Einstellung begrenzt die Gesamtzahl der Lichter; die Budgets sind ein Lichtraster aus 3.072 Zellen (16 x 8 x 24), Aussortieren pro Bild und gedrosselte Schattenupdates. Korrektur: 9 Lichteinstellungen, nicht 2, haben kein Cheat-Flag.</li><li>Die 12 Lichter der Kit-Karte (9 Punkt, 3 Spot) sind Kopien von zwei echten Spiellichtern; die gebaute Datei ist installiert, wurde im Spiel aber noch nicht geladen.</li><li>Offen: ob ein neues Licht Flächen mit vorberechneter Beleuchtung wirklich erreicht; der versteckte Befehl addLight, über resourceExec in einem beliebigen Level ausgeführt, ist ein günstiger erster Test, der noch nicht gelaufen ist.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on dynamic lights in The New Colossus: which C++ classes and decl fields make up a light, which budgets and limits the engine enforces, and whether a new light can light the new geometry of the custom kit map. <code>idLight</code> turns out to be the one class behind every light type, falloff and projection both come from one <code>lightMaterial</code>, and the GPU light list is bound once per frame with view scope, so a new light should add to the baked lightmap of kit pieces rather than replace it — <strong>inferred from the decl/renderParm/cvar architecture, not proven at instruction level, and never seen in the running game.</strong> The kit map's 12 lights are already built and installed; a cheaper console test (<code>addLight</code> through the <code>resourceExec</code> route) is proposed at the end. Everything below was read-only; no game was launched.</p>
+<p>Track <code>dynlights</code>, 2026-10-01, round 2 (verifier fixes + follow-ups).
+Read-only against
+<code>&lt;Steam library&gt;/steamapps/common/Wolfenstein.II.The.New.Colossus</code>. New
+material lives under <code>re_probes/dynlights/</code> (<code>survey_lights.py</code>,
+<code>survey_out.txt</code>, and this round's <code>round2_checks.py</code>/<code>round2_out.txt</code>) and
+this report; nothing under <code>wolfsdk/</code>, <code>tools/</code>, <code>docs/</code>, or any other
+track's <code>re_probes/*</code> folder was written to (<code>re_probes/materials/
+dump_renderparm.py</code> and <code>tools/decomp.py</code> were reused read-only, not
+modified). No game launch, no process attach, no rebuild of the kit map (the
+existing <code>tools/build_kitmap*.py</code>/<code>tools/design_kitmap.py</code> pipeline was read
+and its <strong>already-built output was read and hashed</strong>, never re-run, since
+running it writes under <code>re_probes/kitmap/</code>, another track's folder).</p>
+<h2 id="pass-1-errors-verifier-round-fixed-here">Pass 1 errors (verifier round, fixed here)</h2>
+<p>The verifier REFUTED two numeric claims and flagged one methodology gap and
+one transcription slip; all four are fixed in place below, independently
+re-measured this round with <code>re_probes/dynlights/round2_checks.py</code> (new) and
+<code>re_probes/materials/dump_renderparm.py</code> (reused, not rewritten):</p>
+<ol>
+<li><strong>REFUTED, fixed</strong>: "only two light cvars are not <code>CHEAT</code>-flagged" (Sec.3)
+   contradicted Sec.5's own table two paragraphs later. Re-census: <strong>9</strong>
+   genuinely light-system non-<code>CHEAT</code> cvars exist
+   (<code>r_imageAtlasLightWidth/Height</code>, <code>r_lightClassThreshold</code>,
+   <code>r_lightDistanceFadeMultiplier</code>, <code>r_lightScatteringQuality</code>,
+   <code>r_particlesLightAtlasWidth/Height/Quality</code>, <code>r_shadowMaxStaleFrames</code>).
+   Sec.3 and Sec.5 both corrected; Sec.5's table gained the two rows it had
+   omitted even though they answer "budgets/limits in code" directly.</li>
+<li><strong>REFUTED, fixed</strong>: <code>idLensFlare</code> has <strong>35</strong> distinct <code>edit.*</code> fields, not
+   25 — pass 1 undercounted by eye instead of counting its own
+   <code>survey_out.txt</code> table; <code>round2_checks.py</code> recomputes it mechanically
+   (<code>len(Counter)</code>, not a printed-line eyeball) and gets 35, matching a
+   manual recount of the same file. Sec.2 and PROVEN fixed.</li>
+<li><strong>Minor transcription slip, fixed</strong>: the Sec.3 code block showed
+   <code>lightFalloffMap</code> and <code>lightProjectMap</code> both defaulting to
+   <code>lights/squareLight1.tga</code> (capital L). Re-dumped live with
+   <code>dump_renderparm.py</code>: <code>lightfalloffmap</code> really is
+   <code>lights/squareLight1.tga</code>, but <code>lightprojectmap</code> defaults to
+   <code>lights/squarelight1.tga</code> (lowercase l). Fixed in Sec.3.</li>
+<li><strong>Methodology gap, fixed</strong>: Sec.3's "0/11,469 materials override
+   <code>lightMask</code>" evidence searched the wrong corpus by the report's <em>own</em>
+   cited scope rule (no scope keyword -&gt; instance scope, not material
+   scope). <code>round2_checks.py</code> now runs the right check — raw-text search for
+   <code>lightmask</code> across <strong>every entity class</strong>, all 39 <code>.entities</code> maps — and
+   independently gets <strong>0/0</strong> hits too, so the conclusion survives with the
+   correct justification. Also folded in the verifier's <strong>missed</strong> item:
+   <code>skiplightprobe</code> (a second instance-scope opt-out renderParm, probe-only)
+   gets the same check, also 0/0.</li>
+</ol>
+<p>The verifier's other <strong>missed</strong> items (console commands <code>addLight</code>/
+<code>testLight</code>/etc., <code>build_custom_map.py</code>'s <code>light_color</code>/<code>lights_near</code>
+primitives, <code>writeDebugLightmapImage</code>) are chased in the new Sec.8 and in
+Sec.7's recipe below.</p>
+<h2 id="answer-in-one-paragraph">Answer in one paragraph</h2>
+<p><strong>idLight is the one C++ class behind every dynamic light type</strong> (point,
+spot, probe, area, scattering, and — once, corpus-wide — parallel); the
+<code>light/point</code>/<code>light/spot</code>/<code>light/probe</code> decls set nothing but <code>lightType</code>,
+so every other default (whether a light casts shadows, which falloff image
+it uses, …) is a C++-side default, not a decl default. A light's falloff
+<em>and</em> its projected "cookie" texture are both named in one <strong>material</strong>
+decl via <code>lightMaterial</code> (74% of corpus lights set it explicitly; 133
+distinct retail <code>lights/...</code> materials exist to reuse, each naming a
+<code>lightfalloffmap</code> and a <code>lightprojectmap</code>, both packed into one shared
+light image atlas — <code>idLightAtlasResource</code>, sized by <code>r_imageAtlasLightWidth</code>
+x <code>r_imageAtlasLightHeight</code>, default 2048x1024). <strong>Whether a new light can
+light the kit's new geometry</strong>: the GPU-side light list (<code>lights</code>, a
+<code>StructuredBuffer&lt;light_t&gt;</code>, and its per-cluster index buffers
+<code>clusterLightsId</code>/<code>clusterNumLights</code>) is declared with <strong>view scope</strong> —
+bound once per frame, not per-material — and <code>lightmask</code> (the one renderParm
+that could exempt a surface from it) is <strong>never set away from its default
+(1) by any of the 11,469 census'd retail materials</strong>. That is code-level
+(renderParm-scope) evidence, not a guess, that dynamic lights are a
+frame-global resource every forward-shaded surface samples, independent of
+which "ambientprogram" variant (lightmapped "Unique" or not) a material
+picked — so a new <code>idLight</code> placed near the kit's <code>idStaticInstanceEntity</code>
+pieces should light them <strong>on top of</strong> whatever ambient/lightmap term
+<code>r2_maplightstairs.md</code>'s variant H gives them, not instead of it; nothing
+found disables dynamic lighting for lightmapped statics. This is <strong>INFERRED
+from decl/renderParm/cvar architecture, not instruction-level proven</strong> — no
+shader bytecode decompiler exists in this toolkit (same limit
+<code>r4_materials.md</code> already recorded) and it has never been seen in the
+running game. <strong>The recipe already exists and has already been executed</strong>:
+<code>tools/design_kitmap.py</code>'s <code>LIGHTS</code> list + <code>tools/build_kitmap.py</code>'s
+donor-transplant light authoring placed 12 <code>idLight</code> entities (9 point, 3
+spot) into the kit map by cloning two real retail c2v1 lights — which means
+each new light inherits a complete, retail-precedented <code>lightMaterial</code>/
+<code>castShadows</code>/<code>shadowZControl</code> configuration, not a blank one — and
+<code>tools/build_kitmap_variant.py H</code> folds that <code>.entities</code> text together with
+the lightmap/stairs/collision fixes into one container that <strong>is currently
+installed live</strong> at <code>dlc/dlc_0/base/chunk_22.resources</code>
+(sha256 <code>cd7e9340…</code>, byte-identical to
+<code>re_probes/kitmap/variants/H/chunk_22.resources</code>, independently re-hashed
+this round). Nobody has loaded it in the game yet.</p>
+<h2 id="1-entity-classes-rtti-confirmed-corpus-measured">1. Entity classes (RTTI-confirmed, corpus-measured)</h2>
+<p><code>docs/ghidra/rtti_tnc.json</code> (vtable-per-class, from the TNC EXE's own RTTI,
+no guessing) lists, among light-shaped classes: <code>idLight</code>, <code>idLight2</code>,
+<code>idLensFlare</code>, <code>idGodRays</code>, <code>idLightAtlasResource</code>, <code>idFuncShadowCaster</code>,
+<code>idShadowOcclusion</code>/<code>idShadowOcclusion_Umbra</code>, <code>idStaticShadowGeom</code>,
+<code>idInfoStaticShadowGeo</code>. A fresh corpus census this round
+(<code>re_probes/dynlights/survey_lights.py</code>, reusing <code>tools/survey_tnc.walk</code>/
+<code>unwrap</code> for the archive+compfile layer and <code>tools/build_custom_map.parse</code>
+for the <code>.entities</code> text — both already proven byte-exact elsewhere, no new
+parser) over <strong>39 <code>.entities</code> maps</strong> (<code>base/</code> + <code>dlc_1/2/3/5/base</code>, 28
+archives — the same "retail, <code>dlc_0</code>/<code>dlc_4</code> excluded" set
+<code>r4_materials.md</code>'s census already uses, for the same reason: this
+install's <code>dlc_0</code> currently holds the non-retail kit-map container H, see
+"Recipe" below) finds:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>class</th>
+<th style="text-align: right;">instances</th>
+<th>inherit values seen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idLight</code></td>
+<td style="text-align: right;">13,406</td>
+<td><code>light/point</code> 10,149 · <code>light/spot</code> 2,474 · <code>light/probe</code> 783</td>
+</tr>
+<tr>
+<td><code>idLensFlare</code></td>
+<td style="text-align: right;">7,739</td>
+<td><code>func/flare</code> 7,739</td>
+</tr>
+<tr>
+<td><code>idGodRays</code></td>
+<td style="text-align: right;"><strong>0</strong></td>
+<td>— (RTTI class exists, never placed in these 39 maps)</td>
+</tr>
+<tr>
+<td><code>idLight2</code></td>
+<td style="text-align: right;">0 (not even an <code>inherit</code>/<code>class</code> string; RTTI-only)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>lightType</code> (set on every one of the 13,406 <code>idLight</code> instances) distribution:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th style="text-align: right;">lightType</th>
+<th>count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><code>LIGHT_SPOT</code></td>
+<td>5,903</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>LIGHT_POINT</code></td>
+<td>4,413</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>LIGHT_PROBE</code></td>
+<td>2,529</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>LIGHT_SCATTERING</code></td>
+<td>523</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>LIGHT_AREA</code></td>
+<td>37</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>LIGHT_PARALLEL</code></td>
+<td><strong>1</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>So point/spot/probe/area/scattering/parallel are all the <em>same</em> C++ class
+and the <em>same</em> two decl bases (<code>light/point</code>, <code>light/spot</code> — plus
+<code>light/probe</code> for probes), distinguished purely by the <code>lightType</code> string
+and which sub-block (<code>spotLight</code>/<code>areaLight</code>) is present. The single
+<code>LIGHT_PARALLEL</code> instance (<code>c3v3_lights_loading_bay_light_point_2116865654</code>)
+still carries a <code>spotLight</code> cone block, i.e. it is <strong>not</strong> the sun/directional
+key light — that almost certainly comes from <code>envSettings</code> (the <code>world</code>
+block's own decl, outside any entity), not from an <code>idLight</code> entity; not
+traced further this round (open question).</p>
+<p>A <code>LIGHT_AREA</code> sample (<code>lwint_light_light2_1_758357695</code>, 1 of 37) shows the
+area-specific shape: <code>areaLight = { lightTarget/lightRight/lightUp (a 3x3
+basis), shape = "LIGHTAREA_RECT" }</code>, still with its own <code>lightMaterial</code> and
+<code>castShadows</code>.</p>
+<h2 id="2-fields-corpus-wide">2. Fields, corpus-wide</h2>
+<p><code>idLight</code>: <strong>117 distinct <code>edit.*</code> field paths</strong> across the 13,406
+instances. Top ones (full table: <code>re_probes/dynlights/survey_out.txt</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>field</th>
+<th style="text-align: right;">hits / 13,406</th>
+<th>role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lightType</code></td>
+<td style="text-align: right;">13,406</td>
+<td>point/spot/probe/area/scattering/parallel</td>
+</tr>
+<tr>
+<td><code>spawnPosition.{x,y,z}</code></td>
+<td style="text-align: right;">~13,400</td>
+<td>placement (as every entity)</td>
+</tr>
+<tr>
+<td><code>maxVisibleRange</code></td>
+<td style="text-align: right;">11,008</td>
+<td>distance culling</td>
+</tr>
+<tr>
+<td><code>lightMaterial</code></td>
+<td style="text-align: right;">9,873 (74%)</td>
+<td>falloff + projected ("cookie") image, see Sec.3</td>
+</tr>
+<tr>
+<td><code>lightColor.{r,g,b}</code></td>
+<td style="text-align: right;">3,519–9,367 (uneven per channel)</td>
+<td>tint; which channel(s) a given instance omits was not resolved to a single rule this round (open question)</td>
+</tr>
+<tr>
+<td><code>lightIntensity</code></td>
+<td style="text-align: right;">9,000</td>
+<td>brightness scalar</td>
+</tr>
+<tr>
+<td><code>lightRadius.{x,y,z}</code></td>
+<td style="text-align: right;">~8,400</td>
+<td>point-light range/falloff box</td>
+</tr>
+<tr>
+<td><code>spotLight.lightTarget/lightRight/lightUp/lightConeLength/lightConeSize/lightStart/lightWidthRatio/lightHeightRatio</code></td>
+<td style="text-align: right;">1,593–6,902</td>
+<td>spot cone geometry (basis vectors + derived length/size, see Sec.5)</td>
+</tr>
+<tr>
+<td><code>renderModelInfo.scale.{x,y,z}</code></td>
+<td style="text-align: right;">6,277</td>
+<td>the light's own gizmo/flare-card render model scale</td>
+</tr>
+<tr>
+<td><code>castShadows</code></td>
+<td style="text-align: right;">5,344 explicit (4,984 <code>true</code> / 360 <code>false</code>)</td>
+<td>see Sec.4</td>
+</tr>
+<tr>
+<td><code>maxShadowVisibleRange</code></td>
+<td style="text-align: right;">4,768</td>
+<td>shadow distance cutoff (values seen: 2,4,5,6,8,10,12,15,16,18,20,25,30,35,40)</td>
+</tr>
+<tr>
+<td><code>fadeVisibilityOver</code></td>
+<td style="text-align: right;">4,063</td>
+<td>visibility fade band</td>
+</tr>
+<tr>
+<td><code>advancedLightData.scatteringMultiplier</code></td>
+<td style="text-align: right;">3,400</td>
+<td>volumetric-scattering contribution scalar</td>
+</tr>
+<tr>
+<td><code>staticLightMapScale</code></td>
+<td style="text-align: right;">2,770</td>
+<td>how strongly this light contributes to <strong>baked</strong> lightmaps (bake-time only, see Sec.6)</td>
+</tr>
+<tr>
+<td><code>shadowZControl.shadowMinNear</code></td>
+<td style="text-align: right;">2,525</td>
+<td>shadow depth-bias control (values 0.05–1)</td>
+</tr>
+<tr>
+<td><code>lightCenter.{x,y,z}</code></td>
+<td style="text-align: right;">up to 2,268</td>
+<td>falloff-origin offset, independent of <code>spawnPosition</code></td>
+</tr>
+<tr>
+<td><code>advancedLightData.clippingType</code>/<code>clipBoxSize.*</code>/<code>clipBoxPosition.*</code>/<code>clipPlanesEnabled</code>/<code>clipPlanePosition.*</code></td>
+<td style="text-align: right;">361–1,067</td>
+<td>a light can be clipped to a box or plane (matches <code>light_t.boxMin/boxMax</code> in the GPU struct, Sec.3)</td>
+</tr>
+<tr>
+<td><code>lightProbeInnerFalloff</code></td>
+<td style="text-align: right;">681</td>
+<td>probe-specific</td>
+</tr>
+<tr>
+<td><code>colorCurves.{intensity,duration}</code></td>
+<td style="text-align: right;">469–656</td>
+<td>animated color/intensity curve (references a <code>table</code> decl, e.g. <code>"flaretable_01"</code>)</td>
+</tr>
+<tr>
+<td><code>contributesToLightProbeGen</code></td>
+<td style="text-align: right;">508</td>
+<td>whether this light is baked into light probes (bake-time)</td>
+</tr>
+<tr>
+<td><code>particleLightEffect</code>/<code>particleLightScale</code></td>
+<td style="text-align: right;">1 / 413</td>
+<td>couples a light to the particle-light-atlas system (<code>r_particlesLightAtlas*</code> cvars, Sec.5)</td>
+</tr>
+<tr>
+<td><code>radiosityShadows</code></td>
+<td style="text-align: right;">34</td>
+<td></td>
+</tr>
+<tr>
+<td><code>backFaceShadows</code></td>
+<td style="text-align: right;">13</td>
+<td></td>
+</tr>
+<tr>
+<td><code>shadowRate</code>/<code>shadowResolutionQuality</code>/<code>shadowMipBias</code></td>
+<td style="text-align: right;">1–6</td>
+<td>per-light shadow-map quality overrides</td>
+</tr>
+<tr>
+<td><code>shadowFlags</code></td>
+<td style="text-align: right;">1 (<code>"SHADOWFLAGS_NO_ADAPTIVE_MIP"</code>)</td>
+<td>an actual named shadow-flags field, rarely used</td>
+</tr>
+<tr>
+<td><code>advancedLightData.lightClass</code></td>
+<td style="text-align: right;">8 (<code>"LIGHT_CLASS_2"</code> x2, <code>"LIGHT_CLASS_3"</code> x6; <code>LIGHT_CLASS_1</code> never spelled out)</td>
+<td>ties to <code>r_lightClassThreshold</code>, Sec.5</td>
+</tr>
+<tr>
+<td><code>staticLightBakeSpecular</code></td>
+<td style="text-align: right;">6</td>
+<td>bake-time</td>
+</tr>
+<tr>
+<td><code>dynamicLightSpecularScale</code></td>
+<td style="text-align: right;">seen on the one <code>LIGHT_PARALLEL</code> sample</td>
+<td></td>
+</tr>
+<tr>
+<td><code>clipModelInfo.clipModelName</code></td>
+<td style="text-align: right;">8</td>
+<td>a light can carry its own named clip model</td>
+</tr>
+<tr>
+<td><code>targets.num</code>/<code>targets.item[]</code></td>
+<td style="text-align: right;">1,079/1,235</td>
+<td>a light can trigger/be triggered like any entity</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>idLensFlare</code> (<strong>35</strong> distinct fields, re-measured mechanically this round
+after pass 1's by-eye miscount of 25 — see "Pass 1 errors"; donor's own data
+is in Sec.7):
+<code>declFlare</code> (7,739/7,739, always set — references a <code>flares/...</code> decl, a
+<em>different</em> asset family from <code>lightMaterial</code>), <code>renderModelInfo.{color,
+colorScale,scale}</code> (the flare's visual card), <code>fadeStart</code>/<code>fadeEnd</code>
+(6,884/7,000), <code>quadSize</code> (5,777), <code>lensFlareZBias</code> (3,449),
+<code>bindInfo.bindParent</code> (249 — flares commonly ride on another entity, e.g. a
+flashlight prop in the sample below).</p>
+<p>Neither class has a field that references the baked lightmap directly —
+that is <code>.proc</code>'s job (<code>lightmapScaleBias</code>, <code>r2_maplightstairs.md</code>), a
+completely separate, per-<em>static-instance</em> mechanism from anything an
+<code>idLight</code> carries.</p>
+<h2 id="3-light-materials-and-falloffprojection-images">3. Light materials and falloff/projection images</h2>
+<p>A <code>lightMaterial</code> decl is an ordinary <code>material</code> decl (same text format as
+<code>matpipe.md</code>/<code>r4_materials.md</code> already solved), just with a different set of
+<code>renderParm</code> keys. Example, read whole this round
+(<code>lights/analytical/point/point_frac80</code>, one of <strong>133 distinct <code>lights/...</code>
+materials</strong> found across the 28-archive census):</p>
+<pre><code>lightfalloff2d              1.000000
+lightfalloffatlasscalebias  { 0.030273, 0.029297, 0.000488, 0.000977 }
+lightfalloffmap              &quot;lights/analytical/falloff_aniso0_r64_frac80_gamma2.tga$pad2&quot;
+lightprojatlasscalebias     { 0.006836, 0.013672, 0.000488, 0.000977 }
+lightprojectmap               &quot;lights/proj_white.tga$pad2&quot;
+lightsatlasmap               _lightimageatlas
+</code></pre>
+<p>So one material names <strong>two</strong> images: <code>lightfalloffmap</code> (the radial/aniso
+falloff gradient) and <code>lightprojectmap</code> (the projected "cookie" — most
+lights use a plain white square, <code>lights/proj_white.tga</code> or
+<code>lights/squarelight1.tga</code>, but 133 distinct materials include real gobo
+patterns too: <code>lights/projections/spot_leafy</code>,
+<code>lights/projections/circular_spot_grate/...</code>,
+<code>lights/projections/venus_audition_projection_slide_1_row</code>, window-shaped
+cookies <code>lights/spot/c01p1_farm_window01/02</code>, etc.). Both images are packed
+into <strong>one shared atlas</strong> (<code>lightsatlasmap = _lightimageatlas</code>, the
+<code>idLightAtlasResource</code> RTTI class, sized by <code>r_imageAtlasLightWidth</code> x
+<code>r_imageAtlasLightHeight</code> — default <code>2k x 1k</code>, i.e. 2048x1024; these are 2 of
+<strong>9</strong> light-system cvars in the whole corpus that are <strong>not</strong> <code>CHEAT</code>-flagged
+(full list and table in Sec.5 — fixed this round, see "Pass 1 errors"),
+addressed per-material by the <code>...atlasscalebias</code> rect — the
+same atlas-rect encoding <code>r2_maplightstairs.md</code> already proved for
+lightmaps, just a different atlas.</p>
+<p><strong>For modding: reusing one of the 133 existing <code>lightMaterial</code> values on a
+new <code>idLight</code> is a plain text edit</strong> (same category of change as every
+other proven <code>.entities</code> edit in <code>entitypipe.md</code>). <strong>Authoring a genuinely
+new falloff/cookie image</strong> would mean adding to the shared atlas — not
+attempted or needed this round (the kit's 12 lights all reuse two retail
+materials verbatim via donor transplant, see Sec.7) and not evidenced
+either way; flagged as an open question, same shape as <code>r4_materials.md</code>'s
+open question about the virtual-texture/megatexture append path.</p>
+<p>The GPU-side shape a light actually becomes, read from its <code>renderParm</code>
+declaration this round:</p>
+<pre><code>renderParm lights             { StructuredBuffer light_t view }
+renderParm clusterLightsId     { StructuredBuffer uint view }
+renderParm clusterNumLights    { StructuredBuffer clusterNumLights_t view }
+renderParm numLights           { Vec 0 }
+renderParm clusteredLighting   { Vec 0 view }
+renderParm lightMask           { Vec 1 }                      -- no scope keyword given
+renderParm lightFalloffMap     { String lights/squareLight1.tga }   -- capital L
+renderParm lightProjectMap     { String lights/squarelight1.tga }   -- lowercase l (fixed this round, was mistranscribed as squareLight1.tga)
+renderParm lightsAtlasMap      { Tex2D  lights/squarelight1.tga view }
+renderParm skiplightprobe      { Vec 0 bool }                        -- no scope keyword -&gt; instance scope; probe-bake opt-out only
+
+struct light_t {
+    float3 pos;        uint  lightParms;    float4 posShadow;
+    float4 falloffR;   float4 projS;  float4 projT;  float4 projQ;
+    uint4  scaleBias;
+    float4 boxMin;     float4 boxMax; float4 areaPlane;
+    uint   lightParms2; uint colorPacked; float specMultiplier;
+    uint   shadowBleedReduce_lightScattering;
+}
+</code></pre>
+<p><code>lights</code>/<code>clusterLightsId</code>/<code>clusterNumLights</code>/<code>clusteredLighting</code> are all
+declared with <strong><code>view</code> scope</strong> — the same scope keyword
+<code>r2_maplightstairs.md</code> used to prove <code>lightmapScaleBias</code> is <em>instance</em>-scoped
+(set per draw call from the <code>.proc</code> table). <code>view</code> scope means these
+buffers are bound <strong>once per frame/view</strong>, independent of which material or
+which "ambientprogram" variant (<code>outside</code>, <code>outsideUnique</code>, …,
+<code>r4_materials.md</code> Sec.1.3) a given surface's shader uses — any forward-shaded
+pixel shader that declares <code>lights</code>/<code>clusterLightsId</code> reads the <em>same</em>
+frame-global light list and cluster-index buffers. <code>lightMask</code> (<code>Vec 1</code> =
+"affected by all lights" by default) and <code>skiplightprobe</code> (<code>Vec 0 bool</code> =
+probe-bake-only opt-out, affects <code>LIGHT_PROBE</code> sampling, not direct
+point/spot lights) are the two renderParms that could, in principle, let a
+surface opt out of dynamic lighting. <strong>Fixed this round</strong> (see "Pass 1
+errors"): pass 1's evidence for "nothing opts out" was 0/11,469 retail
+<em>materials</em> overriding <code>lightMask</code> — but neither renderParm carries a scope
+keyword in its decl, which by <code>r2_maplightstairs.md</code>'s own cited rule means
+both default to <strong>instance</strong> scope, i.e. per-entity data, not material text
+— so materials were the wrong corpus to search. The right corpus is entity
+data: <code>round2_checks.py</code> greps the raw text of <strong>every entity, all classes</strong>,
+across all 39 retail <code>.entities</code> maps, case-insensitive, for <code>lightmask</code> and
+<code>skiplightprobe</code> — <strong>0/0 hits for both</strong>, independently reproducing and
+correcting pass 1's conclusion with the corpus its own scope rule actually
+calls for.</p>
+<p><strong>Not decompiled</strong> (no shader bytecode disassembler in this toolkit, the
+same limit <code>r4_materials.md</code> recorded for <code>ambientProgram</code>/<code>stageProgram</code>):
+exactly how a given pixel shader combines the <code>light_t</code> buffer lookup with
+a sampled lightmap texel inside one shader invocation. The <code>view</code>-scope
+argument shows the data is <em>available</em> to every program; it does not show
+the arithmetic that combines it.</p>
+<h2 id="4-castshadows-and-the-shadow-pipeline">4. <code>castShadows</code> and the shadow pipeline</h2>
+<p>5,344/13,406 (40%) of corpus <code>idLight</code> instances set <code>castShadows</code>
+explicitly (4,984 <code>true</code>, 360 <code>false</code>); the rest rely on a C++-side default
+that is not visible in any decl (<code>light/point</code>/<code>light/spot</code> only set
+<code>lightType</code>, confirmed by reading all four base decls fresh this round —
+see Sec.7's donor evidence: the retail point-light donor used by the kit
+build never sets <code>castShadows</code> at all, while the retail spot-light donor
+sets it <code>true</code>). <strong>Not decompiled</strong>: the actual C++ default when the field
+is absent. Shadow-quality/budget levers found as entity fields:
+<code>maxShadowVisibleRange</code> (2–40, no single dominant value), <code>shadowZControl.
+shadowMinNear</code> (0.05–1), <code>shadowRate</code>, <code>shadowResolutionQuality</code>,
+<code>shadowMipBias</code>, <code>shadowFlags</code> (one value seen corpus-wide,
+<code>SHADOWFLAGS_NO_ADAPTIVE_MIP</code>), <code>radiosityShadows</code>, <code>backFaceShadows</code>.</p>
+<h2 id="5-budgetslimits-found-in-code-cvars-re_probescvartablecvars_tnc_v2json-3256-cvars-live-read-flagsdefaultsranges">5. Budgets/limits found in code (cvars; <code>re_probes/cvartable/cvars_tnc_v2.json</code>, 3,256 cvars, live-read flags/defaults/ranges)</h2>
+<p>TNC uses <strong>clustered forward shading</strong> (confirmed by the <code>clusterLightsId</code>/
+<code>clusterNumLights</code>/<code>clusteredLighting</code> renderParms in Sec.3, not just
+inferred from cvar names): the view frustum is divided into
+<code>r_clusteredLightingTilesX</code> x <code>Y</code> x <code>Z</code> = <strong>16 x 8 x 24 = 3,072 cells</strong>
+(all three <code>CHEAT</code>+<code>SHADERSYNC</code>, not settable at runtime without a shader
+recompile sync), <code>r_clusteredLightingNearZ</code>/<code>FarZ</code> = 2.0/256.0 pseudo-depth
+range for the Z-slice distribution. No single "max N lights total" or "max
+lights per cluster" cvar was found (3,256 cvars checked by regex over
+name+description for <code>light</code>, 122 hits this round, re-run fresh — absence
+noted, not a claim that no such cap exists in code — a fixed-size GPU buffer
+almost certainly has <em>some</em> upper bound, just not one exposed as a cvar).
+<strong>Fixed this round</strong> (verifier's missed item): pass 1's "only the tile grid + 2 Umbra caps are quantized budgets" undersold what the same 122-hit sweep
+actually turned up — real per-frame culling/throttling levers beyond the
+static tile grid: <code>r_skipLightRangeCulling</code>/<code>CPUCulling</code>/<code>GPUCulling</code>
+(lights are distance-, CPU-MVP- and GPU-occlusion-culled every frame, each
+switch defaulting to <em>on</em>, i.e. culling active), <code>r_shadowMaxStaleFrames</code>
+(throttles how often a spot/point light's shadow map re-renders, per mip
+level), <code>r_shadowOcclusionMinRadius</code> (10 — above this radius a light's
+shadow updates get occlusion-culled), and <code>r_shadowDirtyWarningTreshold</code>/
+<code>r_shadowTopOffenders</code> (soft-cap diagnostics for "too many lights touch one
+model" and "most expensive shadow casters"). All rows now in the table
+below.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th style="text-align: right;">default</th>
+<th>range</th>
+<th>flags</th>
+<th>exposed/settable in retail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_clusteredLightingTilesX/Y/Z</code></td>
+<td style="text-align: right;">16/8/24</td>
+<td>—</td>
+<td>CHEAT, SHADERSYNC</td>
+<td>no (needs <code>resourceExec … -s</code>)</td>
+</tr>
+<tr>
+<td><code>r_lightClassThreshold</code></td>
+<td style="text-align: right;">2</td>
+<td>—</td>
+<td>NOCHEAT, LOCAL_SETTING, EXPOSE</td>
+<td><strong>yes</strong>, plain console</td>
+</tr>
+<tr>
+<td><code>r_skipLights</code></td>
+<td style="text-align: right;">0</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — bitmask: 1 all, 2 points, 4 spots, 8 area, 16 parallel, 32 probes</td>
+</tr>
+<tr>
+<td><code>r_umbraMaxShadowQueriesVisible</code></td>
+<td style="text-align: right;">6</td>
+<td>0–512</td>
+<td>CHEAT</td>
+<td>no — visible-light shadow-occlusion jobs/frame</td>
+</tr>
+<tr>
+<td><code>r_umbraMaxShadowQueriesInvisible</code></td>
+<td style="text-align: right;">1</td>
+<td>0–512</td>
+<td>CHEAT</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>r_shadowForceDynLights</code></td>
+<td style="text-align: right;">1 (on)</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — always updates dynamic-light shadows</td>
+</tr>
+<tr>
+<td><code>r_shadowUpdateDynamicOnly</code></td>
+<td style="text-align: right;">1</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>r_imageAtlasLightWidth</code></td>
+<td style="text-align: right;">2 (k)</td>
+<td>1–16</td>
+<td>NOCHEAT, EXPOSE</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>r_imageAtlasLightHeight</code></td>
+<td style="text-align: right;">1 (k)</td>
+<td>1–16</td>
+<td>NOCHEAT, EXPOSE</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>r_particlesLightAtlasWidth</code>/<code>Height</code></td>
+<td style="text-align: right;">4096/2048</td>
+<td>—</td>
+<td>NOCHEAT, LOCAL_SETTING, EXPOSE</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>r_particlesLightAtlasQuality</code></td>
+<td style="text-align: right;">1</td>
+<td>—</td>
+<td>NOCHEAT, LOCAL_SETTING, EXPOSE</td>
+<td><strong>yes</strong> — 0 low/1 med/2 high/3 ultra</td>
+</tr>
+<tr>
+<td><code>r_lightDistanceFadeMultiplier</code></td>
+<td style="text-align: right;">1.0</td>
+<td>—</td>
+<td>NOCHEAT, LOCAL_SETTING, EXPOSE</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>r_lightScatteringQuality</code></td>
+<td style="text-align: right;">1</td>
+<td>—</td>
+<td>NOCHEAT, LOCAL_SETTING, EXPOSE</td>
+<td><strong>yes</strong> — scattering-volume resolution, 0–3</td>
+</tr>
+<tr>
+<td><code>r_shadowMaxStaleFrames</code></td>
+<td style="text-align: right;"><code>0,0,1,2,2</code></td>
+<td>—</td>
+<td>NOCHEAT, LOCAL_SETTING, EXPOSE</td>
+<td><strong>yes</strong> — per-mip-level shadow update-rate throttle for spot/point lights (0=60Hz…4=lowest); a real per-frame shadow-update budget, missed in pass 1's table</td>
+</tr>
+<tr>
+<td><code>r_shadowDirtyWarningTreshold</code></td>
+<td style="text-align: right;">1,000,000</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — warns if a model intersects more lights than this</td>
+</tr>
+<tr>
+<td><code>r_shadowOcclusionMinRadius</code></td>
+<td style="text-align: right;">10</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — lights above this radius get occlusion-culled for shadow updates</td>
+</tr>
+<tr>
+<td><code>r_skipLightRangeCulling</code>/<code>CPUCulling</code>/<code>GPUCulling</code></td>
+<td style="text-align: right;">0/0/0 (off)</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — lights ARE actively culled by distance/CPU-MVP/GPU-occlusion every frame; a real per-frame culling budget, missed in pass 1's framing</td>
+</tr>
+<tr>
+<td><code>r_shadowTopOffenders</code></td>
+<td style="text-align: right;">0</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — "List the top N most expensive shadow casting lights (disables soft caps)" — the description itself names "soft caps" elsewhere in the budget system</td>
+</tr>
+<tr>
+<td><code>r_dynamicLightingScale</code></td>
+<td style="text-align: right;">1</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — scales "approximated lighting on dynamic models"</td>
+</tr>
+<tr>
+<td><code>r_enableApproximateLightingForPoint</code></td>
+<td style="text-align: right;">1</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — 0 off / 1 amb+lights / 2 amb only / <strong>3 lights only</strong> (proves ambient and direct are independently switchable terms)</td>
+</tr>
+<tr>
+<td><code>r_useLightPVS</code></td>
+<td style="text-align: right;">0 (off)</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — would use PVS to cut which areas a shadow light reaches; off by default, and skeleton.md already established the kit map ships with no usable PVS/Tome anyway</td>
+</tr>
+<tr>
+<td><code>r_singleLight</code></td>
+<td style="text-align: right;">-1</td>
+<td>—</td>
+<td>CHEAT</td>
+<td>no — isolate one light by index, useful for an in-game debug pass if ever done</td>
+</tr>
+<tr>
+<td><code>r_showLights</code>/<code>r_showLightSpecific</code>/<code>r_showShadowsName</code></td>
+<td style="text-align: right;">0/""/""</td>
+<td>0–3</td>
+<td>CHEAT</td>
+<td>no — debug visualization, would be the first thing to run in-game if a light looks wrong</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>resourceExec route</strong>: every <code>CHEAT</code>-flagged cvar above is, per memory
+<code>tnc-console-unlock</code>, only reachable through the already-proven
+<code>resourceExec &lt;modded cfile&gt; -s</code> carrier (plain <code>+cvar value</code> on the
+command line is rejected). The handful marked <strong>yes</strong> above
+(<code>r_lightClassThreshold</code>, the two light-atlas sizes, <code>r_lightDistanceFade
+Multiplier</code>, the particle-light-atlas sizes) are <code>EXPOSE</code>+<code>NOCHEAT</code> and
+should be settable from the normal in-game console without that carrier —
+<strong>not verified this round</strong> (no game launch), but consistent with every
+other <code>EXPOSE</code>/<code>NOCHEAT</code> cvar already confirmed reachable in prior rounds.</p>
+<h2 id="6-dynamic-light-vs-baked-lightmap-relationship-not-replacement">6. Dynamic light vs. baked lightmap: relationship, not replacement</h2>
+<p><code>r2_maplightstairs.md</code> already proved (code, 123/123 anchors) that every
+<code>idStaticInstanceEntity</code> in a kind-2 world — which is what every kit piece
+is — gets the lightmapped <strong>"Unique"</strong> program unconditionally, and that
+the only way to <em>avoid</em> that is three hard-coded model-name string
+compares, unreachable for new content. That round's whole fix (variant H,
+927 <code>.proc</code> records) is about making the <strong>baked/ambient</strong> term plausible.
+This round's job was the other axis: the <strong>direct</strong> term. Two cvars make
+the split explicit as independently-scaled quantities:
+<code>r_ambientChannelScale</code> ("Scales the ambient light contribution") and
+<code>r_directChannelScale</code> ("Scales the direct light contribution") — if they
+were the same pipeline stage, one scale would do. <code>staticLightMapScale</code>
+(2,770/13,406 <code>idLight</code> instances set it) is the one field that explicitly
+names <em>lightmap</em> in a dynamic-light's own data — but by name and by its
+co-occurrence with other clearly bake-time-only fields
+(<code>contributesToLightProbeGen</code>, <code>staticLightBakeSpecular</code>), it reads as "how
+much this light contributes when the level is <strong>re-baked</strong>", not a runtime
+toggle; this project has no lightmap baker and does not claim to invoke
+one, so this field is inert for any kit-map light that is only ever loaded,
+never baked. Put together: a new <code>idLight</code> near the kit should add its
+<strong>direct</strong> contribution on top of whatever <strong>ambient/baked</strong> term the
+surface already has (0/(1,1,0,0)-sampled before H, a real donor texel after
+H), through the exact same frame-global <code>lights</code>/<code>clusterLightsId</code> buffers
+every other forward-shaded surface in the game reads (Sec.3) — <strong>inferred
+from decl/renderParm/cvar architecture, not instruction-level proven, and
+never seen in the running game.</strong></p>
+<h2 id="7-recipe-the-kit-maps-12-lights-via-the-existing-builders">7. Recipe: the kit map's 12 lights, via the existing builders</h2>
+<p>This is <strong>already built</strong>, not merely designed. The chain, read this round,
+file by file:</p>
+<ol>
+<li><code>tools/design_kitmap.py</code> (lines ~399–415): <code>LIGHT_DONORS</code> names two real
+   retail c2v1 light entities — <code>c2v1_lights_lights_light_point_1603252612</code>
+   (point) and <code>c2v1_lights_lights_light_spot_1557246881</code> (spot) — and
+   <code>LIGHTS</code>, a 12-entry table <code>(name, kind, pos, rgb, intensity,
+   radius_or_aim_point, room, why)</code> covering every room of the kit (hall,
+   Windfang, galleries, corridors, two offices, courtyard). 9 are <code>point</code>,
+   3 are <code>spot</code> (<code>kitmap_light_monolith_w/e</code>, <code>kitmap_light_hof_mond</code>).</li>
+<li><code>tools/build_kitmap.py</code>'s <code>donor_entity()</code> (line ~258) does a <strong>full
+   donor transplant</strong> — the same proven technique <code>entitypipe.md</code> already
+   validated for enemies/pickups: deep-copy the donor's whole <code>entityDef</code>
+   block, rename it, then overwrite only <code>spawnPosition</code>, <code>spawnOrientation</code>,
+   <code>lightColor</code>, <code>lightIntensity</code>, and (point only) <code>lightRadius</code> or (spot
+   only) the cone via <code>spot_range()</code>. <strong>Everything else rides along from the
+   donor</strong>, read fresh this round from retail <code>dlc_2/base/chunk_22.resources</code>:<ul>
+<li>point donor: <code>lightMaterial = "lights/analytical/point/point_frac40"</code>,
+ <code>lightRadius = 6,6,6</code>, no <code>castShadows</code> (so none of the 9 kit point
+ lights cast shadows either).</li>
+<li>spot donor: <code>lightMaterial = "lights/analytical/spot/p100/spot_focus0_
+ frac80"</code>, <code>castShadows = true</code>, <code>shadowZControl.shadowMinNear = 0.19</code>,
+ <code>staticLightMapScale = 0.5</code> (bake-time, Sec.6) — so all 3 kit spot
+ lights (including the two "red streak light on the monolith" ones) <strong>do
+ cast shadows</strong>, inherited, not authored.</li>
+<li><code>spot_range()</code> (build_kitmap.py line 244) rescales the donor's cone to
+ reach the design's aim point while holding the donor's cone <strong>angle</strong>
+ fixed: <code>length = ceil(dist(pos, aim) * 2) / 2</code> (rounded up to 0.5 m),
+ then rewrites <code>lightTarget.x</code>/<code>lightRight.y</code>/<code>lightUp.z</code>/
+ <code>lightConeLength</code>/<code>lightConeSize</code> together, preserving the retail
+ invariant <code>build_kitmap.py</code> itself checks corpus-wide:
+ <code>lightConeLength == lightTarget.x</code> and <code>lightConeSize == 2*lightUp.z</code>
+ (gated, re-verified structurally present in H's <code>.entities</code> this round).</li>
+</ul>
+</li>
+<li><code>tools/build_kitmap_variant.py H</code> = <code>G</code> (texture/material fix) + one
+   <code>.proc</code> lightmap record per rendered kit static-instance piece
+   (<code>r2_maplightstairs.md</code>). It only ever touches the <code>.proc</code> compfile; the
+   <code>.entities</code> text — including the 12 lights from step 2 — passes through
+   unchanged from the base kit build all the way to H.</li>
+</ol>
+<p><strong>Verified fresh this round</strong> (read-only, no rebuild):
+<code>re_probes/kitmap/variants/H/chunk_22.resources</code> sha256
+<code>cd7e93400bee3bed4ed1ce164bd46ca0702f3b77a958377380738fc4e4a2e3e4</code>, and the
+file <strong>currently installed</strong> at
+<code>&lt;Steam library&gt;/.../dlc/dlc_0/base/chunk_22.resources</code> hashes to the exact
+same value — matching <code>r4_materials.md</code>'s Sec.1.5 finding. Reading H's own
+<code>c2v1.entities</code> payload out of that container this round: <strong>976 entity
+blocks total, exactly 12 are <code>class = "idLight"</code>, and all 12 are named
+<code>kitmap_light_*</code></strong> — i.e. the skeleton's rule R6 ("remove all 549 retail
+<code>idLight</code>/<code>idLensFlare</code>") and the 12 new authored lights are both still
+intact in the currently-installed file, with zero retail lights left over
+to confuse the picture.</p>
+<p><strong>For a future light, concretely</strong>: add a tuple to <code>LIGHTS</code> in
+<code>tools/design_kitmap.py</code> (room, position, color, intensity, radius or aim
+point) and re-run <code>tools/design_kitmap.py</code> then <code>tools/build_kitmap.py</code>
+then <code>tools/build_kitmap_variant.py H</code> — no new code needed, the mechanism
+already generalizes to any count/placement. To give a light its own
+character instead of the two donors' two <code>lightMaterial</code>s, pick any of the
+133 corpus <code>lights/...</code> materials found this round (Sec.3) and set
+<code>lightMaterial</code> explicitly after the transplant — same one-line <code>decl.py</code>-
+style edit <code>entitypipe.md</code> already proved safe for <code>lightColor</code>/
+<code>lightIntensity</code>.</p>
+<p><strong>A lower-effort alternative, missed in pass 1</strong> (verifier's missed item):
+<code>tools/build_custom_map.py</code> (already imported by <code>build_kitmap.py</code> as <code>b</code>,
+so already "the existing builders" the brief asked about) has its own
+pre-existing, simpler light-editing primitives that don't need donor
+transplant at all, for a map (like <code>c2v1</code>) that already has retail lights in
+it: <code>light_color(doc, name, rgb, min_intensity)</code> recolors an existing light
+in place and raises its intensity to at least <code>min_intensity</code> (a one-line
+edit to <code>lightColor</code>/<code>lightIntensity</code> on a light that already has a full,
+working <code>lightMaterial</code>/<code>castShadows</code> config), and <code>lights_near(doc, point,
+radius)</code> finds the names of nearby emitting lights (<code>LIGHT_POINT</code>/
+<code>LIGHT_SPOT</code> only — the function's own comment explicitly excludes
+<code>LIGHT_PROBE</code>, since a probe is a reflection/ambient capture, not a lamp).
+That file's own comments also carry a pre-existing, independent light census
+for <code>c2v1</code> specifically (408 lights: 219 <code>LIGHT_SPOT</code>/84 <code>LIGHT_POINT</code>/102
+<code>LIGHT_PROBE</code>/3 <code>LIGHT_SCATTERING</code>) — consistent in shape with this round's
+corpus-wide <code>lightType</code> split (Sec.1) and worth cross-referencing for any
+future single-map light work. The kit map itself has no retail lights left
+to recolor (12/12 are <code>kitmap_light_*</code>, Sec.7 above), so this primitive
+doesn't apply there, but it is the cheaper route for "tint an existing
+retail room's lighting" in any other map.</p>
+<h2 id="8-a-much-cheaper-in-game-test-console-light-commands-new-this-round">8. A much cheaper in-game test: console light commands (new this round)</h2>
+<p><strong>Missed in pass 1</strong>: <code>re_probes/cmdtable/commands.json</code> (234 TNC commands,
+in the task brief's own "available" list) has <strong>8</strong> light-related commands,
+none mentioned in pass 1's 531 lines: <code>addLight</code>, <code>clearLights</code>, <code>popLight</code>,
+<code>popClosestLight</code>, <code>testLight</code>, <code>testPointLight</code>, <code>testParallelLight</code>,
+<code>writeDebugLightmapImage</code>. All 8 are <code>exposed: false</code> (plain-console
+unreachable in retail), so — per memory <code>tnc-console-unlock</code> — reachable
+only via the already-proven <code>resourceExec &lt;loader-modded cfile&gt; -s</code> carrier,
+the same route already confirmed live for <code>God</code>/<code>g_infiniteAmmo</code>.
+<strong>Not run this round</strong> (no game launch; the task's read-only rule also
+forbids writing a new test cfile under <code>mods/</code>), but decompiled this round
+for its exact behavior:</p>
+<pre><code>python tools/decomp.py cmd_addLight --strings Addlight
+</code></pre>
+<p><code>cmd_addLight</code> (rva <code>0xf3d260</code>) is a tail-call stub into
+<code>FUN_7ff62df567c0</code>; decompiling <em>that</em> (<code>python tools/decomp.py 0x1d467c0</code>)
+turned out to be a dead end — it disassembles to a generic MSVC
+<code>__chkstk</code>-style stack-probe helper (zeroes guard pages for a large stack
+frame), not addLight's actual argument parser; Ghidra found no further
+cross-references to walk from there. <strong>Dead end, 1 try, recorded, not
+pursued further this round</strong> (matches <code>idLight::Init</code>'s same "no symbol to
+start from" shape from pass 1's open questions). What <em>is</em> fully recovered —
+every one of <code>addLight</code>'s help-text strings has a stable address and prints
+verbatim regardless of which function reads it — is its <strong>complete usage
+contract</strong>, pulled via <code>--strings</code> against several flag-name patterns:</p>
+<pre><code>Addlight Usage:
+Note: (arg) is required [arg] is optional. Omit the () and []. run addLight -examples for examples
+  -point                spawn a point light, defaults to spot
+  -spot                 spawn a spot light, defaults to this but at least you know what's happening
+  -dist ( n )           spot distance, defaults to 5000, only applicable for spot lights
+  -radius ( n )         defaults to 300, only applicable for point lights
+  -fov ( n )            defaults to player ( 85 ) fov, only applicable to spot lights
+  -intensity ( n )      defaults to 1.0, multiplied into color
+  -color ( r g b )      defaults to 1.0 1.0 1.0
+  -shadows              turn on shadow casting for this light      -- i.e. OFF unless passed
+  -mat ( material )     defaults to nothing, addLight -listMats to see a list of light materials
+  -listmats [ filter ]  prints lists of light materials
+
+examples:
+  addLight -point -color 1 0 0 -radius 150                                    (tiny red point light)
+  addLight -point -color 0 0 1 -radius 500                                    (huge blue shadowed point light -- shown without -shadows in the string dump, read as illustrative, not literal)
+  addLight -spot -dist 5000 -intensity 2 -fov 70 -shadows -color 0 1 .5 -mat lights/gaus_flicker_01
+</code></pre>
+<p>This is directly useful evidence, not just a recipe:</p>
+<ul>
+<li><strong><code>-shadows</code> is opt-in, off by default</strong> — a runtime-level data point (not
+  <code>idLight::Init</code> itself, but the command's own spawn path) consistent with
+  pass 1's open question about <code>castShadows</code>'s unset-field default; still
+  not proof of the C++ class default, since <code>addLight</code> could be choosing its
+  own spawn-time default independently of the class's — flagged as
+  INFERRED, not PROVEN, below.</li>
+<li><strong><code>-mat</code> defaults to nothing</strong> — an <code>addLight</code>-spawned light with no
+  <code>-mat</code> has no <code>lightMaterial</code> override, which (per Sec.3's renderParm
+  defaults) should fall back to the engine's own hardcoded default falloff/
+  project images (<code>lights/squareLight1.tga</code> / <code>lights/squarelight1.tga</code>),
+  not one of the 133 corpus materials — makes a bare <code>addLight -point
+  -color 1 0 0 -radius 150</code> a clean, minimal-variable test.</li>
+<li><strong>The default spawn type is spot, not point</strong> (<code>-spot</code>: "defaults to
+  this"), opposite of what the brief's own FIRST PASS example commands might
+  suggest — anyone testing this in game should pass <code>-point</code> or <code>-spot</code>
+  explicitly rather than relying on the default.</li>
+<li><code>writeDebugLightmapImage</code> ("writes a debug image of the lightmap") is a
+  cheap diagnostic the in-game test should run <em>first</em>, on any kit static
+  instance, to confirm the kit's new geometry actually has a non-trivial
+  baked lightmap rect before worrying about whether dynamic lights land on
+  top of it — the verifier's own suggestion, carried into the test plan
+  below.</li>
+</ul>
+<p><strong>Why this is cheaper than pass 1's test</strong>: standing next to <em>any</em>
+lightmapped <code>"Unique"</code>-program surface in <em>any already-loaded retail level</em>
+and running <code>addLight -point -color 1 0 0 -radius 150</code> through the
+<code>resourceExec</code> carrier tests this report's central open question (does a
+new dynamic light reach lightmapped static geometry) directly, without
+installing or loading the whole rebuilt kit map first. It is the new
+in-game test's step 1, below.</p>
+<h2 id="proven-vs-inferred">PROVEN vs INFERRED</h2>
+<p><strong>Proven (data/corpus, re-measured fresh this round, or file hashes):</strong></p>
+<ul>
+<li><code>idLight</code> is the sole class for point/spot/probe/area/scattering light
+  types (13,406 corpus instances, only <code>light/point</code>/<code>light/spot</code>/
+  <code>light/probe</code> as decl bases, <code>lightType</code> the sole discriminator); exactly
+  one <code>LIGHT_PARALLEL</code> instance exists corpus-wide.</li>
+<li><code>idLensFlare</code> (7,739 instances, always <code>declFlare</code> set) is a separate
+  class/asset family from <code>idLight</code>, not a light subtype.</li>
+<li><code>idGodRays</code> and <code>idLight2</code> are RTTI classes with <strong>0</strong> placed instances
+  across 39 maps / 28 archives.</li>
+<li>117 distinct <code>idLight</code> <code>edit.*</code> fields and <strong>35</strong> distinct <code>idLensFlare</code>
+  fields exist corpus-wide (full tables in <code>re_probes/dynlights/
+  survey_out.txt</code>; the 35 re-measured mechanically this round with
+  <code>round2_checks.py</code> — pass 1's "25" was a by-eye miscount, see "Pass 1
+  errors"); <code>light/point</code>/<code>light/spot</code>/<code>light/probe</code>/<code>func/flare</code>
+  decls set nothing but <code>lightType</code> (or nothing at all for <code>func/flare</code>).</li>
+<li><code>lightMaterial</code> (a <code>material</code> decl) names both <code>lightfalloffmap</code> and
+  <code>lightprojectmap</code>, both atlas-packed via <code>...atlasscalebias</code> into one
+  shared <code>_lightimageatlas</code>; 133 distinct <code>lights/...</code> materials exist to
+  reuse without authoring new images. The two images' defaults differ in
+  case (<code>lightfalloffmap</code> -&gt; <code>lights/squareLight1.tga</code>, <code>lightprojectmap</code>
+  -&gt; <code>lights/squarelight1.tga</code>), re-dumped live this round, fixing a
+  transcription slip in pass 1.</li>
+<li><code>lights</code>/<code>clusterLightsId</code>/<code>clusterNumLights</code>/<code>clusteredLighting</code>
+  renderParms are declared <code>view</code>-scope (frame-global); <code>lightMask</code> (<code>Vec
+  1</code>) and <code>skiplightprobe</code> (<code>Vec 0 bool</code>, probe-bake-only) both default off
+  and are never set away from default in the <strong>correct</strong> corpus — raw text
+  of every entity, all classes, across all 39 retail <code>.entities</code> maps, not
+  materials (0/0 hits for both, fixed this round, see "Pass 1 errors"; the
+  old 0/11,469-materials figure was also correct but was the wrong corpus
+  per the report's own scope rule).</li>
+<li>Exactly <strong>9</strong> light-system cvars in the 3,256-cvar table are not
+  <code>CHEAT</code>-flagged: <code>r_imageAtlasLightWidth/Height</code>, <code>r_lightClassThreshold</code>,
+  <code>r_lightDistanceFadeMultiplier</code>, <code>r_lightScatteringQuality</code>,
+  <code>r_particlesLightAtlasWidth/Height/Quality</code>, <code>r_shadowMaxStaleFrames</code>
+  (fixed this round from pass 1's wrong claim of "only two").</li>
+<li>The console commands <code>addLight</code>/<code>testLight</code>/<code>testPointLight</code>/
+  <code>testParallelLight</code>/<code>clearLights</code>/<code>popLight</code>/<code>popClosestLight</code>/
+  <code>writeDebugLightmapImage</code> exist (all <code>exposed: false</code>); <code>addLight</code>'s full
+  usage/flag-default text was recovered by decompile this round (Sec.8) —
+  missed entirely in pass 1 despite <code>commands.json</code> being in the task's own
+  tool list.</li>
+<li><code>tools/build_custom_map.py</code> already has <code>light_color()</code>/<code>lights_near()</code>,
+  simpler pre-existing primitives for recoloring/finding lights in a map
+  that already has retail lights in it — missed in pass 1's recipe section.</li>
+<li><code>castShadows</code> is explicit on only 40% of corpus lights (4,984 true/360
+  false); the retail point-light donor the kit build clones never sets it,
+  the retail spot-light donor sets it <code>true</code>.</li>
+<li>The kit map's 12 <code>idLight</code> entities are full donor transplants of two
+  real retail c2v1 lights, inheriting <code>lightMaterial</code>/<code>castShadows</code>/
+  <code>shadowZControl</code>/<code>staticLightMapScale</code> unmodified; only placement, color,
+  intensity and (spots) cone range are authored per-light.</li>
+<li><code>re_probes/kitmap/variants/H/chunk_22.resources</code> and the file currently
+  installed at <code>dlc/dlc_0/base/chunk_22.resources</code> are byte-identical
+  (sha256 <code>cd7e9340…</code>, independently re-hashed this round); that file's own
+  <code>c2v1.entities</code> contains exactly 12 <code>idLight</code> blocks, all <code>kitmap_light_*</code>,
+  0 leftover retail lights.</li>
+<li>No cvar in the 3,256-cvar table caps total light count or lights/cluster;
+  the only quantized budgets found are the 16x8x24 clustered-lighting tile
+  grid and the two Umbra shadow-occlusion job caps (6 visible/1 invisible
+  per frame).</li>
+</ul>
+<p><strong>Inferred (architecture-grounded, not instruction-level proven, never
+runtime-observed):</strong></p>
+<ul>
+<li>That a new <code>idLight</code>'s direct-lighting contribution actually reaches a
+  lightmapped (<code>idStaticInstanceEntity</code>/"Unique"-program) surface in the
+  same way it reaches an ordinary surface. Grounded in the <code>view</code>-scope
+  buffer declarations and the universal-default <code>lightMask</code>, but not in a
+  decompiled shader that shows the two terms being summed.</li>
+<li>The C++-side default for <code>castShadows</code> when a light omits it (true or
+  false) — still not decompiled at the <code>idLight</code> class level this round
+  either (<code>cmd_addLight</code>'s tail-call target turned out to be a generic
+  stack-probe helper, not its arg parser — Sec.8, dead end). New this round:
+  <code>addLight</code>'s own <code>-shadows</code> console flag is explicitly opt-in ("turn on
+  shadow casting for this light", off unless passed) — a same-direction
+  runtime signal, not proof of the class constructor's default, since the
+  command's spawn path could set its own default independently of
+  <code>idLight</code>'s.</li>
+<li>Whether the two donor <code>lightMaterial</code>s (and 131 other untried ones) look
+  visually right on the kit's new geometry, or whether the 3 shadow-casting
+  kit spot lights shadow the new kit meshes correctly — nothing here has
+  been loaded in the game.</li>
+</ul>
+<h2 id="failed-hypotheses--dead-ends-this-round">Failed hypotheses / dead ends (this round)</h2>
+<ul>
+<li><strong>"<code>r_skipLights</code>'s bitmask or a similar cvar directly exposes a total
+  light-count cap"</strong> — checked (full description text read): it is a
+  type-exclusion bitmask (points/spots/area/parallel/probes), not a count
+  limit. No count-limit cvar found anywhere in the 3,256-entry table by name
+  or description regex on "light".</li>
+<li><strong>"<code>lightMask</code>/<code>skiplightprobe</code> are used somewhere in retail to keep
+  dynamic light off a surface"</strong> — checked both the (wrong-corpus) 11,469
+  census'd materials and, this round, the right corpus — raw entity text,
+  all classes, all 39 maps: 0/0 hits either way, always the compiled
+  default.</li>
+<li><strong>A single "the" light-cvar budget number</strong> — there isn't one; the real
+  budget is the 3,072-cell clustered grid, per-frame range/CPU/GPU light
+  culling (on by default), and per-light shadow-update throttling
+  (<code>r_shadowMaxStaleFrames</code>) plus the two Umbra job caps — several
+  independent levers, not one scalar.</li>
+<li><strong>"Decompiling <code>cmd_addLight</code>'s tail-call target recovers its argument
+  parser / <code>castShadows</code>'s compiled default"</strong> (the verifier's own
+  suggested open lead) — tried once this round: <code>FUN_7ff62df567c0</code> is a
+  generic MSVC stack-probe helper (zeroes guard pages for a large frame),
+  not addLight-specific code, and Ghidra found no further call-site
+  cross-references to walk from it. 1 try, recorded, not pursued further.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Whether <code>LIGHT_PARALLEL</code>/the sun is ever placed via an <code>idLight</code> entity
+  in practice, or always comes from <code>envSettings</code> — the one corpus
+  <code>LIGHT_PARALLEL</code> instance looks more like a mislabeled spot-shaped effect
+  than the level's actual sun; not traced to <code>envSettings</code>'s own decl this
+  round.</li>
+<li>The exact C++ default for an unset <code>castShadows</code>, and for every other
+  field (<code>lightMaterial</code>, <code>lightRadius</code>, …) a light never sets — would need
+  <code>idLight::Init</code>/the class's constructor decompiled; this round could not
+  find a named function to start from (no symbol, no curated name, no RTTI
+  function — only the vtable address — and a plain-text search via
+  <code>tools/tnc_runtime_code.py --xref lightMaterial</code> found the string but no
+  code cross-reference through that lower-fidelity tool).</li>
+<li>Whether authoring a brand-new falloff/cookie image (not reusing one of
+  the 133 existing <code>lights/...</code> materials) is reachable without a shared
+  light-atlas writer this toolkit does not have — open, same shape as
+  <code>r4_materials.md</code>'s own open question about the virtual-texture append
+  path.</li>
+<li>Whether a fixed array size backs the <code>clusterLightsId</code>/<code>lights</code>
+  structured buffers (almost certainly yes for any real GPU buffer) — not
+  found as a cvar and not decompiled.</li>
+</ul>
+<h2 id="re-runnable-checks">Re-runnable checks</h2>
+<pre><code>python re_probes/dynlights/survey_lights.py     # full field/class/lightType census, ~1 min
+python re_probes/dynlights/round2_checks.py     # round-2: idLensFlare field recount + correct-corpus lightmask/skiplightprobe check, ~1 min
+
+# round-2 cvar re-census (ad hoc, same source re_probes/cvartable/cvars_tnc_v2.json)
+python -c &quot;import json,re; d=json.load(open('re_probes/cvartable/cvars_tnc_v2.json',encoding='utf-8')); hits=[c for c in d['cvars'] if re.search('light',(c['name'] or ''),re.I) or re.search('light',(c['description'] or ''),re.I)]; print(len(hits)); [print(c['name']) for c in hits if not c['cheat']]&quot;
+
+# renderParm casing re-check (reused, not rewritten)
+python re_probes/materials/dump_renderparm.py lightfalloffmap lightprojectmap lightmask skiplightprobe
+
+# addLight usage-text recovery (Sec.8)
+python tools/decomp.py cmd_addLight --strings Addlight
+python tools/decomp.py --strings &quot;\t -point|\t -spot|\t -dist|\t -radius|\t -fov|\t -intensity|\t -color|\t -shadows|-listmats \[&quot;
+
+# cross-checks used this round (ad hoc, not saved as flags on the tool above)
+python -c &quot;import hashlib; print(hashlib.sha256(open('re_probes/kitmap/variants/H/chunk_22.resources','rb').read()).hexdigest())&quot;
+python -c &quot;import hashlib; print(hashlib.sha256(open(r'&lt;Steam library&gt;/steamapps/common/Wolfenstein.II.The.New.Colossus/dlc/dlc_0/base/chunk_22.resources','rb').read()).hexdigest())&quot;
+# both: cd7e9340... (byte-identical; H is what is currently installed)
+</code></pre>
+<p>(The <code>.entities</code>-content checks — 12/12 <code>kitmap_light_*</code>, 0 leftover retail
+lights, <code>lightMaterial</code>/<code>castShadows</code> donor inheritance — were run as
+one-off Python snippets against <code>re_probes/kitmap/variants/H/chunk_22.
+resources</code> and retail <code>dlc_2/base/chunk_22.resources</code>, shown inline above
+rather than saved as a tool, since they reuse <code>survey_lights.py</code>'s imports
+directly.)</p>
+<h2 id="in-game-test-for-the-maintainer">In-game test for the maintainer</h2>
+<p><em>(Translated from German.)</em></p>
+<p><strong>New this round (cheaper, try it first):</strong> The core question of this
+report — does a new dynamic light affect a surface with a baked lightmap
+("Unique" program, i.e. <em>every</em> wall/every piece of furniture in <em>every</em>
+retail level) — can be tested <strong>without</strong> loading the whole kit map:</p>
+<ol start="0">
+<li>As with the already-proven <code>resourceExec</code> route (project memory note
+   <code>tnc-console-unlock</code>, same technique as <code>God</code>/<code>g_infiniteAmmo</code>): run a
+   cfile replaced by the loader with <code>resourceExec &lt;cfile&gt; -s</code>, now with a
+   line like <code>addLight -point -color 1 0 0 -radius 150</code> (or
+   <code>testPointLight</code>) in it.</li>
+<li>Stand next to any wall/piece of furniture somewhere in an already running
+   retail level (no kit map needed) and first run
+   <code>writeDebugLightmapImage</code> — this cheaply confirms that this surface
+   really has a non-trivial lightmap before dynamic light comes into it.</li>
+<li>Then trigger <code>addLight -point -color 1 0 0 -radius 150</code> (red light, no
+   <code>-mat</code>, so the built-in default falloff — the simplest variant): does the
+   wall next to it become noticeably red/brighter, or does it stay exactly
+   as before (counter-evidence to the main claim)? Note:
+   without <code>-point</code>/<code>-spot</code> the default is <strong>spot</strong>, not point.
+   <code>clearLights</code>/<code>popLight</code> cleans up again afterwards.</li>
+</ol>
+<p><strong>Second, more detailed test (as planned so far)</strong>: The 12 new lights
+(and the H lightmap for the old kit pieces) are already installed in
+<code>dlc/dlc_0/base/chunk_22.resources</code> — the same file that
+<code>r2_maplightstairs.md</code> described as variant H, only now with a
+confirmed hash against the installation. Nothing needs to be copied, just
+played:</p>
+<ol start="3">
+<li>Start the c2v1 mission (kit building = old Gestapo office, now with
+   kit geometry).</li>
+<li>Look at each of the twelve rooms (hall, vestibule, two galleries, two
+   corridors, two offices, inner courtyard): is a light burning there in the
+   described colour (e.g. red grazing light on the monolith in the hall, green
+   light in the "interrogation corridor")? Does the light visibly affect the
+   <strong>new</strong> furniture/walls (brighter/darker depending on distance), or do the
+   surfaces look completely flat/one amount of light despite the light (that
+   would be the counter-evidence to this report's main claim)?</li>
+<li>With the three spot lights (two on the monolith, one in the inner courtyard
+   as "moonlight") pay specific attention to shadows: do the new kit
+   furniture/walls cast a shadow from these lights, or does everything stay
+   shadowless (a less conspicuous, but possible fault)?</li>
+<li>Save a <code>condump</code> afterwards (like <code>kitmap1.txt</code> in the previous tests) in
+   case something crashes or looks wrong — especially if the game noticeably
+   stutters when entering a room with many new lights (a hint at the missing
+   cluster/shadow budget from section 5, now with the additional
+   culling/throttling cvars from there).</li>
+</ol>
+<p>Related: <a href="Research-Report-R2-Maplightstairs.html">Research Report: R2 Maplightstairs</a>, <a href="Research-Report-R4-Materials.html">Research Report: R4 Materials</a>, <a href="Research-Report-Matpipe.html">Research Report: Matpipe</a>, <a href="Research-Report-Entitypipe.html">Research Report: Entitypipe</a>, <a href="TNC-Console-Unlock.html">TNC Console Unlock</a>, <a href="Kitmap-Design-Report.html">Kitmap Design Report</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R5-Kiscule-Command.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Kiscule Command Nodes Run Through the Same Unrestricted Path as <code>resourceExec</code></a><a class="next" href="Research-Report-R6-Engine-Limits.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Engine Limits: Entities, AI, Lights, Map Size, Streaming, Decls, Physics, Strings</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

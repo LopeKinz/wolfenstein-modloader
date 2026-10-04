@@ -32,7 +32,9 @@ RAW_REMOTE = "https://raw.githubusercontent.com/wiki/LopeKinz/wolfenstein-modloa
 CATEGORIES = [
     ("start", "Start here", "Einstieg",
      "Guides and overviews: read these first.", "Anleitungen und Überblicke: die solltest du zuerst lesen.",
-     ["Home", "Modding-Guide", "File-Formats", "Modding-Limits", "Engine-Modding-Surface", "Known-Contradictions"]),
+     ["Home", "WolfSDK-Loader", "WolfSDK-Loader-DE", "WolfSDK-Studio", "WolfSDK-Studio-DE", "FAQ", "FAQ-DE",
+      "Mod-Format", "Mod-Format-DE", "Modding-Guide", "File-Formats", "Modding-Limits", "Engine-Modding-Surface",
+      "Known-Contradictions"]),
     ("tno", "The New Order", "The New Order",
      "Part 1 (2014, id Tech 5): maps, textures and what can be changed.", "Teil 1 (2014, id Tech 5): Karten, Texturen und was sich ändern lässt.",
      ["TNO-Modding-Surface", "TNO-CVar-Catalog", "TNO-CVar-Catalog-Gameplay", "TNO-CVar-Catalog-Rendering",
@@ -41,7 +43,7 @@ CATEGORIES = [
      "Part 2 (2017, id Tech 6): settings, encryption, DLC and the developer mode.", "Teil 2 (2017, id Tech 6): Einstellungen, Verschlüsselung, DLC und der Entwicklermodus.",
      ["TNC-Modding-Surface", "TNC-Verified-Findings-2026-09-23", "TNC-CVar-Catalog", "TNC-CVar-Catalog-Gameplay",
       "TNC-CVar-Catalog-Rendering", "TNC-CVar-Catalog-Other", "TNC-CVar-Validation",
-      "TNC-Console-Unlock", "TNC-Texture-Database", "Developer-Mode", "Cfile-Encryption", "DLC-Overrides"]),
+      "TNC-Console-Unlock", "TNC-Texture-Database", "Developer-Mode", "TNC-Dev-Menu", "Cfile-Encryption", "DLC-Overrides"]),
     ("systems", "Game systems", "Spielsysteme",
      "How sound, loading, save games and scripts work in both games.", "Wie Ton, Laden, Spielstände und Skripte in beiden Spielen funktionieren.",
      ["Audio", "Streamed-Audio-Containers", "Asset-Loading-Paths", "Patch-Precedence", "Save-Games-and-Profiles",
@@ -51,8 +53,8 @@ CATEGORIES = [
      ["TNC-Custom-Map-Status", "TNC-C3V1-Custom-Map-Prototype", "TNC-DLC-C02-Runtime-Test", "Kitmap-Kit-Survey",
       "Kitmap-Map-Skeleton", "Kitmap-Design-Report", "Mission-Anatomy", "Mission-Kiscule-Scripting", "Mission-Text"]),
     ("rounds", "Latest research rounds", "Neueste Forschungsrunden",
-     "Rounds 2 to 5 (late September and October 2026): new assets, AI, sound, missions, the console and more.",
-     "Runden 2 bis 5 (Ende September und Oktober 2026): neue Assets, KI, Ton, Missionen, die Konsole und mehr.", []),
+     "Rounds 2 to 10 (late September and October 2026): new assets, AI, sound, missions, the console, The New Order's engine, the dev menu and new maps.",
+     "Runden 2 bis 10 (Ende September und Oktober 2026): neue Assets, KI, Ton, Missionen, die Konsole, die Engine von The New Order, das Entwicklermenü und neue Karten.", []),
     ("reports", "Research reports", "Forschungsberichte",
      "Detailed results of single investigations.", "Ausführliche Ergebnisse einzelner Untersuchungen.", []),
     ("briefs", "Research briefs", "Forschungsaufträge",
@@ -303,7 +305,7 @@ def build(wiki: str, out: str, summaries_path: str) -> int:
         if n not in cat_of:
             if n.startswith("Research-Brief-"):
                 cat_of[n] = "briefs"
-            elif re.match(r"Research-Report-R\d-", n):
+            elif re.match(r"Research-Report-R\d+-", n):
                 cat_of[n] = "rounds"
             else:
                 cat_of[n] = "reports"

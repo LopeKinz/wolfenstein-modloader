@@ -1,0 +1,1392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNC Graphics Beyond Ultra: Non-Exposed Render and Streaming Cvars – Wolfenstein Modloader</title>
+<meta name="description" content="Which hidden Wolfenstein II graphics settings go beyond the Ultra preset, and two presets built from them.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNC Graphics Beyond Ultra: Non-Exposed Render and Streaming Cvars</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Render-Plus"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#pass-1-errors-second-pass">Pass 1 errors (second pass)</a></li><li><a href="#tldr">TL;DR</a></li><li><a href="#1-method">1. Method</a></li><li><a href="#1b-tno--names-only-catalog-new-this-pass-fixes-a-pass-1-error">1b. TNO — names-only catalog (NEW this pass, fixes a pass-1 error)</a></li><li><a href="#2-the-clamp-mechanism-proven">2. The clamp mechanism (PROVEN)</a></li><li><a href="#3-catalog-proven--table-lookup-not-inferred">3. Catalog (PROVEN — table lookup, not inferred)</a></li><li><a href="#4-proven">4. PROVEN</a></li><li><a href="#5-inferred">5. INFERRED</a></li><li><a href="#6-what-wasnt-done--genuinely-open-honest-scope-limit">6. What wasn&#x27;t done / genuinely open (honest scope limit)</a></li><li><a href="#7-failed-hypotheses--explicit-dead-ends">7. FAILED HYPOTHESES / explicit dead ends</a></li><li><a href="#8-presets-cfg-lines-for-the-resourceexec--s--cfile-route">8. Presets (cfg lines for the resourceExec -s / cfile route)</a></li><li><a href="#9-risks">9. Risks</a></li><li><a href="#10-smallest-in-game-test-for-the-maintainer">10. Smallest in-game test (for the maintainer)</a></li><li><a href="#sources">Sources</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report searched the 3,256 <span class="t" data-t="cvar">settings</span> of Wolfenstein II: The New Colossus (TNC) for graphics options beyond the Ultra preset and picked 67 that matter, such as shadows, texture streaming, sharpness, foliage, post effects and field of view. Reading the decompiled code proved that one shared function pulls every setting with a declared range (131 of them) back into that range when it is set up or reset; whether a value typed into the console is also limited is still open. From this, two presets (&#x27;Ultra+&#x27; and &#x27;Clean image&#x27;) were built for the loader&#x27;s default.cfg route, while The New Order (TNO) only gets a list of names because its code could not be read. Everything here comes from <span class="t" data-t="static">static analysis</span>: nothing was seen in the running game, and two risks (a stock Ultra config that may overwrite 5 lines at every start, and a possible reset of cheat-flagged settings) are left for the in-game test.</p><ul><li>Of 3,256 cvars, 304 are exposed; 1,020 carry render or streaming prefixes, and 67 of them were picked as real graphics-quality settings (pass 1 wrongly said 336).</li><li>Some settings go a step past Ultra, e.g. r_decalFilteringQuality 4 (&#x27;Nightmare&#x27;, 16x) and g_fov up to 120 instead of the default 90.</li><li>Depth of field, motion blur, chromatic aberration and film grain can be switched off directly without any unlock; only the vignette needs the default.cfg route.</li><li>No setting gives true supersampling: resolution scaling only lowers the image (floor 0.7, range 0 to 1), and the raw MSAA modes are not recommended.</li><li>Open and not tested in game: whether the stock initial_video_ultra.cfg overwrites 5 Ultra+ lines at every start, and whether cheat-flagged lines get reset (TNC&#x27;s reset-message code has no direct callers).</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat die 3.256 <span class="t" data-t="cvar">Einstellungen</span> von Wolfenstein II: The New Colossus (TNC) nach Grafikoptionen jenseits des Ultra-Presets durchsucht und 67 relevante ausgewählt, etwa Schatten, Textur-Streaming, Schärfe, Vegetation, Nachbearbeitung und Sichtfeld. Das Lesen des dekompilierten Codes hat bewiesen, dass eine gemeinsame Funktion jede Einstellung mit festgelegtem Bereich (131 Stück) beim Anlegen oder Zurücksetzen in diesen Bereich zurückholt; ob auch ein in der Konsole getippter Wert begrenzt wird, ist noch offen. Daraus wurden zwei Presets („Ultra+“ und „Clean image“) für den default.cfg-Weg des Loaders gebaut, während The New Order (TNO) nur eine Namensliste bekommt, weil sich dessen Code nicht lesen ließ. Alles hier stammt aus <span class="t" data-t="static">statischer Analyse</span>: Im laufenden Spiel wurde nichts gesehen, und zwei Risiken (eine mitgelieferte Ultra-Konfiguration, die bei jedem Start 5 Zeilen überschreiben könnte, und ein mögliches Zurücksetzen von Cheat-markierten Einstellungen) bleiben dem Test im Spiel überlassen.</p><ul><li>Von 3.256 Cvars sind 304 freigegeben; 1.020 tragen Render- oder Streaming-Präfixe, und 67 davon wurden als echte Grafikqualitäts-Einstellungen ausgewählt (Durchgang 1 nannte fälschlich 336).</li><li>Manche Einstellungen gehen eine Stufe über Ultra hinaus, z. B. r_decalFilteringQuality 4 („Nightmare“, 16x) und g_fov bis 120 statt der Vorgabe 90.</li><li>Tiefenunschärfe, Bewegungsunschärfe, chromatische Aberration und Filmkorn lassen sich ohne Freischaltung direkt abschalten; nur die Vignette braucht den default.cfg-Weg.</li><li>Echtes Supersampling bietet keine Einstellung: Die Auflösungsskalierung senkt das Bild nur ab (Untergrenze 0,7, Bereich 0 bis 1), und die rohen MSAA-Modi werden nicht empfohlen.</li><li>Offen und nicht im Spiel getestet: ob die mitgelieferte initial_video_ultra.cfg bei jedem Start 5 Ultra+-Zeilen überschreibt und ob Cheat-markierte Zeilen zurückgesetzt werden (der Code für die Rücksetz-Meldung hat in TNC keine direkten Aufrufer).</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on TNC graphics settings beyond the Ultra preset: which registered cvars control render quality and streaming, what range each accepts, and whether each is exposed or cheat-flagged. The report curates the relevant cvars out of the render/streaming-prefixed names, proves from decompiled code that one shared function clamps every cvar to its declared range, and builds two presets ("Ultra+" and "Clean image") for the <code>cfile</code>/<code>resourceExec -s</code> delivery route; TNO gets a names-only catalog. <strong>Static only; two open risks (a stock preset cfg that may re-run at every start, and a possible cheat reset) are what the in-game test at the end checks, and it has not been run.</strong></p>
+<p>Track <code>renderplus</code>. Scope: TNC is the primary catalog (full decompiled
+clamp/exposed/cheat evidence). TNO gets a <strong>names-only</strong> catalog this pass
+(§1b) — it has no runtime image, so no ranges/clamps/exposed-flags are
+possible for it, but it does have real render cvar <em>names</em> worth recording,
+which pass 1 wrongly claimed it didn't (see "Pass 1 errors" below).
+Read-only on both game installs and on everything outside
+<code>re_probes/renderplus/</code> (nothing was written there — this round only <em>read</em>
+the runtime image, the existing cvar table, the existing cvar-delivery code,
+and the stock <code>initial_video_*.cfg</code> files) and this report. No game launch,
+no process attach.</p>
+<h2 id="pass-1-errors-second-pass">Pass 1 errors (second pass)</h2>
+<p>The verifier refuted 4 of pass 1's claims and found 6 missed items. All are
+fixed/investigated below; nothing was walked back for being merely
+inconvenient. Short version:</p>
+<ol>
+<li><strong>TL;DR headline number was wrong by ~3×.</strong> "336 render/streaming cvars"
+   → the correct count for that exact prefix set is <strong>1020</strong> (1033 with
+   <code>fb_</code>), re-verified directly against the cited JSON. Fixed in the TL;DR
+   and §1; the curated §3 catalog (67 rows, keyword-filtered to the brief's
+   actual categories) was always the real deliverable, now stated honestly
+   as a filtered <em>subset</em>, not mislabeled as "the" count.</li>
+<li><strong>§2's <code>0x123932c</code> caller claim was simply wrong</strong> — that address isn't
+   even a valid function start (<code>tools/decomp.py 0x123932c</code> →
+   "no function contains this address"). Removed. Independently re-ran
+   <code>--callers</code> on the clamp function (0x1238730): 3261 <code>UNCONDITIONAL_CALL</code>
+   sites, 0x1239034 confirmed as the one cvar-system-internal caller outside
+   the per-cvar init thunks. New this pass: chased <code>0x1239140</code> itself (the
+   address pass 1 guessed was the console Set path and admitted it couldn't
+   unwind) — it decompiles as a near-content-free trampoline with <strong>205
+   callers scattered across completely unrelated code</strong> (physics-, UI- and
+   audio-looking addresses, one shared tail-call target). That's evidence
+   it is a generic compiler-emitted thunk, not a cvar-specific function —
+   which <em>weakens</em>, not strengthens, pass 1's "proven by elimination" claim
+   that the runtime console Set path also clamps. Downgraded to genuinely
+   open in §5/§6.</li>
+<li><strong>The TNO scope-out was factually wrong and self-cited a section that
+   never mentions TNO.</strong> Ran the project's own existing, zero-new-code
+   <code>re_probes/enginelimits/tno_strings.py</code> against TNO's <code>.rdata</code>/<code>.data</code>:
+   ~1020 render-cvar-like names turned up, several byte-identical in name
+   <em>and description text</em> to TNC's own catalog (<code>image_anisotropy</code>,
+   <code>rs_minimumResolutionScale</code>, <code>vt_maxPPF</code>, <code>r_foliageStartFadeDist</code>,
+   <code>r_foliageBigFadeDistMax</code>). Added as §1b — a names-only list, same
+   honesty level the project's own <code>wolfsdk/cvars.py</code> already uses for TNO.
+   TNO genuinely has no runtime image (re-confirmed), so no ranges/clamps/
+   exposed-flags are possible for it — that narrower claim was correct and
+   stays.</li>
+<li><strong>The stock <code>initial_video_ultra.cfg</code> overwrite risk was never checked,
+   and the primary data table's own <code>session_value</code> field (which pass 1 had
+   available and partially used) was never cross-referenced against the
+   stock preset files.</strong> Both are fixed now: §3's "needs cfile" vs "direct"
+   columns are unaffected, but a new §3.10/§3.11/§9 entry shows (a) 5 of the
+   19 "Ultra+" lines collide with values <code>initial_video_ultra.cfg</code> sets on
+   disk and would be silently re-applied if that file execs every launch
+   (genuinely unresolved — flagged, not asserted either way), and (b) the
+   whole primary JSON table's <code>session_value</code> column matches
+   <code>initial_video_**uber**.cfg</code> on every single discriminating field checked
+   (6/6) — the capture session this entire catalog is built from was
+   already running at the <strong>Uber</strong> tier, not stock Ultra. This doesn't
+   change any default/min/max/exposed value in §3 (those come from the
+   binary's compiled-in default string, a separate field, independently
+   spot-checked), but it does mean the one place pass 1 quoted a
+   "session-observed" value from an older doc (<code>image_anisotropy</code> "4.0")
+   was already stale against the live JSON's own session snapshot (16.0) —
+   pass 1 flagged the mismatch but didn't say which side was right or why.</li>
+<li><strong>§5's "same file" was an overstatement pass 1 had already half-hedged.</strong>
+   The actual runtime-proven test used <code>cfile:snapdemo.cfg</code>/<code>snapedit.cfg</code>
+   fired by a manually bound F6/F7 hotkey (<code>mods/sandbox_tools/mod.json</code>),
+   not <code>cfile:default.cfg</code>'s own unattended startup exec. Fixed wording in
+   §5. The <em>mechanism</em> claim ("same gate") is actually stronger than pass 1
+   argued, now backed by <code>r4_consolecmds.md</code>'s proof that <code>resourceExec</code>
+   drops the restriction level to 0 <strong>generically</strong>, for any file argument
+   — not something specific to <code>snapdemo.cfg</code>.</li>
+<li><strong>The <code>CVAR_CHEAT</code> reset-mechanism risk was missing entirely</strong>, despite
+   bearing on ~40% of both presets' non-exposed lines and despite the
+   sibling round report (<code>r6_enginelimits.md</code>) already hedging it as open.
+   Added to §9, plus a new finding this pass: TNC's own binary contains the
+   verbatim <code>"Resetting cheat cvar: %s"</code> string and its printer function
+   (RVA <code>0x123a320</code>) — but that function has <strong>zero static callers</strong>
+   anywhere in the decompiled image, unlike TNO where the same mechanism is
+   <code>LAUFZEIT</code>-proven to fire on every launch (<code>docs/limits.md</code>). Evidence
+   the TNO-style reset is dead/unwired in TNC's retail build, not proof
+   (an indirect/vtable call wouldn't show up in a static caller scan).</li>
+<li>§3's promised "cheat" column that never appeared in any table — added
+   below where it matters (§3.6 "needs cfile" rows, all confirmed
+   <code>CVAR_CHEAT</code>).</li>
+</ol>
+<h2 id="tldr">TL;DR</h2>
+<p>TNC ships <strong>3256 registered cvars, 304 "exposed" (console/<code>+arg</code>-reachable),
+2952 not</strong> (<code>re_probes/cvartable/cvars_tnc_v2.json</code>, independently
+cross-checked against the engine's own <code>listCvars</code> dump — see
+<code>re_probes/agent_reports/cvartable.md</code>, already in the repo, not redone
+here). Of those, <strong>1020 names start with <code>r_</code>, <code>rs_</code>, <code>vt_</code>, <code>image_</code>,
+<code>sm_</code>, <code>aa_</code> or <code>vulkan_</code></strong> (1033 with <code>fb_</code>) — the render/streaming/
+allocator surface (corrected this pass — pass 1 said 336, a ~3× error, see
+"Pass 1 errors"). Most of that 1020 is aim-assist tuning, SnapMap-portal
+math and Vulkan-allocator knobs, not graphics quality; §3 below is the
+curated subset — <strong>67 cvars</strong> — that actually match the brief's categories
+(LOD, shadows, VT streaming, anisotropy, SSR/AO/volumetrics, foliage/decal/
+particle, post-FX, FOV, resolution scale, plus image-streaming budgets
+added this pass in §3.10): exact name, binary default, declared min/max,
+<code>exposed</code> flag, <code>cheat</code> flag — no guessing, no mining EXE strings.</p>
+<p>Three load-bearing facts, all proven from the decompiled runtime, not
+inferred:</p>
+<ol>
+<li><strong>A single shared function clamps every cvar's value to its declared
+   <code>[valueMin, valueMax]</code></strong> whenever a value is parsed from a string
+   (registration, reset, and the runtime <code>name value</code> console path all
+   funnel through it) — found, decompiled and read at RVA <code>0x1238730</code>
+   (<strong>thousands</strong> of call sites, confirmed with <code>--callers</code>). 131 of the
+   3256 cvars carry a real declared range; for those, <strong>no out-of-range
+   value can ever reach the renderer</strong> — the engine silently clips it back
+   and prints <code>idCvar: Init value clamped</code>. For the other ~3125 (everything
+   without a declared range, which is most of the interesting render
+   knobs), <strong>there is no cvar-layer clamp at all</strong> — whatever downstream
+   code does with the value is the only limit, and that code was not
+   individually traced for every cvar (see §6, "what wasn't done").</li>
+<li><strong><code>exposed=false</code> does not mean "unreachable."</strong> The loader already has
+   a proven, working delivery route for exactly this problem
+   (<code>wolfsdk/mod.py: with_tnc_tweaks()</code> + <code>wolfsdk/cvars.py: split_tnc()</code>,
+   landed 2026-10-01, see <code>TODO.md</code>): cvars the console/<code>+arg</code> gate rejects
+   get appended as plain <code>name value</code> lines to the <strong>retail</strong>
+   <code>cfile:default.cfg</code>, which the engine itself runs via its own
+   <code>resourceExec default.cfg -s</code> at every startup
+   (<code>docs/ladepfade.md:240-253</code>, confirmed against <code>NewColossus_x64vk.exe</code>
+   strings, not guessed) — no manual console typing, no <code>+args</code>. The
+   <em>mechanism</em> (<code>resourceExec</code> drops the restriction level to 0 for any
+   file it runs) is runtime-proven generically
+   (<code>re_probes/agent_reports/r4_consolecmds.md</code>) and for cheat cvars
+   specifically (God, <code>g_infiniteAmmo</code>) — but that proof used two <em>other</em>
+   files (<code>cfile:snapdemo.cfg</code>/<code>snapedit.cfg</code>) fired by a bound hotkey, not
+   <code>default.cfg</code>'s own unattended startup exec (corrected this pass — pass
+   1 said "same file", see "Pass 1 errors" #5). Two risks found this pass
+   that bear directly on whether a <code>default.cfg</code> line actually survives to
+   the rendered frame: the same startup init block also unconditionally
+   execs <code>initial_video_&lt;tier&gt;.cfg</code> from disk (§9), and every non-exposed
+   cvar in both presets is <code>CVAR_CHEAT</code>-flagged (§9). Someone should watch
+   <code>qconsole.log</code> once either way (see §10).</li>
+<li>Most "quality" tier cvars (<code>r_SSRQuality</code>, <code>r_SSDOQuality</code>,
+   <code>r_motionBlurQuality</code>, …) <strong>already default to their own highest
+   declared tier in the binary</strong> — the Ultra preset is very likely just
+   "don't touch the compiled defaults." The real headroom beyond Ultra is
+   in three different places: (a) numeric knobs the Ultra preset doesn't
+   touch at all (VT page locking, shadow query budgets, foliage/decal fade
+   distances, DOF/vignette/grain/CA), (b) a few enums that go <strong>one step
+   past</strong> the tier named "Ultra" in their own description text
+   (<code>r_decalFilteringQuality</code>: 0 Low … 3 <strong>Ultra</strong> … <strong>4 Nightmare</strong>), and
+   (c) forcing off the one quality-reducing default the binary ships <em>on</em>:
+   <code>r_shadingRateQualityOverride</code> defaults to <code>5</code> (<strong>adaptive</strong> variable
+   shading rate), not <code>4</code> (full 1x1 every pixel).</li>
+</ol>
+<h2 id="1-method">1. Method</h2>
+<ul>
+<li>Source of truth: <code>re_probes/cvartable/cvars_tnc_v2.json</code> (3256 cvars,
+  built and triple cross-validated by an earlier round —
+  <code>re_probes/agent_reports/cvartable.md</code> — from the live <code>idCVarSystemLocal</code>
+  registrar walk in <code>re_probes/runtime_87400/module.bin</code>, matched 304/304
+  against the engine's own <code>listCvars</code> output). I did not re-derive this
+  table; I queried it (<code>python3 -c "..."</code> against the JSON, no new probe
+  script, nothing written to disk outside the scratchpad).</li>
+<li>Grouped by prefix (<code>r_</code> 836, <code>vt_</code> 115, <code>rs_</code> 17, <code>image_</code> 16, <code>sm_</code> 12,
+  <code>aa_</code> 10, <code>vulkan_</code> 14 — <code>aa_</code>/<code>sm_</code>/<code>vulkan_</code>/<code>fb_</code> turned out to be
+  aim-assist, SnapMap-portal and Vulkan-allocator tuning, not graphics
+  quality, and are excluded below) and then by keyword regex per the
+  brief's categories (lod, shadow/cascade, stream, aniso/filter,
+  ssr/ao/volumetric/fog, foliage/decal/particle, motion blur/dof/chromatic/
+  grain/vignette/bloom/sharpen, fov, resolution-scale).</li>
+<li>For the one claim that needed code, not just the table (the clamp
+  mechanism), I used <code>tools/decomp.py</code> on the shared value-parser
+  (<code>0x1238730</code>) and the console <code>name value</code> command path (<code>0x1239f20</code> →
+  <code>0x1239140</code>, a tail-call the decompiler couldn't unwind further without
+  more budget — see §6) and <code>tools/tnc_runtime_code.py --xref</code> as a
+  negative control (a cvar's own <code>.data</code> record has <strong>zero</strong> static
+  references outside its own registration constructor — usage code holds a
+  separately-cached pointer that nothing in this round's budget located, so
+  I did not trace individual usage sites beyond the shared clamp function;
+  see §6).</li>
+<li>TNO: <strong>pass 1 wrongly claimed its strings "carry no render cvars worth a
+  catalog entry" — fixed this pass, see §1b.</strong> <code>docs/limits.md</code> (TNO) does
+  document a <em>different</em>, already-measured restriction model
+  (<code>com_allowConsole</code>/cheat-reset gate, not an exposed-cvar gate) — that
+  part was right. TNO genuinely has no runtime image (<code>D:/wolf-decomp</code> is
+  TNC-only, re-confirmed this pass), so no code-level claim (clamps,
+  <code>exposed</code>, declared ranges) is possible for it — but its <code>.rdata</code>/<code>.data</code>
+  strings do carry hundreds of real render cvar names, mined this pass with
+  the project's own pre-existing <code>tno_strings.py</code> (zero new code, zero game
+  launches).</li>
+</ul>
+<h2 id="1b-tno--names-only-catalog-new-this-pass-fixes-a-pass-1-error">1b. TNO — names-only catalog (NEW this pass, fixes a pass-1 error)</h2>
+<p>Ran <code>python re_probes/enginelimits/tno_strings.py</code> (already in the repo,
+unmodified) against <code>WolfNewOrder_x64.exe</code>'s <code>.rdata</code>/<code>.data</code>, filtered to
+the same prefixes as §1. Result: <strong>~1020 unique cvar-like names</strong> starting
+<code>r_</code>/<code>rs_</code>/<code>vt_</code>/<code>image_</code>, spanning every category the brief asked about.
+Highlights — names (and in one case description text) <strong>identical</strong> to
+TNC's own catalog, i.e. the same id-Tech-lineage renderer carried these
+cvars forward:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>TNO string (RVA)</th>
+<th>Matches TNC's</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image_anisotropy</code> — <em>"set the maximum texture anisotropy if available"</em></td>
+<td><code>image_anisotropy</code> (§3.1)</td>
+<td>name <strong>and</strong> description byte-identical</td>
+</tr>
+<tr>
+<td><code>rs_minimumResolutionScale</code></td>
+<td><code>rs_minimumResolutionScale</code> (§3.9)</td>
+<td>same resolution-scale-floor concept</td>
+</tr>
+<tr>
+<td><code>vt_maxPPF</code></td>
+<td><code>vt_maxPPF</code> (§3.4)</td>
+<td>same VT streaming budget concept</td>
+</tr>
+<tr>
+<td><code>r_foliageStartFadeDist</code>, <code>r_foliageBigFadeDistMax</code></td>
+<td>§3.6</td>
+<td>same foliage fade system</td>
+</tr>
+</tbody>
+</table></div>
+<p>No default/min/max/exposed/cheat can be read for any of these — that needs
+a decompiled <code>.text</code>, which TNO doesn't have (SteamStub-encrypted, no
+runtime snapshot exists in this project, confirmed by re-reading
+<code>tools/ghidra_runtime_import_tno.py</code>'s own docstring this pass). This is a
+<strong>names-only</strong> catalog, same honesty level <code>wolfsdk/cvars.py</code> already uses
+for its existing TNO cvar list ("mined out of the retail
+<code>WolfNewOrder_x64.exe</code> string pool, so the names are real"). Treat as a
+lead for a future TNO-focused round, not a deliverable preset — there is no
+way to know from strings alone whether any of these are clamped, exposed,
+or even still read by live code.</p>
+<h2 id="2-the-clamp-mechanism-proven">2. The clamp mechanism (PROVEN)</h2>
+<p><code>FUN_7ff62d448730</code> (RVA <code>0x1238730</code>), decompiled in full. Signature
+<code>(idCvar *this, bool warnIfClamped)</code>. For the INTEGER and FLOAT branches
+(bit <code>0x2</code>/<code>0x4</code> of the flags field at <code>+0x60</code>):</p>
+<pre><code class="language-c">fVar2 = *(float *)(param_1 + 0x64);   // valueMin
+fVar3 = *(float *)(param_1 + 0x68);   // valueMax
+if (fVar2 &lt; fVar3) {                  // only when a real range is declared
+    // clip the parsed value into [fVar2, fVar3]
+    if (param_2 != '\0')
+        FUN_7ff62d4486b0(s_idCvar__Init_value_clamped___i__m_..., clipped, (int)fVar2, (int)fVar3, name);
+}
+</code></pre>
+<p><code>valueMin=1.0, valueMax=-1.0</code> is the catalog's own documented sentinel for
+"no range" (<code>cvartable.md</code> §1) — exactly the <code>fVar2 &lt; fVar3</code> guard above,
+read independently from the decompiled branch condition, not copied from
+that doc. <code>--callers</code> on <code>0x1238730</code> returns <strong>3261</strong> <code>UNCONDITIONAL_CALL</code>
+sites (re-counted exactly this pass), essentially every one of the
+~3258 per-cvar init thunks (<code>0x2e8d09</code>, <code>0x2e8eb0</code>, <code>0x2e9050</code>, …) <strong>plus</strong>
+<code>0x1239034</code> (confirmed, called from <code>0x1238fa0</code>, a plausible Reset-to-
+default wrapper) — i.e. the clamp fires at registration and at <code>reset</code>.</p>
+<p><strong>Correction (pass 1 error):</strong> pass 1 additionally claimed <code>0x123932c</code> as a
+caller. That address is <strong>not a valid function start</strong> in the analyzed
+image (<code>tools/decomp.py 0x123932c</code> → "no function contains this address")
+and does not appear in the <code>--callers</code> output — removed, not replaced.</p>
+<p><strong>Console <code>name value</code> runtime path — downgraded to open, not inferred.</strong>
+Pass 1 guessed the path <code>0x1239f20</code>→<code>0x1239140</code> and, unable to unwind
+<code>0x1239140</code>, argued "console Set also clamps" by elimination (it being "the
+only value-parser in the bounded cvar range"). This pass decompiled
+<code>0x1239140</code> directly: it is a near-empty trampoline (<code>void FUN(void)</code> — the
+decompiler couldn't even recover a parameter list) whose only visible body
+is one tail call to a single shared target, called from <strong>205</strong> sites
+scattered across addresses that look like physics, UI and audio code —
+nothing cvar-specific about it. That's real evidence it's a generic
+compiler-emitted thunk (likely an RTTI/cast or exception-unwind helper),
+<strong>not</strong> evidence it's "the only value-parser in range" — the elimination
+argument pass 1 built on top of it doesn't hold. Whether the runtime
+console <code>name value</code> Set path clamps is genuinely <strong>open</strong>, not proven and
+not disproven, moved out of §5/INFERRED into §6/open questions.</p>
+<p><strong>Consequence for the preset below:</strong> every cvar in §4/§5 that carries a
+declared <code>min</code>/<code>max</code> <strong>cannot</strong> be pushed out of that range by any cfg
+line, console command, or <code>+arg</code> — the engine itself refuses and logs a
+warning instead of corrupting anything. That is the safety net the whole
+"Ultra+" preset leans on for the numeric pushes.</p>
+<h2 id="3-catalog-proven--table-lookup-not-inferred">3. Catalog (PROVEN — table lookup, not inferred)</h2>
+<p>Format: <code>name | default (binary reset-string) | [min,max] (declared, enforced per §2) | exposed | cheat</code>.
+"needs cfile" = <code>exposed=False</code> → not reachable as a plain <code>+arg</code> or typed
+console command (gated the same way <code>g_infiniteAmmo</code> was —
+<code>cvartable.md</code> §3), deliverable only through the <code>cfile:default.cfg</code> route
+(§8). "direct" = <code>exposed=True</code> → already reachable as <code>+arg</code>/console <em>and</em>
+also goes through the same cfile route without any extra plumbing.</p>
+<h3 id="31-anisotropy--texture-filtering">3.1 Anisotropy / texture filtering</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image_anisotropy</code></td>
+<td>1 (session-observed shipped cfg: <strong>4.0</strong>, <code>docs/cvars-tnc.md:572</code>)</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>vt_maxAniso</code></td>
+<td>4</td>
+<td><strong>[1,16]</strong></td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_imageAtlasMaxAniso</code></td>
+<td>4</td>
+<td><strong>[1,16]</strong></td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_decalFilteringQuality</code></td>
+<td>2 (High, aniso 4x)</td>
+<td>none declared; documented 0–4</td>
+<td>direct</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>r_decalFilteringQuality</code>'s own description text names its own ceiling:
+<em>"0 - Low (trilinear). 1 - Medium (aniso 2x). 2 - High (aniso 4x). 3 - Ultra
+(aniso 8x). </em><em>4 - Nightmare (aniso 16x)</em><em>."</em> — a tier past "Ultra" that
+exists in the registered cvar and is reachable directly, no cfile needed.</p>
+<h3 id="32-lod">3.2 LOD</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_lodScaleDeviation</code></td>
+<td>0.5</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_lodScaleDeviationNeo</code> / <code>...Scorpio</code></td>
+<td>1.0 / 1.0</td>
+<td>none declared</td>
+<td>direct — <strong>Xbox One X / Scorpio leftovers, no effect on PC</strong>, skip</td>
+</tr>
+<tr>
+<td><code>r_forceLod</code></td>
+<td>-1</td>
+<td><strong>[-1,2]</strong></td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>r_renderLods</code></td>
+<td>1</td>
+<td>none declared</td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>r_LODAutoGenerateThreshold</code></td>
+<td>0</td>
+<td>none declared</td>
+<td>needs cfile</td>
+</tr>
+</tbody>
+</table></div>
+<p>Direction of <code>r_lodScaleDeviation</code> (does lower = sharper/more-detail-at-
+distance, or the reverse?) was <strong>not</strong> resolved from code this round — the
+usage site wasn't located (§6). Treat as INFERRED/untested; don't ship a
+blind push in the committed preset.</p>
+<h3 id="33-shadows">3.3 Shadows</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_shadowAtlasWidth</code> / <code>Height</code></td>
+<td>8192 / 8192</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_shadowAtlasTileSize</code></td>
+<td>2048</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_shadowHardLimitPixels</code></td>
+<td>262144</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_shadowSoftLimitPixels</code></td>
+<td>262144</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_shadowHardLimitTriangles</code></td>
+<td>65536</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_shadowSoftLimitTriangles</code></td>
+<td>6144</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_shadowsDistanceFadeMultiplier</code></td>
+<td>1.0</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_shadowLODAdjustThreshold</code></td>
+<td>0.2</td>
+<td><strong>[0,4]</strong></td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>r_shadowFadeRangeScale</code></td>
+<td>1.0</td>
+<td><strong>[0,1000000]</strong></td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>r_umbraMaxShadowQueriesVisible</code></td>
+<td>6</td>
+<td><strong>[0,512]</strong></td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>r_umbraMaxShadowQueriesInvisible</code></td>
+<td>1</td>
+<td><strong>[0,512]</strong></td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>r_useStaticShadows</code>, <code>r_staticShadowsIncludeSun</code></td>
+<td>1 / 1</td>
+<td>none declared</td>
+<td>needs cfile</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>r_shadowAtlasWidth/Height</code> at 8192² is already 64 MP; doubling to 16384²
+is <strong>4×</strong> the atlas memory with no declared ceiling to stop a mistyped
+value — flagged risky in §7, not in the safe baseline.
+<code>r_umbraMaxShadowQueriesVisible/Invisible</code> defaulting to <strong>6</strong> and <strong>1</strong>
+(out of a hard-clamped ceiling of 512) looks like the biggest single
+headroom find in this whole table — but whether raising it buys visual
+correctness or just burns CPU on occlusion jobs wasn't traced into the
+Umbra occlusion code; recommend a modest raise, not the clamp ceiling (§8).</p>
+<h3 id="34-virtual-texture-streaming-budgets--pool-sizes">3.4 Virtual-texture streaming (budgets / pool sizes)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vt_maxLockedPagesPercent</code></td>
+<td>20</td>
+<td><strong>[0,50]</strong></td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>vt_minLockedVmtrLOD</code></td>
+<td>6</td>
+<td><strong>[0,10]</strong></td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>vt_maxPPF</code> (pages transcoded/frame)</td>
+<td>32</td>
+<td><strong>[0,64]</strong></td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>vt_lodBias</code></td>
+<td>0</td>
+<td>none declared</td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>vt_minLod</code> / <code>vt_maxLod</code></td>
+<td>0 / 12</td>
+<td>none declared</td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>vt_pageImageSizeVmtr</code> / <code>...Unique</code></td>
+<td>8192 / 128</td>
+<td>none declared — <strong>"vt_restart after changing"</strong></td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>vt_packPageFiles</code></td>
+<td>0</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>vt_restart</code> (command, not cvar)</td>
+<td>—</td>
+<td>—</td>
+<td>exposed command, <code>re_probes/cmdtable/commands.json</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>vt_minLockedVmtrLOD</code> is the real "stop the textures from streaming in
+blurry" lever: its description reads <em>"Lock from coarsest LOD down to this
+LOD level in the vmtr physical page pool"</em> — <code>6</code> means only the top few
+mips stay resident; <code>0</code> locks every mip from coarsest to finest. Hard-
+clamped to <code>[0,10]</code> by §2's mechanism, so a bad value can't corrupt
+anything, but <code>0</code> is a real VRAM commitment (see §7).
+<code>docs/virtualtextures.md:397</code> states <code>vt_pageImageSizeVmtr</code>'s default as
+<strong>4096</strong>, not the <strong>8192</strong> this round's binary-registrar read gives —
+flagged, not resolved (§6); I trust the fresher, cross-validated
+<code>cvars_tnc_v2.json</code> read over the older doc, but didn't re-derive it
+myself, so this is a noted discrepancy, not an overridden one.</p>
+<h3 id="35-ssr--ssao--volumetrics--water">3.5 SSR / SSAO / volumetrics / water</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_SSR</code> (toggle)</td>
+<td>1</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_SSRQuality</code></td>
+<td><strong>2 (High — already max of 0/1/2)</strong></td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_SSDOQuality</code></td>
+<td><strong>1 (Medium of 0/1/2)</strong> — not maxed</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_SSRMinSmoothness</code></td>
+<td>0.3</td>
+<td>none declared</td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>r_lightScattering</code> (volumetric fog toggle)</td>
+<td>1</td>
+<td>none declared</td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>r_lightScatteringQuality</code></td>
+<td><strong>1</strong> of 0–3 (3 = highest, reserved-for-cinematics tier exists: <code>r_lightScatteringQualityCinematic</code>)</td>
+<td>none declared</td>
+<td>direct (Quality) / needs cfile (Cinematic)</td>
+</tr>
+<tr>
+<td><code>r_waterReflections</code></td>
+<td>1</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_waterQualityFFT</code></td>
+<td>0 (256×256 sim)</td>
+<td>none declared, documented 0/1</td>
+<td>needs cfile — <code>1</code> = 512×512</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>r_SSDOQuality</code> defaulting to <strong>1</strong>, not <strong>2</strong>, while <code>r_SSRQuality</code>
+already sits at its own max (<strong>2</strong>) is the one SSR/AO cvar in this table
+that genuinely has headroom under the brief's own "beyond Ultra" framing —
+everything else in this group is already at its ceiling by default.</p>
+<h3 id="36-foliage--decal--particle-limits">3.6 Foliage / decal / particle limits</h3>
+<p>Pass 1 promised a <code>cheat</code> column in §3's format line (never delivered,
+flagged by the verifier) — added here since this is the subsection where
+it actually matters (every "needs cfile" row below is <code>CVAR_CHEAT</code>,
+re-confirmed against the live JSON this pass; see §9's cheat-reset risk).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+<th>cheat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_decalDistanceFadeMultiplier</code></td>
+<td>1.0</td>
+<td>none declared</td>
+<td>direct</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>r_decalLifetimeMultiplier</code></td>
+<td>1.0</td>
+<td>none declared</td>
+<td>direct</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>r_decalDistanceFadeStart</code></td>
+<td>60</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>r_decalDistanceExtendedFadeStart</code></td>
+<td>10</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>r_foliageStartFadeDist</code></td>
+<td>3000</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>r_foliageSmallFadeDistMax</code></td>
+<td>5000</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>r_foliageBigFadeDistMax</code></td>
+<td>7000</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>r_gpuParticle{Large,Medium,Small}EmitterParticleCount</code></td>
+<td>32768 / 4096 / 512</td>
+<td>none declared — <strong>registered as <code>type=string</code>, not int, in the live table</strong></td>
+<td>needs cfile</td>
+<td><strong>yes</strong> (<code>CHEAT</code>,<code>INIT</code>)</td>
+</tr>
+<tr>
+<td><code>r_imageAtlasDecalWidth</code>/<code>Height</code></td>
+<td>8 / 8 (×1k)</td>
+<td><strong>[1,16]</strong></td>
+<td>direct</td>
+<td>no</td>
+</tr>
+</tbody>
+</table></div>
+<p>The GPU-particle counts being registered as <strong>string</strong>-typed cvars (not
+int/float) in the live registrar is an engine quirk worth flagging as-is —
+untested whether writing a bare number to a string cvar round-trips
+cleanly through the config parser; not assumed either way (§6/§9).</p>
+<h3 id="37-post-fx-motion-blur--dof--chromatic-aberration--film-grain--vignette">3.7 Post-FX (motion blur / DOF / chromatic aberration / film grain / vignette)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>r_dof</code></strong> (master DOF toggle: 0/1/2)</td>
+<td>1</td>
+<td>none declared</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_motionblur</code></td>
+<td>1</td>
+<td>none declared</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_motionBlurQuality</code></td>
+<td><strong>2 (already max of 0–2)</strong></td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_chromaticAberration</code></td>
+<td>1</td>
+<td>none declared</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_filmGrainRatio</code></td>
+<td>1.0</td>
+<td>none declared</td>
+<td><strong>direct</strong></td>
+</tr>
+<tr>
+<td><code>r_vignette</code></td>
+<td>1</td>
+<td>none declared</td>
+<td><strong>needs cfile</strong></td>
+</tr>
+<tr>
+<td><code>r_sharpening</code></td>
+<td>2.0</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_antialiasing</code></td>
+<td>6 (TSSAA 8TX)</td>
+<td>none declared, documented enum 0–12</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>com_overrideDOF</code>, <code>com_override_dof*</code> (near/far/intensity override)</td>
+<td>0 / 1 / …</td>
+<td>none declared</td>
+<td>needs cfile</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>r_dof</code>, <code>r_motionblur</code>, <code>r_chromaticAberration</code> and <code>r_filmGrainRatio</code> all
+being <strong>exposed</strong> means the three most-requested "clean image" toggles
+(DOF, motion blur, chromatic aberration, plus grain via a ratio) need
+<strong>no console unlock at all</strong> — a plain <code>+r_dof 0</code> on the command line
+already works by the gate's own rules, the cfile route is only strictly
+needed for <code>r_vignette</code> (not exposed) and the <code>com_override_dof*</code> fallback.
+<code>r_antialiasing</code>'s own enum documents three raw-MSAA tiers past the
+TSSAA/FXAA/SMAA set (<code>10/11/12</code> = MSAA 2x/4x/8x) — <strong>not recommended</strong>,
+see §7: id Tech 6/TNC is built around the TSSAA/deferred pipeline and
+nothing in this round confirms MSAA is functional rather than a leftover
+enum value.</p>
+<h3 id="38-fov">3.8 FOV</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+<th>archived</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g_fov</code></td>
+<td>90</td>
+<td><strong>[10,120]</strong></td>
+<td>direct</td>
+<td>yes (<code>CVAR_ARCHIVE</code>, survives restarts)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hard-clamped by §2's mechanism to <strong>10–120</strong>. The options-menu slider's own
+range was not independently re-measured this round (no game launch
+permitted) — but 120 is far past what any vanilla FOV slider in this game
+offers, and the clamp guarantees <code>g_fov 150</code> degrades gracefully to <code>120</code>
+instead of doing anything worse. This is the single cleanest "beyond the
+menu" win in the whole table: one cvar, hard-clamped, already
+<code>CVAR_ARCHIVE</code> so it persists like a normal setting.</p>
+<h3 id="39-resolution-scaling">3.9 Resolution scaling</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rs_enable</code></td>
+<td>0 (off)</td>
+<td>none declared, documented 0–3</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>rs_minimumResolutionScale</code></td>
+<td>0.7</td>
+<td>none declared</td>
+<td>needs cfile</td>
+</tr>
+<tr>
+<td><code>rs_forceFractionX</code> / <code>rs_forceFractionY</code></td>
+<td>0 / 0</td>
+<td>none declared, documented "0.0 to 1.0"</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_initialModeWidth</code>/<code>Height</code></td>
+<td>1920/1080</td>
+<td>none declared — <strong>only used when <code>r_mode=-2</code> on first-ever start</strong></td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_windowWidth</code>/<code>Height</code></td>
+<td>0 / 0</td>
+<td>none declared</td>
+<td>direct</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Dead end, stated honestly:</strong> this is a <em>downscale-for-performance</em>
+system (<code>rs_minimumResolutionScale</code> default <strong>0.7</strong>, i.e. "never render
+below 70%"), not a supersampling system. <code>rs_forceFractionX/Y</code>'s own
+description caps itself at "0.0 to 1.0" in the binary's own text, and no
+cvar in the whole table exposes an internal render-resolution multiplier
+above 1.0 — I looked specifically (§3.9's full <code>rs_</code>/<code>r_mode</code>/<code>r_window*</code>
+sweep is exhaustive, not partial). Forcing <code>rs_forceFractionX 1.5</code> is
+untested and not recommended (§7, failed hypothesis).</p>
+<h3 id="310-image-streaming-budgets--pool-sizes-is_-prefix--new-this-pass">3.10 Image streaming budgets / pool sizes (<code>is_</code> prefix — NEW this pass)</h3>
+<p><strong>Missed in pass 1</strong> (its prefix sweep used <code>r_</code>/<code>rs_</code>/<code>vt_</code>/<code>image_</code>/<code>sm_</code>/
+<code>aa_</code>/<code>vulkan_</code>, never <code>is_</code> — a verifier-flagged gap). 28 <code>is_</code> cvars exist
+("Image Streaming" system, distinct from <code>image_</code>); the brief's own
+"texture streaming budgets and pool sizes" category is a direct textbook
+match:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>range</th>
+<th>exposed</th>
+<th>cheat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_poolSize</code></td>
+<td>1024 (MiB)</td>
+<td>none declared</td>
+<td>direct</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>is_materialAniso</code></td>
+<td>4</td>
+<td><strong>[1,16]</strong></td>
+<td>direct</td>
+<td>no — <strong>a third, separate anisotropy cvar</strong>, on top of <code>image_anisotropy</code>/<code>vt_maxAniso</code> in §3.1</td>
+</tr>
+<tr>
+<td><code>is_maxTextureSize</code></td>
+<td>32768 (KB)</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>is_mipBias</code></td>
+<td>0</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>is_cacheGreedily</code></td>
+<td>1</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>is_maxAllocationsPerFrame</code></td>
+<td>32</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>is_defragLimitMB</code></td>
+<td>32</td>
+<td>none declared</td>
+<td>needs cfile</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>is_poolSize</code>'s own description says <code>"...is_restart after changing"</code> —
+same pattern as <code>vt_restart</code>, a separate command, not re-verified this
+pass. <code>is_materialAniso</code> is engine-clamped <code>[1,16]</code> exactly like
+<code>vt_maxAniso</code>/<code>r_imageAtlasMaxAniso</code> (§3.1/§2) — raising it to 16 is a
+third, independent anisotropy push, not a duplicate of the two already in
+§8.1. Not added to the committed presets this pass (would need a fresh
+risk pass of its own); flagged here as the clearest concrete follow-up.</p>
+<h3 id="311-found-via-the-stock-preset-files-missed-by-the-3-keyword-sweep">3.11 Found via the stock preset files, missed by the §3 keyword sweep</h3>
+<p>Reading the stock <code>initial_video_*.cfg</code> files this pass (§9) surfaced
+several <strong>exposed, non-cheat</strong> render cvars the brief's categories cover
+that pass 1's regex never matched (none contain "lod", "shadow", "stream",
+"aniso", "ssr/ao/volumetric", "foliage/decal/particle", or a post-FX
+keyword in their own name):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>default</th>
+<th>exposed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r_lightDistanceFadeMultiplier</code></td>
+<td>1.0</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_lightClassThreshold</code></td>
+<td>2</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_decalFadeCulling</code></td>
+<td>2</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_particlesLightAtlasQuality</code></td>
+<td>1</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_particlesLightAtlasWidth</code>/<code>Height</code></td>
+<td>4096/2048</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_particleFadeQualityMultiplier</code></td>
+<td>1.0</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_waterCaustics</code>, <code>r_waterHitsSim</code>, <code>r_waterPostProcess</code></td>
+<td>1/1/1</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_waterGridResolution</code></td>
+<td>256</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_waterLodViewDistance</code></td>
+<td>16.0</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_waterInterleaveUpdates</code></td>
+<td>1</td>
+<td>direct</td>
+</tr>
+<tr>
+<td><code>r_shadowMaxStaleFrames</code></td>
+<td><code>"0,0,1,2,2"</code> (string-typed)</td>
+<td>direct</td>
+</tr>
+</tbody>
+</table></div>
+<p>Not added to §8's committed presets this pass (no time left to individually
+risk-assess 11 more lines) — listed here as confirmed real and directly
+settable, for a follow-up round.</p>
+<h2 id="4-proven">4. PROVEN</h2>
+<ul>
+<li>3256 registered / 304 exposed cvars, independently re-confirmed by
+  re-querying the already-cross-validated <code>cvars_tnc_v2.json</code> (not
+  re-derived, but spot-checked: <code>g_fov</code>, <code>r_dof</code>, <code>vt_maxAniso</code>,
+  <code>r_decalFilteringQuality</code> all match their declared min/max and exposed
+  state against direct field inspection of the JSON).</li>
+<li>The shared clamp function <code>0x1238730</code> exists, decompiles cleanly, and
+  its branch condition (<code>valueMin &lt; valueMax</code>) matches the catalog's own
+  documented sentinel independently.</li>
+<li><code>0x1238730</code> has call sites from essentially every per-cvar init thunk
+  plus the cvar system's own Set/Reset internals (<code>--callers</code>, RVA list
+  too long to be anything but "called everywhere").</li>
+<li><code>r_dof</code>, <code>r_motionblur</code>, <code>r_chromaticAberration</code>,
+  <code>r_filmGrainRatio</code>, <code>g_fov</code>, <code>vt_maxAniso</code>, <code>r_imageAtlasMaxAniso</code>,
+  <code>r_decalFilteringQuality</code>, <code>vt_maxLockedPagesPercent</code>,
+  <code>vt_minLockedVmtrLOD</code>, <code>vt_maxPPF</code> are all <code>exposed=True</code> in the live
+  registrar — directly settable, no unlock route needed.</li>
+<li><code>r_vignette</code>, <code>com_overrideDOF</code>/<code>com_override_dof*</code>,
+  <code>r_umbraMaxShadowQueries{Visible,Invisible}</code>, <code>r_shadowLODAdjustThreshold</code>,
+  <code>r_foliage*FadeDist</code>, <code>r_decalDistanceFadeStart</code>,
+  <code>r_gpuParticle*EmitterParticleCount</code> are all <code>exposed=False</code> — need the
+  cfile route.</li>
+<li>The engine's own startup sequence runs <code>resourceExec default.cfg -s</code>
+  unconditionally (<code>docs/ladepfade.md:240-253</code>, TNC-confirmed via
+  <code>command_queue.md</code>'s cross-reference to <code>NewColossus_x64vk.exe</code>), and
+  the loader already has working code (<code>wolfsdk/mod.py</code>,
+  <code>wolfsdk/cvars.py</code>) that appends arbitrary <code>name value</code> lines to that
+  exact file, journaled/reverted like any other mod asset
+  (<code>tools/verify_tnc_tweaks.py</code>, 17/17 at the copy level per <code>TODO.md</code>).</li>
+<li><code>resourceExec &lt;file&gt; -s</code> drops the engine's restriction level to 0 for
+  the duration of that file's own lines, <strong>generically, for any filename</strong>
+  — proven at the code level (<code>r4_consolecmds.md</code>, <code>0xa7a040</code>/<code>0xa7a74b</code>),
+  and runtime-confirmed in-game for two <em>other</em> files via that same
+  callback (<code>cfile:snapdemo.cfg</code>/<code>snapedit.cfg</code>, <code>mods/sandbox_tools</code>) —
+  not yet for <code>default.cfg</code>'s own startup exec specifically (precision fix
+  this pass, see "Pass 1 errors" #5).</li>
+<li>(NEW this pass) <code>initial_video_ultra.cfg</code>'s own on-disk content: read in
+  full, cross-referenced line-by-line against both §8 presets (§9) — 5
+  direct numeric collisions found. <code>initial_video_uber.cfg</code>/
+  <code>_meinleben.cfg</code> also read in full (§9, §3.11).</li>
+<li>(NEW this pass) The primary JSON's <code>session_value</code> column matches
+  <code>initial_video_uber.cfg</code> on 6/6 independently checked discriminating
+  fields (<code>r_decalFilteringQuality</code>=4, <code>is_materialAniso</code>/<code>image_anisotropy</code>
+  =16.0, <code>r_shadowAtlasWidth</code>=8192 [not 16384, rules out <code>meinleben</code>],
+  <code>r_particlesLightAtlasQuality</code>=2 [not 3, rules out <code>meinleben</code>],
+  <code>r_particlesLightAtlasWidth</code>=4096 [not 8192, rules out <code>meinleben</code>]) —
+  the capture session was running Uber, not stock Ultra.</li>
+<li>(NEW this pass) TNC's binary contains the string <code>"Resetting cheat cvar:
+  %s"</code> and its printer function at RVA <code>0x123a320</code> (decompiled in full);
+  <code>--callers</code> on that RVA returns zero hits anywhere in the analyzed image.</li>
+</ul>
+<h2 id="5-inferred">5. INFERRED</h2>
+<ul>
+<li><code>r_decalFilteringQuality 4</code> ("Nightmare") actually looks different
+  on-screen from <code>3</code> ("Ultra") — the enum and its own aniso-tier text are
+  real, the pixel result wasn't seen (no game launch).</li>
+<li>The cfile-delivery <em>gate</em> (restriction level 0 inside any
+  <code>resourceExec</code>'d file) applies to render cvars exactly like cheat cvars —
+  same code path, proven generically (§4). Whether <code>default.cfg</code>
+  specifically survives to the rendered frame unmolested is <strong>not</strong>
+  inferred from this — moved to open questions (§6) given the two new
+  risks found this pass (initial_video re-exec, cheat-flag reset).</li>
+<li><code>vt_minLockedVmtrLOD 0</code> / <code>vt_maxLockedPagesPercent 50</code> will visibly
+  reduce VT streaming pop-in — consistent with their own description text,
+  not confirmed on-screen.</li>
+<li>Direction/sign of <code>r_lodScaleDeviation</code>, <code>r_shadowAtlasTileSize</code>'s
+  packing constraints, and whether <code>r_gpuParticle*EmitterParticleCount</code>
+  (string-typed) round-trips a plain integer through the cfg parser are
+  each flagged inline above as untraced.</li>
+<li>(NEW this pass) <code>0x123a320</code> having zero static callers suggests TNC's
+  retail build doesn't wire up the TNO-style cheat-reset — inference from a
+  negative control, not proof; an indirect/vtable call site wouldn't show
+  up in a plain <code>UNCONDITIONAL_CALL</code> scan (§6).</li>
+</ul>
+<h2 id="6-what-wasnt-done--genuinely-open-honest-scope-limit">6. What wasn't done / genuinely open (honest scope limit)</h2>
+<ul>
+<li><strong>Per-cvar usage sites were not traced.</strong> A cvar's own <code>.data</code> record has
+  no static xrefs outside its registration constructor
+  (<code>tnc_runtime_code.py --xref 0x2f35050</code> on <code>rs_forceFractionX</code>'s record
+  → zero refs, confirmed) — code that <em>reads</em> a cvar's value holds a
+  separately-cached <code>idCvar*</code> pointer initialized once at registration,
+  and locating that second pointer's own address (to then xref <em>it</em>) is a
+  per-cvar reverse-engineering task, not a one-shot tool call. This round
+  did it for none of the ~330 render cvars; the min/max clamp (§2) is a
+  cvar-<em>system</em> proof, not per-cvar usage proof. Anything whose on-screen
+  effect isn't independently obvious from its own description text is
+  marked INFERRED or left as an open question, not asserted.</li>
+<li>No game launch happened (forbidden by the brief) — nothing in this
+  report was seen rendered.</li>
+<li><strong>Whether the runtime console <code>name value</code> Set path also clamps is now
+  genuinely open</strong> (downgraded from pass 1's "inferred by elimination" —
+  the elimination argument's own premise didn't hold, §2). Would need
+  either locating the real Set-path value-parser or a live
+  <code>g_fov 999</code>-via-console test with <code>qconsole.log</code> open.</li>
+<li><strong>Whether <code>initial_video_&lt;tier&gt;.cfg</code> execs on every launch or only on
+  first-ever run is unresolved by any doc in this project</strong> and was not
+  resolved this pass either — <code>docs/ladepfade.md</code>'s own evidence tier for
+  its ordering is <code>STRING</code> (binary layout, i.e. the order these filenames'
+  exec-strings sit in one init block), not <code>LAUFZEIT</code> (an actual observed
+  sequence). That the file's own content exactly matches the session
+  snapshot's <code>session_value</code>s (previous bullet) is suggestive that <em>some</em>
+  session had it active, but doesn't resolve "every launch" vs "once".</li>
+<li><strong>Whether a TNC cheat-reset silently wipes <code>cfile:default.cfg</code>-set
+  <code>CVAR_CHEAT</code> cvars before the frame renders is unresolved.</strong> The
+  printer-function-has-no-callers finding (§4/§5) is new evidence toward
+  "no", but <code>g_infiniteAmmo</code>'s existing proof doesn't close this: that test
+  fired <em>after</em> full load via a hotkey-bound <code>resourceExec</code>, well past any
+  startup-only reset window, while <code>default.cfg</code> itself runs <em>during</em>
+  startup — the one place a startup-only reset would actually matter.</li>
+<li>TNO's render surface now has a names-only catalog (§1b) — ranges, clamps
+  and exposed-flags remain out of reach without a TNO runtime image, which
+  this project does not have.</li>
+</ul>
+<h2 id="7-failed-hypotheses--explicit-dead-ends">7. FAILED HYPOTHESES / explicit dead ends</h2>
+<ul>
+<li><strong>True supersampling (render resolution above native) via <code>rs_*</code>: no
+  cvar does this.</strong> The resolution-scale system is a downscale-for-perf
+  feature with its own floor at 0.7 and a self-documented 0.0–1.0 range on
+  the force-fraction cvars. Not included in the preset.</li>
+<li><strong>Raw MSAA (<code>r_antialiasing</code> 10/11/12) as a quality upgrade over TSSAA:
+  not recommended.</strong> The enum exists and is reachable, but nothing in this
+  round confirms id Tech 6's pipeline actually supports MSAA correctly
+  (most modern deferred-leaning renderers of this era don't, without
+  dedicated code paths that weren't traced) — flagged as a risk, not
+  shipped in the committed preset.</li>
+<li><strong>Doubling <code>r_shadowAtlasWidth/Height</code> to 16384:</strong> technically legal
+  (unclamped), but 4× the atlas memory of the 8192² default with zero
+  declared ceiling — flagged risky, not in the baseline preset, offered
+  only as an optional advanced line.</li>
+<li><strong>DevGUI/render-debug-overlay route:</strong> <code>docs/ui-assets.md</code> §5 already
+  establishes <code>devgui</code> sets without a lock warning but does nothing in the
+  retail build (F8/F10 draw nothing) — re-confirmed by reading that
+  section, not re-tested; not a path to any of this report's cvars.</li>
+</ul>
+<h2 id="8-presets-cfg-lines-for-the-resourceexec--s--cfile-route">8. Presets (cfg lines for the <code>resourceExec -s</code> / cfile route)</h2>
+<p>Both blocks are plain <code>name value</code> lines — exactly the format
+<code>wolfsdk/cvars.py: build_cfg()</code> already emits and <code>wolfsdk/mod.py:
+with_tnc_tweaks()</code> already appends to <code>cfile:default.cfg</code>. Every line below
+works through that one mechanism regardless of <code>exposed</code> state (§4); lines
+marked <code>[direct]</code> would <em>also</em> work as a bare <code>+name value</code> launch
+argument if ever needed standalone. Ranked by impact (engine-clamped
+numeric pushes and already-exposed toggles first — safest, least guessy;
+unclamped distance/budget pushes last — real but untested visual size).</p>
+<h3 id="81-ultra--push-past-the-ultra-presets-own-ceiling">8.1 "Ultra+" — push past the Ultra preset's own ceiling</h3>
+<pre><code>// *** NEW this pass: lines marked [OVERLAP] are also set by the stock
+// initial_video_ultra.cfg, which execs from disk in the same startup init
+// block AFTER default.cfg per docs/ladepfade.md's string-order listing
+// (STRING-tier evidence, not LAUFZEIT — open question, see §6/§9). If that
+// file re-execs on every launch, these 5 lines may get silently pulled back
+// toward (or below) the values shown here. Nothing else in this preset
+// overlaps.
+// --- Ultra+: rank 1-4, hard-clamped by the engine, cannot overshoot ---
+r_decalFilteringQuality 4          // [direct][OVERLAP: stock ultra.cfg sets &quot;3&quot;] Nightmare tier (16x decal aniso) — past &quot;3 Ultra&quot; in the cvar's own text
+image_anisotropy 16                // [direct][OVERLAP: stock ultra.cfg sets &quot;8.0&quot;] world/char texture aniso, unclamped by engine but hardware-capped at 16x anyway
+vt_maxAniso 16                     // [direct][OVERLAP: stock ultra.cfg sets &quot;4.0&quot;] engine-clamped [1,16], was 4
+r_imageAtlasMaxAniso 16            // [direct] engine-clamped [1,16], was 4 — NOT in initial_video_ultra.cfg, no overlap
+vt_maxLockedPagesPercent 50        // [direct] engine-clamped [0,50], was 20 — more VT pages always resident
+vt_minLockedVmtrLOD 0              // [direct] engine-clamped [0,10], was 6 — locks ALL mips resident, big VRAM cost (see risks)
+vt_maxPPF 64                       // [direct] engine-clamped [0,64], was 32 — faster streaming convergence after fast camera moves
+r_imageAtlasDecalWidth 16          // [direct] engine-clamped [1,16], was 8
+r_imageAtlasDecalHeight 16         // [direct] engine-clamped [1,16], was 8
+
+// --- rank 5-6, exposed, unclamped multipliers (moderate pushes, not extreme) ---
+r_decalDistanceFadeMultiplier 2.5  // [direct][OVERLAP: stock ultra.cfg sets &quot;2&quot;] decals visible further out, was 1.0
+r_decalLifetimeMultiplier 2.5      // [direct][OVERLAP: stock ultra.cfg sets &quot;1.3&quot;] decals persist longer, was 1.0
+r_shadowsDistanceFadeMultiplier 1.5 // [direct] shadows stay in longer with distance, was 1.0 — stock ultra.cfg ALSO sets &quot;1.5&quot;, no conflict
+
+// --- rank 7-9, needs cfile (not exposed), moderate pushes off low defaults ---
+r_umbraMaxShadowQueriesVisible 32  // engine-clamped [0,512], was 6 — more lights get real shadow-occlusion tests/frame
+r_umbraMaxShadowQueriesInvisible 8 // engine-clamped [0,512], was 1
+r_waterQualityFFT 1                // documented 0/1, was 0 — 512x512 water sim instead of 256x256
+r_decalDistanceFadeStart 120       // unclamped, was 60
+r_foliageStartFadeDist 6000        // unclamped, was 3000
+r_foliageSmallFadeDistMax 10000    // unclamped, was 5000
+r_foliageBigFadeDistMax 14000      // unclamped, was 7000
+
+// --- rank 10, gameplay-adjacent but explicitly asked for: FOV beyond the menu ---
+g_fov 120                          // [direct] engine-clamped [10,120], CVAR_ARCHIVE (persists), was 90
+</code></pre>
+<h3 id="82-clean-image--kill-the-stylisticpost-process-noise-maximize-sharpness">8.2 "Clean image" — kill the stylistic/post-process noise, maximize sharpness</h3>
+<pre><code>// --- rank 1-4: the four exposed post-fx master toggles, no unlock needed ---
+r_dof 0                            // [direct] master depth-of-field OFF (0=off,1=on,2=on+near-field)
+r_motionblur 0                     // [direct] motion blur OFF
+r_chromaticAberration 0            // [direct] chromatic aberration OFF
+r_filmGrainRatio 0                 // [direct] film grain ratio to 0 (art-authored grain fully suppressed)
+
+// --- rank 5: needs cfile, the one post-fx toggle NOT exposed ---
+r_vignette 0                       // vignette OFF
+
+// --- rank 6: forces off the one quality-REDUCING default the binary ships on ---
+r_shadingRateQualityOverride 4     // [direct] engine-clamped [0,5]; was 5 = adaptive VRS. 4 = always full 1x1 shading rate everywhere
+
+// --- rank 7-8: sharper temporal resolve, modest, avoid overshooting (see risks) ---
+r_antialiasing 9                   // [direct] TSSAA (8X_8TX) — highest *temporal* tier, was 6 (TSSAA 8TX). Do NOT use 10/11/12 (raw MSAA, unverified, see FAILED HYPOTHESES)
+r_sharpening 2.5                   // [direct] was 2.0 — modest nudge, watch for edge halos above ~3.0
+
+// --- rank 9: shared with 8.1, texture clarity is part of &quot;clean&quot; too ---
+image_anisotropy 16
+vt_maxAniso 16
+r_imageAtlasMaxAniso 16
+
+// --- rank 10: belt-and-braces DOF kill via the override system, optional, only if r_dof 0 alone ever proves insufficient ---
+com_overrideDOF 1
+com_override_dof 0
+
+// --- make sure nothing silently drops internal render resolution under &quot;clean&quot; ---
+rs_enable 0                        // [direct] dynamic resolution scaling OFF (already the default — explicit belt-and-braces)
+</code></pre>
+<p>Both blocks can be merged into one cfile (duplicate cvar names between them
+don't collide — none overlap except the shared anisotropy/<code>rs_enable</code>
+lines, listed once). Hand the merged text to
+<code>wolfsdk/mod.py: with_tnc_tweaks()</code> the same way the existing Cheats &amp; QoL
+settings already go through it, or append it to the TNC tweak catalog in
+<code>wolfsdk/cvars.py</code> (<code>_TNC_GROUPS</code> already buckets <code>r_</code>/<code>vt_</code>/<code>rs_</code>/<code>image_</code>
+into "Renderer"/"Textures"/"Virtual Textures" categories, so these just
+need <code>Tweak(...)</code> entries with the ranges proven in §3 — no new plumbing).</p>
+<h2 id="9-risks">9. Risks</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Line(s)</th>
+<th>Risk</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vt_minLockedVmtrLOD 0</code>, <code>vt_maxLockedPagesPercent 50</code></td>
+<td>Real VRAM commitment — "lock every mip resident" is not free on &lt;8 GB cards</td>
+<td>Engine-clamped so it can't go further than documented; drop to <code>vt_minLockedVmtrLOD 2-3</code> / <code>vt_maxLockedPagesPercent 30</code> on lower-VRAM GPUs</td>
+</tr>
+<tr>
+<td><code>r_umbraMaxShadowQueriesVisible/Invisible</code> raised</td>
+<td>Untraced into the Umbra occlusion job scheduler — could be pure CPU cost for little/no visual gain</td>
+<td>Shipped as a modest raise (32/8), not the 512 ceiling; watch frame time</td>
+</tr>
+<tr>
+<td><code>r_decalDistanceFadeMultiplier/Lifetime 2.5</code>, foliage fade distances</td>
+<td>Unclamped — no engine-side ceiling at all; a much larger decal/foliage draw count could cost real GPU time</td>
+<td>Values chosen as moderate multiples, not maxed; <code>r_showDecalsByExpense</code>/<code>r_showFoliageSubTreeBounds</code> exist for in-game diagnosis if it stutters</td>
+</tr>
+<tr>
+<td><code>r_shadowAtlasWidth/Height</code> 16384 (offered in §7, <strong>not</strong> in the committed preset)</td>
+<td>4× atlas VRAM, unclamped</td>
+<td>Deliberately left out of §8; only mention if asked for explicitly</td>
+</tr>
+<tr>
+<td><code>r_antialiasing</code> 10/11/12 (MSAA)</td>
+<td>Unverified on this renderer — explicitly excluded from §8.2</td>
+<td>Use <code>9</code> (TSSAA) instead</td>
+</tr>
+<tr>
+<td>Cfile route for render cvars</td>
+<td>Proven generically (any <code>resourceExec</code>'d file), not yet independently fired for <code>default.cfg</code> specifically or for a render cvar</td>
+<td>§10's in-game test closes this</td>
+</tr>
+<tr>
+<td><code>r_gpuParticle*EmitterParticleCount</code> (not in §8, mentioned in §3.6 only)</td>
+<td>Registered as <code>type=string</code> in the live table — round-trip through the cfg text parser untested</td>
+<td>Left out of the committed preset; flagged as a follow-up, not shipped blind</td>
+</tr>
+<tr>
+<td><code>docs/virtualtextures.md</code> says <code>vt_pageImageSizeVmtr</code> default 4096, live registrar says 8192</td>
+<td>Discrepancy not resolved</td>
+<td>Noted in §3.4; the preset doesn't touch this cvar at all, so it doesn't block delivery</td>
+</tr>
+<tr>
+<td><strong>(NEW) <code>initial_video_ultra.cfg</code> re-exec</strong></td>
+<td>Read in full this pass: it sets <code>r_decalFilteringQuality "3"</code>, <code>image_anisotropy "8.0"</code>, <code>vt_maxAniso "4.0"</code>, <code>r_decalDistanceFadeMultiplier "2"</code>, <code>r_decalLifetimeMultiplier "1.3"</code> — all 5 <strong>conflict</strong> with §8.1's pushed values (marked <code>[OVERLAP]</code> inline). <code>docs/ladepfade.md</code> places its exec in the same startup init block as <code>default.cfg</code>, string-order <em>after</em> it. If it fires every launch, these 5 lines lose to the stock file on every start. <strong>Unresolved</strong> — no doc in this project settles "every launch" vs "first-run-only" (§6)</td>
+<td>§10's test now checks one overlap line (<code>r_decalFilteringQuality</code>) directly after launch</td>
+</tr>
+<tr>
+<td><strong>(NEW) <code>CVAR_CHEAT</code> on every non-exposed line in both presets</strong></td>
+<td>All 10 "needs cfile" cvars across §8.1/§8.2 are <code>CVAR_CHEAT</code> (independently re-checked this pass). TNO has a proven, <code>LAUFZEIT</code>-confirmed startup mechanism that silently resets every <code>CVAR_CHEAT</code> cvar (<code>docs/limits.md</code>); <code>r6_enginelimits.md</code> already hedged TNC's equivalent as unresolved. New this pass: TNC's binary <em>has</em> the identical <code>"Resetting cheat cvar: %s"</code> printer function (<code>0x123a320</code>), but it has <strong>zero static callers</strong> — evidence (not proof) it's unwired in TNC. <code>g_infiniteAmmo</code>'s existing proof doesn't settle this either way: it fired post-load via a hotkey, after any startup-only reset window would already be closed, while <code>default.cfg</code> runs <em>during</em> startup</td>
+<td>§10's test checks one CHEAT-flagged cfile line (<code>r_vignette 0</code>) explicitly for this reason</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="10-smallest-in-game-test-for-the-maintainer">10. Smallest in-game test (for the maintainer)</h2>
+<p><em>(Translated from German.)</em></p>
+<ol>
+<li>Merge the two blocks from §8.1 and §8.2 into one <code>.cfg</code> file
+   (or enter them directly as new <code>Tweak</code> entries in <code>wolfsdk/cvars.py</code> under
+   <code>_TNC_GROUPS</code>/"Renderer").</li>
+<li>Apply in the loader — the existing <code>with_tnc_tweaks()</code> route appends the
+   lines automatically to <code>cfile:default.cfg</code> (the same mechanism that,
+   according to <code>TODO.md</code>, already brought God mode/infinite ammo into the game).</li>
+<li>Start the game, and <strong>before</strong> the first click check <code>qconsole.log</code>
+   (set <code>logFile 1</code>/<code>logFilePersistent 1</code> beforehand if the log is missing —
+   <code>docs/ladepfade.md</code> section "Kein Log ohne Zutun" ("no log without doing
+   something") applies, according to its own text, to part 2 as well) for
+   <code>CANNOT be set</code> or <code>Unknown command</code> on exactly these lines — either would
+   contradict the gate model proven in §4.</li>
+<li>Then just look: <code>g_fov 120</code> should immediately show a visibly wider
+   field of view (clearest single test, since <code>CVAR_ARCHIVE</code> + hard-clamped);
+   <code>r_dof 0</code> + <code>r_motionblur 0</code> should be noticeable immediately in the next
+   cutscene/when looking around quickly (no more blur/softening effect);
+   <code>r_decalFilteringQuality 4</code> is seen most clearly on a flat
+   bullet hole from a steep viewing angle (sharp instead of
+   washed out).</li>
+<li><strong>New this round, two concrete checks for the two open risks from
+   §9:</strong> type <code>r_decalFilteringQuality</code> in the console (<code>~</code>) (without a
+   value, it shows the current state). If it says <code>4</code> → our line has
+   survived, <code>initial_video_ultra.cfg</code> does <strong>not</strong> overwrite the tweaks
+   at every start. If it says <code>3</code> → the stock file wins, and the
+   preset needs either a different delivery route or must drop the 5
+   lines marked <code>[OVERLAP]</code> from §8.1. The same for
+   <code>r_vignette</code> (should show <code>0</code>, not <code>1</code>) — if it is back at <code>1</code>,
+   a cheat reset has wiped the cfile line, and the whole
+   "needs cfile" part of both presets is affected, not just this one
+   line.</li>
+<li>If both checks from step 5 are green, the cfile route for
+   render cvars is upgraded to PROVEN, and <code>vt_minLockedVmtrLOD 0</code> can be
+   checked on a fast camera turn for texture pop-in/blur
+   (should occur much more rarely/not at all compared with the
+   original state).</li>
+</ol>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><code>re_probes/cvartable/cvars_tnc_v2.json</code>, <code>re_probes/agent_reports/cvartable.md</code> (3256/304 cvar catalog, incl. <code>session_value</code> field, not redone, queried)</li>
+<li><code>tools/decomp.py 0x1238730 --callers</code>, <code>0x1239140 --callers</code>, <code>0x123932c</code>, <code>0x123a320 --callers</code>, <code>0x123a320 --xrefs</code>, <code>0x1238530</code>, <code>0x1238fa0</code> (clamp mechanism + cheat-reset investigation, this round and this pass)</li>
+<li><code>tools/tnc_runtime_code.py --xref 0x2f35050</code>, <code>--xref 0x123a320</code> (negative controls on per-cvar usage tracing, this round/this pass)</li>
+<li><code>wolfsdk/mod.py</code> (<code>with_tnc_tweaks</code>, <code>TNC_DEFAULT_CFG</code>), <code>wolfsdk/cvars.py</code> (<code>split_tnc</code>, <code>build_cfg</code>, <code>_tnc_exposed</code>) — existing delivery mechanism, read not written</li>
+<li><code>mods/sandbox_tools/mod.json</code> — the actual file (<code>snapdemo.cfg</code>/<code>snapedit.cfg</code>) the runtime-proven cfile test used, read this pass to fix the "same file" overstatement</li>
+<li><code>docs/ladepfade.md:240-289</code>, <code>re_probes/agent_reports/command_queue.md</code>, <code>re_probes/agent_reports/r4_consolecmds.md</code> — <code>resourceExec default.cfg -s</code> at TNC startup and the generic restriction-level-0 proof</li>
+<li><code>docs/cvars-tnc.md</code>, <code>docs/cvars-tnc-vergleich.md</code>, <code>docs/virtualtextures.md</code>, <code>docs/ui-assets.md</code>, <code>docs/limits.md</code> (TNO cheat-reset precedent) — cross-referenced, not re-derived</li>
+<li><code>re_probes/agent_reports/r6_enginelimits.md</code> — sibling round report, cited this pass for its CVAR_CHEAT-reset hedge (missed in pass 1)</li>
+<li><code>re_probes/enginelimits/tno_strings.py</code> (existing, unmodified) run against TNO's <code>.rdata</code>/<code>.data</code> this pass — §1b</li>
+<li><code>&lt;Steam library&gt;/.../Wolfenstein.II.The.New.Colossus/base/initial_video_{ultra,uber,meinleben}.cfg</code> — read-only, this pass, §3.11/§9</li>
+<li><code>tools/ghidra_runtime_import_tno.py</code> (docstring re-read this pass, confirms no TNO runtime image exists)</li>
+<li><code>TODO.md</code> (2026-10-01 entry on the cfile tweak delivery mechanism)</li>
+</ul>
+<p>Related: <a href="Research-Report-R4-Console-Commands.html">Research Report: R4 Console Commands</a>, <a href="Research-Report-R6-Engine-Limits.html">Research Report: R6 Engine Limits</a>, <a href="Research-Report-Cvartable.html">Research Report: Cvartable</a>, <a href="Research-Report-Command-Queue.html">Research Report: Command Queue</a>, <a href="Modding-Limits.html">Modding Limits</a>, <a href="Asset-Loading-Paths.html">Asset Loading Paths</a>, <a href="TNC-CVar-Catalog.html">TNC CVar Catalog</a>, <a href="TNO-Virtual-Textures.html">TNO Virtual Textures</a>, <a href="UI-Assets.html">UI Assets</a>, <a href="TNC-CVar-Validation.html">TNC CVar Validation</a>, <a href="TNC-CVar-Catalog-Rendering.html">TNC CVar Catalog Rendering</a>, <a href="TNC-Console-Unlock.html">TNC Console Unlock</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Player-Systems.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Player Systems: Movement, Perks, Contraptions, Dual Wield, Weapon Upgrade Kits</a><a class="next" href="Research-Report-R6-Tno-Audio.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Sound Replacement: The Write Path, Round-Tripped</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

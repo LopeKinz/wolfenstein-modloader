@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Documentation — Getting Started – Wolfenstein Modloader</title>
-<meta name="description" content="Start page: how proof is graded, which page answers which question, and what works in both games.">
+<title>Wolfenstein Modding Wiki – Wolfenstein Modloader</title>
+<meta name="description" content="Start page: where to begin with WolfSDK 0.2.0, how proof is graded, and what works in both games.">
 <meta name="theme-color" content="#2d3134">
 <link rel="icon" href="../assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,23 +34,66 @@
 
 <div class="pagehead"><div class="wrap">
 <p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
-<h1>Documentation — Getting Started</h1>
+<h1>Wolfenstein Modding Wiki</h1>
 <p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
 <a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Home"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
 </div></div>
 <div class="wrap docgrid">
-<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#the-most-important-rule-measured--speculated">The Most Important Rule: Measured ≠ Speculated</a></li><li><a href="#which-document-answers-which-question">Which Document Answers Which Question</a></li><li><a href="#what-works-what-doesnt-what-is-unverified">What Works, What Doesn&#x27;t, What Is Unverified</a></li><li><a href="#before-you-believe-anything-stated-here">Before you believe anything stated here</a></li><li><a href="#recalculate-evidence">Recalculate Evidence</a></li></ol></aside>
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#start-here">Start here</a></li><li><a href="#download">Download</a></li><li><a href="#documentation--getting-started">Documentation — Getting Started</a></li><li><a href="#the-most-important-rule-measured--speculated">The Most Important Rule: Measured ≠ Speculated</a></li><li><a href="#which-document-answers-which-question">Which Document Answers Which Question</a></li><li><a href="#what-works-what-doesnt-what-is-unverified">What Works, What Doesn&#x27;t, What Is Unverified</a></li><li><a href="#before-you-believe-anything-stated-here">Before you believe anything stated here</a></li><li><a href="#recalculate-evidence">Recalculate Evidence</a></li></ol></aside>
 <div>
-<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game. It also links to the detailed pages and to read-only tools that recompute the evidence.</p><ul><li>Strict rule: a text found in the game program does not prove the feature exists; of 2,231 harvested setting names in Wolfenstein II, 409 were not settings at all.</li><li>The New Order: patched archives load in game (14/14 rebuilt files, 48 minutes of play, 0 errors); cheat settings from config files stay locked, while the <span class="t" data-t="console">console</span> (Ctrl+^) is code-read only and untested.</li><li>Wolfenstein II: value edits (pistol magazine 10 to 30), a custom weapon skin and a custom map are confirmed in a running game.</li><li>Wolfenstein II: the encrypted config files were cracked and used to run God mode and infinite ammo in a real save.</li><li>Still not working or unverified: The New Order&#x27;s new 3D models and megatexture pixels, Wolfenstein II&#x27;s megatexture pixels and loose files.</li></ul></div><div class="de"><p class="lede">Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie erklärt drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur als Text in der Datei gefunden. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist. Dazu kommen Links zu den Detailseiten und zu Werkzeugen, die die Belege nur lesend nachrechnen.</p><ul><li>Strenge Regel: Ein Text im Spielprogramm beweist nicht, dass die Funktion existiert; von 2.231 gesammelten Einstellungsnamen in Wolfenstein II waren 409 gar keine Einstellungen.</li><li>The New Order: gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); Cheat-Einstellungen aus Konfigurationsdateien bleiben gesperrt, die <span class="t" data-t="console">Konsole</span> (Strg+^) ist nur aus dem Code gelesen und ungetestet.</li><li>Wolfenstein II: Wertänderungen (Pistolenmagazin 10 auf 30), ein eigener Waffenskin und eine eigene Karte sind im laufenden Spiel bestätigt.</li><li>Wolfenstein II: Die verschlüsselten Konfigurationsdateien wurden geknackt und damit Gottmodus und unendliche Munition in einem echten Spielstand ausgelöst.</li><li>Noch nicht möglich oder unbestätigt: neue 3D-Modelle und Megatextur-Pixel in The New Order, Megatextur-Pixel und lose Dateien in Wolfenstein II.</li></ul></div></section>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It opens with a &#x27;Start here&#x27; table that sends players to the WolfSDK Loader guide, modders to the Studio guide, and everyone to the FAQ and the mod.json format, in English and German, plus the download of WolfSDK 0.2.0. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game.</p><ul><li>Strict rule: a text found in the game program does not prove the feature exists; of 2,231 harvested setting names in Wolfenstein II, 409 were not settings at all.</li><li>The New Order: patched archives load in game (14/14 rebuilt files, 48 minutes of play, 0 errors); cheat settings from config files stay locked, while the <span class="t" data-t="console">console</span> (Ctrl+^) is code-read only and untested.</li><li>Wolfenstein II: value edits (pistol magazine 10 to 30), a custom weapon skin, a custom map and maps loaded from the developer menu are confirmed in a running game.</li><li>Wolfenstein II: the encrypted config files were cracked and used to run God mode and infinite ammo in a real save; sound replacement is held back in 0.2.0.</li><li>Still not working or unverified: The New Order&#x27;s new 3D models and megatexture pixels, Wolfenstein II&#x27;s megatexture pixels and loose files.</li></ul></div><div class="de"><p class="lede">Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie beginnt mit einer Tabelle „Start here“, die Spieler zur Anleitung des WolfSDK Loaders schickt, Modder zur Studio-Anleitung und alle zur FAQ und zum mod.json-Format, auf Englisch und Deutsch, dazu der Download von WolfSDK 0.2.0. Sie erklärt die drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur ein Text, der in der Datei gefunden wurde. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist.</p><ul><li>Strenge Regel: Ein Text im Spielprogramm beweist nicht, dass die Funktion existiert; von 2.231 gesammelten Einstellungsnamen in Wolfenstein II waren 409 gar keine Einstellungen.</li><li>The New Order: Gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); Cheat-Einstellungen aus Konfigurationsdateien bleiben gesperrt, die <span class="t" data-t="console">Konsole</span> (Strg+^) ist nur aus dem Code gelesen und ungetestet.</li><li>Wolfenstein II: Wertänderungen (Pistolenmagazin 10 auf 30), ein eigener Waffen-Skin, eine eigene Karte und Karten aus dem Entwicklermenü sind im laufenden Spiel bestätigt.</li><li>Wolfenstein II: Die verschlüsselten Konfigurationsdateien wurden geknackt und damit Gottmodus und unendliche Munition in einem echten Spielstand ausgelöst; der Sound-Austausch ist in 0.2.0 zurückgehalten.</li><li>Noch nicht möglich oder unbestätigt: neue 3D-Modelle und Megatextur-Pixel in The New Order, Megatextur-Pixel und lose Dateien in Wolfenstein II.</li></ul></div></section>
 <section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
 <p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
-<article class="doc" data-autohint><p>This directory describes two games and a tool:</p>
-<ul>
-<li><strong>Wolfenstein: The New Order</strong> (id Tech 5, <code>WolfNewOrder_x64.exe</code>) — the SDK reads, patches, and launches this game.</li>
-<li><strong>Wolfenstein II: The New Colossus</strong> (id Tech 6, <code>NewColossus_x64vk.exe</code>) — the SDK locates and launches it, passing Cvars, and <strong>now writes its archives too</strong>: <code>wolfsdk/tncpatch.py</code> patches its IDCL containers directly (<code>wolfsdk/game.py</code>, <code>TITLES["tnc"].mods = True</code> for both titles). Decl value edits, a BC1 weapon skin, and a full <code>dlc_0</code>-precedence custom map have all been confirmed working in a real, running game — see the table below and <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>.</li>
-</ul>
-<p>The tool itself is described in <code>../README.md</code>. This section contains what has been discovered about the games.</p>
+<article class="doc" data-autohint><h2 id="start-here">Start here</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>You want to…</th>
+<th>English</th>
+<th>Deutsch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>play with mods, cheats or a custom map</td>
+<td><a href="WolfSDK-Loader.html">WolfSDK Loader</a></td>
+<td><a href="WolfSDK-Loader-DE.html">WolfSDK Loader</a></td>
+</tr>
+<tr>
+<td>make mods (textures, texts, decls, scripts)</td>
+<td><a href="WolfSDK-Studio.html">WolfSDK Studio</a></td>
+<td><a href="WolfSDK-Studio-DE.html">WolfSDK Studio</a></td>
+</tr>
+<tr>
+<td>find a quick answer</td>
+<td><a href="FAQ.html">FAQ</a></td>
+<td><a href="FAQ-DE.html">FAQ</a></td>
+</tr>
+<tr>
+<td>write a <code>mod.json</code> by hand</td>
+<td><a href="Mod-Format.html">Mod format</a></td>
+<td><a href="Mod-Format-DE.html">Mod-Format</a></td>
+</tr>
+<tr>
+<td>learn which values a mod can change</td>
+<td><a href="Modding-Guide.html">Modding Guide</a></td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div>
+<p>Keywords: start here, home, wiki, getting started, first steps, WolfSDK, Loader, Studio, Hier starten, Startseite, Erste Schritte</p>
+<h2 id="download">Download</h2>
 <p><strong>Download:</strong> the first app release, WolfSDK 0.2.0, is on the <a href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0">release page</a>: a Loader for players and a Studio for modders (the Studio download contains the Loader too). Windows only, Steam versions of both games. Unzip and run <code>WolfSDK.cmd</code>; Python is bundled.</p>
+<p>Community and Discord: https://lopekinz.github.io/wolfenstein-modloader/#community</p>
+<p>Keywords: download, release, WolfSDK 0.2.0, Loader ZIP, Studio ZIP, Discord, community, herunterladen</p>
+<h2 id="documentation--getting-started">Documentation — Getting Started</h2>
+<p>This wiki describes two games and a tool:</p>
+<ul>
+<li><strong>Wolfenstein: The New Order</strong> (id Tech 5, <code>WolfNewOrder_x64.exe</code>) — the loader reads, patches, and launches this game.</li>
+<li><strong>Wolfenstein II: The New Colossus</strong> (id Tech 6, <code>NewColossus_x64vk.exe</code>) — the loader locates and launches it, passing Cvars, and <strong>writes its archives too</strong>: <code>wolfsdk/tncpatch.py</code> patches its IDCL containers directly (<code>wolfsdk/game.py</code>, <code>TITLES["tnc"].mods = True</code> for both titles). Decl value edits, a BC1 weapon skin, and a full <code>dlc_0</code>-precedence custom map have all been confirmed working in a real, running game — see the tables below and <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>.</li>
+</ul>
+<p>The apps are described on <a href="WolfSDK-Loader.html">WolfSDK Loader</a> and <a href="WolfSDK-Studio.html">WolfSDK Studio</a>; their source and README are in the repository folder <code>modloader/</code>. The pages below contain what has been discovered about the games.</p>
+<p>Keywords: documentation, research, overview, The New Order, The New Colossus, id Tech 5, id Tech 6, Dokumentation, Forschung</p>
 <hr />
 <h2 id="the-most-important-rule-measured--speculated">The Most Important Rule: Measured ≠ Speculated</h2>
 <p>This project is only as valuable as you can trust your claims. Therefore, the documents define three levels of proof, most sharply formulated in <code>Asset-Loading-Paths.md</code>:</p>
@@ -80,10 +123,56 @@
 </tr>
 </tbody>
 </table></div>
+<p>Keywords: evidence, proof, measured, inferred, speculated, evidence grades, Beleg, gemessen</p>
+<h3 id="strings-are-not-proof-the-cvar-example">Strings Are Not Proof: the Cvar Example</h3>
 <p>A string in the EXE does not prove that the function exists. How large the difference is: of 2231 "Cvar names" harvested as strings from Part 2, <strong>409 are not Cvars at all</strong>, and <strong>1433 real Cvars were missed</strong>. The engine's own registry holds 3,256, of which 304 are exposed to the retail console (<a href="TNC-CVar-Catalog.html"><code>TNC-CVar-Catalog.md</code></a>, <a href="TNC-CVar-Validation.html"><code>TNC-CVar-Validation.md</code></a>).</p>
 <p>For the game launched so far, almost nothing has been done. By far the largest part of all statements about <em>Effect</em> is unverified; statements about <em>Format</em> are mostly not.</p>
+<p>Keywords: strings, cvar names, registry, exposed cvars, unverified, effect vs format</p>
 <hr />
 <h2 id="which-document-answers-which-question">Which Document Answers Which Question</h2>
+<p>The tables below point to the page for each question. For the apps themselves, start with <a href="#start-here">Start here</a>.</p>
+<p>Keywords: which page, document index, table of contents, where to find, Inhaltsverzeichnis</p>
+<h3 id="questions-about-the-apps-and-writing-mods">Questions about the Apps and Writing Mods</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>How do I install and use the loader?</td>
+<td><a href="WolfSDK-Loader.html"><code>WolfSDK-Loader</code></a></td>
+</tr>
+<tr>
+<td>How do I use the Studio?</td>
+<td><a href="WolfSDK-Studio.html"><code>WolfSDK-Studio</code></a></td>
+</tr>
+<tr>
+<td>Short answers to common questions</td>
+<td><a href="FAQ.html"><code>FAQ</code></a></td>
+</tr>
+<tr>
+<td>Which fields does <code>mod.json</code> have?</td>
+<td><a href="Mod-Format.html"><code>Mod-Format</code></a></td>
+</tr>
+<tr>
+<td>How do I write a Mod? Which values exist for weapons, skins, enemies?</td>
+<td><a href="Modding-Guide.html"><code>Modding-Guide.md</code></a></td>
+</tr>
+<tr>
+<td>What doesn't work, and why? How does the Retail-Cvar block work?</td>
+<td><a href="Modding-Limits.html"><code>Modding-Limits.md</code></a></td>
+</tr>
+<tr>
+<td>How do I load maps from the developer menu of Part 2?</td>
+<td><a href="TNC-Dev-Menu.html"><code>TNC-Dev-Menu</code></a></td>
+</tr>
+</tbody>
+</table></div>
+<p>Keywords: loader, studio, faq, mod.json, modding guide, limits, dev menu, which page</p>
+<h3 id="questions-about-formats-and-asset-types">Questions about Formats and Asset Types</h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -97,14 +186,6 @@
 <td><a href="File-Formats.html"><code>File-Formats.md</code></a></td>
 </tr>
 <tr>
-<td>How do I write a Mod? Which fields exist for weapons, skins, enemies?</td>
-<td><a href="Modding-Guide.html"><code>Modding-Guide.md</code></a></td>
-</tr>
-<tr>
-<td>What doesn't work, and why? How does the Retail-Cvar block work?</td>
-<td><a href="Modding-Limits.html"><code>Modding-Limits.md</code></a></td>
-</tr>
-<tr>
 <td>What asset types exist at all, how many, text or binary?</td>
 <td><a href="Engine-Modding-Surface.html"><code>Engine-Modding-Surface.md</code></a></td>
 </tr>
@@ -116,6 +197,18 @@
 <td>The same for <strong>Part 2</strong>: 174 types, difficulty levels, enemy health, Gore, cost of an Edit</td>
 <td><a href="TNC-Modding-Surface.html"><code>TNC-Modding-Surface.md</code></a></td>
 </tr>
+</tbody>
+</table></div>
+<p>Keywords: file formats, archives, asset types, modding surface, master.index, entities</p>
+<h3 id="questions-about-audio-ui-and-textures">Questions about Audio, UI and Textures</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Document</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>How is the Audio layer built, and how do you make the game louder/grittier?</td>
 <td><a href="Audio.html"><code>Audio.md</code></a></td>
@@ -132,6 +225,18 @@
 <td>How are the texture databases of Part 2 (<code>.texdb</code>) built?</td>
 <td><a href="TNC-Texture-Database.html"><code>TNC-Texture-Database.md</code></a></td>
 </tr>
+</tbody>
+</table></div>
+<p>Keywords: audio, sound, UI, HUD, menu text, megatexture, virtual textures, texdb</p>
+<h3 id="questions-about-loading-paths-saves-and-cvars">Questions about Loading Paths, Saves and Cvars</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Document</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>Can you load loose files instead of archives? DLC folders? Overlay paths?</td>
 <td><a href="Asset-Loading-Paths.html"><code>Asset-Loading-Paths.md</code></a></td>
@@ -148,14 +253,18 @@
 <td>Which Cvars does Part 1 have, which are cheats, and how do you set them?</td>
 <td><a href="TNO-CVar-Catalog.html"><code>TNO-CVar-Catalog.md</code></a> — 3194 Cvars from the engine registry</td>
 </tr>
+</tbody>
+</table></div>
+<p>Keywords: loading paths, loose files, overlay, save games, profiles, cvar catalog, cvars</p>
+<h3 id="questions-about-the-console-scripts-and-research-status">Questions about the Console, Scripts and Research Status</h3>
+<div class="table-wrap"><table>
+<thead>
 <tr>
-<td>Where do the documents contradict each other?</td>
-<td><a href="Known-Contradictions.html"><code>Known-Contradictions.md</code></a></td>
+<th>Question</th>
+<th>Document</th>
 </tr>
-<tr>
-<td>What has happened since the last session, what is open?</td>
-<td><a href="Research-Status-2026-09-21.html"><code>Research-Status-2026-09-21.md</code></a></td>
-</tr>
+</thead>
+<tbody>
 <tr>
 <td>How does Part 2's console/Cvar restriction work, and which commands reach the game without a patch?</td>
 <td><a href="TNC-Console-Unlock.html"><code>TNC-Console-Unlock.md</code></a></td>
@@ -164,14 +273,26 @@
 <td>What do Kiscule's 205 script node types do, grouped by purpose?</td>
 <td><a href="Kiscule-Node-Reference.html"><code>Kiscule-Node-Reference.md</code></a></td>
 </tr>
+<tr>
+<td>Where do the documents contradict each other?</td>
+<td><a href="Known-Contradictions.html"><code>Known-Contradictions.md</code></a></td>
+</tr>
+<tr>
+<td>What has happened since the last session, what is open?</td>
+<td><a href="Research-Status-2026-09-21.html"><code>Research-Status-2026-09-21.md</code></a></td>
+</tr>
 </tbody>
 </table></div>
+<p>Keywords: console unlock, kiscule, script nodes, contradictions, research status</p>
+<h3 id="raw-data-and-long-pages">Raw Data and Long Pages</h3>
 <p>Raw data without prose: <code>cvars_tnc.json</code> and <code>cvars_tno.json</code> (the engines' cvar registries), <code>cvars_tnc_echt.json</code> (<code>listCvars</code> output of the running engine: the 304 exposed Cvars), <code>samples/</code> (Before/After images of Gore Mods).</p>
 <p><code>Asset-Loading-Paths.md</code> and <code>TNO-Virtual-Textures.md</code> are long. Both have a short answer at the very top; those who only need the decision read only that.</p>
+<p>Keywords: raw data, json, cvars_tnc.json, cvars_tno.json, samples, long pages</p>
 <hr />
 <h2 id="what-works-what-doesnt-what-is-unverified">What Works, What Doesn't, What Is Unverified</h2>
-<p>"Unverified" here always means: <strong>plausible but not confirmed in a running game</strong> — not "uncertain measured".</p>
-<h3 id="wolfenstein-the-new-order-id-tech-5">Wolfenstein: The New Order (id Tech 5)</h3>
+<p>"Unverified" here always means: <strong>plausible but not confirmed in a running game</strong> — not "uncertain measured". The status of the WolfSDK 0.2.0 features themselves is in the <a href="FAQ.html#which-wolfsdk-features-are-confirmed-in-game">FAQ</a>.</p>
+<p>Keywords: status, what works, unverified, measured, research status, Stand</p>
+<h3 id="the-new-order-id-tech-5-archives-and-decls">The New Order (id Tech 5): Archives and Decls</h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -216,6 +337,19 @@
 <td><strong>works</strong> (Fields measured, Effect unverified)</td>
 <td><code>TNO-Modding-Surface.md</code> §4.4</td>
 </tr>
+</tbody>
+</table></div>
+<p>Keywords: The New Order, TNO, archives, decls, patch, revert, weapon values, sound decls</p>
+<h3 id="the-new-order-cheat-cvars">The New Order: Cheat Cvars</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Proof</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><code>g_permaGodMode</code>, <code>g_permaInfiniteAmmo</code>, <code>g_fov</code>, <code>g_damageScale</code>, <code>pm_togglesprint</code>, <code>com_showFPS</code>, <code>g_showHud</code></td>
 <td><strong>works</strong>, not affected by the block</td>
@@ -223,9 +357,22 @@
 </tr>
 <tr>
 <td>Cheat cvars (<code>devgui</code>, Gore Cvars, all <code>pm_*</code> speeds, <code>g_gravity</code>, Intro skip) via Config or <code>+name value</code></td>
-<td><strong>does not work</strong>, measured — rejected from a Config, accepted from command line and wiped by Cheat Reset. <code>toggle name v v</code> (console or <code>+toggle</code>) is <strong>code-only</strong>, not yet run in game</td>
+<td><strong>does not work</strong>, measured — rejected from a Config, accepted from command line and wiped by Cheat Reset. <code>toggle name v v</code> (console or <code>+toggle</code>) is <strong>code-only</strong>, not yet run in game; the loader sends cheat cvars as <code>+toggle</code> since 0.2.0 (<strong>Not yet confirmed in game</strong>)</td>
 <td><code>Modding-Limits.md</code> §1-2, <a href="TNO-CVar-Catalog.html">TNO-CVar-Catalog</a></td>
 </tr>
+</tbody>
+</table></div>
+<p>Keywords: TNO cvars, cheat cvars, retail lock, cheat reset, toggle, +toggle, g_permaGodMode</p>
+<h3 id="the-new-order-console-and-devgui">The New Order: Console and DevGUI</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Proof</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>Console in The New Order</td>
 <td><strong>unmeasured</strong> — opens with Ctrl+^ (code only); <code>com_allowConsole</code> does not open it</td>
@@ -236,6 +383,19 @@
 <td><strong>does not work</strong>, measured at the main menu — file patchable, but no consumer for <code>debugmenu.txt</code> found in the exe (code only); <code>devgui</code> only stays on inside a level</td>
 <td><code>Modding-Limits.md</code> §2, <code>UI-Assets.md</code> §5</td>
 </tr>
+</tbody>
+</table></div>
+<p>Keywords: TNO console, Ctrl+^, com_allowConsole, DevGUI, debugmenu.txt, ingame menu</p>
+<h3 id="the-new-order-what-does-not-work">The New Order: What Does Not Work</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Proof</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>Patch EXE (Steam version)</td>
 <td><strong>does not work</strong> — <code>.text</code> is SteamStub-encrypted</td>
@@ -262,8 +422,26 @@
 <td><code>TNO-Modding-Surface.md</code> §6.4</td>
 </tr>
 <tr>
+<td>Edit save games</td>
+<td><strong>blocked</strong> — nothing encrypted, but the 4-byte checksum header is not recomputable</td>
+<td><code>Save-Games-and-Profiles.md</code> §3</td>
+</tr>
+</tbody>
+</table></div>
+<p>Keywords: does not work, EXE patch, particles, geometry, virtual texture pixels, new assets, save games</p>
+<h3 id="the-new-order-unverified-menu-hud-and-map-data">The New Order: Unverified Menu, HUD and Map Data</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Proof</th>
+</tr>
+</thead>
+<tbody>
+<tr>
 <td>Change Menu text (<code>strings/*.lang</code>) length-preserving</td>
-<td><strong>unverified</strong> — raw deposited, raw write path exists in Patcher, <code>mods/menue_marke</code> built but never applied</td>
+<td><strong>unverified</strong> — raw deposited, raw write path exists in Patcher, <code>mods/menue_marke</code> built but never applied (not in the public 0.2.0 package)</td>
 <td><code>UI-Assets.md</code> §3</td>
 </tr>
 <tr>
@@ -276,6 +454,19 @@
 <td><strong>unverified</strong> — plaintext, but enforces Chunk Rebuild</td>
 <td><code>TNO-Modding-Surface.md</code> §4.1/4.2</td>
 </tr>
+</tbody>
+</table></div>
+<p>Keywords: unverified, menu text, strings, HUD textures, BIM, entities, script</p>
+<h3 id="the-new-order-unverified-loading-paths-and-shaders">The New Order: Unverified Loading Paths and Shaders</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Proof</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>Loose files instead of archive (<code>fs_overlaypath</code>)</td>
 <td><strong>unverified</strong> — Cvar and search path output prove it, precedence not</td>
@@ -291,14 +482,10 @@
 <td><strong>unverified</strong></td>
 <td><code>TNO-Modding-Surface.md</code> §2.10</td>
 </tr>
-<tr>
-<td>Edit save games</td>
-<td><strong>blocked</strong> — nothing encrypted, but the 4-byte checksum header is not recomputable</td>
-<td><code>Save-Games-and-Profiles.md</code> §3</td>
-</tr>
 </tbody>
 </table></div>
-<h3 id="wolfenstein-ii-the-new-colossus-id-tech-6">Wolfenstein II: The New Colossus (id Tech 6)</h3>
+<p>Keywords: unverified, loose files, fs_overlaypath, own DLC package, renderProg, HLSL</p>
+<h3 id="the-new-colossus-id-tech-6-developer-console-and-cvars">The New Colossus (id Tech 6): Developer Console and Cvars</h3>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -323,56 +510,19 @@
 <td><strong>works, measured</strong> — read from a memory snapshot of the running game</td>
 <td><a href="TNC-CVar-Catalog.html"><code>TNC-CVar-Catalog.md</code></a></td>
 </tr>
+</tbody>
+</table></div>
+<p>Keywords: The New Colossus, TNC, developer console, com_enableDeveloperMode, startup arguments, cvar catalog</p>
+<h3 id="the-new-colossus-console-restriction">The New Colossus: Console Restriction</h3>
+<div class="table-wrap"><table>
+<thead>
 <tr>
-<td>Read <code>.texdb</code>, unpack Oodle</td>
-<td><strong>works, measured</strong> — 24 files, 437,706 entries, gap 0</td>
-<td><code>TNC-Texture-Database.md</code></td>
+<th>Area</th>
+<th>Status</th>
+<th>Evidence</th>
 </tr>
-<tr>
-<td>Read <code>IDCL</code> archives (<code>.resources</code>, v12)</td>
-<td><strong>works</strong> — layout verified against all 24 files; unpacker not yet connected</td>
-<td><code>wolfsdk/idcl.py</code>, <code>Known-Contradictions.md</code> W8</td>
-</tr>
-<tr>
-<td>Apply mods / write archives</td>
-<td><strong>works, measured</strong> — <code>wolfsdk/tncpatch.py</code> writes IDCL containers directly; decl value edits (pistol magazine 10→30) confirmed in game</td>
-<td><code>wolfsdk/game.py</code> (<code>mods=True</code>), <code>tnc-decl-edits</code> session notes</td>
-</tr>
-<tr>
-<td>Change audio</td>
-<td><strong>does not work</strong> — Wwise banks, no bank parser</td>
-<td><code>Audio.md</code> §7</td>
-</tr>
-<tr>
-<td>Replace textures (weapon skin, single material)</td>
-<td><strong>works, measured</strong> — a custom BC1 pistol skin (<code>.bimage</code>+<code>.texdb</code> blocks re-encoded and appended, all 40 <code>textures.cache</code> copies patched) shows on the first-person model in a running game</td>
-<td>session notes, 2026-09-25</td>
-</tr>
-<tr>
-<td>Replace textures (Virtual-Texture/Megatexture pixel plane)</td>
-<td><strong>does not work</strong> — Key-to-asset name mapping missing, tile content undeciphered, every size change rewrites the entire (up to 8 GB) file; unaffected by the weapon-skin finding above, which is a different, smaller container</td>
-<td><code>TNC-Texture-Database.md</code> §6</td>
-</tr>
-<tr>
-<td>Change save games</td>
-<td><strong>partial</strong> — <code>.verify</code> is not a lock (save game loaded as "corrupted" in dev mode), profile/progress are AES encrypted</td>
-<td><code>Save-Games-and-Profiles.md</code> §5</td>
-</tr>
-<tr>
-<td>Loose files (<code>resource_loadLooseAssets</code>)</td>
-<td><strong>unverified</strong> — Cvar description matches verbatim, runtime evidence missing</td>
-<td><code>Asset-Loading-Paths.md</code>, E5/E6</td>
-</tr>
-<tr>
-<td>Custom DLC / custom map (<code>dlc/&lt;name&gt;/…</code>, <code>dlc_0</code> precedence)</td>
-<td><strong>works, measured</strong> — the engine mounts the first <code>dlc/*</code> folder (alphabetical) whose <code>packagemapspec.json</code> lists the map; a <code>dlc_0</code> folder beats retail <code>dlc_2</code> for map <code>c2v1</code>, confirmed in game with a relit custom light layout and a normal mission start</td>
-<td><a href="TNC-Custom-Map-Status.html"><code>TNC-Custom-Map-Status.md</code></a>, <a href="Research-Report-Tnc-Custom-Maps.html">Research-Report-Tnc-Custom-Maps</a></td>
-</tr>
-<tr>
-<td><code>cfile</code> entries (encrypted configs/localization under <code>.resources</code>)</td>
-<td><strong>works, measured</strong> — the AES-128-CBC/HMAC-SHA256 key is derived (<code>"swapTeam\n\x00"</code> + salt + resource name), round-trip byte-exact on 67/67 retail payloads; the loader builds new, game-accepted payloads under existing names (<code>wolfsdk/tnccrypt.py</code>), used to unlock the restricted console below</td>
-<td><a href="Research-Report-Cfilekey2.html">Research-Report-Cfilekey2</a></td>
-</tr>
+</thead>
+<tbody>
 <tr>
 <td>Console/Cvar restriction (34/304 exposed vs. 234/3,256 total)</td>
 <td><strong>works, measured</strong> — <code>resourceExec &lt;loader-replaced cfile&gt; -s</code> drops the restriction for the file; <code>God</code>, <code>Notarget</code>, <code>g_infiniteAmmo 1</code> confirmed executing in a real save game</td>
@@ -385,22 +535,145 @@
 </tr>
 </tbody>
 </table></div>
+<p>Keywords: console restriction, exposed commands, resourceExec, devMode_enable, devMode, TNC console</p>
+<h3 id="the-new-colossus-archives-and-applying-mods">The New Colossus: Archives and Applying Mods</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read <code>.texdb</code>, unpack Oodle</td>
+<td><strong>works, measured</strong> — 24 files, 437,706 entries, gap 0</td>
+<td><code>TNC-Texture-Database.md</code></td>
+</tr>
+<tr>
+<td>Read <code>IDCL</code> archives (<code>.resources</code>, v12)</td>
+<td><strong>works</strong> — layout verified against all 24 files; since 0.2.0 the loader writes them and the Studio reads them</td>
+<td><code>wolfsdk/idcl.py</code>, <code>Known-Contradictions.md</code> W8</td>
+</tr>
+<tr>
+<td>Apply mods / write archives</td>
+<td><strong>works, measured</strong> — <code>wolfsdk/tncpatch.py</code> writes IDCL containers directly; decl value edits (pistol magazine 10→30) confirmed in game</td>
+<td><code>wolfsdk/game.py</code> (<code>mods=True</code>), Explosive Pistol mod</td>
+</tr>
+</tbody>
+</table></div>
+<p>Keywords: TNC archives, IDCL, texdb, Oodle, apply mods, decl edits, tncpatch</p>
+<h3 id="the-new-colossus-textures">The New Colossus: Textures</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Replace textures (weapon skin, single material)</td>
+<td><strong>works, measured</strong> — a custom BC1 pistol skin (<code>.bimage</code>+<code>.texdb</code> blocks re-encoded and appended, all 40 <code>textures.cache</code> copies patched) shows on the first-person model in a running game</td>
+<td>session notes, 2026-09-25</td>
+</tr>
+<tr>
+<td>Replace textures (Virtual-Texture/Megatexture pixel plane)</td>
+<td><strong>does not work</strong> — Key-to-asset name mapping missing, tile content undeciphered, every size change rewrites the entire (up to 8 GB) file; unaffected by the weapon-skin finding above, which is a different, smaller container</td>
+<td><code>TNC-Texture-Database.md</code> §6</td>
+</tr>
+</tbody>
+</table></div>
+<p>Keywords: TNC textures, weapon skin, BC1, bimage, textures.cache, megatexture, virtual texture</p>
+<h3 id="the-new-colossus-audio-saves-and-loose-files">The New Colossus: Audio, Saves and Loose Files</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Change audio</td>
+<td><strong>Held back</strong> in 0.2.0 — the Studio can write PCM sounds into the Wwise sound packs, but <em>Revert</em> does not yet restore replaced sound packs, so it refuses for now</td>
+<td><a href="Audio.html"><code>Audio.md</code></a>, <a href="Modding-Limits.html"><code>Modding-Limits.md</code></a></td>
+</tr>
+<tr>
+<td>Change save games</td>
+<td><strong>partial</strong> — <code>.verify</code> is not a lock (save game loaded as "corrupted" in dev mode), profile/progress are AES encrypted</td>
+<td><code>Save-Games-and-Profiles.md</code> §5</td>
+</tr>
+<tr>
+<td>Loose files (<code>resource_loadLooseAssets</code>)</td>
+<td><strong>unverified</strong> — Cvar description matches verbatim, runtime evidence missing</td>
+<td><code>Asset-Loading-Paths.md</code>, E5/E6</td>
+</tr>
+</tbody>
+</table></div>
+<p>Keywords: TNC audio, Wwise, sound packs, held back, save games, verify, loose files</p>
+<h3 id="the-new-colossus-custom-maps-and-developer-menu">The New Colossus: Custom Maps and Developer Menu</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Custom DLC / custom map (<code>dlc/&lt;name&gt;/…</code>, <code>dlc_0</code> precedence)</td>
+<td><strong>works, measured</strong> — the engine mounts the first <code>dlc/*</code> folder (alphabetical) whose <code>packagemapspec.json</code> lists the map; a <code>dlc_0</code> folder beats retail <code>dlc_2</code> for map <code>c2v1</code>, confirmed in game with a relit custom light layout and a normal mission start. The loader's <em>Install map…</em> sets it up</td>
+<td><a href="TNC-Custom-Map-Status.html"><code>TNC-Custom-Map-Status.md</code></a>, <a href="Research-Report-Tnc-Custom-Maps.html">Research-Report-Tnc-Custom-Maps</a></td>
+</tr>
+<tr>
+<td>Developer menu loads maps (<code>devmap</code>)</td>
+<td><strong>works, measured</strong> — the Dev Menu Map Loading mod turns each map entry into console lines ending in <code>devmap</code></td>
+<td><a href="TNC-Dev-Menu.html"><code>TNC-Dev-Menu</code></a></td>
+</tr>
+</tbody>
+</table></div>
+<p>Keywords: custom map, dlc_0, packagemapspec.json, c2v1, Install map, developer menu, devmap</p>
+<h3 id="the-new-colossus-cfile-entries">The New Colossus: cfile Entries</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cfile</code> entries (encrypted configs/localization under <code>.resources</code>)</td>
+<td><strong>works, measured</strong> — the AES-128-CBC/HMAC-SHA256 key is derived (<code>"swapTeam\n\x00"</code> + salt + resource name), round-trip byte-exact on 67/67 retail payloads; the loader builds new, game-accepted payloads under existing names (<code>wolfsdk/tnccrypt.py</code>), used to unlock the restricted console</td>
+<td><a href="Research-Report-Cfilekey2.html">Research-Report-Cfilekey2</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>Keywords: cfile, encrypted config, AES, HMAC, tnccrypt, key derivation</p>
 <hr />
 <h2 id="before-you-believe-anything-stated-here">Before you believe anything stated here</h2>
 <p>These documents were created side-by-side in a short time and contradicted each other at <strong>20 places</strong>. Raised in <a href="Known-Contradictions.html"><code>Known-Contradictions.md</code></a>, processed on 21.09.2026: 17 were fixed in the text, 3 remain open with justification — two of which are embedded in the code and belong to other workers.</p>
-<p>What changed the direction of the statement so that no one falls back to an old status:</p>
+<p>In case of a conflict, the rule remains: <strong>the newer, more detailed individual investigation overrides the older summary</strong> — and both override the README.</p>
+<p>Keywords: contradictions, which document is right, newer overrides older, Widersprüche</p>
+<h3 id="corrections-that-changed-the-direction-of-a-statement">Corrections That Changed the Direction of a Statement</h3>
+<p>So that no one falls back to an old status:</p>
 <ul>
-<li>The Patcher does <strong>not</strong> hang onto the file end but writes into the slot;
-  <code>File-Formats.md</code> §3 described up to that point the procedure, which demonstrably leads to a crash (W4).</li>
+<li>The Patcher does <strong>not</strong> hang onto the file end but writes into the slot; <code>File-Formats.md</code> §3 described up to that point the procedure, which demonstrably leads to a crash (W4).</li>
 <li>A <strong>BIM Encoder exists</strong> (<code>wolfsdk/image.py</code>, only RGBA8) — six places explained it as missing (W5).</li>
 <li>The <strong><code>IDCL</code> Container</strong> (Part 2) and the <strong><code>.pages</code> Container</strong> (Virtual Textures) are read, not "unsolved" (W8, W9).</li>
 <li>The <strong>2231 Cvars</strong> for Part 2 are candidates; 222 of them are among the 304 exposed Cvars (W3). Against the full registry of 3,256: 1822 are real, 409 are not Cvars.</li>
 <li>The <strong>Slot space is exactly <code>csize</code></strong>, not <code>csize + 15</code> (W6).</li>
 </ul>
-<p>In case of a conflict, the rule remains: <strong>the newer, more detailed individual investigation overrides the older summary</strong> — and both override the README.</p>
+<p>Keywords: corrections, slot write, BIM encoder, IDCL, pages container, csize</p>
 <hr />
 <h2 id="recalculate-evidence">Recalculate Evidence</h2>
-<p>Every document names the tool from which its numbers originate. All are purely read-only and do not start a game:</p>
+<p>Every document names the tool from which its numbers originate. All are purely read-only and do not start a game. They live in the research workspace: they are not part of the public <code>modloader/</code> folder or the 0.2.0 packages.</p>
 <pre><code>python tools/verify_all.py              # all harmless checks
 python tools/survey_engine.py           # engine-surface.md
 python tools/survey_modding_surface.py  # moddingflaeche-tno.md
@@ -413,8 +686,11 @@ python tools/probe_idcl.py              # IDCL-Derivation
 python tools/probe_loadpaths.py --self-test   # ladepfade.md
 python tools/probe_savegame.py          # spielstaende.md
 </code></pre>
-<p><code>probe_loadpaths.py --self-test</code> also checks the <strong>negative findings</strong>. If it fails after a game update, the affected document is outdated — this applies generally to all verification tools here.</p></article></section>
-<nav class="pager" aria-label="Pages"><a class="next" href="Modding-Guide.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Modding Guide</a></nav>
+<p>Keywords: verification tools, probe, survey, recalculate, reproduce</p>
+<h3 id="negative-findings-and-game-updates">Negative Findings and Game Updates</h3>
+<p><code>probe_loadpaths.py --self-test</code> also checks the <strong>negative findings</strong>. If it fails after a game update, the affected document is outdated — this applies generally to all verification tools here.</p>
+<p>Keywords: negative findings, self-test, game update, outdated documents</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="next" href="WolfSDK-Loader.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>WolfSDK Loader</a></nav>
 </div></div>
 </main>
 <footer>

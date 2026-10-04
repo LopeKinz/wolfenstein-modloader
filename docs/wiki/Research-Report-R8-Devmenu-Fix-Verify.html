@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verification of `mods/tnc_devmenu_fix` (Static Only, runtime_87400 Snapshot) – Wolfenstein Modloader</title>
+<meta name="description" content="Code-reading check of the mod that makes Wolfenstein II&#x27;s developer menu load maps: all four claims hold, nothing run in game.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Verification of <code>mods/tnc_devmenu_fix</code> (Static Only, runtime_87400 Snapshot)</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R8-Devmenu-Fix-Verify"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-selector-branch-and-field-offsets-holds">1. Selector branch and field offsets: HOLDS</a></li><li><a href="#2-restriction-level-holds-one-gap">2. Restriction level: HOLDS (one gap)</a></li><li><a href="#3-devmap-and-si_-cvars-holds-this-was-the-important-one">3. devmap and si_* cvars: HOLDS (this was the important one)</a></li><li><a href="#4--in-decl-strings-holds-static-indirect">4. \&quot; in decl strings: HOLDS (static, indirect)</a></li><li><a href="#summary-of-corrections">Summary of corrections</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p class="update"><b><span class="en">Update</span><span class="de">Aktualisierung</span></b> <span class="en">Newer than this page: the TNC Dev Menu page records devmap running from the developer menu and the map loading, confirmed in game on 2026-10-02.</span><span class="de">Neuer als diese Seite: Die Seite TNC Dev Menu verzeichnet, dass devmap aus dem Entwicklermenü läuft und die Karte lädt, im Spiel bestätigt am 02.10.2026.</span></p><div class="en"><p class="lede">This round-8 report checked, only by reading the <span class="t" data-t="binary">program code</span> of Wolfenstein II: The New Colossus, whether the mod that makes the developer menu load maps can work. It tested four claims: the menu has a branch that runs an entry&#x27;s command lines, those lines run at the unrestricted level, devmap and the needed si_ settings are reachable there, and escaped quotes in the menu text are read correctly. All four hold, one with a gap, and the build tool needed no change. Nothing was run in game for this report.</p><ul><li>Menu entries with command lines and no map name take a branch that runs every line; the unrestricted buffer always runs at level 0.</li><li>A full scan found one more place that raises the restriction: the key-bind dispatcher, so bound keys run restricted.</li><li>devmap is among the 234 registered commands but not among the 34 exposed ones; the si_ settings carry no flag that blocks them at level 0.</li><li>Gap: the call chain from the menu up to the frame loop was not traced, so &#x27;nothing raises the level there&#x27; is argued, not proven.</li><li>Escaped quotes are only proven indirectly: none of the 168 retail menu lines contains one, so the first in-game run is the real test.</li></ul></div><div class="de"><p class="lede">Dieser Bericht aus Runde 8 hat nur durch Lesen des <span class="t" data-t="binary">Programmcodes</span> von Wolfenstein II: The New Colossus geprüft, ob die Mod funktionieren kann, die das Entwicklermenü Karten laden lässt. Geprüft wurden vier Annahmen: Das Menü hat einen Zweig, der die Befehlszeilen eines Eintrags ausführt; diese Zeilen laufen ohne Sperre; devmap und die nötigen si_-Einstellungen sind dort erreichbar; und maskierte Anführungszeichen im Menütext werden richtig gelesen. Alle vier halten, eine mit einer Lücke, und das Bauwerkzeug musste nicht geändert werden. Für diesen Bericht lief nichts im Spiel.</p><ul><li>Menüeinträge mit Befehlszeilen und ohne Kartennamen nehmen einen Zweig, der jede Zeile ausführt; der freie Puffer läuft immer auf Stufe 0.</li><li>Ein vollständiger Scan fand eine weitere Stelle, die die Sperre anhebt: die Tastenbelegung, gebundene Tasten laufen also gesperrt.</li><li>devmap gehört zu den 234 registrierten Befehlen, aber nicht zu den 34 freigegebenen; die si_-Einstellungen tragen kein Flag, das sie auf Stufe 0 blockiert.</li><li>Lücke: Die Aufrufkette vom Menü bis zur Bildschleife wurde nicht verfolgt; dass dort nichts die Stufe anhebt, ist begründet, nicht bewiesen.</li><li>Maskierte Anführungszeichen sind nur indirekt belegt: Keine der 168 Menüzeilen der Verkaufsversion enthält eins, der erste Lauf im Spiel ist also der echte Test.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-8 static verification of the <code>tnc_devmenu_fix</code> mod against the TNC runtime snapshot: the selector branch and field offsets, the restriction level, <code>devmap</code> and the <code>si_*</code> cvars, and escaped quotes in decl strings. All four claims hold (one gap noted), and the build tool needs no change. <strong>Static only; nothing was run in game.</strong></p>
+<p>Verdicts: 1 HOLDS, 2 HOLDS (one gap noted), 3 HOLDS, 4 HOLDS (static evidence only). No claim refuted,
+no change to tools/build_devmenu_fix.py required. Nothing was run in game; no files touched except this one.</p>
+<h2 id="1-selector-branch-and-field-offsets-holds">1. Selector branch and field offsets: HOLDS</h2>
+<p>Selector body re-read from re_probes/devmenu_restore/selector-unwind.txt (unwind reconstruction of 0x3D03B0).
+Item stride 0x150, item base = <code>*(decl+0x80) + idx*0x150</code>.</p>
+<p>Field table (reflection records in .rdata, name ptr + offset dword), read from module.bin:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>field</th>
+<th>file off of record</th>
+<th>item offset</th>
+<th>type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>devMenuDisplayName</td>
+<td>0x21252e0</td>
+<td>+0x00</td>
+<td>idStr</td>
+</tr>
+<tr>
+<td>devMenuSubList</td>
+<td>0x2125330</td>
+<td>+0x30</td>
+<td>decl ptr</td>
+</tr>
+<tr>
+<td>devMenuMapName</td>
+<td>0x2125380</td>
+<td>+0x38</td>
+<td>idStrMapName (data +0x40, len +0x48)</td>
+</tr>
+<tr>
+<td>devMenuTestExtraLayers</td>
+<td>0x21253c0</td>
+<td>+0x68</td>
+<td>idList</td>
+</tr>
+<tr>
+<td><strong>devMenuCommandStrings</strong></td>
+<td>0x2125420</td>
+<td><strong>+0x88</strong></td>
+<td><code>idList&lt;idStr&gt;</code> (ptr +0x88, count +0x90)</td>
+</tr>
+<tr>
+<td>devMenuCommandStrings_AfterMapLoad</td>
+<td>0x2125470</td>
+<td>+0xA8</td>
+<td><code>idList&lt;idStr&gt;</code></td>
+</tr>
+<tr>
+<td>devMenuCheckpoint / Spawnspot</td>
+<td></td>
+<td>+0xC8 / +0xF8</td>
+<td>idStr</td>
+</tr>
+<tr>
+<td>devTimelineType</td>
+<td></td>
+<td>+0x128</td>
+<td>enum</td>
+</tr>
+<tr>
+<td>devVariation</td>
+<td></td>
+<td>+0x130</td>
+<td>decl ptr</td>
+</tr>
+<tr>
+<td>devPart / devProgression / devGameType</td>
+<td></td>
+<td>+0x138 / +0x140 / +0x148</td>
+<td>int / ptr / enum</td>
+</tr>
+</tbody>
+</table></div>
+<p>So +0x48 is the length of devMenuMapName (idStr at +0x38, data +0x40, len +0x48; the playSnapMap branch
+uses +0x40 as the char*), +0x88/+0x90 is devMenuCommandStrings, NOT AfterMapLoad (+0xA8). Command
+strings are read as <code>*(+0x88) + 8 + k*0x30</code> (idStr data ptr at +8, stride 0x30), formatted with <code>"%s\n"</code>
+(0x25fcd44) and appended to the buffer.</p>
+<p>Gates in the selector, state 0x2ac==0 &amp;&amp; 0x2ad==0 &amp;&amp; 0x2ae==0 (normal list state):</p>
+<ul>
+<li>name length (+0x10) != 0, else return (we always set a display name).</li>
+<li>strcmp(name, DAT_ec) where DAT_ec = "..." (RVA 0x26118ec): equal -&gt; return. Only a label literally "..." is skipped.
+  The follow-up test <code>((~u)&gt;&gt;31)*-2 == 1</code> can never be true (value is 0 or 2), so it never returns.</li>
+<li><code>+0x30 == 0</code> (no sublist): true for our entries.</li>
+<li><code>+0x148 == 1</code> (GAME_TYPE_PVP; enum order read at file 0x20ab8e8: 0 CAMPAIGN, 1 PVP, 2 SCORE, 3..6 CHRONICLE_0..3):
+  we never emit devGameType, so the field keeps its zero default. Default value not read from a constructor
+  (not traced), but retail items without devGameType (demo "Xmas-2015") take the normal campaign path,
+  which is consistent.</li>
+<li><code>+0x48 == 0 &amp;&amp; +0x90 &gt; 0</code> -&gt; buffer loop. Variation ptr (+0x130) is NOT tested in this branch at all.
+  Our entries carry no devMapName, so this holds.
+After the loop: both buffers are executed, 0x2ac/0x2ad/0x2ae cleared, <code>return</code> (menu stays open, Update then
+resets +0x2b4 to -1). Display name compare and variation pointer do not block the branch.</li>
+</ul>
+<p>Execution: <code>FUN_7ff62d475800(cmdSys, 0)</code> then <code>(cmdSys, 1)</code> = RVA 0x1265800. Disassembly (0x1265800-0x1265afd):
+param (ebx) is written to the restriction level 0x41244d8 first, the buffer is then chosen by that level
+(<code>cmp [rbp+0x200b8],0 ; cmove edi,0x50</code> -&gt; 0x4104470 at level 0, 0x41144a0 otherwise), lines are executed in a loop
+(<code>jg 0x12658a4</code> after call 0x1265150 while buffer length &gt; 0), and the old level is restored at 0x1265aca.
+Caveat: Ghidra shows only one line because 0x1265150 is marked noreturn; the raw loop is there.
+Result: the unrestricted buffer is ALWAYS drained at level 0, the restricted buffer at level 1.</p>
+<h2 id="2-restriction-level-holds-one-gap">2. Restriction level: HOLDS (one gap)</h2>
+<p>The selector chooses the buffer from the ambient level (0x3d0497: <code>cmp [0x41244d8],0; lea rcx,0x4104470;
+cmovne rcx, 0x41144a0; call 0x12124a0</code> = idStr append). If ambient level were 1 the lines would land in the
+restricted buffer and run at level 1 (non-exposed commands rejected, "Attempting to call a developer command").
+Full list of writers of 0x41244d8 (my own capstone scan of .text, not just r4's table):
+0xa5fe5c (+args), 0xa6029a (startup exec), 0xa654c8 (Init), 0xa8db77 and 0xa90aaa (console key handlers),
+0x1264170 (exec), 0xa7a76f (resourceExec, level 0), 0x126586f (ExecuteBuffer arg), 0x1214619 (constructor).
+NEW vs r4: 0xaa87fb in FUN 0xaa8780: sets level 1, appends a bound command + "\n" into the RESTRICTED buffer
+(0x41144a0), restores. It is the key-bind dispatcher; it only buffers, it does not run game code. Every site is a
+save/set/restore bracket. None of them wraps the widget Update (0x3D0260, vtable 0x260F360 slot +0x50, a generic
+per-frame widget update). Hence ambient level is 0 when Update runs.
+Gap: I did not trace the call chain from the UI frame up to the root, so "no bracket is an ancestor of the
+widget update" is argued from the bracket list (all are input/exec/Init), not proven by a call graph.
+A bind to a menu confirm key would only buffer, not run Update, so it does not matter.</p>
+<h2 id="3-devmap-and-si_-cvars-holds-this-was-the-important-one">3. devmap and si_* cvars: HOLDS (this was the important one)</h2>
+<p>Registration: commands_live.json "all" table (234) contains devmap (flags 0, callback 0xa7e0d0; slowcombomap is
+an alias with the same callback), not in the exposed 34. Fine at level 0.</p>
+<p>Cvar objects (name read at object+0x48, flags at +0x60):</p>
+<ul>
+<li>0x2F4F140 si_spawnspot (0x8 = CHEAT), 0x2F4F1D0 si_nextlayeractive (0x8), 0x2F4F260 si_filllayeractive (0x8),
+  0x2F4F2F0 si_devprogression (0x8), 0x2F4F530 si_gamemode (0xA = INT|CHEAT), 0x2F4F5C0 si_mainmenustart (0x9).</li>
+<li>si_checkpointName is NOT among the addresses given in the brief: it is at 0x2F4D3B0 (flags 0x8).</li>
+<li>No INIT (0x4000) or ROM (0x8000) bit on any of them. Set path for a console line is
+  idCVarSystemLocal vtbl+0x88 (0x1239f20) -&gt; idCVar::Set(force=0) = 0x1239140: INIT -&gt; "can only be set on the
+  command line", ROM -&gt; "is read only", level!=0 and no NOCHEAT(0x10) -&gt; "Attempting to set a developer cvar".
+  There is no CHEAT (0x8) gate in that function. At level 0 all of our cvars are settable.</li>
+<li><code>si_filllayeractive ""</code>: tokenizer 0x11fc230/0x11fc380 marks quotes with 0xff, strips them later and keeps
+  empty quoted tokens, so argc==2 and Set(cvar,"") runs (argc==1 would only print the current value).</li>
+</ul>
+<p>Does the map parser overwrite them? No. Scan of every rip-relative reference to the objects (+0..0x90):</p>
+<ul>
+<li>Parser 0xA7BD10-0xA7D816 touches only: reads si_nextlayeractive (+8) at 0xa7ced9 and si_filllayeractive at
+  0xa7cf0b, each ONLY <code>if (local arg string length == 0)</code> (cmp [rbp+0x28],0 / cmp [rbp-8],0), i.e. when no
+  -layername/-filllayername was given the cvar is the default. Also reads si_nextbakevariation (0x2f4d328) and
+  si_gamemode value (0xa7cf71). It WRITES only at 0xa7d5c5: si_nextlayeractive := "" and si_nextbakevariation := ""
+  AFTER consumption (end of parse, decomp line 1551 of native-map-decomp.txt).</li>
+<li>Parser never references si_spawnspot, si_checkpointName, si_devprogression. -spawnspot/-checkpoint args go to locals.</li>
+<li>si_spawnspot is consumed (read, then cleared to "") at 0x11dc885-0x11dc8d6 during map start;
+  si_checkpointName consumed/cleared at 0x11b6a02-0x11b6a64; si_devprogression consumed at 0x11b808b, cleared 0x11b8122.
+  All one-shot inputs, which is what the cvar lines rely on. Other writers: native launch 0x3ECF50 (the code the
+  build mimics: same cvars, defaults spawn "player_start_1", gamemode 0 / 2 / 3..6 + mainmenustart 1 for
+  score/chronicle), 0x991745 (chapter start), loadGame 0xa85924/0xa85edb, regression 0xb20dd4/0xb20ea0.
+  None runs between our lines and devmap.
+Failed hypothesis: "parser resets si_* to defaults when no args": not found anywhere.
+Minor, not verified: the native launch also copies the shell difficulty into si_nextGameDifficulty /
+si_challengeDifficulty / si_freedomChronicleDifficulty (0x2f4f410/380/6e0) when &lt; 7. The fix leaves them
+untouched (empty/previous). Whether an empty difficulty cvar matters at map start is unchecked.
+Buffer capacity: append (0x12124a0) fails silently if a static buffer is full; our ~8 short lines are fine.</li>
+</ul>
+<h2 id="4--in-decl-strings-holds-static-indirect">4. <code>\"</code> in decl strings: HOLDS (static, indirect)</h2>
+<ul>
+<li>Engine idLexer escape reader at 0x11fd090 handles <code>\"</code> -&gt; 0x22, <code>\\</code> -&gt; 0x5c, \n \t etc. (skipped only if
+  lexer flag 0x20000 is set). A <code>\"</code> therefore does not terminate a string when that flag is clear.</li>
+<li>Retail evidence of the same escape in text decls: credits <code>entry0 = "Vladimir \"Nomad\" Goryachev";</code>,
+  gameMode online/campaign <code>titleStorageModeName = "\"Campaign\"";</code> (read from the retail archive, read-only).
+  No retail devMenuOption decl contains <code>\"</code> (all 168 lines checked), so for devMenuOption specifically this is
+  inference from the shared reflection string reader, not proof. Unresolved: whether the devMenuOption reader
+  sets lexer flag 0x20000 (not found, would be unusual).</li>
+<li>Even without unescape the command-line tokenizer 0x11fc230 has its own backslash path (0x11fc1a0), but I did
+  not trace it, so do not rely on it.</li>
+<li>Repo's wolfsdk/decl.py unquote and the build self-check (check_texts) agree with the writer. Existing retail
+  retail devMenuCommandStrings (demo: "con_noprint 0", "pm_enablewanderer 1") contain no quotes, so the proven
+  in-game path has never carried quotes. First in-game run is the real test of claim 4.</li>
+<li>Cheap insurance if it fails in game: drop the quotes where the value has none (<code>si_spawnspot player_start_1</code>,
+  <code>si_gamemode 0</code>), and for the empty ones use <code>si_x ""</code> only (tokenizer needs the quotes for empties); layer lists
+  have no spaces so they work unquoted too (<code>si_nextlayeractive layer/code,layer/c01p1</code>). The tokenizer treats
+  <code>//</code> before the first quote as a comment, <code>/</code> alone is fine, so unquoted layer paths and <code>devmap maps/...</code> are safe.</li>
+</ul>
+<h2 id="summary-of-corrections">Summary of corrections</h2>
+<p>None needed. Documentation fix only: brief's cvar address list lacks si_checkpointName (0x2F4D3B0); 0x2F4F2F0 is
+si_devprogression, 0x2F4F260 is si_filllayeractive.</p>
+<p>Related: <a href="Research-Report-R4-Console-Commands.html">Research Report: R4 Console Commands</a>, <a href="Research-Report-R9-Dev-Starts.html">Research Report: R9 Dev Starts</a>, <a href="Developer-Mode.html">Developer Mode</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R7-Tno-Script-Vm.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Tnoscriptvm: The DoomScript VM, Read from the Decrypted TNO Runtime Image</a><a class="next" href="Research-Report-R8-Tno-Cvars.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Cvar Registry, Loader Audit, and Delivery Fix</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

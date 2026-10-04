@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Box Map Under a New Map Name (`game/wolfsdk/box`) – Wolfenstein Modloader</title>
+<meta name="description" content="Can a Wolfenstein II custom map use a brand-new map name? A test box room is built; not yet seen in game.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>A Box Map Under a New Map Name (<code>game/wolfsdk/box</code>)</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R9-Box-Map"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#answer">Answer</a></li><li><a href="#research-step-by-step">Research, step by step</a></li><li><a href="#what-was-built">What was built</a></li><li><a href="#checks-all-31-ok-0-fail-dwolf-decomptmpboxmapbuild_logtxt">Checks (all 31 OK, 0 FAIL; D:/wolf-decomp/tmp/boxmap/build_log.txt)</a></li><li><a href="#install-game-closed-freedom-chronicles-still-required">Install (game closed; Freedom Chronicles still required)</a></li><li><a href="#in-game-test">In-game test</a></li><li><a href="#not-proven-worst-first">Not proven (worst first)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><p class="update"><b><span class="en">Update</span><span class="de">Aktualisierung</span></b> <span class="en">Newer than this page: another map under a new name, game/wolfsdk/modtest, has since loaded in game (2026-10-02, see TNC Custom Map Status); the box map itself is still not confirmed in game.</span><span class="de">Neuer als diese Seite: Eine andere Karte unter neuem Namen, game/wolfsdk/modtest, lädt inzwischen im Spiel (02.10.2026, siehe TNC Custom Map Status); die Box-Karte selbst ist im Spiel noch nicht bestätigt.</span></p><div class="en"><p class="lede">This round-9 report asked whether a custom map for Wolfenstein II: The New Colossus can use a name the retail game never had. Reading the code found no step that limits map names to the retail list: the name only has to be listed in the dlc_0 folder&#x27;s map list. A closed grey test room (8 × 8 × 4 m) was built under the name game/wolfsdk/box as a third map in the same archive, and all 31 build checks pass. Everything is <span class="t" data-t="static">static analysis</span>; the box was not loaded in the game, and the route depended on the developer menu, which was itself still unconfirmed at the time.</p><ul><li>The name lookup is a plain case-insensitive text compare over the map lists, with no hash and no fixed list; base maps are checked before DLC maps.</li><li>The box adds 29 entries (17 map-level files copied under the new name, 12 new model and collision entries); all 7,130 existing entries stay unchanged.</li><li>The new name needs its own textures.cache file, provided as a link to c2v1&#x27;s; without it the game warns &#x27;Failed to open&#x27;.</li><li>No chapter data is needed: without it the player falls back to the generic player definition; map sound banks are missing, so ambience is silent.</li><li>Not proven in game: devmap with a non-retail name, new model and collision entries, and the lighting, which may look blotchy or dark.</li></ul></div><div class="de"><p class="lede">Dieser Bericht aus Runde 9 fragte, ob eine eigene Karte für Wolfenstein II: The New Colossus einen Namen tragen kann, den die Verkaufsversion nie hatte. Das Lesen des Codes fand keinen Schritt, der Kartennamen auf die Liste des Spiels beschränkt: Der Name muss nur in der Kartenliste des Ordners dlc_0 stehen. Ein geschlossener grauer Testraum (8 × 8 × 4 m) wurde unter dem Namen game/wolfsdk/box als dritte Karte im selben Archiv gebaut, und alle 31 Prüfungen des Builds bestehen. Alles ist <span class="t" data-t="static">statische Analyse</span>; die Box wurde im Spiel nicht geladen, und der Weg hing vom Entwicklermenü ab, das damals selbst noch unbestätigt war.</p><ul><li>Die Namenssuche ist ein einfacher Textvergleich ohne Beachtung der Groß- und Kleinschreibung über die Kartenlisten, ohne Hash und ohne feste Liste; Basis-Karten werden vor DLC-Karten geprüft.</li><li>Die Box fügt 29 Einträge hinzu (17 Dateien der Kartenebene unter neuem Namen kopiert, 12 neue Modell- und Kollisionseinträge); alle 7.130 vorhandenen Einträge bleiben unverändert.</li><li>Der neue Name braucht eine eigene textures.cache-Datei, als Verknüpfung auf die von c2v1; ohne sie meldet das Spiel „Failed to open“.</li><li>Kapiteldaten sind nicht nötig: Ohne sie wird der Spieler zur allgemeinen Spielerdefinition; Karten-Soundbanks fehlen, die Umgebung bleibt also stumm.</li><li>Im Spiel nicht bewiesen: devmap mit einem Namen außerhalb der Verkaufsversion, neue Modell- und Kollisionseinträge und die Beleuchtung, die fleckig oder dunkel aussehen kann.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-9 pass: can a TNC custom map use a brand-new map name? Static analysis of the runtime snapshot found no step that limits map names to the retail list — the name only has to be listed in <code>dlc_0</code>'s <code>packagemapspec.json</code>. A box map is built as a third map in <code>dlc_0</code>'s own <code>chunk_22</code>, next to <code>c2v1</code> and <code>c2v1_custom</code>, and all build checks pass. <strong>Not yet seen in the game; the route also depends on the dev-menu command branch, which is itself still unconfirmed in game.</strong></p>
+<p>Date: 2026-10-02. Nothing was installed and the game was not started. Nothing
+was written under <code>&lt;Steam library&gt;</code> or <code>Saved Games</code>; the install was only
+read. Builds went only to <code>D:/wolf-decomp/tmp/boxmap/</code>. New files:
+<code>tools/build_boxmap.py</code> and this report.</p>
+<h2 id="answer">Answer</h2>
+<p><strong>Yes, a new map name works.</strong> Static analysis of the runtime snapshot
+(<code>re_probes/runtime_87400/module.bin</code>, same EXE SHA256 as installed) found no
+step that limits map names to the retail list. You only have to list the name
+in <code>dlc/dlc_0/base/packagemapspec.json</code>.
+The box map is therefore built as a <strong>third map in dlc_0's own chunk_22</strong>,
+next to <code>c2v1</code> and <code>c2v1_custom</code>. Retail does the same thing: dlc_2's
+chunk_22 holds c2v1, c2v2 and c2v3. The c2v1 slot (kit level H) stays
+byte-identical, so the box costs no map slot. A second folder such as
+<code>dlc_00</code> is worse because:</p>
+<ul>
+<li>it would need its own dlcid (SearchDLC drops a duplicate id, <code>0xabe2c6</code>);</li>
+<li>it would need its own 886 MB texdb link, sound packs and pages.</li>
+</ul>
+<p><strong>Not yet seen in the game.</strong> Static analysis covers every step up to the
+spawn. The whole route depends on the dev menu command branch
+(<code>mods/tnc_devmenu_fix</code>), and that branch is itself still unconfirmed in game.</p>
+<h2 id="research-step-by-step">Research, step by step</h2>
+<p>"Read" means the result comes from disassembly or decompiled code of the
+snapshot. "Measured" means it was observed in data or in the game.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Address</th>
+<th>Result</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>devmap</code> callback</td>
+<td><code>0xa7e0d0</code> → parser <code>0xa7bd10</code></td>
+<td>The only map-related rejection in the parser is the existence check (#2). The parser's other strings are argument errors for <code>-spawnspot</code>, <code>-checkpoint</code>, <code>-layername</code> and the like.</td>
+<td>read</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Existence check</td>
+<td><code>0xa7b330</code>, called at <code>0xa7cd07</code></td>
+<td>The check builds <code>maps/&lt;name&gt;</code> (<code>'maps/%s'</code> <code>0x26c6418</code>) and appends <code>'.%s'</code>. If <code>[0x30b54e8] &gt;= 2</code> it calls only resource-manager slot <code>+0x80</code>, then slot <code>+0x88</code>. Slot <code>+0x80</code> failing gives "Map %s is not present in this package". Slot <code>+0x88</code> failing gives "map %s is not installed". The loose-file test ("Can't find map") runs only when the value is below 2.</td>
+<td>read</td>
+</tr>
+<tr>
+<td>2a</td>
+<td>Value of <code>[0x30b54e8]</code></td>
+<td><code>0x30b54e8</code></td>
+<td>2 in the snapshot. Map load sets it to 3 (<code>0xac407d</code>).</td>
+<td>measured (snapshot)</td>
+</tr>
+<tr>
+<td>2b</td>
+<td>Slot <code>+0x80</code> = <code>0xabf3d0</code></td>
+<td>vtbl <code>0x26d2a08</code></td>
+<td>Returns true if the name is in the base spec or in <strong>any</strong> DLC spec.</td>
+<td>read</td>
+</tr>
+<tr>
+<td>2c</td>
+<td>Slot <code>+0x88</code> = GetIsChunkForMapInstalled <code>0xabf6a0</code></td>
+<td><code>0xabf841</code>, <code>0xabf86e</code></td>
+<td>Spec lookup <code>0xabf440</code>. For a DLC entry it logs "dlc maps are considdered installed for now". It then checks only base/ref chunks with IsChunkInstalled, which is always 1 on PC (<code>chunklist.md</code>). The result is true.</td>
+<td>read</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Name lookup</td>
+<td><code>0xac5d10</code></td>
+<td>Strips the extension and every leading <code>maps/</code>, then runs a linear, case-insensitive string compare over the spec entries (stride <code>0x68</code>). There is no hash and no fixed list.</td>
+<td>read</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Base before DLC, first hit</td>
+<td><code>0xabf440</code>, <code>0xabf500</code></td>
+<td>Searches <code>this+8</code> (base) first, then the DLC list (<code>this+0x30</code>, <code>0x160</code> per DLC) in folder-scan order. The first hit wins. Prefix <code>'%s/%s'</code> = DLC path + <code>base/</code>. Matches <code>dlc4_cfile.md</code>.</td>
+<td>read; DLC-vs-DLC precedence measured in game on 2026-09-24</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Mount by name (LoadNamedResourceBlock)</td>
+<td><code>0xac1730</code></td>
+<td>Calls <code>0xabf6a0</code>. For a DLC entry it mounts DLC sound at <code>0xac1a47</code> with the prefix, then base chunk/chunkbase, then <code>&lt;prefix&gt;chunk_&lt;chunkid&gt;.resources</code> and <code>.texdb</code> (<code>0xac2308</code>–<code>0xac241c</code>). Refchunks are mounted from <code>base/</code> (<code>0xac24ef</code> loop).</td>
+<td>read</td>
+</tr>
+<tr>
+<td>6</td>
+<td>The map needs its mapresources</td>
+<td><code>0xac217b</code>, <code>0xac27a9</code>, <code>0xac281d</code></td>
+<td>Formats <code>'generated/buildGame/%s.mapResources'</code> and looks it up in the mounted containers. If it is missing: "The map %s isn't present in the cache file" and the load is aborted. Retail stores the name in lower case, so the lookup is case-insensitive.</td>
+<td>read</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Other resources named after the map</td>
+<td>strings + refs</td>
+<td><code>'%s/_combo/%s.proc'</code> <code>0x26c64b0</code>; <code>'_combo/_world.tome'</code> <code>0x381d78</code>; <code>'_combo/sky.bmodel'</code> <code>0x381b9f</code>; <code>'_combo/_world.bmodel'</code> <code>0x26062e0</code>; <code>'_combo/_world.bshadows'</code> <code>0x381fcf</code>; <code>'/_combo/world.hkshape'</code> (fn <code>0x4b0700</code>); <code>'_combo/_world.pvs'</code> <code>0x2651bc8</code>; <code>'%s/%s.ambientsh'</code> <code>0x75a4a2</code>; <code>'%s/mega.decl'</code> (MapInit <code>0x11b55f0</code>); <code>'generated/staticstreamtree/%s.bsstree'</code> <code>0x2606448</code>; <code>'/devmapinfo.json'</code> (<code>0xafcc20</code>, only on the <code>-checkpoint</code> path); <code>'maps/%s/lightprobes/%s_row.bimage'</code> (per light-probe entity; the box has none). The <code>.prockd</code> and <code>.hknavmesh</code> names follow the retail pattern; I found no format string for them.</td>
+<td>read</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Side file <code>textures.cache</code></td>
+<td><code>0xac40a7</code>–<code>0xac40c9</code></td>
+<td><code>'%smaps/%s/textures.cache'</code> = <code>&lt;dlc&gt;/base/maps/&lt;name&gt;/textures.cache</code> → <code>MountMemoryDatabase</code> <code>0x793090</code>. If the file is missing: warning "Failed to open", then return <strong>without popping the heap it pushed</strong>, so the heap stack loses one slot per load. <strong>The box needs this file under its own name.</strong></td>
+<td>read</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Virtual texture pages</td>
+<td><code>0x8457cb</code>–<code>0x845871</code></td>
+<td><code>'%s%s/%s.pages'</code> = DLC prefix + <code>virtualtextures/</code> + the material's <code>landpagefile</code>. That file name comes from the <code>mega.decl</code> text, not from the map name. The box keeps c2v1's <code>landpagefile</code>, so it reads <code>dlc_0/virtualtextures/maps/game/dlc/c02/c2v1.pages</code>, which already exists. The <code>_vmtr</code> pages (<code>0xac5471</code>) are optional (file-exists test first).</td>
+<td>read</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Sound</td>
+<td><code>0x8cb91f</code>, caller <code>0x8cc6a7</code></td>
+<td>prodspec has no entry for the map, so the game logs "[SOUND] No banks found for map '%s'" (a warning). The caller ignores the result. The box therefore has no map-specific banks; global sounds still play.</td>
+<td>read</td>
+</tr>
+<tr>
+<td>11</td>
+<td>MapInit with no chapter part</td>
+<td>resolver call <code>0x11b6733</code>, writes <code>0x11b6798</code>–<code>0x11b6818</code></td>
+<td><code>0xDF5860</code> matches the map name first; no part names <code>game/wolfsdk/box</code>, so it returns false. Chapter, variation and part stay 0, because each load gets a fresh game: AllocGame <code>0x11a7aa0</code> → <code>0x11ade60</code> zeroes <code>+0x163a08/10/18</code>. The playerDef comes from the worldspawn's reflected <code>playerDef</code> field (<code>+0x930</code>, record <code>0x20eaea0</code>; set at <code>0x11b55f0</code>, decomp line 1248). That field is null here.</td>
+<td>read</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Player with null playerDef</td>
+<td>SetupPlayer <code>0x11bb7b9</code>–<code>0x11bb7f3</code></td>
+<td>Falls back to <code>entityDef "player"</code>. It is fatal ("Failed to load player entityDef") only if that decl is missing. It is in <code>gameresources.resources</code>. Mission init <code>0xf973b0</code> tests part and variation for 0. <strong>No chapter or variation data is needed.</strong></td>
+<td>read; the <code>player</code> decl's presence was measured (archive index)</td>
+</tr>
+<tr>
+<td>13</td>
+<td>An extra name in dlc_0's spec does not break startup</td>
+<td>installed <code>dlc/dlc_0/base/packagemapspec.json</code></td>
+<td>Lists <code>game/dlc/c02/c2v1_custom</code> as well as c2v1 since 2026-09-24. The kit levels have loaded with it since then.</td>
+<td>measured (indirect)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Gaps: <code>0xabf3d0</code> and <code>0xabf6a0</code> were read from disassembly, not run.
+SearchDLC (<code>0xabdcf0</code>) was not re-traced; it is taken from <code>dlc4_cfile.md</code>
+and <code>r2_mapnodlc.md</code>. There it is measured by log order and a
+screenshot-confirmed run.</p>
+<h2 id="what-was-built">What was built</h2>
+<p><code>python tools/build_boxmap.py</code> takes about 2 minutes and builds twice.
+<code>--once</code> builds once. Output in <code>D:/wolf-decomp/tmp/boxmap/box/</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dlc_0/base/chunk_22.resources</code></td>
+<td>147,335,539 B, sha256 <code>1fc43560a43cb6f833c0261bfda1245b54cddcb2546946645c92ef84c167a58f</code>. It is kit level H (sha <code>cd7e9340…</code>, identical to the installed <code>dlc_0</code> chunk) plus 29 added entries. Nothing was replaced or removed.</td>
+</tr>
+<tr>
+<td><code>dlc_0/base/packagemapspec.json</code></td>
+<td>c2v1_custom and c2v1 as <code>mapinstall</code> writes them, plus <code>{"name": "game/wolfsdk/box", "chunkid": 22, "basechunkid": 6, "layer": -1, "refchunks": [9, 13]}</code>, patchlevel 3</td>
+</tr>
+<tr>
+<td><code>dlc_0/dlcinfo.json</code></td>
+<td><code>{"dlcid": 4}</code></td>
+</tr>
+<tr>
+<td><code>side_files.json</code></td>
+<td>The 14 dlc_2 side files <code>mapinstall</code> already links, plus <strong>one new link name</strong>: <code>base/maps/game/wolfsdk/box/textures.cache</code> → dlc_2's <code>base/maps/game/dlc/c02/c2v1/textures.cache</code></td>
+</tr>
+<tr>
+<td><code>box.glb</code></td>
+<td>The room as glTF: 6 nodes, so it can be opened in Blender</td>
+</tr>
+<tr>
+<td><code>devmenu_entry.txt</code>, <code>manifest.json</code></td>
+<td>The dev menu item, plus hashes, added names, engine-name evidence and check results</td>
+</tr>
+</tbody>
+</table></div>
+<p>The 29 entries:</p>
+<ul>
+<li><strong>17 map-level c2v1 entries copied under the new name:</strong><ul>
+<li><code>maps/game/wolfsdk/box.entities</code></li>
+<li><code>.../box/_combo/box.proc</code></li>
+<li><code>.../box/box.prockd</code></li>
+<li><code>generated/buildgame/game/wolfsdk/box.mapresources</code></li>
+<li><code>_world.tome</code> (0 B, as in H) and <code>-metadata.json</code></li>
+<li><code>box.ambientsh</code>, <code>box.hknavmesh</code>, <code>devmapinfo.json</code></li>
+<li><code>mega/megatrans/megafoliagetrans.decl</code></li>
+<li><code>_world.bmodel</code> and <code>sky.bmodel</code> (40 B each in H)</li>
+<li><code>_world.pvs</code></li>
+<li><code>world.hkshape</code> (c06p2's, as in H)</li>
+<li><code>generated/staticstreamtree/game/wolfsdk/box.bsstree</code></li>
+</ul>
+</li>
+<li><strong>12 new entries:</strong> a <code>model</code> and a <code>cm</code> for each of the 6 slabs.</li>
+</ul>
+<p>The rename rule (<code>maplevel()</code>/<code>rename()</code>) takes the map's own entries:</p>
+<ul>
+<li><code>maps/&lt;m&gt;.entities</code>, <code>generated/buildgame|staticstreamtree/&lt;m&gt;.*</code>;</li>
+<li>under <code>maps/&lt;m&gt;/</code>: <code>_combo/*</code>, <code>&lt;base&gt;.*</code>, <code>devmapinfo.json</code>, <code>mega*.decl</code>.</li>
+</ul>
+<p>Per-entity resources stay under c2v1 (trigger cms, lightprobes, kiscules).
+The box has none of those entities.</p>
+<p>The box itself is reused, not newly written code:</p>
+<ul>
+<li><strong>Room:</strong> inside 8 × 8 × 4 m, slabs 0.25 m thick, floor top at
+  <code>(5, -183, -4.5)</code>. That is the kit hall floor inside c2v1's proc areas.
+  c06p2's world collision is ≥ 295 m away.</li>
+<li><strong>Slabs:</strong> <code>build_gltfmap.pieces()</code> builds them: r4 model writer, box cm
+  with contents | 0x18 (variant D), <code>megatexturedModel = false</code>, material
+  <code>textures/common/blockout_gray</code>, one <code>.proc</code> texel each (variant H recipe).</li>
+<li><strong><code>.entities</code>:</strong> H's worldspawn verbatim; <code>player_start_1</code>, cloned from
+  <code>c2v1_ps_challenge_01</code> with no layer, 2 m south of the centre and 0.1 m
+  above the floor; <code>wolfsdk_box_light</code>, a clone of H's point light
+  <code>kitmap_light_hall_fill</code> at 3.2 m, radius 9, warm white.</li>
+<li><strong><code>.mapresources</code>:</strong> H's 20,838 rows with the map-level rows renamed, the
+  map list set to <code>maps/game/wolfsdk/box</code>, and 12 always-load rows.</li>
+</ul>
+<h2 id="checks-all-31-ok-0-fail-dwolf-decomptmpboxmapbuild_logtxt">Checks (all 31 OK, 0 FAIL; <code>D:/wolf-decomp/tmp/boxmap/build_log.txt</code>)</h2>
+<ul>
+<li><strong>Container:</strong><ul>
+<li>Before finalize, <code>probe_idclhash</code> rejects the file (negative control).</li>
+<li>Finalize moves the data hash of exactly the 29 added entries.</li>
+<li>Entry count is 7,130 + 29.</li>
+<li><strong>All 7,130 base entries are unchanged</strong> (payload, version, flags,
+dependencies), so c2v1 is still kit level H.</li>
+<li>The 29 entries are each present once, as written.</li>
+<li><code>probe_datahash</code> <code>+0x50 7158/7158</code> (the 1 mode-4 entry is skipped, as in
+every build). <code>probe_idclhash</code> <code>+0x08 1/1 +0x20 1/1</code>.</li>
+</ul>
+</li>
+<li><strong>Naming:</strong> <code>naming_problems()</code> returns [] on the built container. It
+  checks four things:<ul>
+<li>every map-level c2v1 entry has a copy under the new name;</li>
+<li>no mapresources row of the box still names a map-level c2v1 resource;</li>
+<li>every such row exists renamed, and the map list is the new name;</li>
+<li>the box's text payloads do not contain <code>game/dlc/c02/c2v1</code>. The only
+allowed exception is the <code>mega*.decl</code> page reference (#9).</li>
+</ul>
+</li>
+</ul>
+<p>The controls each fail as they should:
+    - <strong>A:</strong> <code>box.ambientsh</code> left under the old name only;
+    - <strong>B:</strong> its mapresources row left on the old name;
+    - <strong>C:</strong> the old map path inside the box <code>.entities</code>.</p>
+<p>Separately, all 14 engine-derived names from the format strings exist under
+  <code>game/wolfsdk/box</code>. <code>_world.bshadows</code> is missing on purpose, as it is in H,
+  which loaded in game.
+- <strong><code>.entities</code>:</strong>
+    - byte-exact round trip;
+    - <code>build_custom_map.check</code> finds nothing (996 entityDefs mounted through
+    the new spec);
+    - exactly 1 worldspawn, 1 start, 1 light and 6 static instances;
+    - every slab model resolves, and every cm resolves "exact" to our own cm;
+    - the start and the light are inside the room;
+    - the 6 collision boxes equal the designed slabs (closed room).
+- <strong><code>.mapresources</code> and <code>.proc</code>:</strong> base rows kept in order with only the
+  map-level ones renamed, plus 12 always-load rows; the only unresolved
+  map-level row is <code>_world.bshadows</code>, exactly as in H; the <code>.proc</code> keeps all
+  base records and gains 1 record per slab.
+- <strong>Determinism:</strong> two builds give the same sha256.</p>
+<h2 id="install-game-closed-freedom-chronicles-still-required">Install (game closed; Freedom Chronicles still required)</h2>
+<p><code>wolfsdk/mapinstall.py</code> and the devmenu builder belong to others, so here is
+what they would need:</p>
+<ol>
+<li><strong><code>mapinstall.py</code>:</strong><ul>
+<li>let <code>install()</code> write the box entry as a third spec map (or take the
+ spec from the build);</li>
+<li>add one hardlink: <code>dlc_0/base/maps/game/wolfsdk/box/textures.cache</code> →
+ <code>dlc_2/base/maps/game/dlc/c02/c2v1/textures.cache</code>;</li>
+<li>record both in <code>wolfsdk_karte.json</code>, so uninstall recognises them.</li>
+</ul>
+</li>
+</ol>
+<p>After that: <code>python -m wolfsdk map-install D:\wolf-decomp\tmp\boxmap\box\dlc_0\base\chunk_22.resources</code>.
+2. <strong><code>tools/build_devmenu_fix.py</code>:</strong> add the item below to <code>devmenuoption/main</code>
+   and raise <code>num</code> from 3 to 4. Field order and quoting are the same as the
+   existing campaign command entries.</p>
+<pre><code>item[3] = {
+    devMenuDisplayName = &quot;WolfSDK: Box&quot;;
+    devMenuCommandStrings = {
+        num = 7;
+        item[0] = &quot;si_spawnspot \&quot;player_start_1\&quot;&quot;;
+        item[1] = &quot;si_nextlayeractive \&quot;layer/dlc/c2v1\&quot;&quot;;
+        item[2] = &quot;si_filllayeractive \&quot;\&quot;&quot;;
+        item[3] = &quot;si_devprogression \&quot;\&quot;&quot;;
+        item[4] = &quot;si_checkpointName \&quot;\&quot;&quot;;
+        item[5] = &quot;si_gamemode 0&quot;;
+        item[6] = &quot;devmap game/wolfsdk/box&quot;;
+    }
+}
+</code></pre>
+<p><code>layer/dlc/c2v1</code> loads the same layered preload rows as in the kit-level
+tests. The box's own entities have no layer.</p>
+<h3 id="manual-route-until-then-powershell">Manual route until then (PowerShell)</h3>
+<p>Revert the mods in the loader first: mapinstall forbids creating files in
+dlc_0 while tncpatch journals it.</p>
+<pre><code class="language-powershell">$g = &quot;&lt;Steam library&gt;\steamapps\common\Wolfenstein.II.The.New.Colossus\dlc&quot;
+$b = &quot;D:\wolf-decomp\tmp\boxmap\box\dlc_0\base&quot;
+Copy-Item &quot;$g\dlc_0\base\packagemapspec.json&quot; &quot;D:\wolf-decomp\tmp\boxmap\spec_before.json&quot;
+Copy-Item &quot;$b\chunk_22.resources&quot; &quot;$g\dlc_0\base\chunk_22.resources.new&quot;
+Move-Item -Force &quot;$g\dlc_0\base\chunk_22.resources.new&quot; &quot;$g\dlc_0\base\chunk_22.resources&quot;
+Remove-Item &quot;$g\dlc_0\base\packagemapspec.json&quot;; Copy-Item &quot;$b\packagemapspec.json&quot; &quot;$g\dlc_0\base\packagemapspec.json&quot;
+New-Item -ItemType Directory -Force &quot;$g\dlc_0\base\maps\game\wolfsdk\box&quot; | Out-Null
+New-Item -ItemType HardLink -Path &quot;$g\dlc_0\base\maps\game\wolfsdk\box\textures.cache&quot; -Target &quot;$g\dlc_2\base\maps\game\dlc\c02\c2v1\textures.cache&quot;
+</code></pre>
+<p>Never open the hardlinked files for writing. To replace one, delete it first
+and then copy. Undo:</p>
+<ul>
+<li>copy <code>re_probes\kitmap\variants\H\chunk_22.resources</code> back the same way;</li>
+<li>put <code>spec_before.json</code> back;</li>
+<li><code>Remove-Item -Recurse "$g\dlc_0\base\maps\game"</code>. This only unlinks the
+  link; dlc_2's file stays.</li>
+</ul>
+<p>Until it is restored, the loader's uninstall will name the changed chunk and
+spec as unknown.</p>
+<h2 id="in-game-test">In-game test</h2>
+<ol>
+<li>Apply the mods (with the box item in tnc_devmenu_fix) and start the game.
+   Open the dev menu → "WolfSDK: console test". The console must show
+   <code>g_debugLayerChanges</code> = 1. If it does not, the command branch does not
+   work and the box test means nothing.</li>
+<li>Dev menu → "WolfSDK: Box".<ul>
+<li><strong>Pass:</strong> you spawn in a closed grey room (8 × 8 × 4 m) lit by one warm
+ light, can walk, do not fall, and cannot leave through the walls.</li>
+</ul>
+</li>
+<li>Afterwards type <code>condump boxmap1.txt</code> in the console and send the file from
+   <code>Saved Games/.../base/</code>. Lines that explain a failure:</li>
+</ol>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Log line</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Map game/wolfsdk/box is not present in this package</code></td>
+<td>spec not installed</td>
+</tr>
+<tr>
+<td><code>map ... is not installed</code></td>
+<td>the installed check in step 2c failed</td>
+</tr>
+<tr>
+<td><code>The map ... isn't present in the cache file</code></td>
+<td>the old chunk is still in dlc_0</td>
+</tr>
+<tr>
+<td><code>MountMemoryDatabase: Failed to open ...box/textures.cache</code></td>
+<td>the link is missing</td>
+</tr>
+<tr>
+<td><code>[SOUND] No banks found for map 'game/wolfsdk/box'</code></td>
+<td><strong>expected</strong>, harmless</td>
+</tr>
+<tr>
+<td><code>Failed to load player entityDef</code></td>
+<td>the player fallback broke</td>
+</tr>
+</tbody>
+</table></div>
+<p>Falling through the floor means a collision problem. A black room means a
+lighting problem.</p>
+<p>Variant B if campaign mode misbehaves: use <code>si_gamemode 5</code> plus an extra line
+<code>si_mainmenustart 1</code>, which is what the c2v1 entries use.</p>
+<h2 id="not-proven-worst-first">Not proven (worst first)</h2>
+<ol>
+<li>The dev menu command branch, and <code>devmap</code> itself, have never run in game.
+   All of r8's analysis is static.</li>
+<li>A non-retail map name has never been loaded: steps 1–12 are static only.</li>
+<li>New <code>model</code>/<code>cm</code> entries have never been loaded in game. This is
+   DESIGN.md risk 1, the same as the <code>build_gltfmap</code> build.</li>
+<li>Campaign mode (<code>si_gamemode 0</code>) with no chapter part on a DLC-chunk map:<ul>
+<li>the player becomes the generic <code>player</code> entityDef, with that decl's
+ default inventory;</li>
+<li>whether the game makes an initial autosave for a chapterless map is
+ unknown.</li>
+</ul>
+</li>
+<li>Lighting: borrowed lightmap texels plus one dynamic light. The room may
+   look blotchy or dark (variant G looked blotchy).</li>
+<li>No map sound banks (the warning from step 10). Ambience will be silent.</li>
+<li>Static reading: the heap-stack leak when <code>textures.cache</code> is missing is
+   inferred from decompiled code. The link avoids that case, so it is not
+   tested.</li>
+</ol>
+<p>No fallback into the c2v1 slot was built, because the new name is not ruled
+out. If the box fails at steps 2–6 (one of the "not present", "not installed"
+or "cache file" lines above), the same pieces can go into
+<code>c2v1.entities</code> the way the kit level does, launched with the existing
+"Death is Coming (C2V1)" dev menu entry.</p>
+<p>Related: <a href="Research-Report-Chunklist.html">Research Report: Chunklist</a>, <a href="Research-Report-Dlc4-Cfile.html">Research Report: Dlc4 Cfile</a>, <a href="Research-Report-R2-Mapnodlc.html">Research Report: R2 Mapnodlc</a>, <a href="Research-Report-R8-Devmenu-Fix-Verify.html">Research Report: R8 Devmenu Fix Verify</a>, <a href="Research-Report-R10-Modtest-Map.html">Research Report: R10 Modtest Map</a>, <a href="TNC-Custom-Map-Status.html">TNC Custom Map Status</a>, <a href="DLC-Overrides.html">DLC Overrides</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R8-Tno-Cvars.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Cvar Registry, Loader Audit, and Delivery Fix</a><a class="next" href="Research-Report-R9-Dev-Starts.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Dev Starts After Map Load (kce) Restored Through Marker Layers</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

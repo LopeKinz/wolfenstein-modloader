@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mod Format DE – Wolfenstein Modloader</title>
+<meta name="description" content="Field-by-field guide to the mod.json file that WolfSDK 0.2.0 reads, with real examples from shipped mods.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
+<h1>Mod Format DE</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Mod-Format-DE"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#wie-schreibe-ich-eine-mod-von-hand">Wie schreibe ich eine Mod von Hand?</a></li><li><a href="#alle-felder-der-modjson-im-überblick">Alle Felder der mod.json im Überblick</a></li><li><a href="#modjson-felder-id-und-name">mod.json-Felder id und name</a></li><li><a href="#modjson-feld-spiel-für-welches-spiel-eine-mod-ist">mod.json-Feld spiel: für welches Spiel eine Mod ist</a></li><li><a href="#modjson-feld-priority-reihenfolge-und-konflikte">mod.json-Feld priority: Reihenfolge und Konflikte</a></li><li><a href="#modjson-feld-assets-welche-spiel-assets-eine-mod-ändert">mod.json-Feld assets: welche Spiel-Assets eine Mod ändert</a></li><li><a href="#asset-änderung-set-einzelne-werte-einer-decl-ändern">Asset-Änderung set: einzelne Werte einer Decl ändern</a></li><li><a href="#asset-änderung-file-ein-ganzes-asset-ersetzen">Asset-Änderung file: ein ganzes Asset ersetzen</a></li><li><a href="#modjson-feld-cvars-einstellungen-beim-spielstart">mod.json-Feld cvars: Einstellungen beim Spielstart</a></li><li><a href="#beispiel-die-kleinste-mod-big-pistol-magazine">Beispiel: die kleinste Mod (Big Pistol Magazine)</a></li><li><a href="#beispiel-eine-werte-mod-für-the-new-colossus-invulnerable">Beispiel: eine Werte-Mod für The New Colossus (Invulnerable)</a></li><li><a href="#beispiel-eine-mod-nur-mit-cvars-hidden-menu-options">Beispiel: eine Mod nur mit Cvars (Hidden Menu Options)</a></li><li><a href="#beispiel-eine-mod-die-ganze-dateien-ersetzt-photo-mode">Beispiel: eine Mod, die ganze Dateien ersetzt (Photo Mode)</a></li><li><a href="#wie-finde-ich-asset-namen-und-änderbare-pfade">Wie finde ich Asset-Namen und änderbare Pfade?</a></li><li><a href="#wie-prüfe-ich-eine-mod-vor-dem-anwenden">Wie prüfe ich eine Mod vor dem Anwenden?</a></li><li><a href="#modjson-fehler-beim-einlesen-einer-mod">mod.json-Fehler beim Einlesen einer Mod</a></li><li><a href="#modjson-fehler-beim-prüfen-oder-anwenden">mod.json-Fehler beim Prüfen oder Anwenden</a></li><li><a href="#modjson-der-apps-im-vergleich-zum-sdk-schema">mod.json der Apps im Vergleich zum SDK-Schema</a></li><li><a href="#eine-modjson-die-in-den-apps-und-im-sdk-funktioniert">Eine mod.json, die in den Apps und im SDK funktioniert</a></li><li><a href="#welche-teile-des-mod-formats-sind-im-spiel-bestätigt">Welche Teile des Mod-Formats sind im Spiel bestätigt?</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">A WolfSDK mod is a folder with a mod.json file. This page explains every field the Loader and Studio read: id and name are required, spiel picks the game (tno or tnc), priority sets the load order, assets lists the changed game files and cvars lists settings sent at game start. A change either sets single values inside a <span class="t" data-t="decl">decl</span> by dotted paths or replaces a whole file. The page also lists the error messages, how to check a mod before applying it, and how the apps&#x27; format differs from the schema of the SDK packages.</p><ul><li>Only id and name are required; without spiel a mod counts as a The New Order mod, and the apps read spiel, not game.</li><li>Mods are applied lowest priority first (default 100); if two mods set the same value the higher one wins and a conflict is reported, and two mods writing the same texture are refused.</li><li>set can only change paths that already exist in the decl; new fields need a whole-file replacement with file.</li><li>Confirmed in game: set on a The New Colossus decl (the 30-round pistol magazine) and file on an encrypted config (Sandbox Tools god mode and infinite ammo).</li><li>Not yet confirmed in game: cvars sent through default.cfg in The New Colossus or through start arguments and +toggle in The New Order.</li></ul></div><div class="de"><p class="lede">Eine WolfSDK-Mod ist ein Ordner mit einer Datei mod.json. Diese Seite erklärt jedes Feld, das Loader und Studio lesen: id und name sind Pflicht, spiel wählt das Spiel (tno oder tnc), priority legt die Reihenfolge fest, assets listet die geänderten Spieldateien und cvars die Einstellungen, die beim Spielstart gesendet werden. Eine Änderung setzt entweder einzelne Werte in einer <span class="t" data-t="decl">Decl</span> über Pfade mit Punkten oder ersetzt eine ganze Datei. Dazu kommen die Fehlermeldungen, die Prüfung einer Mod vor dem Anwenden und der Unterschied zum Schema der SDK-Pakete.</p><ul><li>Nur id und name sind Pflicht; ohne spiel gilt eine Mod als Mod für The New Order, und die Apps lesen spiel, nicht game.</li><li>Mods werden mit der niedrigsten Priorität zuerst angewendet (Standard 100); setzen zwei Mods denselben Wert, gewinnt die höhere und ein Konflikt wird gemeldet, zwei Mods für dieselbe Textur werden abgelehnt.</li><li>set kann nur Pfade ändern, die es in der Decl schon gibt; neue Felder brauchen einen Ersatz der ganzen Datei mit file.</li><li>Im Spiel bestätigt: set auf eine Decl von The New Colossus (das Pistolenmagazin mit 30 Schuss) und file auf eine verschlüsselte Konfigurationsdatei (God-Mode und unendliche Munition aus Sandbox Tools).</li><li>Im Spiel noch nicht bestätigt: cvars über default.cfg in The New Colossus oder über Startargumente und +toggle in The New Order.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p><a href="Mod-Format.html">🇬🇧 English</a> · 🇩🇪 Deutsch</p>
+<h1 id="mod-format-eine-modjson-von-hand-schreiben">Mod-Format: eine mod.json von Hand schreiben</h1>
+<p>Diese Seite beschreibt die <code>mod.json</code>, die WolfSDK Loader und WolfSDK Studio 0.2.0 lesen, Feld für Feld, so wie <code>modloader/wolfsdk/mod.py</code> sie prüft. Die Beispiele sind echte Dateien aus den Mods der 0.2.0-Pakete. Wer eine Mod ohne JSON bauen will, nimmt das <a href="WolfSDK-Studio-DE.html">WolfSDK Studio</a>. Welche Decls und Pfade es gibt: <a href="Modding-Guide.html">Modding Guide</a> (Englisch).</p>
+<p>Keywords: Mod-Format, mod.json, Manifest, Dateiformat einer Mod, Mod von Hand schreiben, mod format, write a mod by hand</p>
+<h2 id="wie-schreibe-ich-eine-mod-von-hand">Wie schreibe ich eine Mod von Hand?</h2>
+<ol>
+<li>Leg im Ordner <code>mods</code> neben <code>WolfSDK.cmd</code> einen Ordner an, z. B. <code>mods\meine_mod</code> (<em>Open folder</em> auf der Seite <em>Mods</em> öffnet ihn).</li>
+<li>Leg eine <code>mod.json</code> hinein (Felder unten). Dateien, auf die sie zeigt, kommen in denselben Ordner, z. B. <code>mods\meine_mod\decls\x.decl</code>.</li>
+<li>Auf der Seite <em>Mods</em> auf <em>Reload</em> klicken, die Mod anhaken, dann <em>Check</em> (oder <em>Check mod set</em> auf der Seite <em>Overview</em>).</li>
+<li><em>Apply mods</em>, <em>Start game</em>.</li>
+</ol>
+<p>Ein Gerüst über die Kommandozeile, im entpackten Ordner:</p>
+<pre><code>python\python.exe -m wolfsdk new-mod meine.mod --name &quot;Meine Mod&quot;
+</code></pre>
+<p>Das schreibt <code>mods\meine_mod\mod.json</code> mit einem Beispiel-<code>set</code>. Der Loader liest jeden Ordner in <code>mods</code> mit einer <code>mod.json</code>; eine kaputte wird mit <code>!</code> unter <em>Checks &amp; messages</em> aufgeführt.</p>
+<p>Keywords: wie schreibe ich eine Mod, Mod schreiben, Mod erstellen, neue Mod, eigene Mod, Mod-Ordner, new-mod, write a mod</p>
+<h2 id="alle-felder-der-modjson-im-überblick">Alle Felder der mod.json im Überblick</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Feld</th>
+<th>Pflicht</th>
+<th>Standard</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>ja</td>
+<td>–</td>
+<td>eindeutige ID, z. B. <code>example.big_magazine</code></td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>ja</td>
+<td>–</td>
+<td>Name auf der Seite <em>Mods</em></td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>nein</td>
+<td><code>"0.0.0"</code></td>
+<td>auf der Seite <em>Mods</em> angezeigt</td>
+</tr>
+<tr>
+<td><code>author</code></td>
+<td>nein</td>
+<td><code>""</code></td>
+<td>wer sie gemacht hat</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>nein</td>
+<td><code>""</code></td>
+<td>was sie tut und was getestet ist</td>
+</tr>
+<tr>
+<td><code>priority</code></td>
+<td>nein</td>
+<td><code>100</code></td>
+<td>ganze Zahl; niedrig zuerst, höher gewinnt</td>
+</tr>
+<tr>
+<td><code>spiel</code></td>
+<td>nein</td>
+<td><code>"tno"</code></td>
+<td>das Spiel: <code>"tno"</code> oder <code>"tnc"</code></td>
+</tr>
+<tr>
+<td><code>assets</code></td>
+<td>nein</td>
+<td><code>{}</code></td>
+<td>Änderungen, Schlüssel <code>typ:name</code>, mit <code>set</code>/<code>file</code></td>
+</tr>
+<tr>
+<td><code>cvars</code></td>
+<td>nein</td>
+<td><code>{}</code></td>
+<td>Cvars, die beim Spielstart gesendet werden</td>
+</tr>
+</tbody>
+</table></div>
+<p>Andere Schlüssel werden ignoriert. Das Studio schreibt <code>"studio": {"version": 1}</code> in die Mods, die es erstellt.</p>
+<p>Keywords: Felder der mod.json, alle Felder, Schlüssel, Aufbau, Referenz, mod.json fields, keys</p>
+<h2 id="modjson-felder-id-und-name">mod.json-Felder id und name</h2>
+<p><code>id</code> und <code>name</code> sind die einzigen Pflichtfelder; beide müssen nicht-leerer Text sein.</p>
+<ul>
+<li><code>id</code> kennzeichnet die Mod. Der Loader merkt sich angehakte Mods über ihre <code>id</code>, also halte sie zwischen Versionen stabil. Zwei Mods mit derselben <code>id</code>: Die zweite wird mit „Duplicate mod id“ übersprungen. Die mitgelieferten Mods nutzen IDs mit Punkt wie <code>example.big_magazine</code>, <code>wolfsdk.tnc_photo_mode</code> oder <code>studio.sandbox_tools</code>.</li>
+<li><code>name</code> ist das, was die Seite <em>Mods</em> anzeigt.</li>
+</ul>
+<p><code>version</code>, <code>author</code> und <code>description</code> sind optionaler Text. Die Seite <em>Mods</em> zeigt Name, Version, Priorität und die Zahl der Assets.</p>
+<p>Keywords: id, name, Mod-ID, Mod-Name, Pflichtfelder, Duplicate mod id, version, author, description, required fields</p>
+<h2 id="modjson-feld-spiel-für-welches-spiel-eine-mod-ist">mod.json-Feld spiel: für welches Spiel eine Mod ist</h2>
+<p><code>spiel</code> ist <code>"tno"</code> (<em>The New Order</em>) oder <code>"tnc"</code> (<em>The New Colossus</em>). Ohne das Feld ist eine Mod eine <em>The New Order</em>-Mod. Jeder andere Wert ist ein Fehler („'spiel' must be 'tno' or 'tnc'“).</p>
+<p>Die beiden Spiele teilen weder Asset-Namen noch Archivformat. Der Loader zeigt und wendet nur die Mods des Spiels an, das oben rechts gewählt ist.</p>
+<p><strong>Achtung:</strong> Die Apps lesen <code>spiel</code>, nicht <code>game</code>. Eine <code>mod.json</code> mit nur <code>"game": "tnc"</code> gilt als <em>The New Order</em>-Mod und erscheint bei <em>The New Colossus</em> nicht. Die SDK-Pakete nutzen <code>game</code> (siehe Vergleich unten).</p>
+<p>Keywords: spiel, game, tno, tnc, welches Spiel, New Order, New Colossus, Mod erscheint nicht, Mod wird nicht angezeigt, which game</p>
+<h2 id="modjson-feld-priority-reihenfolge-und-konflikte">mod.json-Feld priority: Reihenfolge und Konflikte</h2>
+<p><code>priority</code> ist eine ganze Zahl, Standard <code>100</code>. Mods werden nach <code>priority</code>, dann <code>id</code> angewendet, die niedrigste zuerst. Jede Mod arbeitet auf dem Ergebnis der vorherigen.</p>
+<ul>
+<li>Zwei Mods ändern <strong>verschiedene</strong> Werte derselben Decl: Beide wirken.</li>
+<li>Zwei Mods setzen mit <code>set</code> <strong>denselben</strong> Wert: Die höhere <code>priority</code> gewinnt, ein Konflikt wird gemeldet.</li>
+<li>Zwei Mods ersetzen dasselbe Asset mit <code>file</code>: Die höhere <code>priority</code> gewinnt, als Konflikt gemeldet.</li>
+<li>Zwei Mods schreiben dieselbe Textur (Asset <code>image</code> oder <code>texdb</code>): abgelehnt, bevor etwas geschrieben wird („They can't be used together - please tick only one of them“).</li>
+</ul>
+<p>Konflikte blockieren das Anwenden nicht; sie stehen unter <em>Checks &amp; messages</em>.</p>
+<p>Keywords: priority, Priorität, Reihenfolge, Ladereihenfolge, Konflikt, zwei Mods, überschreiben, höchste gewinnt, load order, conflict</p>
+<h2 id="modjson-feld-assets-welche-spiel-assets-eine-mod-ändert">mod.json-Feld assets: welche Spiel-Assets eine Mod ändert</h2>
+<p><code>assets</code> ist ein Objekt. Jeder Schlüssel benennt ein Asset als <code>typ:name</code>, getrennt am ersten Doppelpunkt, z. B. <code>weapon:weapon/handgun_base</code>, <code>material:models/weapons/handgun/handgun_hg</code> oder <code>cfile:snapdemo.cfg</code>. Jeder Wert ist ein Objekt mit <code>set</code>, <code>file</code> oder beidem.</p>
+<p>Regeln, die der Loader prüft:</p>
+<ul>
+<li>Ein Schlüssel ohne Doppelpunkt ist ein Fehler („asset key must look like 'type:name'“).</li>
+<li>Ein Eintrag ohne <code>set</code> und ohne <code>file</code> ist ein Fehler.</li>
+<li>Das Asset muss im gewählten Spiel existieren („asset does not exist in the game“).</li>
+<li>Retail-Namen sind klein geschrieben. Schreib ein Asset überall gleich; zwei Schreibweisen werden abgelehnt („the same asset is spelled differently“).</li>
+</ul>
+<p><code>"assets": {}</code> ist erlaubt, für eine Mod, die nur Cvars setzt.</p>
+<p>Keywords: assets, Asset-Schlüssel, typ:name, Asset-Name, Asset-ID, asset key</p>
+<h2 id="asset-änderung-set-einzelne-werte-einer-decl-ändern">Asset-Änderung set: einzelne Werte einer Decl ändern</h2>
+<p><code>set</code> ordnet Pfaden mit Punkten in einer Decl neue Werte zu. Nur diese Werte ändern sich; Kommentare, Einrückung und alles andere bleiben.</p>
+<pre><code class="language-json">&quot;damage:damage/tungsten/mg60&quot;: {
+  &quot;set&quot;: {
+    &quot;edit.damageParms.minDamage&quot;: 22.0,
+    &quot;edit.damageParms.maxDamage&quot;: 30.0
+  }
+}
+</code></pre>
+<ul>
+<li>Ein Pfad muss in der Decl schon existieren, sonst „unknown path(s)“. <code>set</code> kann keine neuen Felder anlegen; dafür <code>file</code> nehmen.</li>
+<li><code>true</code>/<code>false</code> werden als <code>true</code>/<code>false</code> geschrieben. Zahlen werden so geschrieben, wie sie angegeben sind: <code>30.0</code> bleibt <code>30.0</code>, <code>30</code> bleibt <code>30</code>.</li>
+<li>Text bekommt Anführungszeichen, wenn der Originalwert welche hatte. Blockwerte wie <code>virtualmapping</code> brauchen ihre Klammern: <code>"{ 0.015625, 0.015625, 0.000000, 0.062500 }"</code>.</li>
+<li>Eine als Text angegebene Zahl (<code>"0.00"</code>) wird genau so geschrieben.</li>
+</ul>
+<p>Keywords: set, Pfad, Wert ändern, Decl-Pfad, Zahlenformat, edit value</p>
+<h2 id="asset-änderung-file-ein-ganzes-asset-ersetzen">Asset-Änderung file: ein ganzes Asset ersetzen</h2>
+<p><code>file</code> ist ein Pfad relativ zum Mod-Ordner. Seine Bytes ersetzen das Asset vollständig. Aus der mitgelieferten Mod <code>cheats_gamemode</code>:</p>
+<pre><code class="language-json">&quot;gamemodesp:gamemode/campaign&quot;: { &quot;file&quot;: &quot;assets/gamemodesp__gamemode_campaign.decl&quot; }
+</code></pre>
+<ul>
+<li>Der Pfad muss im Mod-Ordner bleiben („points outside the mod folder“), und die Datei muss existieren („file is missing“).</li>
+<li>Mit <code>set</code> und <code>file</code> auf einem Asset kommt zuerst <code>file</code>, dann <code>set</code> darauf.</li>
+<li>Die Bytes werden geschrieben, wie sie sind. <em>The New Colossus</em>-<code>cfile</code>-Einträge (verschlüsselte Configs wie <code>snapdemo.cfg</code>) müssen für ihren Namen verschlüsselt sein: Lass sie von der Text-Ersetzung des Studios speichern. Reiner Text funktioniert dort nicht.</li>
+<li>Lieber <code>set</code>: Eine <code>file</code>-Mod kollidiert mit jeder anderen Mod auf diesem Asset.</li>
+</ul>
+<p>Keywords: file, Datei ersetzen, ganze Datei, Asset ersetzen, cfile, verschlüsselt, replace asset</p>
+<h2 id="modjson-feld-cvars-einstellungen-beim-spielstart">mod.json-Feld cvars: Einstellungen beim Spielstart</h2>
+<p><code>cvars</code> ordnet Cvar-Namen je einen Wert zu (Text, Zahl oder true/false; Listen und Objekte werden abgelehnt). Sie werden bei jedem Spielstart mit <em>Start game</em> oder <code>Spielen.cmd</code> gesendet und gewinnen gegen dieselbe Cvar auf <em>Cheats &amp; QoL</em>.</p>
+<ul>
+<li><em>The New Order:</em> Startargumente; Cheat-Cvars zusätzlich als <code>+toggle</code>, damit der Cheat-Reset beim Start sie nicht löscht.</li>
+<li><em>The New Colossus:</em> Cvars, die die Retail-Konsole annimmt, gehen als Startargumente, der Rest in die <code>default.cfg</code> des Spiels; <em>Revert</em> entfernt sie. Namen, die keine <em>The New Colossus</em>-Cvars sind, werden übersprungen. Ersetzt eine andere angehakte Mod <code>cfile:default.cfg</code>, bleiben diese Cvars weg, mit Meldung.</li>
+</ul>
+<p>Schreib Werte als Text (<code>"1"</code>): Der Loader macht aus jedem Wert Text, und aus <code>true</code> würde <code>True</code>.</p>
+<p>Keywords: cvars, Cvar, Konsolenvariablen, Einstellungen, Startparameter, default.cfg, +toggle, settings</p>
+<h2 id="beispiel-die-kleinste-mod-big-pistol-magazine">Beispiel: die kleinste Mod (Big Pistol Magazine)</h2>
+<p>Die mitgelieferte Mod <code>example_big_magazine</code> für <em>The New Order</em>, vollständig:</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;example.big_magazine&quot;,
+  &quot;name&quot;: &quot;Big Pistol Magazine (Example)&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;author&quot;: &quot;wolfsdk&quot;,
+  &quot;description&quot;: &quot;Raises the pistol magazine from 20 to 66. ...&quot;,
+  &quot;priority&quot;: 100,
+  &quot;assets&quot;: {
+    &quot;weapon:weapon/handgun_base&quot;: {
+      &quot;set&quot;: { &quot;edit.validAmmoClips.item[0].clipSize&quot;: 66 }
+    }
+  }
+}
+</code></pre>
+<p>Kein <code>spiel</code>, also eine <em>The New Order</em>-Mod. Ein <code>set</code> auf einen Pfad; der Rest der Waffen-Decl bleibt unberührt.</p>
+<p>Keywords: Beispiel, mod.json Beispiel, Vorlage, Beispiel-Mod, kleinste Mod, großes Magazin, clipSize, example, template</p>
+<h2 id="beispiel-eine-werte-mod-für-the-new-colossus-invulnerable">Beispiel: eine Werte-Mod für The New Colossus (Invulnerable)</h2>
+<p>Aus der mitgelieferten Mod <code>tnc_erste</code> (2 ihrer 7 Assets gezeigt):</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;wolfsdk.tnc_erste&quot;,
+  &quot;name&quot;: &quot;Invulnerable (TNC)&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;priority&quot;: 100,
+  &quot;spiel&quot;: &quot;tnc&quot;,
+  &quot;assets&quot;: {
+    &quot;table:playerdamage/normal&quot;: { &quot;set&quot;: { &quot;min&quot;: &quot;0.0&quot;, &quot;max&quot;: &quot;0.0&quot; } },
+    &quot;table:playerdamage/hard&quot;:   { &quot;set&quot;: { &quot;min&quot;: &quot;0.00&quot;, &quot;max&quot;: &quot;0.00&quot; } }
+  }
+}
+</code></pre>
+<p><code>"spiel": "tnc"</code> macht sie zu einer <em>The New Colossus</em>-Mod. Die Werte sind Text, damit jeder genau die Länge des Originalwerts behält.</p>
+<p>Keywords: Beispiel, The New Colossus Mod, TNC-Mod, spiel tnc, unverwundbar, playerdamage, table, example, TNC mod</p>
+<h2 id="beispiel-eine-mod-nur-mit-cvars-hidden-menu-options">Beispiel: eine Mod nur mit Cvars (Hidden Menu Options)</h2>
+<p>Die mitgelieferte Mod <code>tnc_hidden_options</code> ändert gar kein Asset (Beschreibung gekürzt):</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;wolfsdk.tnc_hidden_options&quot;,
+  &quot;name&quot;: &quot;Hidden Menu Options&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;author&quot;: &quot;wolfsdk&quot;,
+  &quot;description&quot;: &quot;Turns on menu options the retail game hides: ...&quot;,
+  &quot;priority&quot;: 100,
+  &quot;spiel&quot;: &quot;tnc&quot;,
+  &quot;cvars&quot;: {
+    &quot;menu_showOptionForDevMenu&quot;: &quot;1&quot;,
+    &quot;menu_showOptionForSASMenu&quot;: &quot;1&quot;,
+    &quot;menu_allowMeinLeben&quot;: &quot;1&quot;,
+    &quot;g_setting_photomode&quot;: &quot;1&quot;
+  },
+  &quot;assets&quot;: {}
+}
+</code></pre>
+<p>Die Konsole lehnt diese Entwickler-Cvars ab, also schreibt der Loader sie in <code>default.cfg</code>. <strong>Im Spiel noch nicht bestätigt.</strong></p>
+<p>Keywords: Beispiel, nur Cvars, Cvar-Mod, Menüoptionen, Hidden Menu Options, default.cfg, example, cvars only</p>
+<h2 id="beispiel-eine-mod-die-ganze-dateien-ersetzt-photo-mode">Beispiel: eine Mod, die ganze Dateien ersetzt (Photo Mode)</h2>
+<p>Die mitgelieferte Mod <code>tnc_photo_mode</code> (Beschreibung gekürzt):</p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;wolfsdk.tnc_photo_mode&quot;,
+  &quot;name&quot;: &quot;Photo Mode&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;author&quot;: &quot;wolfsdk&quot;,
+  &quot;description&quot;: &quot;One key freezes the game for screenshots: ...&quot;,
+  &quot;priority&quot;: 100,
+  &quot;spiel&quot;: &quot;tnc&quot;,
+  &quot;assets&quot;: {
+    &quot;cfile:default_snap.cfg&quot;: { &quot;file&quot;: &quot;assets/default_snap_cfg.bin&quot; }
+  }
+}
+</code></pre>
+<p><code>assets/default_snap_cfg.bin</code> ist die verschlüsselte Form der unbenutzten SnapMap-Config <code>default_snap.cfg</code>. Im Spiel: <code>bind F8 "resourceExec default_snap.cfg -s"</code>. <strong>Im Spiel noch nicht bestätigt.</strong></p>
+<p>Keywords: Beispiel, Datei ersetzen, cfile, Photo Mode, Fotomodus, resourceExec, bin-Datei, example, file replacement</p>
+<h2 id="wie-finde-ich-asset-namen-und-änderbare-pfade">Wie finde ich Asset-Namen und änderbare Pfade?</h2>
+<p>Mit der Kommandozeile im entpackten Ordner (für <em>The New Colossus</em> <code>--title tnc</code> dazu):</p>
+<pre><code>python\python.exe -m wolfsdk --title tnc list --type weapon --grep pistol
+python\python.exe -m wolfsdk --title tnc cat weapon:&lt;name&gt;
+python\python.exe -m wolfsdk --title tnc paths weapon:&lt;name&gt;
+</code></pre>
+<p><code>list</code> zeigt Asset-Namen, <code>cat</code> gibt ein Asset aus, <code>paths</code> listet die Pfade, die <code>set</code> ändern kann, mit ihren aktuellen Werten. <code>types</code> listet die Asset-Typen. Im WolfSDK Studio kannst du Texturen und Texte durchsuchen und direkt ersetzen. Pfade für Waffen, Skins und Gegner mit Beispielen: <a href="Modding-Guide.html">Modding Guide</a> (Englisch).</p>
+<p>Keywords: Asset finden, Asset-Namen, Pfade finden, list, cat, paths, types, Kommandozeile, CLI, Decl-Pfade, find asset, command line</p>
+<h2 id="wie-prüfe-ich-eine-mod-vor-dem-anwenden">Wie prüfe ich eine Mod vor dem Anwenden?</h2>
+<ul>
+<li>Im Loader: <em>Check</em> auf der Seite <em>Mods</em> oder <em>Check mod set</em> auf der Seite <em>Overview</em>.</li>
+<li>Auf der Kommandozeile: <code>python\python.exe -m wolfsdk check</code></li>
+</ul>
+<p>Die Prüfung baut jede Änderung im Speicher und prüft Asset-Namen, Decl-Pfade, Konflikte und die geplanten Schreibvorgänge. Sie schreibt nichts. Ergebnisse und Fehler erscheinen unter <em>Checks &amp; messages</em>.</p>
+<p>Anwenden beginnt jedes Mal bei den Originaldateien und schreibt den ganzen angehakten Satz, deshalb lässt ein fehlgeschlagenes Anwenden das Spiel im Original: Schlägt es fehl, werden die vorher angewendeten Mods zurückgesetzt, und der Loader sagt das.</p>
+<p>Keywords: Mod prüfen, mod.json prüfen, testen, Probelauf, Check, Check mod set, wolfsdk check, check mod, validate mod.json, dry run</p>
+<h2 id="modjson-fehler-beim-einlesen-einer-mod">mod.json-Fehler beim Einlesen einer Mod</h2>
+<p>Diese erscheinen nach <em>Reload</em> mit <code>!</code> unter <em>Checks &amp; messages</em>; die Mod wird nicht aufgeführt:</p>
+<ul>
+<li><code>invalid JSON (...)</code>: Ein Komma, Anführungszeichen oder eine Klammer stimmt nicht.</li>
+<li><code>field 'id' is missing</code> / <code>field 'name' is missing</code> oder <code>must be a non-empty string</code>.</li>
+<li><code>'spiel' must be 'tno' or 'tnc'</code>.</li>
+<li><code>'priority' must be a whole number</code>.</li>
+<li><code>'assets' must be an object</code>, <code>asset key must look like 'type:name'</code>, <code>... has neither 'file' nor 'set'</code>, <code>... .set must be an object</code>.</li>
+<li><code>... .file points outside the mod folder</code>.</li>
+<li><code>'cvars' must be an object</code>, <code>cvar '...' needs a single value (text, number or true/false)</code>.</li>
+<li><code>Duplicate mod id</code>.</li>
+</ul>
+<p>Keywords: Fehler in mod.json, Fehlermeldung, invalid JSON, Feld fehlt, kaputte Mod, Mod lädt nicht, mod.json error, error message</p>
+<h2 id="modjson-fehler-beim-prüfen-oder-anwenden">mod.json-Fehler beim Prüfen oder Anwenden</h2>
+<p>Diese kommen von <em>Check</em>, <em>Check mod set</em> oder <em>Apply mods</em>:</p>
+<ul>
+<li><code>asset does not exist in the game (...)</code>: falscher Name, oder die Mod ist für das andere Spiel (<code>spiel</code>).</li>
+<li><code>unknown path(s): ...</code>: Der <code>set</code>-Pfad steht nicht in dieser Decl. Vielleicht steht er in der Eltern-Decl (<code>inherit</code>); <code>paths</code> zeigt, was existiert.</li>
+<li><code>file is missing: ...</code>: Die <code>file</code>-Datei liegt nicht im Mod-Ordner.</li>
+<li><code>... change the same textures ... please tick only one of them</code>: zwei Textur-Mods für dasselbe Asset.</li>
+<li><code>the same asset is spelled differently</code>: Schreib den Asset-Schlüssel in jeder Mod gleich.</li>
+<li><code>Not enough disk space</code>: Platz auf dem Laufwerk des Spiels freimachen und erneut anwenden.</li>
+</ul>
+<p>Keywords: Fehler beim Anwenden, Fehler beim Prüfen, asset does not exist, unknown path, file is missing, gleiche Texturen, Speicherplatz, apply error</p>
+<h2 id="modjson-der-apps-im-vergleich-zum-sdk-schema">mod.json der Apps im Vergleich zum SDK-Schema</h2>
+<p>Die SDK-Pakete (pip, npm, cargo, go) nutzen eine andere <code>mod.json</code>, festgelegt in <code>spec/mod.schema.json</code> im Repository:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Apps (Loader, Studio)</th>
+<th>SDK-Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spiel</td>
+<td>nur <code>spiel</code></td>
+<td><code>game</code>; <code>spiel</code> als alter Alias</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>Pflicht</td>
+<td>nicht im Schema</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>Pflicht</td>
+<td>optional (Ordnername)</td>
+</tr>
+<tr>
+<td>Standard-<code>priority</code></td>
+<td><code>100</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td>gleiche Priorität</td>
+<td>nach <code>id</code> sortiert</td>
+<td>Eingabereihenfolge</td>
+</tr>
+<tr>
+<td>Asset-Einträge auf oberster Ebene</td>
+<td>ignoriert</td>
+<td>angenommen, wenn <code>assets</code> fehlt</td>
+</tr>
+<tr>
+<td><code>cvars</code>, <code>author</code></td>
+<td>gelesen</td>
+<td>nicht im Schema</td>
+</tr>
+<tr>
+<td>Schlüssel außer <code>set</code>/<code>file</code> in einem Asset</td>
+<td>ignoriert</td>
+<td>nicht erlaubt</td>
+</tr>
+</tbody>
+</table></div>
+<p>Beide wenden zuerst <code>file</code> an, dann <code>set</code> darauf. Das SDK und seine eigene Kommandozeile <code>wolfsdk -g</code>: <a href="Modding-Guide.html">Modding Guide</a>, Teil für Programmierer (Englisch).</p>
+<p>Keywords: SDK-Schema, mod.schema.json, game oder spiel, Unterschied, SDK mod.json, Kompatibilität, SDK schema</p>
+<h2 id="eine-modjson-die-in-den-apps-und-im-sdk-funktioniert">Eine mod.json, die in den Apps und im SDK funktioniert</h2>
+<p>Schreib sie so, dass beide sie gleich lesen:</p>
+<ul>
+<li><code>id</code> und <code>name</code> (die Apps brauchen beide; das SDK nimmt zusätzliche Schlüssel an).</li>
+<li><code>spiel</code> für das Spiel; das SDK liest es als alten Namen von <code>game</code>. Schreibst du auch <code>game</code>, gib ihm denselben Wert.</li>
+<li><code>priority</code> ausschreiben, weil die Standardwerte verschieden sind (<code>100</code> gegen <code>0</code>).</li>
+<li>Alles unter <code>assets</code>, jeder Eintrag nur mit <code>set</code> und/oder <code>file</code>.</li>
+<li><code>cvars</code> wirken nur in den Apps.</li>
+</ul>
+<p>Keywords: kompatible mod.json, beide Formate, SDK und Loader, portable Mod, game und spiel, kompatibel, compatible mod.json</p>
+<h2 id="welche-teile-des-mod-formats-sind-im-spiel-bestätigt">Welche Teile des Mod-Formats sind im Spiel bestätigt?</h2>
+<ul>
+<li>Mods anwenden und zurücksetzen mit Backups: <strong>Im Spiel bestätigt</strong>.</li>
+<li><code>set</code> auf einer <em>The New Colossus</em>-Decl: <strong>Im Spiel bestätigt</strong> (das 30-Schuss-Magazin der Explosive Pistol).</li>
+<li><code>file</code> auf einer <em>The New Colossus</em>-<code>cfile</code>: <strong>Im Spiel bestätigt</strong> (Sandbox Tools: Gottmodus und unendlich Munition).</li>
+<li><code>cvars</code> in <em>The New Colossus</em> über <code>default.cfg</code> und in <em>The New Order</em> über Startargumente und <code>+toggle</code>: <strong>Im Spiel noch nicht bestätigt</strong>.</li>
+<li><em>The New Order</em>: Gepatchte Archive laden ohne Fehler (gemessen, <a href="Modding-Limits.html">Modding Limits</a> §4); was die meisten einzelnen Wertänderungen im Spiel bewirken, ist <strong>Im Spiel noch nicht bestätigt</strong>.</li>
+</ul>
+<p>Keywords: im Spiel bestätigt, getestet, Status, funktioniert set, funktioniert file, funktionieren cvars, confirmed in game, tested</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Mod-Format.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Mod Format</a><a class="next" href="Modding-Guide.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Modding Guide</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

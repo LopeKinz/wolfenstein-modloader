@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dev Starts After Map Load (kce) Restored Through Marker Layers – Wolfenstein Modloader</title>
+<meta name="description" content="Bringing back Wolfenstein II&#x27;s developer start points after map load, through marker layers and map scripts.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Dev Starts After Map Load (kce) Restored Through Marker Layers</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R9-Dev-Starts"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#result-in-one-paragraph">Result in one paragraph</a></li><li><a href="#q1--which-list-does-flowlayerchecks-validate-read-the-active-layers">Q1 — Which list does FlowLayerCheck&#x27;s Validate read? The active layers.</a></li><li><a href="#q2--unknown-layer-names-the-resolver-and-where-the-marker-must-go">Q2 — Unknown layer names, the resolver, and where the marker must go</a></li><li><a href="#q3--sendcustomevent-versus-kce">Q3 — SendCustomEvent versus kce</a></li><li><a href="#q4--begingame-timing-versus-the-after-load-queue">Q4 — BeginGame timing versus the after-load queue</a></li><li><a href="#the-18-events-not-in-the-base-scripts">The 18 events not in the base scripts</a></li><li><a href="#what-was-built">What was built</a></li><li><a href="#checks-python--x-utf8-toolsverify_devmenu_devstartspy---copies-all-ok">Checks (python -X utf8 tools/verify_devmenu_devstarts.py --copies): all OK</a></li><li><a href="#in-game-test-for-the-maintainer">In-game test for the maintainer</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Many developer menu entries of Wolfenstein II: The New Colossus used to run extra commands after the map loaded, such as a teleport or a scene start, but those commands do not exist in the retail game. This round-9 report shows by reading the code that a made-up &#x27;marker&#x27; layer name, passed when the map starts, lets each map&#x27;s own <span class="t" data-t="kiscule">Kiscule</span> script send the same events instead. Version 0.2.0 of the dev menu mod restores 126 of the 158 such entries, and every offline check passes. Nothing was tested in game, and one timing difference stays open.</p><ul><li>The marker must go into both layer lists: the active one so the script check sees it, the fill one so the chapter lookup ignores it.</li><li>63 layer checks in 12 base scripts on 12 maps restore 126 of 158 entries; 2 more are only partly served.</li><li>32 are not restored: 14 DLC entries, 14 whose events have no receiver, and 4 that only had give lines.</li><li>Fixed on the way: 32 Fergus/Wyatt timeline entries matched no chapter part before; the timeline layers now go into both lists.</li><li>Open risk: the old commands ran before the map&#x27;s start event, the new chain runs during it; two maps (c01p1, c09p1) gate their intro on such an event.</li></ul></div><div class="de"><p class="lede">Viele Einträge im Entwicklermenü von Wolfenstein II: The New Colossus führten früher nach dem Laden der Karte zusätzliche Befehle aus, etwa einen Teleport oder den Start einer Szene, aber diese Befehle gibt es in der Verkaufsversion nicht. Dieser Bericht aus Runde 9 zeigt durch Codelesen, dass ein ausgedachter „Markierungs“-Layername, beim Kartenstart übergeben, das eigene <span class="t" data-t="kiscule">Kiscule</span>-Skript jeder Karte dieselben Ereignisse senden lässt. Version 0.2.0 der Dev-Menü-Mod stellt 126 von 158 solcher Einträge wieder her, und jede Offline-Prüfung besteht. Im Spiel wurde nichts getestet, und ein Unterschied im Zeitablauf bleibt offen.</p><ul><li>Die Markierung muss in beide Layer-Listen: in die aktive, damit die Skriptprüfung sie sieht, und in die Füll-Liste, damit die Kapitelsuche sie ignoriert.</li><li>63 Layer-Prüfungen in 12 Basis-Skripten auf 12 Karten stellen 126 von 158 Einträgen wieder her; 2 weitere werden nur teilweise bedient.</li><li>32 werden nicht wiederhergestellt: 14 DLC-Einträge, 14, deren Ereignisse keinen Empfänger haben, und 4, die nur give-Zeilen hatten.</li><li>Nebenbei behoben: 32 Fergus/Wyatt-Einträge der Zeitlinien fanden vorher keinen Kapitelteil; die Zeitlinien-Layer stehen jetzt in beiden Listen.</li><li>Offenes Risiko: Die alten Befehle liefen vor dem Startereignis der Karte, die neue Kette läuft währenddessen; zwei Karten (c01p1, c09p1) knüpfen ihr Intro an ein solches Ereignis.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-9 pass on restoring the developer "starts" that ran after map load (kce) in <code>tnc_devmenu_fix</code>, through marker layers. Statically the idea holds, with one change: the marker must go into both <code>si_nextlayeractive</code> and <code>si_filllayeractive</code>. Version 0.2.0 of the mod restores most of the stock after-load entries, and every check passes, including two controls that must fail; one timing difference (BeginGame versus the after-load queue) stays open. <strong>Static only; not tested in game.</strong></p>
+<p>Static work only. Runtime image <code>re_probes/runtime_87400/module.bin</code> (base 0x7ff62c210000,
+all addresses below are RVAs), <code>tools/decomp.py</code> on the TNC GZF, raw disassembly via
+<code>tools/tnc_runtime_code.py</code>. No game launch, nothing written under the install or Saved
+Games; the apply/revert test ran on copies under <code>D:/wolf-decomp/tmp/devstarts</code> (deleted
+afterwards). Stock decls/scripts were read from the loader backup (<code>Pristine</code> in
+<code>tools/build_devmenu_fix.py</code>: rebuilt archives from their full copies, all 24 checked
+against the manifest's original size + head sha256), never from the modded live archives.</p>
+<h2 id="result-in-one-paragraph">Result in one paragraph</h2>
+<p>The idea holds statically, with one change: the marker must go into <strong>both</strong>
+<code>si_nextlayeractive</code> and <code>si_filllayeractive</code>. FlowLayerCheck reads the map's active
+layer names; the part resolver ignores every active layer that is also a fill layer; an
+unknown layer name is never validated anywhere on this path. <code>mods/tnc_devmenu_fix</code>
+0.2.0 restores <strong>126 of the 158</strong> stock after-load entries (63 FlowLayerChecks in 12
+base scripts, 12 maps). Every check in <code>tools/verify_devmenu_devstarts.py --copies</code>
+passes, including two controls that must fail. One semantic difference remains
+open: kce ran from the after-load queue, before BeginGame. The chain now fires
+during BeginGame. Two maps gate their intro on a dev event and may race (see Q4).</p>
+<h2 id="q1--which-list-does-flowlayerchecks-validate-read-the-active-layers">Q1 — Which list does FlowLayerCheck's Validate read? The active layers.</h2>
+<ul>
+<li>RTTI vtable <code>idKisculeNodeFlowLayerCheck</code> 0x2881678; slot 13 = definition factory
+  0x9B7920, which registers <code>Validate</code> -&gt; callback <strong>0x9B7AB0</strong> and the outputs
+  "Validation succeeded"/"Validation failed".</li>
+<li>0x9B7AB0: <code>m_layerPresent</code> via 0x9BC010. Reflection says the field is
+  <code>const idDeclLayer * layerPresent</code>, at offset 0x10 (record at 0x22E3A60). A null
+  pointer returns with <strong>no</strong> output. Otherwise it calls 0x11B3340(gameLocal from TLS,
+  decl-&gt;name at +8).</li>
+<li>0x11B3340: case-insensitive search of <code>idList&lt;idStr&gt;</code> at <strong>gameLocal+0x60C0</strong> (count
+  +0x60C8, stride 0x30).</li>
+<li>Writers of +0x60C0: the spawn function <strong>0x11B3410</strong>, called from MapInit 0x11B55F0 at
+  0x11B6FEB. MapInit passes a list copied from map params+0x1198 (the active list,
+  loop 0x11B6FA7..0x11B6FDE). At its end (0x11B4E26..) the function appends every name
+  of its active set to +0x60C0 and +0x60E0. It skips only layer decls with
+  <code>forceOnSpawn</code> (the only idDeclLayer field, +0x80; all 144 retail layer decls are
+  <code>{ }</code>). SetTimeline 0x11ABA00 also edits these lists, only for layer/fergus and
+  layer/wyatt. The fill list (params+0x18B8) is never read for +0x60C0.</li>
+<li>Retail usage agrees: 105 of the 134 retail FlowLayerChecks are driven by
+  <code>BeginGame.OnBeginGameAlways</code>.</li>
+</ul>
+<h2 id="q2--unknown-layer-names-the-resolver-and-where-the-marker-must-go">Q2 — Unknown layer names, the resolver, and where the marker must go</h2>
+<ul>
+<li><code>si_nextlayeractive</code> and <code>si_filllayeractive</code> are copied as plain strings. The map
+  parser 0xA7BD10 reads them only when there is no -layername/-filllayername argument
+  (0xA7CED9/0xA7CF0B, r8). The splitter 0xA97670 does string work only and looks up
+  no decl. The "map layer '%s' swapped for '%s'" lookup (0xA93C40) applies only to
+  explicit <code>-layername</code> arguments and never fails. There is no warning and no abort
+  for an unknown name in either list.</li>
+<li>Unknown name in the active list: the spawn set gets it, but no entity carries it
+  (entity layers are the <code>layers { }</code> blocks in <code>.entities</code>), so spawning does not
+  change. It ends up in +0x60C0/+0x60E0.</li>
+<li>Fill list readers: the resolver 0xDF5860, the timeline getter 0x11AB970 via
+  0x11F6B90 (looks for <code>layer/fergus</code>), and save serialisation 0x11DB010. The spawn
+  function writes it only for bake variations.</li>
+<li>Resolver 0xDF5860: builds active minus fill (exact compare, 0xDF5AD4..0xDF5BFD), then
+  0xDF8540 requires every remaining name to be a decl name in the candidate part's
+  <strong>base</strong> list (part+0 only). So an active-only marker would break playerDef and
+  mainMission resolution, as suspected. A marker that is also a fill layer drops out
+  before the comparison. <strong>Marker route: put it in both lists.</strong> FlowLayerCheck sees it
+  (active), and the resolver does not (fill).</li>
+<li>The marker is not a real decl. The kiscule reflection reader for resource pointers,
+  0xF26F10, finds the resource list by class name (0xABBE60, "idDeclLayer"), then calls
+  0xABA110(list, name, 1, 0). For a missing name that call creates and loads the
+  resource (vtable +0xC8/+0x28). It warns or errors only through resource_errorInGame,
+  which is 0 live. FlowLayerCheck then gets a non-null decl that carries the marker
+  name. Residual risk: not seen at runtime; if it fails, the chain is silent. One
+  cosmetic side path: 0xAAC010 matches active names to layer decls for the
+  loading-screen choice.</li>
+<li><strong>Failed assumption found on the way (fixed):</strong> the previous build put the
+  Fergus/Wyatt layers into the active list only. For <strong>32</strong> variation entries
+  (<code>layer/fergus</code> / <code>layer/wyatt</code>, e.g. c03p1 "D1 - harbor - fergus") these are not in
+  the part's base list, so 0xDF5860 matched no part. The timeline getter also reads
+  <code>layer/fergus</code> from the fill list. The timeline layers now go into both lists. Check 4
+  shows active minus fill inside the base list for all 301 variation entries.</li>
+</ul>
+<h2 id="q3--sendcustomevent-versus-kce">Q3 — SendCustomEvent versus kce</h2>
+<ul>
+<li>SendCustomEvent Exec 0x9AC5D0 calls 0xF562F0 with the manager at gameLocal+0xD0CC0,
+  emitter = node+0x28 (its instance), the event name and global. With global=true it
+  visits every instance and every receiver of that name (0xF62AD0). It delivers when
+  the receiver sits in the emitter's own instance <strong>or</strong> its <code>global</code> byte (+0x40) is
+  set, and only if <code>m_enabled</code> is true. It then sets received=1 and <strong>fromConsole=0</strong>,
+  respects maxNotificationCount and notifies "Received".</li>
+<li>A console send (null emitter) reaches only global receivers. A script-side global
+  send reaches the same set plus non-global receivers inside the sending instance.
+  The build checks this: no event sent from the 12 hosts has a non-global receiver in
+  its host.</li>
+<li>m_fromConsole: none of the GetCustomEvent receivers of the sent events in the
+  affected maps' scripts has an edge from its <code>m_fromConsole</code> output (check 5). The
+  fromConsole=0 difference therefore changes nothing here.</li>
+</ul>
+<h2 id="q4--begingame-timing-versus-the-after-load-queue">Q4 — BeginGame timing versus the after-load queue</h2>
+<ul>
+<li><code>notice_BeginGame</code> (event def 0x2F68A20, registered 0x16ED20) is posted with delay 0
+  by 0xE77940, once per entity (flag +0x5518), from game-side think code. Delivery
+  goes through 0xC7EA20 (event 0x209) to node handler <strong>0x9A8510</strong>. A node fires once
+  ("ignored BeginGameEvent as it has already triggered once", +0x40). It fires
+  <code>OnBeginGame</code> if challenge-entity+0x618C is set <strong>or</strong> <code>ignoreInitialFlag</code> (default
+  true). It then always fires <code>OnBeginGameAlways</code>.</li>
+<li>At that point all kiscule instances exist, because they are spawned inside the map
+  change, and +0x60C0 is filled at the end of 0x11B3410. Receivers and the layer list
+  are ready.</li>
+<li>The after-load queue (0xA82EC0 → common+0x10B18) is drained in idCommonLocal::Frame
+  0xA747F0 at 0xA74E37..0xA74F01. That is directly after the map-change block (params
+  0xA97B20, load 0xA849B0) and the first-frame call (0xA80AD0/0xA80E40); the lines go
+  to the command buffer, which is drained at once. kce therefore ran <strong>before</strong>
+  BeginGame was dispatched. Inferred: the exact first-tick order was not traced
+  further.</li>
+<li>Decision: <strong>OnBeginGame</strong> with the default ignoreInitialFlag=true, the configuration
+  heaven_flow uses for its one-shot intro. OnBeginGameAlways is what retail uses for
+  state restore (show/hide). Today both fire in the same call. No Delay is added:
+  SendCustomEvent's <code>Send</code> output fires after delivery, which keeps the stock order.</li>
+<li><strong>Open risk:</strong> the chain now fires during BeginGame, not before it. Its order
+  relative to other scripts' BeginGame nodes is not established statically. The
+  signal executor 0xF53160 runs some node classes at once and queues others. Two maps
+  gate their intro on a dev event:<ul>
+<li>c01p1: <code>devstarted</code> → heaven_flow <code>Gate.Close</code>. That gate guards OnBeginGame → Log
+→ Gate.Test → <code>play_soup</code>.</li>
+<li>c09p1: <code>Dev_DevLoaded</code> → event_flow gate before <code>BossOffice_play</code>.</li>
+<li>Elsewhere the dev events only teleport or start scenes.</li>
+</ul>
+</li>
+</ul>
+<h2 id="the-18-events-not-in-the-base-scripts">The 18 events not in the base scripts</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>events</th>
+<th>where</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>devstart_afterescape, _meeting, _panzerhund (c1v1); _firstroom, _secondroom (c2v1); _greenroom, _concerthall, _lorentz (c2v2); _controlcenter, _lifesupport, _thechase (c2v3); ev_open_bridge_door (c3v3)</td>
+<td>GetCustomEvent in DLC archives: dlc_1 chunk_20, dlc_0 and dlc_2 chunk_22, dlc_3 chunk_24 (<code>*_devstart(s).decl</code>, mission_flow, progression, vo)</td>
+<td>not served: DLC maps, and the loader writes base/ only</td>
+</tr>
+<tr>
+<td>player_start_wall, _maintenance, _roundhouse (c08p1, c08p2 "Lakeview")</td>
+<td>only as <code>cb_player_start_*</code> (sent by c08p1 <code>gp_kiscule_campain_specifics</code>, received by the combat scripts)</td>
+<td>stock kce had no receiver: a no-op, not restored</td>
+</tr>
+<tr>
+<td>start_panzerhund_alley, _streets, _tunnels (c08p2)</td>
+<td>in none of the 3078 scripts, base or DLC</td>
+<td>a no-op, not restored</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="what-was-built">What was built</h2>
+<ul>
+<li><code>tools/build_devmenu_fix.py</code> (docstring updated):<ul>
+<li>reads stock data through <code>Pristine</code>;</li>
+<li>gives each servable after-load sequence the marker
+<code>layer/wolfsdk/&lt;events, lower case, joined by __&gt;</code>, e.g.
+<code>layer/wolfsdk/devtel_soup__devstarted</code>, in active <strong>and</strong> fill;</li>
+<li>adds the timeline layers to fill;</li>
+<li>edits one host script per map through <code>kiscule.apply_ops</code>: one BeginGame, plus per
+marker a FlowLayerCheck and a chain of SendCustomEvent(global=true) in stock order;</li>
+<li>stores the edited scripts as <code>extkisclule:&lt;script&gt;</code> file assets (packed exactly like
+Studio's <code>script_assets</code>) under <code>assets/kiscule/</code>;</li>
+<li>merges only entries whose lines are byte-identical and lists every merge.
+  The host is the map's <code>*devstart*</code> script, or else the one with most receivers. It
+  must be placed exactly once, on layers inside every restored entry's active list.</li>
+</ul>
+</li>
+<li>Also fixed:<ul>
+<li><code>devMenuSubList = NULL</code> is now read as "no sub list". The 7 c07p1 Wyatt entries were
+dead sub-list links before.</li>
+<li>New entry "WolfSDK: Box" in <code>devmenuoption/main</code>, placed before "WolfSDK: console
+test", as the coordinator asked (<code>devmap game/wolfsdk/box</code>, layer/dlc/c2v1). It is
+exempt from the shipped-maps filter, because the map comes from dlc_0's
+packagemapspec.</li>
+</ul>
+</li>
+<li>Not reproduced:<ul>
+<li><code>give weapon/player/sp/lkw|dkw</code> (c02p2). <code>apply_ops</code> cannot create the
+ActionGiveItems list item, because the catalogue has no item template.</li>
+<li><code>Progression</code>.</li>
+</ul>
+</li>
+<li>Counts:<ul>
+<li>95 decls, 12 scripts, 306 starts (220 before).</li>
+<li>Restored: 126 entries, 63 FlowLayerChecks. Per map: c01p1 13, c02p0 4, c02p1 6,
+c02p2 1, c04p2 2, c05p2 8, c08p1 2, c08p2 1, c09p1 9, c09p2 7, c11p1 4,
+submarine/c07p1 6.</li>
+<li>Partly served: 2 (c02p2 "piston room": the event is sent, give is not).</li>
+<li>Not restored: 32. That is 14 DLC entries, 14 c08p1/c08p2 entries whose events have
+no receiver (these stay separate entries with the plain start), and 4 c02p2
+entries that only have give. Of these, 5 DLC entries are still merged: c2v1 Second
+Room into First Room; c2v2 Concert hall and Lorentz into Green room; c2v3 Life
+support and The chase into Control center.</li>
+</ul>
+</li>
+</ul>
+<h2 id="checks-python--x-utf8-toolsverify_devmenu_devstartspy---copies-all-ok">Checks (<code>python -X utf8 tools/verify_devmenu_devstarts.py --copies</code>): all OK</h2>
+<ol>
+<li>The mod folder equals a fresh build (107 assets). <code>build_devmenu_fix.py --check</code>
+   also passes; it failed before, because it read the modded live decls.</li>
+<li>Each of the 12 scripts:<ul>
+<li><code>pack(unpack(asset))</code> reproduces the asset byte for byte, and <code>Doc.render()</code> is
+ stable;</li>
+<li>the view diff against retail shows only added BeginGame, FlowLayerCheck and
+ SendCustomEvent nodes, exactly one BeginGame, and edges only between added nodes;</li>
+<li>no retail node, param, port or edge changed; the broken-edge count is unchanged.</li>
+<li><strong>Control:</strong> one retail GetCustomEvent eventName changed → detected.</li>
+</ul>
+</li>
+<li>All 126 restored entries:<ul>
+<li>the marker appears once in the active list and once in the fill list;</li>
+<li>there is exactly one FlowLayerCheck for it in the map's scripts (host replaced by
+ the mod copy), wired from OnBeginGame;</li>
+<li>its chain sends exactly the stock kce events in stock order;</li>
+<li>at least one of them reaches a receiver.</li>
+<li><strong>Control:</strong> a wrong marker → detected.</li>
+</ul>
+</li>
+<li>Resolver: active minus fill is inside the part's base layers for all 301 variation
+   entries. Control: the timeline layers that rely on the fill exemption are present
+   (with fill "" these 32 entries fail).</li>
+<li>No receiver of a sent event reads m_fromConsole.</li>
+<li><code>mod.build_payloads</code> on the live install, read only, with the mods applied now
+   (tnc_photo_mode, tnc_skin_eigene_pistole) plus this mod: 0 conflicts, 0 errors, and
+   our payloads equal the files. No other tnc mod touches these assets.</li>
+<li>Copies of the 13 archives that hold the assets (pristine sources, md5 checked after
+   copying):<ul>
+<li><code>tncpatch.Installation(copy).apply</code> → no missing or unsupported asset. It rebuilt
+ 8 archives: chunk_1, _3, _9, _13, gameresources, patch_1_chunkbase_6, patch_2,
+ patch_3.</li>
+<li>Every copy of every asset reads back as built.</li>
+<li><code>revert()</code> → all 13 archives md5-identical to the originals.</li>
+<li>For the real apply: the backup needs full copies of those 8 archives, about
+ 1.6 GB.</li>
+</ul>
+</li>
+</ol>
+<h2 id="in-game-test-for-the-maintainer">In-game test for the maintainer</h2>
+<p>The game must be closed. In the loader, apply the mods including "Dev Menu Map Loading"
+(0.2.0). Start the game and open the dev menu.</p>
+<ol>
+<li><strong>Levels → c05 → c05p2 → (Fergus dev starts) → "Train".</strong> Expected: the map loads,
+   then within the first second the player is moved to the train, as the stock
+   <code>telTrain</code> did. Control in the same list: "Train Station", then "Ending" — each must
+   end up somewhere different.</li>
+<li><strong>Levels → c11 → c11p1 → "hugin room"</strong> (also an ungated map): the same kind of
+   teleport.</li>
+<li><strong>Levels → c01 → c01p1 → Fergus dev starts → "bomb".</strong> Expected: the bomb scene, and
+   the "soup" intro does <strong>not</strong> play. If both play, or only the intro plays, that is
+   the Q4 ordering risk. Report which one happened.</li>
+<li><strong>Timeline fix:</strong> Levels → c03 → c03p1 → "D1 - harbor - fergus" should start with
+   that part's player and main mission (the resolver now finds the part). Before this
+   change it probably fell back to the defaults.</li>
+<li>"WolfSDK: Box" in the main dev menu should load the box map.</li>
+</ol>
+<p>What the results mean:</p>
+<ul>
+<li>If 1 and 2 load the map but nothing happens after loading, the marker decl path
+  failed (FlowLayerCheck got a null decl). Tell me; the fallback is to use unused
+  existing layer decls as markers.</li>
+<li>If the console prints "Unknown command" for any dev-menu line, the old dev-menu path
+  itself failed (see <code>docs/tnc-devmenu-status.md</code>).</li>
+</ul>
+<p>Related: <a href="Research-Report-R8-Devmenu-Fix-Verify.html">Research Report: R8 Devmenu Fix Verify</a>, <a href="Developer-Mode.html">Developer Mode</a>, <a href="Kiscule-Scripting.html">Kiscule Scripting</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R9-Box-Map.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>A Box Map Under a New Map Name (<code>game/wolfsdk/box</code>)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Engine Limits from Decompiled Code: Entities, AI, Script VM, Physics, Decls, Audio, Render – Wolfenstein Modloader</title>
+<meta name="description" content="Hard engine limits in The New Order read from code: entities, AI groups, scripts, physics, render and audio.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Engine Limits from Decompiled Code: Entities, AI, Script VM, Physics, Decls, Audio, Render</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R7-Tno-Limits"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#question">Question</a></li><li><a href="#answer-short">Answer (short)</a></li><li><a href="#1-entities-the-slot-array-the-spawn-id-counter-and-what-each-overflow-does">1. Entities: the slot array, the spawn-id counter, and what each overflow does</a></li><li><a href="#2-ai-population-cap-per-spawner-field-not-a-global-constant--confirmed-identical-in-tno">2. AI population cap: per-spawner field, not a global constant — confirmed identical in TNO</a></li><li><a href="#3-the-two-literals-extracted-with-full-confidence-group-cap-64-fatal-and-script-call-stack-depth-64-fatal">3. The two literals extracted with full confidence: Group cap (64, fatal) and script call-stack depth (64, fatal)</a></li><li><a href="#4-physics-one-hard-fatal-cap-one-soft-warn-and-reject-cap">4. Physics: one hard fatal cap, one soft warn-and-reject cap</a></li><li><a href="#5-decl-audio-ai-nav-and-render-softhard-caps-found-incidentally">5. Decl, audio, AI-nav and render soft/hard caps found incidentally</a></li><li><a href="#6-the-shared-max_-rtti-name-family-same-dead-end-in-tno-as-in-tnc">6. The shared MAX_* RTTI-name family: same dead end in TNO as in TNC</a></li><li><a href="#proven">PROVEN</a></li><li><a href="#inferred-plausible-not-nailed-down-this-round">INFERRED (plausible, not nailed down this round)</a></li><li><a href="#failed-hypotheses--dead-ends">Failed hypotheses / dead ends</a></li><li><a href="#recipe-what-this-means-for-modding-tno-today">Recipe: what this means for modding TNO, today</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#reproduction">Reproduction</a></li><li><a href="#smallest-in-game-test">Smallest in-game test</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report read the decrypted program code of Wolfenstein: The New Order (TNO) to find the fixed limits at which the game warns or crashes. It found that at most 8,189 <span class="t" data-t="entity">entities</span> can exist at the same time, that an AI group with more than 64 members crashes the game exactly as in Wolfenstein II, and that scripts crash beyond 64 nested calls or 32 KiB of global memory. Some limits only print a warning, like the per-spawner AI population cap, and none of the about 20 decompiled functions behind them reads a <span class="t" data-t="cvar">console setting</span>. Everything is static code reading; the game was never launched.</p><ul><li>Entities: 8,192 slots, of which 8,189 are usable at the same time, plus a lifetime spawn counter capped at 524,287; both overflows crash the game.</li><li>An AI &#x27;Group&#x27; is capped at 64 members and crashes when exceeded, the same value and behaviour as in Wolfenstein II; the &#x27;Too many AIs&#x27; cap is a per-spawner field (-1 = unlimited) and only warns.</li><li>Scripts crash at 65 or more nested calls or more than 32,768 bytes of global memory; a cloth sheet with more than 100 particles crashes; an env decl allows at most 80 renderParms.</li><li>Soft limits that warn instead of crashing: physics trace models (32 vertices, 32 edges, 16 polygons), 256 GUI surfaces, 128 dynamic environment probes, 2 sound listeners and 180 nodes in an AI path search.</li><li>Open: the script limits for functions and statements, the AI blackboard and weapon-stats capacities, and whether TNO has any setting-controlled limit at all; nothing was tested in game.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um die festen Grenzen zu finden, bei denen das Spiel warnt oder abstürzt. Ergebnis: Höchstens 8.189 <span class="t" data-t="entity">Entities</span> können gleichzeitig existieren, eine KI-Gruppe mit mehr als 64 Mitgliedern lässt das Spiel genau wie in Wolfenstein II abstürzen, und Skripte stürzen ab, wenn sie mehr als 64 Aufrufe tief verschachtelt sind oder mehr als 32 KiB globalen Speicher belegen. Manche Grenzen geben nur eine Warnung aus, etwa die KI-Obergrenze pro Spawner, und keine der rund 20 dekompilierten Funktionen dahinter liest eine <span class="t" data-t="cvar">Konsolen-Einstellung</span>. Alles beruht auf statischem Codelesen; das Spiel wurde nie gestartet.</p><ul><li>Entities: 8.192 Plätze, davon 8.189 gleichzeitig nutzbar, dazu ein Zähler für alle jemals erzeugten Entities mit Obergrenze 524.287; beide Überläufe lassen das Spiel abstürzen.</li><li>Eine KI-„Group“ ist auf 64 Mitglieder begrenzt und stürzt beim Überschreiten ab, gleicher Wert und gleiches Verhalten wie in Wolfenstein II; die Grenze „Too many AIs“ ist ein Feld pro Spawner (-1 = unbegrenzt) und warnt nur.</li><li>Skripte stürzen ab bei 65 oder mehr verschachtelten Aufrufen oder mehr als 32.768 Bytes globalem Speicher; ein Stoffobjekt mit mehr als 100 Partikeln stürzt ab; eine env-Decl erlaubt höchstens 80 renderParms.</li><li>Weiche Grenzen, die warnen statt abzustürzen: Physik-Kollisionsmodelle (32 Eckpunkte, 32 Kanten, 16 Polygone), 256 GUI-Flächen, 128 dynamische Umgebungssonden, 2 Sound-Zuhörer und 180 Knoten bei einer KI-Wegsuche.</li><li>Offen: die Skript-Grenzen für Funktionen und Anweisungen, die Kapazitäten von KI-Blackboard und Waffenstatistik und ob TNO überhaupt eine per Einstellung steuerbare Grenze hat; im Spiel wurde nichts getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-7 research pass on The New Order's hard engine limits, read from decompiled code — the TNO counterpart of <a href="Research-Report-R6-Engine-Limits.html">Engine limits (R6)</a>. It finds a proven entity-slot ceiling with a separate spawn counter, a fatal AI "Group" member cap identical to TNC's, a fatal script call-stack depth, and hard and soft physics caps; the AI population limit is a per-spawner field, not a global constant, as in TNC. <strong>Static evidence only; the game was never launched.</strong></p>
+<p>Track <code>tnolimits</code>. Read-only on both game installs and on every project file
+outside <code>re_probes/tnolimits/</code> (unused — no scratch file was needed) and this
+report. The game was never launched, no process was attached. This track's
+sole new capability is <code>tools/decomp.py --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf</code>,
+querying <code>re_probes/runtime_tno_186352/module.bin</code> (a read-only memory
+snapshot of TNO, PID 186352, base <code>0x7FF74A390000</code>, captured earlier and
+already analyzed into <code>D:/wolf-decomp/ghidra/tno_runtime.gzf</code> — see
+<code>D:/wolf-decomp/tno_import_log.txt</code>: 50,884 functions from <code>.pdata</code>, 2,369
+RTTI vtables labeled, <strong>no curated/command names yet</strong>, unlike TNC's
+<code>tnc_runtime.gzf</code>). Every RVA below is a file offset into that <code>module.bin</code>
+(<code>rva = address - 0x7FF74A390000</code>), computed and cross-checked with Python,
+never by hand. Builds directly on <code>r6_enginelimits.md</code> (same question, TNC
+side; TNO side there was <strong>string-only</strong>, no runtime image existed yet) and
+does not redo <code>r6_tnoconsole.md</code>/<code>docs/limits.md</code> (retail cvar lock,
+cheat-reset mechanism — a different kind of limit).</p>
+<h2 id="question">Question</h2>
+<p>TNO's hard engine limits from code: entity/AI/light/physics/decl/string/
+memory caps (<code>MAX_*</code> constants, asserts, "overflow"/"exceeded" errors);
+which are cvars and which are compiled; what happens at the limit (warn vs
+fatal); compare with TNC's <code>r6_enginelimits.md</code>.</p>
+<h2 id="answer-short">Answer (short)</h2>
+<p><strong>Headline: TNO's decompiled runtime resolves one of TNC's own standing open
+questions, in TNO's own code.</strong> <code>r6_enginelimits.md</code> §2.1 could not find any
+caller of TNC's entity-registration overflow branch (Ghidra's static xref
+scan found zero callers for the fatal path itself) and explicitly recorded
+the real <code>MAX_GENTITIES</code>-equivalent numeric value as unrecoverable. TNO's
+decompiled <code>idGameLocal::RegisterEntity</code> (3 independent inlined copies, RVAs
+<code>0x8609db</code>/<code>0x860870</code>/<code>0x865440</code>, §1) <strong>does</strong> have found callers and a
+directly-readable literal: a managed-object pointer array of <strong>8192 (0x2000)
+slots</strong>, of which indices above <strong>0x1ffd (8189)</strong> are refused ("no free
+entities", fatal), with <code>0x1ffe</code>/<code>0x1fff</code> used as reserved sentinel ids (the
+world entity is explicitly assigned <code>0x1ffe</code> in one of the three copies) —
+and a <em>separate</em> monotonic "ever spawned" counter capped at <strong>0x7ffff
+(524,287)</strong>, whose overflow is the actual <code>"idGameLocal::RegisterEntity:
+spawn count overflow"</code> message both games share verbatim. This is TNO's own
+number, not proof TNC's is identical (<code>r6_enginelimits.md</code> itself cautions
+against that assumption) — but it is the first <strong>PROVEN</strong>, not just
+named-but-unreachable, entity-slot ceiling found in this project for either
+game.</p>
+<p><strong>Second confirmation: the "Group has too many members" cap is identical in
+both games, and now proven fatal in both.</strong> <code>r6_enginelimits.md</code> §3.2 found
+the format string byte-identical in TNO's static <code>.rdata</code> but could not read
+<code>.text</code> to confirm the number. Decompiled TNO (RVA <code>0x57cecf</code>): literal
+<code>0x40</code> = <strong>64</strong>, followed immediately by <code>swi(3)</code> (an <code>int3</code> trap — an
+unconditional crash, the same "print then trap" idiom as every other fatal
+cap found this round) — <strong>exactly TNC's value and TNC's fatal behaviour</strong>,
+now independently proven on both sides rather than inferred from a shared
+string.</p>
+<p><strong>Everything else found this round is new ground r6 did not cover (TNC side
+not reproduced here either)</strong>: the TNO script VM has a hard <strong>64-deep call
+stack</strong> (RVA <code>0x96e7d0</code>, fatal) and a hard <strong>32 KiB global-variable memory
+pool</strong> (RVA <code>0x9791e0</code>, fatal); physics has a hard <strong>100-particle cloth
+cap</strong> (RVA <code>0x29d480</code>, fatal) and a <strong>soft</strong> 32-vertex/32-edge/16-polygon
+cap on trace-model-from-submodel generation (RVA <code>0xc8ae0</code>, warn-and-reject,
+not fatal); an <code>idDeclEnv</code> (environment decl) is capped at <strong>80
+renderParms</strong> (RVA <code>0x113720</code>, fatal); the render layer soft-caps <strong>256 GUI
+surfaces</strong> (RVA <code>0x313810</code>) and <strong>128 dynamic-environment probes</strong> (RVA
+<code>0x3179b9</code>), both reject-and-continue, not fatal; audio soft-caps <strong>2 sound
+listeners</strong> (RVA <code>0x4a3260</code>); AI pathfinding's Dijkstra search soft-caps at
+<strong>180 visited nodes</strong> (RVA <code>0x7902e0</code>) with a verbose diagnostic dump instead
+of a crash. Three subsystems (AI blackboard variable pools, script
+max-functions/max-statements, the "too many weapon stats"/"too many touched
+triggers" registries) have a <strong>capacity held in a data field, not a literal
+in the instruction stream</strong> — same class of dead end <code>r6_enginelimits.md</code>
+hit for ~440 <code>MAX_*</code> names; confirmed, not resolved, this round.</p>
+<p><strong>Which are cvars and which are compiled, for TNO specifically</strong>: <strong>every
+single cap found this round is compiled or data-driven-but-not-cvar-backed</strong>
+— not one of the ~20 decompiled functions below reads a cvar before
+comparing against its limit. This is a materially different picture from
+TNC's §4 (131 cvars with engine-clamped min/max, several of them exactly the
+kind of streaming/world-geometry/physics pool a modder would want to raise)
+— but it is <strong>not proof TNO has no such cvars anywhere</strong>; this round
+inspected the ~20 functions behind the error strings found, not TNO's full
+cvar registry (TNO has no <code>cvars_tnc_v2.json</code>-equivalent catalogue — see
+open questions). The one direct attempt to reuse TNC's approach (finding
+<code>idCVarSystemLocal</code>'s singleton the way <code>tools/probe_cvartable.py</code> does for
+TNC) failed outright this round (see Failed hypotheses) — the TNC-side
+cvar/command registry array-size ceiling (§1 of <code>r6_enginelimits.md</code>: 256/64
+commands, 4096/512 cvars) and the cvar min/max table (§4) have <strong>no TNO
+counterpart in this project yet</strong>.</p>
+<p><strong>Negative evidence against two of TNC's own cross-game guesses</strong>: TNC's
+hard-coded 16-projectile multi-fire clamp message ("Tried to spawn too many
+projectiles") <strong>does not exist anywhere in TNO's string table</strong> (full
+<code>"too many"</code>/<code>"projectil"</code> scans, zero hits) — not an unconfirmed number
+this time, a confirmed absent feature/message. TNC's unnamed light-count
+caps (<code>GatherShadowCasters</code>'s "Maximum allowed per frame", "Too many visible
+lights") <strong>also do not exist in TNO's string table</strong> — <code>r6_enginelimits.md</code>'s
+own open question about those two functions' literal values cannot be
+settled from the TNO side; they appear to be TNC-only code (later engine
+revision only, or renamed beyond a substring match).</p>
+<h2 id="1-entities-the-slot-array-the-spawn-id-counter-and-what-each-overflow-does">1. Entities: the slot array, the spawn-id counter, and what each overflow does</h2>
+<p>Three independent, differently-inlined copies of <code>idGameLocal::RegisterEntity</code>
+all reference <code>"idGameLocal::RegisterEntity: spawn count overflow"</code> (RVA
+<code>0xffeb60</code>) and all agree on the same two literals:</p>
+<pre><code class="language-c">// FUN_7ff74abf09db, rva 0x8609db (one of three inlined copies)
+if (0x7ffff &lt; *(int *)(unaff_RBX + 0x170598)) {       // monotonic spawn-id counter
+    FUN_7ff74ad5ab70(s_idGameLocal__RegisterEntity__spa_7ff74b38eb60);
+    pcVar2 = (code *)swi(3); (*pcVar2)();             // int3 trap -- FATAL
+    return;
+}
+if (unaff_ESI &lt; 0) {                                   // caller passed &quot;pick a free slot&quot;
+    lVar1 = *(longlong *)(unaff_RBX + 0x161d0 + (longlong)*(int*)(unaff_RBX+0x2e1d0)*8);
+    while (lVar1 != 0 &amp;&amp; (*(int*)(unaff_RBX + 0x2e1d0) &lt; 0x1ffe)) {  // linear free-slot search, capped
+        ... *(int*)(unaff_RBX + 0x2e1d0) = iVar3; ...
+    }
+    unaff_ESI = *(int *)(unaff_RBX + 0x2e1d0);
+    if (0x1ffd &lt; unaff_ESI) {                          // 8189 -- no slot left
+        FUN_7ff74ad5ab70(s_no_free_entities_7ff74b38eb98);
+        pcVar2 = (code *)swi(3); (*pcVar2)();          // FATAL
+        return;
+    }
+    ...
+}
+</code></pre>
+<p>A third copy (RVA <code>0x865440</code>, the largest/least-inlined of the three — grep
+for the same two constants inside it) additionally contains
+<code>*(undefined4 *)(lVar15 + 0x218) = 0x1ffe;</code> — assigning the <strong>world entity</strong>
+its id directly as the top-of-range sentinel <code>0x1ffe</code> (8190), consistent
+with the classic id Tech <code>ENTITYNUM_WORLD</code>/<code>ENTITYNUM_NONE</code> convention of
+reserving the last few ids below the array size. The int array parallel to
+the pointer array runs <code>0x261d0</code>–<code>0x2e1d0</code> (exactly <code>0x8000</code> bytes = <code>8192 *
+4</code>), independently confirming the pointer array's declared capacity is
+<strong>8192 (0x2000) entries</strong>, of which indices <code>0</code>–<code>0x1ffd</code> (8189) are the
+actual free-list search space and <code>0x1ffe</code>/<code>0x1fff</code> are reserved. Separately,
+<code>FUN_7ff74aa69ef0</code> ("touched triggers", §5) uses literal <code>0x1fff</code> (8191) as
+its own "no entity" sentinel default — a fourth, independent confirmation of
+the same <code>0x2000</code>-entry array size.</p>
+<p><strong>The "spawn count" field (<code>+0x170598</code>) is a different counter from the
+slot-array index</strong> — it only increments, it is not decremented on entity
+removal (unlike the free-slot index, which is explicitly reused), and its
+own cap (<code>0x7ffff</code> = 524,287) is roughly 64× the slot array size. This
+explains the message's own wording ("spawn count", not "entity count"): it
+is almost certainly a lifetime spawn-id generator (every entity ever
+created in a level, including ones since freed, gets a unique id up to
+~524k), separate from "how many entities can be alive at once" (~8189).
+Modding relevance: a level that spawns and frees an unusually large number
+of entities over its lifetime (not simultaneously alive) is the one that
+could theoretically hit the <code>0x7ffff</code> ceiling; a level with too many
+<em>simultaneously alive</em> entities hits the <code>0x1ffd</code> ceiling instead — two
+different failure modes, two different literal numbers, same source string
+family.</p>
+<h2 id="2-ai-population-cap-per-spawner-field-not-a-global-constant--confirmed-identical-in-tno">2. AI population cap: per-spawner field, not a global constant — confirmed identical in TNO</h2>
+<p><code>FUN_7ff74ab478a0</code> (name resolved directly by <code>decomp.py</code>, RVA <code>0x7b78a0</code>) is
+the function behind all three <code>"idTarget_ShowAI ... Too many AIs active!"</code>
+strings (TNO's name for TNC's <code>idTarget_AISpawn</code>, same message family,
+<code>r6_enginelimits.md</code> §2 already flagged the naming parallel but had no TNO
+code to check it against):</p>
+<pre><code class="language-c">iVar2 = func_0x7ff74abe4880(DAT_7ff74c1360e0);      // live active-AI count
+iVar15 = *(int *)(param_1 + 0x37c);                 // per-entity cap field (-1 = unlimited)
+bVar17 = iVar15 &lt; 0;
+if ((bVar17) || (iVar2 &lt; iVar15)) {
+    ... /* cap not exceeded, or unlimited: normal spawn logic follows */
+}
+else {
+    uVar6 = func_0x7ff74abcdac0(param_1 + 0x18);
+    FUN_7ff74ad5a7b0(s_idTarget_ShowAI___entity___s__To_7ff74b343e30, uVar6, iVar2,
+                     *(undefined4 *)(param_1 + 0x37c));   // warn, NOT fatal
+    ...
+}
+</code></pre>
+<p><code>FUN_7ff74ad5a7b0</code> is a thin wrapper around <code>FUN_7ff74ad5a270(3, fmt, args)</code>
+— a leveled print/log call, not a no-return trap (unlike every fatal case in
+this report, which goes through a <em>different</em> function, <code>FUN_7ff74ad5ab70</code>,
+immediately followed by <code>swi(3)</code>). Execution continues normally after every
+"Too many AIs" call site in this function (three call sites inside one
+function body, all reached via <code>break</code>/fallthrough, never <code>return</code> into a
+crash). <strong>This independently confirms, in TNO's own disassembly, exactly
+what <code>r6_enginelimits.md</code> §2 proved for TNC</strong>: the cap is a per-entity,
+map-author-set field (TNO reads it at a fixed struct offset <code>+0x37c</code>
+directly, rather than through TNC's generic decl-field-by-name-hash
+accessor — a build/inlining difference, not a semantic one), compared
+against a live counter, with <code>-1</code> meaning unlimited, and exceeding it is a
+<strong>logged warning, not a crash</strong>. No global "max AI in world" constant exists
+in this function, same as TNC.</p>
+<h2 id="3-the-two-literals-extracted-with-full-confidence-group-cap-64-fatal-and-script-call-stack-depth-64-fatal">3. The two literals extracted with full confidence: Group cap (64, fatal) and script call-stack depth (64, fatal)</h2>
+<pre><code class="language-c">// FUN_7ff74a90cecf, rva 0x57cecf -- &quot;Group '%s' has too many members&quot;
+void FUN_7ff74a90cecf(void) {
+  undefined8 uVar2 = func_0x7ff74abcdac0();
+  FUN_7ff74ad5ab70(s_Group___s__has_too_many_members__7ff74b2c27d0, uVar2, 0x40);  // 0x40 = 64
+  pcVar1 = (code *)swi(3); (*pcVar1)();                                            // FATAL
+}
+</code></pre>
+<p><code>r6_enginelimits.md</code> §3.2 found TNC's own value for this same cap (<code>0x40</code>,
+also fatal, also via the "print then no-return call" idiom) and the
+byte-identical TNO string, but explicitly could not confirm the TNO number.
+<strong>It is confirmed now: 64, fatal, in both games.</strong></p>
+<pre><code class="language-c">// FUN_7ff74acfe7d0, rva 0x96e7d0 -- idThread/idProgram-style VM call-stack push
+if (0x3f &lt; *(int *)(param_1 + 0x318)) {                 // 0x3f = 63 -&gt; cap is 64 deep
+    FUN_7ff74acfe320(param_1, s_call_stack_overflow_7ff74b3c5bc8);
+    pcVar3 = (code *)swi(3); (*pcVar3)();               // FATAL
+    return;
+}
+</code></pre>
+<p>This is the literal behind <code>"call stack overflow"</code> (RVA <code>0x1035bc8</code>, one of
+the <code>"locals stack overflow"</code>/<code>"EnterFuncton: locals stack overflow"</code> family
+<code>r6_tnoscript.md</code> §3.3 already found by name but had not decompiled — that
+report also surfaced <code>"Stack depth: %d bytes, %d max\n"</code>/<code>"Call depth: %d,
+%d max\n"</code>, which Ghidra's xref scan shows <strong>"no references found"</strong> for
+(pure debug-dump strings, not the check itself) — the actual bound was
+recovered by decompiling the function behind the sibling, <em>found</em>-reference
+error string instead, the same successful pattern <code>r6_enginelimits.md</code> §3
+used for TNC. A script that nests <strong>65 or more</strong> function calls (<code>thread</code>
+calls, event handlers calling into other event handlers, etc.) crashes TNO
+outright.</p>
+<pre><code class="language-c">// FUN_7ff74ad091e0, rva 0x9791e0 -- script global/AST memory accounting
+*(int *)(lVar15 + 0xfc) = *(int *)(lVar15 + 0xfc) + iVar14;
+if (0x8000 &lt; *(int *)(lVar15 + 0xfc)) {                 // 0x8000 = 32768 bytes
+    uVar10 = FUN_7ff74a395990(auStack_4028, s_Exceeded_global_memory_size___d_b_7ff74b3c6938, 0x8000);
+    ...
+    pcVar2 = (code *)swi(3); (*pcVar2)();               // FATAL
+    return;
+}
+</code></pre>
+<p>TNO's script compiler hard-caps a level's (or shared <code>.script</code>'s) global
+variable/constant memory at exactly <strong>32 KiB</strong>, fatal on overflow. The two
+sibling caps in the same compiler — <code>"Exceeded maximum allowed number of
+functions (%d)"</code> (RVA <code>0x97ab10</code>) and <code>"...statements (%d)"</code> (RVA
+<code>0x979a60</code>) — are real, fatal (<code>swi(3)</code>, same idiom), and <em>found</em> (unlike
+most of r6's <code>MAX_*</code> family), but their actual capacity is read from a
+struct field (<code>param_1+0x10120</code>/<code>+0x10124</code> and <code>+0x2c138</code>/<code>+0x2c13c</code>
+respectively) rather than a bare immediate — the literal that initializes
+that field was not traced this round (see Open questions).</p>
+<h2 id="4-physics-one-hard-fatal-cap-one-soft-warn-and-reject-cap">4. Physics: one hard fatal cap, one soft warn-and-reject cap</h2>
+<pre><code class="language-c">// FUN_7ff74a62d480, rva 0x29d480 -- cloth-sheet constructor
+iVar4 = param_2 * param_3;             // width * height
+if (iVar4 &lt; 0x65) {                    // must stay under 101 particles
+    ... /* build the cloth system */
+    return param_1;
+}
+FUN_7ff74ad5ab70(s_Cloth_system___s__has_too_many_p_7ff74b226020, ..., iVar4, 100);
+pcVar6 = (code *)swi(3); (*pcVar1)();  // FATAL
+</code></pre>
+<p>A cloth sheet (width × height particle grid) over <strong>100 particles</strong> crashes
+TNO (message literally states "Decrease ... to be less than %d" with <code>100</code>
+as the argument). Any mod authoring a new cloth-sim prop (flag, curtain,
+cape) must keep <code>width*height ≤ 100</code>.</p>
+<pre><code class="language-c">// FUN_7ff74a458ae0, rva 0xc8ae0 -- TrmFromSubModel (build a physics trace model from a render submodel)
+if (0x20 &lt; *(int *)(param_2 + 0x54))      // &gt; 32 verts: WARN, continues (non-fatal)
+    FUN_7ff74ad5a710(...vertices(%d) (max %d)..., 0x20);
+if (0x20 &lt; *(int *)(param_2 + 0x4c))      // &gt; 32 edges: WARN, continues (non-fatal)
+    FUN_7ff74ad5a710(...edges(%d) (max %d)..., 0x20);
+if (0x10 &lt; *(int *)(param_2 + 0x3c)) {    // &gt; 16 polygons: WARN *and* reject
+    FUN_7ff74ad5a710(...polygons(%d) (max %d)..., 0x10);
+    FUN_7ff74a458530(param_1); return 0;  // abort, NOT a crash
+}
+if (iVar4 &lt; 0x21 &amp;&amp; iVar3 &lt; 0x21) { ... }  // only proceeds if verts AND edges both &lt;= 32
+</code></pre>
+<p>Unlike every other cap in this report, overflowing this one <strong>never
+crashes</strong>: the vertex/edge checks only warn (and the function still bails
+out a few lines later via the same <code>&lt;= 0x20</code> gate), and the polygon check
+explicitly warns-then-returns-zero. A destructible/physics-trace submodel
+is limited to 32 vertices, 32 edges and 16 polygons; exceeding any of them
+silently produces no trace model (the object becomes non-collidable via
+this path) rather than crashing the game — a materially different failure
+mode from TNC's one disassembled physics-adjacent bound (<code>r6_enginelimits.md</code>
+§3.3's <code>[-16,16]</code> cuttable-model cube, also non-fatal but a spatial bound,
+not a count).</p>
+<h2 id="5-decl-audio-ai-nav-and-render-softhard-caps-found-incidentally">5. Decl, audio, AI-nav and render soft/hard caps found incidentally</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>subsystem</th>
+<th>cap</th>
+<th style="text-align: right;">value</th>
+<th>enforcement</th>
+<th>RVA</th>
+<th>source function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idDeclEnv</code> (environment decl) <code>renderParms</code></td>
+<td>hard</td>
+<td style="text-align: right;"><strong>80</strong> (0x50)</td>
+<td><strong>FATAL</strong> (<code>swi(3)</code>)</td>
+<td><code>0x113720</code></td>
+<td><code>idDeclEnv::Parse</code>-equivalent</td>
+</tr>
+<tr>
+<td>sound-world listeners</td>
+<td>hard</td>
+<td style="text-align: right;"><strong>2</strong></td>
+<td>soft (warns, resets to 0)</td>
+<td><code>0x4a3260</code></td>
+<td>sound-world <code>AddListener</code>-equiv</td>
+</tr>
+<tr>
+<td>AAS/nav <code>Search_Dijkstra</code> visited-node limit</td>
+<td>hard</td>
+<td style="text-align: right;"><strong>180</strong> (0xb4)</td>
+<td>soft (verbose diagnostic dump, falls back, no crash)</td>
+<td><code>0x7902e0</code></td>
+<td><code>Search_Dijkstra</code>-equiv</td>
+</tr>
+<tr>
+<td>GUI surface stack (<code>MAX_GUI_SURFACES</code>)</td>
+<td>hard</td>
+<td style="text-align: right;"><strong>256</strong> (0x100)</td>
+<td>soft (warn, silently drops the new surface)</td>
+<td><code>0x313810</code></td>
+<td><code>idRenderModelGui::AdvanceSurf</code>-equiv</td>
+</tr>
+<tr>
+<td>dynamic environment probes (<code>MAX_DYNAMIC_ENVIRONMENT</code>)</td>
+<td>hard</td>
+<td style="text-align: right;"><strong>128</strong> (0x80)</td>
+<td>soft (warn, caller gets <code>-1</code>)</td>
+<td><code>0x3179b9</code></td>
+<td>dynamic-environment-probe allocator</td>
+</tr>
+<tr>
+<td>approximated light-model buffer</td>
+<td>data field, not literal</td>
+<td style="text-align: right;">—</td>
+<td>soft, <strong>rate-limited</strong> (only every 500th overflow is logged)</td>
+<td><code>0x475bfc</code></td>
+<td>light-model gather</td>
+</tr>
+<tr>
+<td>AI blackboard int/float/string variable pools (3 parallel)</td>
+<td>data field, not literal</td>
+<td style="text-align: right;">—</td>
+<td>soft (returns null, caller must handle)</td>
+<td><code>0x54b700</code>/<code>0x54b7c0</code>/<code>0x54b880</code></td>
+<td>AI blackboard <code>Set*</code>-equivalents</td>
+</tr>
+<tr>
+<td>weapon-stats registry</td>
+<td>dynamically resized (<code>idList</code>-shaped)</td>
+<td style="text-align: right;">— (capacity is a runtime-configured field, grows)</td>
+<td>soft warn only if that external capacity is hit</td>
+<td><code>0x8e79d0</code></td>
+<td>weapon-stats add</td>
+</tr>
+<tr>
+<td>touched-triggers-per-frame registry</td>
+<td>dynamically resized</td>
+<td style="text-align: right;">—</td>
+<td>soft warn</td>
+<td><code>0x6d9ef0</code></td>
+<td>trigger-touch add</td>
+</tr>
+</tbody>
+</table></div>
+<p>The last two generalize <code>r6_enginelimits.md</code> §5's TNC finding (decl/resource
+counts are <code>idList</code>-shaped, not a small fixed <code>idArray</code>) to two more TNO
+subsystems: neither has a small compiled ceiling, both only warn if an
+<em>externally supplied</em> capacity (set elsewhere, not found this round) is
+reached.</p>
+<h2 id="6-the-shared-max_-rtti-name-family-same-dead-end-in-tno-as-in-tnc">6. The shared <code>MAX_*</code> RTTI-name family: same dead end in TNO as in TNC</h2>
+<pre><code>python tools/decomp.py --strings &quot;MAX_GENTITIES|MAX_RENDER_LIGHTS|ENTITYNUM_MAX_NORMAL&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+  MAX_RENDER_LIGHTS       (no references found)
+  MAX_GENTITIES           (no references found)
+  ENTITYNUM_MAX_NORMAL    (no references found)
+</code></pre>
+<p>Exactly as <code>r6_enginelimits.md</code> §6 found for TNC: these are RTTI/reflection
+debug-name literals, not strings fed to a comparison+warn/fatal call site,
+so Ghidra's static xref scan finds no referencing instruction — the pattern
+that <em>did</em> work everywhere else in this report (find the <em>error-message</em>
+sibling string instead, which — unlike the bare <code>MAX_*</code> name — sits next to
+the actual literal at its one call site) does not apply to this family in
+either game. Confirms, does not newly resolve, <code>r6_enginelimits.md</code>'s own
+conclusion that the ~440 <code>MAX_*</code> names are structural metadata, not
+runtime-checked bounds with a logged path.</p>
+<h2 id="proven">PROVEN</h2>
+<ul>
+<li>TNO's <code>idGameLocal::RegisterEntity</code> has a managed-object array of <strong>8192
+  (0x2000) entries</strong>, of which indices <code>0</code>–<code>0x1ffd</code> (8189) are the usable
+  free-slot search space and <code>0x1ffe</code>/<code>0x1fff</code> are reserved sentinels (one
+  of three decompiled copies assigns <code>0x1ffe</code> to the world entity directly,
+  RVA <code>0x865440</code>); a separate lifetime spawn-id counter caps at <strong>524,287</strong>
+  — both confirmed across <strong>3 independent inlined call sites</strong> (RVAs
+  <code>0x8609db</code>, <code>0x860870</code>, <code>0x865440</code>) plus a 4th independent confirmation of
+  the <code>0x2000</code>-entry size from an unrelated function's sentinel constant
+  (<code>0x1fff</code>, RVA <code>0x6d9ef0</code>) — both overflows are <strong>FATAL</strong> (<code>swi(3)</code> trap).</li>
+<li><code>idTarget_ShowAI</code>'s "Too many AIs active" check (RVA <code>0x7b78a0</code>) reads a
+  per-entity field at <code>param_1+0x37c</code>, <code>-1</code> = unlimited, compares to a live
+  count, and is a <strong>soft warning, not fatal</strong> — independently confirms
+  <code>r6_enginelimits.md</code> §2's TNC finding, in TNO's own disassembly this time.</li>
+<li>The "Group has too many members" cap is <strong>64 (0x40), FATAL</strong> in TNO (RVA
+  <code>0x57cecf</code>) — matches TNC's value exactly (<code>r6_enginelimits.md</code> §3.2),
+  resolving that report's own "could not confirm for TNO" caveat.</li>
+<li>TNO's script VM call-stack depth cap is <strong>64 (0x3f+1), FATAL</strong> (RVA
+  <code>0x96e7d0</code>).</li>
+<li>TNO's script global/constant memory pool cap is <strong>32,768 bytes (0x8000),
+  FATAL</strong> (RVA <code>0x9791e0</code>).</li>
+<li>TNO's cloth-sheet particle-count cap is <strong>100 (0x64), FATAL</strong> (RVA
+  <code>0x29d480</code>).</li>
+<li><code>TrmFromSubModel</code>'s vertex/edge cap is <strong>32 each (soft warn, continues)</strong>
+  and its polygon cap is <strong>16 (soft warn + reject, not fatal)</strong> (RVA
+  <code>0xc8ae0</code>) — the one cap family in this report that never crashes.</li>
+<li><code>idDeclEnv</code>'s <code>renderParms</code> cap is <strong>80 (0x50), FATAL</strong> (RVA <code>0x113720</code>).</li>
+<li>Sound-world listener cap is <strong>2 (soft, resets to 0)</strong> (RVA <code>0x4a3260</code>).</li>
+<li>AAS/nav Dijkstra search node-visit cap is <strong>180 (0xb4, soft, diagnostic
+  dump + fallback)</strong> (RVA <code>0x7902e0</code>).</li>
+<li><code>MAX_GUI_SURFACES</code> = <strong>256 (soft, drop)</strong> (RVA <code>0x313810</code>);
+  <code>MAX_DYNAMIC_ENVIRONMENT</code> = <strong>128 (soft, reject)</strong> (RVA <code>0x3179b9</code>).</li>
+<li>The <code>MAX_*</code>/RTTI-name family (<code>MAX_GENTITIES</code>, <code>MAX_RENDER_LIGHTS</code>,
+  <code>ENTITYNUM_MAX_NORMAL</code>) shows <strong>zero referencing instructions</strong> in TNO's
+  decompiled runtime, same as TNC — reconfirms <code>r6_enginelimits.md</code> §6's
+  conclusion with TNO's own decompiler this time, not string-matching alone.</li>
+<li>TNC's 16-projectile multi-fire clamp message and its light-count-cap
+  messages (<code>GatherShadowCasters</code>, "Too many visible lights") are <strong>absent
+  from TNO's entire string table</strong> (zero matches on full-text scans) — a
+  confirmed feature/message absence, not an unconfirmed number.</li>
+</ul>
+<h2 id="inferred-plausible-not-nailed-down-this-round">INFERRED (plausible, not nailed down this round)</h2>
+<ul>
+<li>That the script compiler's max-functions/max-statements caps (RVAs
+  <code>0x97ab10</code>/<code>0x979a60</code>) have some specific literal value — the <em>check</em> and
+  its <strong>fatal</strong> enforcement are proven, but the capacity is read from a
+  struct field whose own initializer was not traced back to a constant this
+  round (same class of gap as TNC's <code>MAX_GENTITIES</code> numeric value before
+  this track, just not resolved here either).</li>
+<li>That the approximated-light-model buffer and the three AI-blackboard
+  variable pools have a genuinely fixed capacity at all, as opposed to one
+  computed at level-load from decl/config data — the enforcement (soft
+  reject) is proven, the capacity's origin is not traced.</li>
+<li>That TNO's apparent total absence of cvar-gated caps in the ~20 functions
+  inspected generalizes to "TNO has no cvar-controlled engine limits at
+  all" — more likely this round simply didn't sample any cvar-backed
+  subsystem; no TNO equivalent of TNC's <code>cvars_tnc_v2.json</code> live-registry
+  walk exists to check this properly (see Open questions).</li>
+</ul>
+<h2 id="failed-hypotheses--dead-ends">Failed hypotheses / dead ends</h2>
+<ul>
+<li>Tried resolving <code>vtbl_idCVarSystemLocal</code>/<code>vtbl_idCmdSystemLocal</code> by name
+  through <code>decomp.py</code> the same way TNC's curated function names work —
+  <strong>"no function matches" for both</strong>. <code>decomp.py</code>'s name resolver only
+  walks <code>FunctionManager.getFunctions()</code>; RTTI vtable labels are data
+  symbols in this snapshot (per <code>D:/wolf-decomp/tno_import_log.txt</code>:
+  "labeled 2369 RTTI vtables", distinct from the function list), not
+  reachable this way. Reusing TNC's <code>probe_cvartable.py</code>/<code>cmdtable.md</code>
+  approach for TNO (walking the live cvar/command registry the way those
+  tools read TNC's <code>module.bin</code> directly, entirely read-only, no process
+  attach) would need the TNO singleton's RVA found by hand first — not
+  attempted further this round given the time budget; a real next step,
+  not a dead end in principle.</li>
+<li>Searched TNO's full string table for TNC's <code>"Tried to spawn too many
+  projectiles"</code> family and for <code>"Too many visible lights"</code>/<code>"Maximum
+  allowed per frame"</code> — <strong>zero matches for either</strong>, confirmed by two
+  independent <code>--strings</code> passes (<code>"too many"</code>/<code>"projectil"</code> and
+  <code>"visible light|Maximum allowed per frame|shadow caster"</code>). Not a
+  decompiler limitation — the messages are not present in TNO's <code>.rdata</code> at
+  all.</li>
+<li><code>"Stack depth: %d bytes, %d max\n"</code>/<code>"Call depth: %d, %d max\n"</code> (flagged
+  by name only in <code>r6_tnoscript.md</code> §3.3) — Ghidra's xref scan: <strong>no
+  references found</strong> for either, exactly the class of miss
+  <code>r6_enginelimits.md</code> hit for most of the <code>MAX_*</code> family. Worked around,
+  not solved: found the actual bound via the sibling <code>"call stack
+  overflow"</code> string instead (§3), which <em>did</em> have a found reference.</li>
+<li><code>idMemLocal::Alloc: exceeded MAX_TRACKED_POINTERS</code>, <code>idWinding::Split:
+  points exceeded estimate</code>, <code>idFile_Memory::TruncateData: ... exceeded
+  allocated size</code> — all <strong>no references found</strong>; not pursued further, same
+  indirect/optimized-call-site class of dead end <code>r6_enginelimits.md</code>
+  already catalogued for TNC.</li>
+</ul>
+<h2 id="recipe-what-this-means-for-modding-tno-today">Recipe: what this means for modding TNO, today</h2>
+<ol>
+<li><strong>Don't build an encounter "Group" (shared AI roster/TargetList) bigger
+   than 64 members</strong> — confirmed fatal in TNO now, not just inferred from a
+   shared string. Split a larger set-piece into two or more groups instead.</li>
+<li><strong>AI population caps (<code>maxActiveAIs</code>-equivalent, idTarget_ShowAI) are
+   per-spawner data, exactly like TNC</strong> — a custom map wanting unlimited AI
+   just sets the field to <code>-1</code> (or omits it); this is a data change, not a
+   cvar, not a patch, and failing to do so only prints a warning, never
+   crashes.</li>
+<li><strong>Script mods should stay well under 64 nested calls and 32 KiB of
+   global script memory.</strong> A <code>thread</code>-heavy <code>.script</code> file that calls deep
+   chains of helper threads/functions, or declares a very large number of
+   global constants/arrays, risks the two fatal VM caps in §3 — both are
+   hard crashes with no warning beforehand.</li>
+<li><strong>A cloth-sim prop (flag/cape/curtain) must stay at <code>width*height ≤
+   100</code> particles</strong> or the game crashes outright on spawn (§4) — this is a
+   genuinely new, previously-undocumented hard limit for anyone adding
+   cloth to a custom prop.</li>
+<li><strong>A destructible/physics-trace submodel should stay at ≤32 vertices, ≤32
+   edges, ≤16 polygons</strong> — the only cap family in this report that fails
+   soft (object just becomes non-collidable) instead of crashing, so this
+   one is forgiving to get wrong during iteration, unlike every other cap
+   here.</li>
+<li><strong>An <code>env</code> decl (environment/skybox-style decl) is capped at 80
+   <code>renderParms</code></strong> — fatal if exceeded (§5); relevant only to anyone editing
+   <code>env</code> decls directly, which is a narrow but real part of TNO's decl
+   surface.</li>
+<li><strong>Entity population</strong>: a single TNO level is extremely unlikely to hit
+   either entity ceiling found in §1 (~8189 simultaneously alive, ~524k
+   lifetime spawns) through normal level design — recorded for completeness
+   and because it resolves <code>r6_enginelimits.md</code>'s own open question, not
+   because it is a practical modding constraint today.</li>
+</ol>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li><strong>TNO's cvar/command registry array sizes</strong> (TNC's own §1: 256/64
+  commands, 4096/512 cvars) — no TNO counterpart was attempted this round
+  beyond the one failed name-lookup (see Failed hypotheses). Finding TNO's
+  <code>idCVarSystemLocal</code> singleton RVA and its <code>RegisterStaticVars</code> the way
+  TNC's <code>cvartable.md</code>/<code>cmdtable.md</code> tracks did (a dedicated disassembly
+  pass, not a quick side quest) is the natural next step and would also
+  make a live cvar min/max catalogue possible for TNO for the first time.</li>
+<li><strong>The literal values behind the script compiler's max-functions/
+  max-statements caps</strong> (§3) — the fatal check is proven, the capacity
+  field's own origin was not traced to a constant.</li>
+<li><strong>Whether TNO has <em>any</em> cvar-gated engine limit at all</strong> — this round
+  sampled ~20 cap-enforcing functions and found none, but that is not an
+  exhaustive search of TNO's cvar surface (no live-registry walk exists for
+  TNO yet, see above).</li>
+<li><strong>The AI blackboard pools, the light-model-approximation buffer, and the
+  weapon-stats/touched-triggers registries' actual capacities</strong> — all
+  confirmed data-driven, none traced to their initializing constant/decl
+  field this round.</li>
+<li><strong>Whether TNC has equivalents of the new TNO-only caps found here</strong>
+  (script call-stack depth, script global memory, cloth particles, env decl
+  renderParms, GUI surfaces, dynamic environment probes, Dijkstra node
+  limit, sound listeners) — not cross-checked against TNC's own runtime
+  this round; <code>tools/decomp.py</code>'s default <code>--gzf</code> already points at TNC's
+  snapshot, so this is a same-method, same-tool follow-up for whoever picks
+  it up next, not a new capability gap.</li>
+</ul>
+<h2 id="reproduction">Reproduction</h2>
+<pre><code># All queries below ran against the TNO runtime snapshot, ~15-90s each:
+python tools/decomp.py --strings &quot;overflow&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py --strings &quot;exceeded&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py --strings &quot;too many&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py --strings &quot;projectil&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py --strings &quot;visible light|Maximum allowed per frame|shadow caster&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python tools/decomp.py --strings &quot;MAX_GENTITIES|MAX_RENDER_LIGHTS|ENTITYNUM_MAX_NORMAL&quot; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+
+# Entity registration (3 inlined copies):
+python tools/decomp.py 0x8609db 0x860870 0x865440 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+# AI population per-spawner cap:
+python tools/decomp.py 0x7b78a0 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+# &quot;Group has too many members&quot; (64, fatal):
+python tools/decomp.py 0x57cecf --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+# Script VM call-stack depth (64, fatal) + global memory (32KiB, fatal):
+python tools/decomp.py 0x96e7d0 0x9791e0 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+# Physics: cloth cap (100, fatal) + TrmFromSubModel (32/32/16, soft):
+python tools/decomp.py 0x29d480 0xc8ae0 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+# Decl / audio / AI-nav / render soft+hard caps:
+python tools/decomp.py 0x113720 0x4a3260 0x7902e0 0x313810 0x3179b9 --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+
+# Negative control (vtable name lookup fails -- data symbol, not a function):
+python tools/decomp.py vtbl_idCVarSystemLocal vtbl_idCmdSystemLocal --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+</code></pre>
+<h2 id="smallest-in-game-test">Smallest in-game test</h2>
+<p><em>(Translated from German.)</em></p>
+<p>Everything in this report is a <strong>compiled</strong> limit, not a cvar — so there is
+no console command to try out, only a scenario that actually reaches the
+limit. By far the safest test (no crash to
+expect, only a log line):</p>
+<ol>
+<li>
+<p><strong>AI population limit, harmless (§2):</strong> In an own
+   test map/an own <code>.script</code> spawn setup, set an <code>idTarget_ShowAI</code>
+   (or the decl/entity field behind it, presumably analogous to TNC's
+   <code>m_maxActiveAIs</code> — exact field name in TNO's own <code>.entities</code>/decls
+   still to be verified) to a small value (e.g. <code>2</code>) and let more
+   AIs spawn at the same time. Expectation according to this report: the
+   surplus AIs are <strong>not</strong> spawned, a line
+   <code>"Too many AIs active! Number of AIs active: ..., limit set
+   to: ..."</code> appears in <code>qconsole.log</code>, and the game keeps running normally — no crash, nothing
+   breaks.</p>
+</li>
+<li>
+<p><strong>Riskier, but unambiguous proof of a hard crash (§3):</strong>
+   If a deliberate crash test is wanted (e.g. to confirm
+   that the 64 "Group" cap really is fatal): extend an own
+   AI encounter group (shared <code>TargetList</code>/<code>Group</code> field, as the
+   retail maps use for mass encounters) to <strong>65 or more</strong> members
+   and load the scene. Expectation according to this report: the game
+   crashes immediately on reaching the 65th member (<code>int3</code> trap, no
+   graceful exit) — <strong>save beforehand</strong>, this test is deliberately
+   destructive and serves only as a control, not for normal modding.</p>
+</li>
+</ol>
+<p>Related: <a href="Research-Report-R6-Engine-Limits.html">Research Report: R6 Engine Limits</a>, <a href="Research-Report-R6-Tno-Console.html">Research Report: R6 Tno Console</a>, <a href="Research-Report-R6-Tno-Script.html">Research Report: R6 Tno Script</a>, <a href="Research-Report-Cmdtable.html">Research Report: Cmdtable</a>, <a href="Research-Report-Cvartable.html">Research Report: Cvartable</a>, <a href="Modding-Limits.html">Modding Limits</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R7-Tno-Commands.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Console Commands: Registration, Flags, and What&#x27;s Reachable Right Now</a><a class="next" href="Research-Report-R7-Tno-Map-Loading.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Map Loading in Code: Command Handlers, <code>Map_f</code>, Chunk Mounting, and a Working DLC-Extension Pipeline</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

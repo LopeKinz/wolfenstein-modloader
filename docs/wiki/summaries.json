@@ -77,24 +77,24 @@
  "Home": {
   "status": "reference",
   "en": {
-   "oneLine": "Start page: how proof is graded, which page answers which question, and what works in both games.",
-   "summary": "The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game. It also links to the detailed pages and to read-only tools that recompute the evidence.",
+   "oneLine": "Start page: where to begin with WolfSDK 0.2.0, how proof is graded, and what works in both games.",
+   "summary": "The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It opens with a 'Start here' table that sends players to the WolfSDK Loader guide, modders to the Studio guide, and everyone to the FAQ and the mod.json format, in English and German, plus the download of WolfSDK 0.2.0. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game.",
    "points": [
     "Strict rule: a text found in the game program does not prove the feature exists; of 2,231 harvested setting names in Wolfenstein II, 409 were not settings at all.",
     "The New Order: patched archives load in game (14/14 rebuilt files, 48 minutes of play, 0 errors); cheat settings from config files stay locked, while the {console|console} (Ctrl+^) is code-read only and untested.",
-    "Wolfenstein II: value edits (pistol magazine 10 to 30), a custom weapon skin and a custom map are confirmed in a running game.",
-    "Wolfenstein II: the encrypted config files were cracked and used to run God mode and infinite ammo in a real save.",
+    "Wolfenstein II: value edits (pistol magazine 10 to 30), a custom weapon skin, a custom map and maps loaded from the developer menu are confirmed in a running game.",
+    "Wolfenstein II: the encrypted config files were cracked and used to run God mode and infinite ammo in a real save; sound replacement is held back in 0.2.0.",
     "Still not working or unverified: The New Order's new 3D models and megatexture pixels, Wolfenstein II's megatexture pixels and loose files."
    ]
   },
   "de": {
-   "oneLine": "Startseite: wie Beweise bewertet werden, welche Seite welche Frage beantwortet und was in beiden Spielen geht.",
-   "summary": "Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie erklärt drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur als Text in der Datei gefunden. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist. Dazu kommen Links zu den Detailseiten und zu Werkzeugen, die die Belege nur lesend nachrechnen.",
+   "oneLine": "Startseite: wo du mit WolfSDK 0.2.0 anfängst, wie Beweise eingestuft werden und was in beiden Spielen funktioniert.",
+   "summary": "Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie beginnt mit einer Tabelle „Start here“, die Spieler zur Anleitung des WolfSDK Loaders schickt, Modder zur Studio-Anleitung und alle zur FAQ und zum mod.json-Format, auf Englisch und Deutsch, dazu der Download von WolfSDK 0.2.0. Sie erklärt die drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur ein Text, der in der Datei gefunden wurde. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist.",
    "points": [
     "Strenge Regel: Ein Text im Spielprogramm beweist nicht, dass die Funktion existiert; von 2.231 gesammelten Einstellungsnamen in Wolfenstein II waren 409 gar keine Einstellungen.",
-    "The New Order: gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); Cheat-Einstellungen aus Konfigurationsdateien bleiben gesperrt, die {console|Konsole} (Strg+^) ist nur aus dem Code gelesen und ungetestet.",
-    "Wolfenstein II: Wertänderungen (Pistolenmagazin 10 auf 30), ein eigener Waffenskin und eine eigene Karte sind im laufenden Spiel bestätigt.",
-    "Wolfenstein II: Die verschlüsselten Konfigurationsdateien wurden geknackt und damit Gottmodus und unendliche Munition in einem echten Spielstand ausgelöst.",
+    "The New Order: Gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); Cheat-Einstellungen aus Konfigurationsdateien bleiben gesperrt, die {console|Konsole} (Strg+^) ist nur aus dem Code gelesen und ungetestet.",
+    "Wolfenstein II: Wertänderungen (Pistolenmagazin 10 auf 30), ein eigener Waffen-Skin, eine eigene Karte und Karten aus dem Entwicklermenü sind im laufenden Spiel bestätigt.",
+    "Wolfenstein II: Die verschlüsselten Konfigurationsdateien wurden geknackt und damit Gottmodus und unendliche Munition in einem echten Spielstand ausgelöst; der Sound-Austausch ist in 0.2.0 zurückgehalten.",
     "Noch nicht möglich oder unbestätigt: neue 3D-Modelle und Megatextur-Pixel in The New Order, Megatextur-Pixel und lose Dateien in Wolfenstein II."
    ]
   }
@@ -127,21 +127,23 @@
  "Reverse-Engineering-Research": {
   "status": "reference",
   "en": {
-   "oneLine": "Index of all research briefs and reports from the reverse-engineering work, with links to each page.",
-   "summary": "This page is a table of contents for the research notes on Wolfenstein II: The New Colossus and related work. It links the task briefs (what a researcher was asked to find out) and the reports (what they found), plus pages on building a new map from existing parts, missions, custom map prototypes, DLC tests and weapons. The notes keep the original measurements, failed attempts and open questions. It contains no results of its own; it helps you find the right page.",
+   "oneLine": "Index of all research briefs and reports from the reverse-engineering work, rounds 2 to 10 included, with links to each page.",
+   "summary": "This page is a table of contents for the research notes on Wolfenstein II: The New Colossus, Wolfenstein: The New Order and related work. It links the task briefs (what a researcher was asked to find out) and the reports (what they found), now including every report of research rounds 2 to 10, plus pages on building a new map from existing parts, missions, custom map prototypes, DLC tests and weapons. The notes keep the original measurements, failed attempts and open questions. It contains no results of its own; it helps you find the right page.",
    "points": [
     "24 research briefs describing tasks, e.g. encryption keys, mesh and collision formats.",
-    "36 research reports with the results, e.g. on texture keys, save files and custom maps.",
+    "93 research reports with the results: 36 from the early work and 57 from rounds 2 to 10.",
+    "Rounds 6 to 10 add 24 reports, e.g. on The New Order's decrypted code, engine limits, the developer menu and new map names.",
     "Extra sections for kit-based map building, mission research, map prototypes, DLC tests and weapons.",
     "Failed approaches and uncertainty are kept, not smoothed over."
    ]
   },
   "de": {
-   "oneLine": "Verzeichnis aller Forschungsaufträge und Berichte aus der Reverse-Engineering-Arbeit, mit Links zu jeder Seite.",
-   "summary": "Diese Seite ist ein Inhaltsverzeichnis der Forschungsnotizen zu Wolfenstein II: The New Colossus und verwandter Arbeit. Sie verlinkt die Aufträge (was jemand herausfinden sollte) und die Berichte (was dabei herauskam), dazu Seiten zum Bau einer neuen Karte aus vorhandenen Teilen, zu Missionen, Kartenprototypen, DLC-Tests und Waffen. Die Notizen bewahren die Originalmessungen, gescheiterte Versuche und offene Fragen. Eigene Ergebnisse enthält die Seite nicht; sie hilft dir, die passende Seite zu finden.",
+   "oneLine": "Verzeichnis aller Forschungsaufträge und Berichte aus der Reverse-Engineering-Arbeit, einschließlich der Runden 2 bis 10, mit Links zu jeder Seite.",
+   "summary": "Diese Seite ist ein Inhaltsverzeichnis der Forschungsnotizen zu Wolfenstein II: The New Colossus, Wolfenstein: The New Order und verwandter Arbeit. Sie verlinkt die Aufträge (was jemand herausfinden sollte) und die Berichte (was dabei herauskam), jetzt mit jedem Bericht der Forschungsrunden 2 bis 10, dazu Seiten zum Bau einer neuen Karte aus vorhandenen Teilen, zu Missionen, Kartenprototypen, DLC-Tests und Waffen. Die Notizen bewahren die Originalmessungen, gescheiterte Versuche und offene Fragen. Eigene Ergebnisse enthält die Seite nicht; sie hilft dir, die passende Seite zu finden.",
    "points": [
     "24 Forschungsaufträge, z. B. zu Verschlüsselungsschlüsseln, Mesh- und Kollisionsformaten.",
-    "36 Forschungsberichte mit Ergebnissen, z. B. zu Textur-Schlüsseln, Spielständen und eigenen Karten.",
+    "93 Forschungsberichte mit Ergebnissen: 36 aus der frühen Arbeit und 57 aus den Runden 2 bis 10.",
+    "Die Runden 6 bis 10 bringen 24 Berichte, z. B. zum entschlüsselten Code von The New Order, zu Engine-Grenzen, zum Entwicklermenü und zu neuen Kartennamen.",
     "Eigene Abschnitte zu Kartenbau aus Bausteinen, Missionen, Kartenprototypen, DLC-Tests und Waffen.",
     "Gescheiterte Ansätze und Unsicherheiten werden nicht geglättet, sondern festgehalten."
    ]
@@ -427,25 +429,27 @@
  "Known-Contradictions": {
   "status": "reference",
   "en": {
-   "oneLine": "Log of 22 contradictions found between the project's docs and code, and how each was fixed.",
-   "summary": "This page compares what the project's documents and tool code claim about Wolfenstein: The New Order modding, mostly, and lists every place where they disagreed. Each of the 22 points says what was wrong, what was changed, or why it is still open. The rule was strict: where proof was missing, the text now says unverified instead of works. This matters because the whole project depends on keeping measured facts apart from guesses.",
+   "oneLine": "Log of 27 contradictions found between the project's docs and code, and how each was fixed.",
+   "summary": "This page compares what the project's documents and tool code claim, at first mostly about Wolfenstein: The New Order modding, and lists every place where they disagreed. Each of the 27 points says what was wrong, what was changed, or why it is still open; points W21 to W27 were added in October 2026 when later work corrected earlier pages. The rule was strict: where proof was missing, the text now says unverified instead of works. This matters because the whole project depends on keeping measured facts apart from guesses.",
    "points": [
     "17 of the first 20 points are fixed; 3 still need a game start or a Steam file check to close.",
     "The game log shows that command-line {cvar|cheat settings} such as intro-skip are accepted and then wiped by a cheat reset.",
     "A 48-minute game run with all 14 patched {archive|archives} and 373 changed assets logged zero errors.",
     "Several wrong numbers were remeasured, for example the virtual texture data is 39 files and 35.6 GB.",
-    "Added later: SpawnAI is not a real command in the retail build (a static correction, never typed in game), and the cfile type is now usable, but only for small config files."
+    "Added on 1 October 2026: SpawnAI is not a real command in the retail build (a static correction, never typed in game), and the cfile type is now usable, but only for small config files.",
+    "Added on 4 October 2026 (W23–W27): the loader read the older base copy of duplicated assets, the dev menu failure was placed wrongly, key binds in The New Colossus run restricted, a new map name needs far less than claimed, and TNC sounds and normal maps now have a write path."
    ]
   },
   "de": {
-   "oneLine": "Protokoll von 22 Widersprüchen zwischen Doku und Code des Projekts und wie sie behoben wurden.",
-   "summary": "Diese Seite vergleicht, was die Dokumente und der Tool-Code des Projekts vor allem über das Modden von Wolfenstein: The New Order behaupten, und listet jede Stelle auf, an der sie sich widersprachen. Jeder der 22 Punkte sagt, was falsch war, was geändert wurde oder warum er noch offen ist. Die Regel war streng: Wo ein Beweis fehlte, steht jetzt unbestätigt statt funktioniert. Das ist wichtig, weil das ganze Projekt davon lebt, gemessene Fakten von Vermutungen zu trennen.",
+   "oneLine": "Protokoll von 27 Widersprüchen zwischen Doku und Code des Projekts und wie sie behoben wurden.",
+   "summary": "Diese Seite vergleicht, was die Dokumente und der Tool-Code des Projekts behaupten, anfangs vor allem über das Modden von Wolfenstein: The New Order, und listet jede Stelle auf, an der sie sich widersprachen. Jeder der 27 Punkte sagt, was falsch war, was geändert wurde oder warum er noch offen ist; die Punkte W21 bis W27 kamen im Oktober 2026 dazu, als spätere Arbeit frühere Seiten korrigierte. Die Regel war streng: Wo ein Beweis fehlte, steht jetzt unbestätigt statt funktioniert. Das ist wichtig, weil das ganze Projekt davon lebt, gemessene Fakten von Vermutungen zu trennen.",
    "points": [
     "17 der ersten 20 Punkte sind behoben; 3 brauchen noch einen Spielstart oder eine Steam-Dateiprüfung.",
     "Das Spiel-Log zeigt, dass {cvar|Cheat-Einstellungen} wie Intro-Skip über die Kommandozeile angenommen und dann durch einen Cheat-Reset gelöscht werden.",
     "Ein 48-minütiger Spiellauf mit allen 14 gepatchten {archive|Archiven} und 373 geänderten Assets lieferte null Fehler im Log.",
     "Mehrere falsche Zahlen wurden neu gemessen, zum Beispiel sind die virtuellen Texturen 39 Dateien mit 35,6 GB.",
-    "Später ergänzt: SpawnAI ist im Retail-Build kein echter Befehl (statische Korrektur, nie im Spiel eingetippt), und der Typ cfile ist jetzt nutzbar, aber nur für kleine Konfigurationsdateien."
+    "Ergänzt am 01.10.2026: SpawnAI ist im Retail-Build kein echter Befehl (statische Korrektur, nie im Spiel eingetippt), und der Typ cfile ist jetzt nutzbar, aber nur für kleine Konfigurationsdateien.",
+    "Ergänzt am 04.10.2026 (W23–W27): Der Loader las die ältere Basis-Kopie doppelter Assets, der Fehler im Entwicklermenü war falsch verortet, belegte Tasten laufen in The New Colossus gesperrt, ein neuer Kartenname braucht weit weniger als behauptet, und TNC-Sounds und Normal Maps haben jetzt einen Schreibweg."
    ]
   }
  },
@@ -477,30 +481,28 @@
  "TNC-Texture-Database": {
   "status": "partial",
   "en": {
-   "oneLine": "The .texdb texture database format of TNC: readable in full, and a map texture cache that can be patched.",
-   "summary": "Wolfenstein II: The New Colossus stores its texture data in separate {texdb|.texdb} files next to the game archives. This page decodes their layout: a sorted table of 64-bit keys pointing to {oodle|Oodle}-compressed blocks, with no file names inside. Reading every block is now possible. A second part shows that each map's textures.cache uses the same layout and can be patched so a custom pistol skin also shows at medium distance; this is derived from the code, not seen in the game.",
+   "oneLine": "The .texdb texture database format of TNC: readable in full, a patchable texture cache per map, and normal-map writing.",
+   "summary": "Wolfenstein II: The New Colossus stores its texture data in separate {texdb|.texdb} files next to the game archives. This page decodes their layout: a sorted table of 64-bit keys pointing to {oodle|Oodle}-compressed blocks, with no file names inside, and every block can be read. Each map's textures.cache uses the same layout and is patched too; a custom BC1 pistol skin written this way was confirmed in game on 25 September 2026, while its showing at medium distance through the caches is derived from the code. Since WolfSDK 0.2.0 BC5 normal maps can be replaced as well, not yet confirmed in game.",
    "points": [
     "Verified against all 24 .texdb files: 21.5 GB and 437,706 table entries.",
     "Keys repeat often: 437,706 rows share only 127,418 distinct keys, so the table must not be read as a simple dictionary.",
     "Large textures are chains of tiles; one tested entry split into 32 tiles that all unpacked correctly.",
     "The 40 per-map textures.cache files have the same layout; the engine only checks an 8-byte magic value, with no hash or size check.",
+    "Normal maps are written as plain BC5 blocks, so the undecoded tile format is not needed; 60 of 60 retail BC5 maps confirm the DirectX green channel, and 50 checks pass.",
     "Open on this page: which key belongs to which texture, and the internal format of a tile."
    ]
   },
   "de": {
-   "oneLine": "Das .texdb-Texturdatenbankformat von TNC: vollständig lesbar, dazu ein patchbarer Textur-Cache pro Karte.",
-   "summary": "Wolfenstein II: The New Colossus speichert seine Texturdaten in eigenen {texdb|.texdb}-Dateien neben den Spielarchiven. Diese Seite entschlüsselt deren Aufbau: eine sortierte Tabelle mit 64-Bit-Schlüsseln, die auf {oodle|Oodle}-komprimierte Blöcke zeigen, ganz ohne Dateinamen. Jeder Block lässt sich jetzt lesen. Ein zweiter Teil zeigt, dass der textures.cache jeder Karte gleich aufgebaut ist und sich so patchen lässt, dass ein eigener Pistolen-Skin auch auf mittlere Entfernung erscheint. Das ist aus dem Code abgeleitet, nicht im Spiel gesehen.",
+   "oneLine": "Das .texdb-Texturdatenbankformat von TNC: vollständig lesbar, ein patchbarer Textur-Cache pro Karte und das Schreiben von Normal Maps.",
+   "summary": "Wolfenstein II: The New Colossus speichert seine Texturdaten in eigenen {texdb|.texdb}-Dateien neben den Spielarchiven. Diese Seite entschlüsselt deren Aufbau: eine sortierte Tabelle mit 64-Bit-Schlüsseln, die auf {oodle|Oodle}-komprimierte Blöcke zeigen, ganz ohne Dateinamen, und jeder Block lässt sich lesen. Der textures.cache jeder Karte ist gleich aufgebaut und wird ebenfalls gepatcht; ein so geschriebener eigener BC1-Pistolen-Skin wurde am 25.09.2026 im Spiel bestätigt, dass er über die Caches auch auf mittlere Entfernung erscheint, ist aus dem Code abgeleitet. Seit WolfSDK 0.2.0 lassen sich auch BC5-Normal-Maps ersetzen, im Spiel noch nicht bestätigt.",
    "points": [
     "Geprüft an allen 24 .texdb-Dateien: 21,5 GB und 437.706 Tabelleneinträge.",
     "Schlüssel wiederholen sich oft: 437.706 Zeilen teilen sich nur 127.418 verschiedene Schlüssel. Die Tabelle darf daher nicht als einfaches Wörterbuch gelesen werden.",
     "Große Texturen sind Ketten aus Kacheln; ein getesteter Eintrag zerfiel in 32 Kacheln, die sich alle korrekt entpacken ließen.",
     "Die 40 textures.cache-Dateien der Karten sind gleich aufgebaut; die Engine prüft nur einen 8-Byte-Kennwert, ohne Hash- oder Größenprüfung.",
+    "Normal Maps werden als einfache BC5-Blöcke geschrieben, das unentschlüsselte Kachelformat wird also nicht gebraucht; 60 von 60 BC5-Karten des Spiels bestätigen den Grünkanal nach DirectX-Art, und 50 Prüfungen bestehen.",
     "Auf dieser Seite noch offen: welcher Schlüssel zu welcher Textur gehört und das innere Format einer Kachel."
    ]
-  },
-  "update": {
-   "en": "Newer than this page: the wiki's start page now records custom weapon skins as working and measured in The New Colossus – a custom BC1 pistol skin shows on the first-person model in the running game.",
-   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Waffen-Skins in The New Colossus jetzt als funktionierend und gemessen – ein eigener BC1-Pistolen-Skin erscheint im laufenden Spiel am Modell in der Ich-Perspektive."
   }
  },
  "Research-Report-Texdbkey": {
@@ -940,24 +942,24 @@
   "status": "reference",
   "en": {
    "oneLine": "Inventory of the sound system in both games: where audio lives, what format it uses, and what can be modded.",
-   "summary": "This page surveys the audio of Wolfenstein: The New Order (TNO) and Wolfenstein II: The New Colossus (TNC). In TNO, the sounds are plain Ogg Vorbis files stored in two big streaming containers, and all sound settings (volume, range, random variants, mixer levels) are readable text {decl|declarations}. TNC uses the Wwise audio middleware with binary sound banks, which the tools cannot edit yet. For TNO, the easiest way to change sound is editing a few text files, not replacing audio data.",
+   "summary": "This page surveys the audio of Wolfenstein: The New Order (TNO) and Wolfenstein II: The New Colossus (TNC). In TNO, the sounds are plain Ogg Vorbis files stored in two big streaming containers, and all sound settings (volume, range, random variants, mixer levels) are readable text {decl|declarations}. TNC uses the Wwise audio middleware with binary sound banks; WolfSDK can now read them, and a TNC sound replacement is built but held back in release 0.2.0. For TNO, the easiest way to change sound is editing a few text files, not replacing audio data.",
    "points": [
     "TNO audio is {ogg|Ogg Vorbis}; all 61,318 sample entries were checked against the streaming containers with 0 mismatches.",
     "99% of TNO sound definitions (9,364 of 9,445) inherit from one master file that adds 10 dB volume, so one number changes almost everything.",
     "The TNO mixer file has 13 sub-buses; the player weapon bus sits at -11 dB, a single number in a text file.",
     "Replacing actual TNO audio bytes is technically possible but risky: the 1.5 GB streaming containers are not backed up by the tools.",
-    "TNC uses Wwise with 937 sound banks; there is no parser for them, so only volume console settings are usable there. That changed sound files take effect in TNO is not yet confirmed in the game."
+    "TNC uses Wwise with 937 sound banks; a 16-bit PCM WAV can be turned into a game sound, but this is held back in 0.2.0 because Revert does not yet restore replaced sound packs. No sound change is confirmed in game for either game."
    ]
   },
   "de": {
    "oneLine": "Bestandsaufnahme des Soundsystems beider Spiele: wo Audio liegt, welches Format es hat und was sich modden lässt.",
-   "summary": "Diese Seite untersucht den Ton von Wolfenstein: The New Order (TNO) und Wolfenstein II: The New Colossus (TNC). In TNO sind die Sounds normale Ogg-Vorbis-Dateien in zwei großen Streaming-Containern, und alle Sound-Einstellungen (Lautstärke, Reichweite, Zufallsvarianten, Mischpultpegel) sind lesbare Text-{decl|Deklarationen}. TNC nutzt die Audio-Middleware Wwise mit binären Soundbanks, die die Werkzeuge noch nicht bearbeiten können. In TNO änderst du den Klang am einfachsten über ein paar Textdateien, nicht durch Austausch der Audiodaten.",
+   "summary": "Diese Seite untersucht den Ton von Wolfenstein: The New Order (TNO) und Wolfenstein II: The New Colossus (TNC). In TNO sind die Sounds normale Ogg-Vorbis-Dateien in zwei großen Streaming-Containern, und alle Sound-Einstellungen (Lautstärke, Reichweite, Zufallsvarianten, Mischpultpegel) sind lesbare Text-{decl|Deklarationen}. TNC nutzt die Audio-Middleware Wwise mit binären Soundbanks; WolfSDK kann sie inzwischen lesen, und ein Sound-Austausch für TNC ist gebaut, in Release 0.2.0 aber zurückgehalten. In TNO änderst du den Klang am einfachsten über ein paar Textdateien, nicht durch Austausch der Audiodaten.",
    "points": [
     "TNO-Audio ist {ogg|Ogg Vorbis}; alle 61.318 Sample-Einträge wurden gegen die Streaming-Container geprüft, mit 0 Abweichungen.",
     "99 % der TNO-Sounddefinitionen (9.364 von 9.445) erben von einer Master-Datei, die 10 dB Lautstärke addiert – eine Zahl ändert also fast alles.",
     "Die TNO-Mischpultdatei hat 13 Unterkanäle; der Kanal für Spielerwaffen liegt bei -11 dB, eine einzige Zahl in einer Textdatei.",
     "Echte TNO-Audiodaten zu ersetzen ist technisch möglich, aber riskant: Die 1,5 GB großen Streaming-Container werden von den Werkzeugen nicht gesichert.",
-    "TNC nutzt Wwise mit 937 Soundbanks; dafür gibt es keinen Parser, dort sind nur Lautstärke-Einstellungen nutzbar. Dass geänderte Sounddateien in TNO wirken, ist im Spiel noch nicht bestätigt."
+    "TNC nutzt Wwise mit 937 Soundbanks; ein 16-Bit-PCM-WAV kann zu einem Spielsound werden, das ist in 0.2.0 aber zurückgehalten, weil Revert ersetzte Soundpakete noch nicht wiederherstellt. Für keines der beiden Spiele ist eine Sound-Änderung im Spiel bestätigt."
    ]
   }
  },
@@ -1272,22 +1274,22 @@
  "Research-Artifacts": {
   "status": "reference",
   "en": {
-   "oneLine": "Inventory of the project's raw research files and an index of the round 2–5 research reports.",
-   "summary": "This page lists the large raw files produced by the reverse-engineering work, which stay in the code repository instead of the wiki because they are too big. It also links every research report from rounds 2 to 5, added on 1 October 2026. It notes that this research is static (reading files and code) unless a page says a change was confirmed in the running game.",
+   "oneLine": "Inventory of the project's raw research files, with links to the round 2–5 reports and a pointer to rounds 6–10.",
+   "summary": "This page lists the large raw files produced by the reverse-engineering work, which stay in the code repository instead of the wiki because they are too big. It notes that nine more research rounds (2 to 10) have landed since the inventory was made; it links the reports of rounds 2 to 5 itself and points to the Reverse Engineering Research index for all of them. It notes that this research is static (reading files and code) unless a page says a change was confirmed in the running game.",
    "points": [
     "Inventory size at generation time: 1,918 files, 7.4 GiB in total.",
     "The biggest parts are game archives (.resources, 3.8 GiB) and texture databases (.texdb, 2.5 GiB).",
-    "Round 2 has 10 reports, round 3 has 11, round 4 has 11 and round 5 has 1.",
+    "Round 2 has 10 reports, round 3 has 11, round 4 has 11 and round 5 has 1; rounds 6 to 10 are listed on the Reverse Engineering Research index.",
     "The console unlock and the Kiscule Command node are written up with in-game proof on the TNC Console Unlock page."
    ]
   },
   "de": {
-   "oneLine": "Bestandsliste der Rohdaten des Projekts und Index der Forschungsberichte aus den Runden 2–5.",
-   "summary": "Diese Seite listet die großen Rohdateien der Reverse-Engineering-Arbeit auf, die wegen ihrer Größe im Code-Repository statt im Wiki bleiben. Außerdem verlinkt sie alle Forschungsberichte der Runden 2 bis 5, die am 1. Oktober 2026 dazukamen. Sie weist darauf hin, dass diese Forschung statisch ist (Dateien und Code lesen), außer eine Seite sagt ausdrücklich, dass eine Änderung im laufenden Spiel bestätigt wurde.",
+   "oneLine": "Bestandsliste der Rohdaten des Projekts, mit Links zu den Berichten der Runden 2–5 und einem Verweis auf die Runden 6–10.",
+   "summary": "Diese Seite listet die großen Rohdateien der Reverse-Engineering-Arbeit auf, die wegen ihrer Größe im Code-Repository statt im Wiki bleiben. Sie vermerkt, dass seit der Bestandsaufnahme neun weitere Forschungsrunden (2 bis 10) dazukamen; die Berichte der Runden 2 bis 5 verlinkt sie selbst, für alle verweist sie auf das Verzeichnis Reverse Engineering Research. Sie weist darauf hin, dass diese Forschung statisch ist (Dateien und Code lesen), außer eine Seite sagt ausdrücklich, dass eine Änderung im laufenden Spiel bestätigt wurde.",
    "points": [
     "Umfang zum Erstellungszeitpunkt: 1.918 Dateien, insgesamt 7,4 GiB.",
     "Die größten Anteile sind Spielarchive (.resources, 3,8 GiB) und Texturdatenbanken (.texdb, 2,5 GiB).",
-    "Runde 2 hat 10 Berichte, Runde 3 hat 11, Runde 4 hat 11 und Runde 5 einen.",
+    "Runde 2 hat 10 Berichte, Runde 3 hat 11, Runde 4 hat 11 und Runde 5 einen; die Runden 6 bis 10 stehen im Verzeichnis Reverse Engineering Research.",
     "Konsolen-Freischaltung und der Kiscule-Command-Knoten sind mit Beweis im Spiel auf der Seite TNC Console Unlock beschrieben."
    ]
   }
@@ -1471,24 +1473,24 @@
   "status": "partial",
   "en": {
    "oneLine": "Do Wolfenstein II patch archives override the base archives? Strong evidence says yes, not yet proven.",
-   "summary": "In Wolfenstein II (TNC), about 1,700 game files exist twice: in a base archive and in a later patch archive. This page asks which copy the game uses, because that decides whether a mod needs only a small extra archive or a rebuild of a 670 MB file. Everything measurable without starting the game points to the patch copy winning, but this is not proven. The page describes a test that changes two bytes and needs one game start.",
+   "summary": "In Wolfenstein II (TNC), about 1,700 game files exist twice: in a base archive and in a later patch archive. This page asks which copy the game uses, because that decides whether a mod needs only a small extra archive or a rebuild of a 670 MB file. Everything measurable without starting the game points to the patch copy winning, but this is still not measured in the running game. Since WolfSDK 0.2.0 the loader reads the newest patch copy and writes its result into every copy, so mods no longer depend on the answer.",
    "points": [
     "1,013 files exist only in patch archives, so patch archives are definitely loaded.",
     "In 1,680 duplicate pairs the patch copy is newer 1,635 times and never older.",
     "The game program knows a container type named PATCH and a field named patchPriority.",
-    "A new patch_5 would likely need 'patchlevel' raised to 5 in a settings file (deduced, not tested).",
-    "Decisive test: change the throwing-knife limit in both copies and read the number in the HUD."
+    "Before 0.2.0 the loader read the older base copy and wrote it into every copy, so a mod could undo official patch changes; now it reads the newest patch copy.",
+    "Decisive test, still not run: change the throwing-knife limit in both copies and read the number in the HUD."
    ]
   },
   "de": {
    "oneLine": "Überschreiben die Patch-Archive von Wolfenstein II die Basis-Archive? Starke Indizien sagen ja, bewiesen ist es nicht.",
-   "summary": "In Wolfenstein II (TNC) liegen rund 1.700 Spieldateien doppelt vor: in einem Basis-Archiv und in einem späteren Patch-Archiv. Die Seite fragt, welche Kopie das Spiel nutzt, denn davon hängt ab, ob ein Mod nur ein kleines Zusatzarchiv braucht oder eine 670 MB große Datei neu gebaut werden muss. Alles, was sich ohne Spielstart messen lässt, spricht für die Patch-Kopie, bewiesen ist es aber nicht. Die Seite beschreibt einen Test, der zwei Bytes ändert und einen Spielstart braucht.",
+   "summary": "In Wolfenstein II (TNC) liegen rund 1.700 Spieldateien doppelt vor: in einem Basis-Archiv und in einem späteren Patch-Archiv. Die Seite fragt, welche Kopie das Spiel nutzt, denn davon hängt ab, ob ein Mod nur ein kleines Zusatzarchiv braucht oder eine 670 MB große Datei neu gebaut werden muss. Alles, was sich ohne Spielstart messen lässt, spricht für die Patch-Kopie, im laufenden Spiel gemessen ist es aber weiterhin nicht. Seit WolfSDK 0.2.0 liest der Loader die neueste Patch-Kopie und schreibt sein Ergebnis in jede Kopie, Mods hängen also nicht mehr von der Antwort ab.",
    "points": [
     "1.013 Dateien gibt es nur in Patch-Archiven, also werden Patch-Archive sicher geladen.",
     "Bei 1.680 doppelten Paaren ist die Patch-Kopie 1.635 Mal neuer und nie älter.",
     "Das Spielprogramm kennt einen Container-Typ namens PATCH und ein Feld namens patchPriority.",
-    "Ein eigenes patch_5 bräuchte wohl „patchlevel“ 5 in einer Einstellungsdatei (abgeleitet, nicht getestet).",
-    "Entscheidender Test: das Wurfmesser-Limit in beiden Kopien ändern und die Zahl im HUD ablesen."
+    "Vor 0.2.0 las der Loader die ältere Basis-Kopie und schrieb sie in jede Kopie, ein Mod konnte so offizielle Patch-Änderungen rückgängig machen; jetzt liest er die neueste Patch-Kopie.",
+    "Entscheidender Test, noch nicht ausgeführt: das Wurfmesser-Limit in beiden Kopien ändern und die Zahl im HUD ablesen."
    ]
   }
  },
@@ -1496,24 +1498,26 @@
   "status": "solved",
   "en": {
    "oneLine": "The node-graph mission script format of Wolfenstein II, fully decoded and rewritable byte-for-byte.",
-   "summary": "{kiscule|Kiscule} is the mission scripting system of Wolfenstein II (TNC): triggers, enemy waves, doors and audio are built as node graphs, like boxes connected by wires. The researchers decoded the file format completely and can read and write all 2,408 scripts back byte-for-byte identical. Modders can safely change numbers such as delays or trigger counts. Whether the game accepts rewritten scripts is not yet confirmed in the game.",
+   "summary": "{kiscule|Kiscule} is the mission scripting system of Wolfenstein II (TNC): triggers, enemy waves, doors and audio are built as node graphs, like boxes connected by wires. The researchers decoded the file format completely and can read and write all 2,408 scripts back byte-for-byte identical. Since WolfSDK 0.2.0 the Studio has a script and mission editor built on this, which saves edits as mods. Whether the game runs edited or added nodes is not yet confirmed in the game.",
    "points": [
     "2,408 scripts with 70,274 nodes in 205 node types; every byte is explained.",
     "{roundtrip|Round-trip}: 2,408 of 2,408 scripts written back identical, including compression.",
     "All 205 node types match classes in the game program; 113 more exist but are never used.",
     "30 of 2,408 original scripts contain small defects, such as 43 connections that point nowhere.",
-    "All 2,443 map references to scripts resolve."
+    "All 2,443 map references to scripts resolve.",
+    "The Studio editor shows 3,010 scripts, can change parameters and add or remove nodes and connections, and passes 98 of 98 offline checks; not yet confirmed in game."
    ]
   },
   "de": {
    "oneLine": "Das Knotengraph-Skriptformat der Missionen von Wolfenstein II, vollständig entschlüsselt und byte-genau schreibbar.",
-   "summary": "{kiscule|Kiscule} ist das Missions-Skriptsystem von Wolfenstein II (TNC): Auslöser, Gegnerwellen, Türen und Audio sind als Knotengraphen gebaut, wie Kästchen, die mit Drähten verbunden sind. Die Forscher haben das Dateiformat vollständig entschlüsselt und können alle 2.408 Skripte byte-genau lesen und zurückschreiben. Zahlen wie Wartezeiten oder Auslöse-Zähler kannst du gefahrlos ändern. Ob das Spiel umgeschriebene Skripte annimmt, ist im Spiel noch nicht bestätigt.",
+   "summary": "{kiscule|Kiscule} ist das Missions-Skriptsystem von Wolfenstein II (TNC): Auslöser, Gegnerwellen, Türen und Audio sind als Knotengraphen gebaut, wie Kästchen, die mit Drähten verbunden sind. Die Forscher haben das Dateiformat vollständig entschlüsselt und können alle 2.408 Skripte byte-genau lesen und zurückschreiben. Seit WolfSDK 0.2.0 hat das Studio darauf aufbauend einen Skript- und Missionseditor, der Änderungen als Mods speichert. Ob das Spiel bearbeitete oder neue Knoten ausführt, ist im Spiel noch nicht bestätigt.",
    "points": [
     "2.408 Skripte mit 70.274 Knoten in 205 Knotentypen; jedes Byte ist erklärt.",
     "{roundtrip|Roundtrip}: 2.408 von 2.408 Skripten identisch zurückgeschrieben, inklusive Kompression.",
     "Alle 205 Knotentypen entsprechen Klassen im Spielprogramm; 113 weitere existieren, werden aber nie benutzt.",
     "30 von 2.408 Original-Skripten haben kleine Fehler, etwa 43 Verbindungen ins Leere.",
-    "Alle 2.443 Verweise von Karten auf Skripte lassen sich auflösen."
+    "Alle 2.443 Verweise von Karten auf Skripte lassen sich auflösen.",
+    "Der Studio-Editor zeigt 3.010 Skripte, ändert Parameter, fügt Knoten und Verbindungen hinzu oder entfernt sie und besteht 98 von 98 Offline-Prüfungen; im Spiel noch nicht bestätigt."
    ]
   }
  },
@@ -1645,25 +1649,27 @@
  "Modding-Limits": {
   "status": "reference",
   "en": {
-   "oneLine": "What cannot be modded in Wolfenstein: The New Order, why, and which file rules a patcher must obey.",
-   "summary": "This page lists what cannot be changed in Wolfenstein: The New Order (TNO) and why, based on the game's own log file. Many cheat {cvar|settings} (most of the 3,194 in the engine) are locked in the retail version, and none of five tested ways around the lock from config files worked. A later code reading (not yet run in game) finds the {console|console} opens with Ctrl+^ and that the toggle command can set cheat settings. It explains two strict file rules the patcher must follow, and shows that {decl|decl} text files are the way to change damage, health and gore instead.",
+   "oneLine": "What WolfSDK 0.2.0 and The New Order cannot do yet, why, and which file rules a patcher must obey.",
+   "summary": "This page starts with the limits of the WolfSDK 0.2.0 apps that players and modders run into: Steam versions only, custom maps that need a DLC, held-back sound and video replacement, and testing on one PC so far. The rest lists what cannot be changed in Wolfenstein: The New Order (TNO) and why, based on the game's own log file. Many cheat {cvar|settings} are locked in the retail version, and none of five tested ways around the lock from config files worked; a later code reading (not yet run in game) finds the {console|console} opens with Ctrl+^ and that toggle can set cheat settings. It explains two strict file rules the patcher must follow and shows that {decl|decl} text files are the way to change damage, health and gore instead.",
    "points": [
-    "Cvars like g_infiniteAmmo are locked, while g_permaGodMode and g_damageScale are not; cheat is the default flag (2,865 of 3,194).",
-    "{compression|Compressed} data must end with a sync marker; a normal stream end breaks the whole resource reader.",
-    "Data in an archive must stay in ascending order, so patches write into the existing slot.",
+    "WolfSDK 0.2.0 supports only the Steam versions, has been tested on one PC, and holds back sound and video replacement because Revert cannot restore them yet.",
+    "Four mods that carry whole modified retail files are left out of the public package; custom maps need The Freedom Chronicles, episode 2.",
+    "In TNO, cvars like g_infiniteAmmo are locked, while g_permaGodMode and g_damageScale are not; cheat is the default flag (2,865 of 3,194).",
+    "{compression|Compressed} data must end with a sync marker, and data in an archive must stay in ascending order, so patches write into the existing slot.",
     "A patch of 373 assets loaded and ran for about 48 minutes with zero errors in the log.",
-    "Read from code only: the console needs Ctrl+^ (not com_allowConsole), and god, noclip and give do not exist in this game.", "New 3D models, new weapon textures and movement speed cannot be modded yet."
+    "Read from code only: TNO's console needs Ctrl+^, and god, noclip and give do not exist; new 3D models, new weapon textures and movement speed cannot be modded yet."
    ]
   },
   "de": {
-   "oneLine": "Was sich in Wolfenstein: The New Order nicht modden lässt, warum, und welche Dateiregeln ein Patcher einhalten muss.",
-   "summary": "Diese Seite listet, was sich in Wolfenstein: The New Order (TNO) nicht ändern lässt und warum, gestützt auf die Logdatei des Spiels. Viele Cheat-{cvar|Einstellungen} (die meisten der 3.194 in der Engine) sind in der Verkaufsversion gesperrt, und keiner von fünf getesteten Umwegen über Konfigurationsdateien hat funktioniert. Eine spätere Code-Analyse (im Spiel noch nicht ausprobiert) zeigt, dass sich die {console|Konsole} mit Strg+^ öffnet und der Befehl toggle Cheat-Einstellungen setzen kann. Sie erklärt zwei strenge Dateiregeln für den Patcher und zeigt, dass stattdessen {decl|Decl}-Textdateien der Weg sind, um Schaden, Leben und Gore zu ändern.",
+   "oneLine": "Was WolfSDK 0.2.0 und The New Order noch nicht können, warum, und welche Dateiregeln ein Patcher einhalten muss.",
+   "summary": "Diese Seite beginnt mit den Grenzen der WolfSDK-0.2.0-Apps, auf die Spieler und Modder stoßen: nur Steam-Versionen, eigene Karten, die ein DLC brauchen, zurückgehaltener Austausch von Sounds und Videos und bisher Tests auf nur einem PC. Danach listet sie, was sich an Wolfenstein: The New Order (TNO) nicht ändern lässt und warum, gestützt auf die eigene Logdatei des Spiels. Viele Cheat-{cvar|Einstellungen} sind in der Verkaufsversion gesperrt, und keiner von fünf getesteten Wegen über Konfigurationsdateien kam an der Sperre vorbei; eine spätere Code-Analyse (noch nicht im Spiel ausprobiert) ergibt, dass sich die {console|Konsole} mit Strg+^ öffnet und toggle Cheat-Einstellungen setzen kann. Sie erklärt zwei strenge Dateiregeln für den Patcher und zeigt, dass Schaden, Leben und Gore stattdessen über {decl|Decl}-Textdateien geändert werden.",
    "points": [
-    "Cvars wie g_infiniteAmmo sind gesperrt, g_permaGodMode und g_damageScale dagegen nicht; Cheat ist das Standard-Flag (2.865 von 3.194).",
-    "{compression|Komprimierte} Daten müssen mit einer Sync-Markierung enden; ein normales Stream-Ende legt den ganzen Ressourcenleser lahm.",
-    "Daten im Archiv müssen aufsteigend sortiert bleiben, daher schreiben Patches in den bestehenden Platz.",
-    "Ein Patch mit 373 Assets lud und lief rund 48 Minuten ohne einen einzigen Fehler im Log.",
-    "Nur aus dem Code gelesen: Die Konsole braucht Strg+^ (nicht com_allowConsole), und god, noclip und give gibt es in diesem Spiel nicht.", "Neue 3D-Modelle, neue Waffentexturen und Laufgeschwindigkeit lassen sich noch nicht modden."
+    "WolfSDK 0.2.0 unterstützt nur die Steam-Versionen, wurde auf einem PC getestet und hält den Austausch von Sounds und Videos zurück, weil Revert sie noch nicht wiederherstellen kann.",
+    "Vier Mods, die ganze veränderte Originaldateien mitbringen, fehlen im öffentlichen Paket; eigene Karten brauchen The Freedom Chronicles, Episode 2.",
+    "In TNO sind Cvars wie g_infiniteAmmo gesperrt, g_permaGodMode und g_damageScale dagegen nicht; Cheat ist das Standard-Flag (2.865 von 3.194).",
+    "{compression|Komprimierte} Daten müssen mit einer Sync-Markierung enden, und Daten im Archiv müssen aufsteigend sortiert bleiben, deshalb schreiben Patches in den vorhandenen Platz.",
+    "Ein Patch mit 373 Assets lud und lief etwa 48 Minuten ohne einen einzigen Fehler im Log.",
+    "Nur aus dem Code gelesen: Die Konsole von TNO braucht Strg+^, und god, noclip und give gibt es nicht; neue 3D-Modelle, neue Waffentexturen und Laufgeschwindigkeit lassen sich noch nicht modden."
    ]
   }
  },
@@ -1897,30 +1903,26 @@
  "TNC-Custom-Map-Status": {
   "status": "partial",
   "en": {
-   "oneLine": "Status of a Wolfenstein II custom map prototype: a renamed copy of a DLC map plus an edited save.",
-   "summary": "Status of a custom map prototype for Wolfenstein II (TNC). It installs a copy of the DLC map Gestapo Office (c2v1) under a new name as an extra {dlc|DLC} bundle, and prepares an edited {savegame|save file} to load it. The game starts stably with the bundle, but loading the map through the save has not been confirmed, and the world geometry is not replaced yet.",
+   "oneLine": "Status of custom maps in Wolfenstein II: the working dlc_0 route, brand-new map names, and the early prototype log.",
+   "summary": "This page tracks custom maps for Wolfenstein II: The New Colossus (TNC). The working route, confirmed in game on 24 September 2026, is a {dlc|DLC} folder named dlc_0 that takes over the map c2v1 of The Freedom Chronicles, episode 2; the loader's Install map button sets it up. Since 2 October 2026 a map under a brand-new name, game/wolfsdk/modtest, also loads in game from the developer menu. The older prototype log (edited saves, 'unknown command') stays on the page with corrections.",
    "points": [
-    "The bundle contains all 6,985 original entries and shares the original textures.",
-    "Earlier save attempts showed 'File Corrupt'; version 2 also fixes the map name inside checkpoint.dat.",
-    "According to this page, map and devmap report 'unknown command' in the console.",
-    "A patch to show the map in the developer menu crashed the game at startup and was removed.",
-    "The original saves are backed up and can be restored at any time."
+    "dlc_0 sorts before the retail dlc_2 folder, so its own map archive is used; a DLC folder can never take over a base campaign map.",
+    "A new map name needs only an entry in dlc_0's map list, a textures.cache link and the map's files renamed; no chapter data.",
+    "The mod test map copies the Gestapo office with 304 of 9,206 entities removed and adds 23 pickups and 8 enemies; it loads in game, enemy behaviour is not yet confirmed.",
+    "The box test map (an 8 × 8 × 4 m room with new geometry) is not yet confirmed in game.",
+    "Correction: map and devmap are registered, only hidden from the console; devmap runs from a developer menu entry."
    ]
   },
   "de": {
-   "oneLine": "Stand eines Prototyps für eigene Karten in Wolfenstein II: umbenannte Kopie einer DLC-Karte plus bearbeiteter Spielstand.",
-   "summary": "Stand eines Prototyps für eigene Karten in Wolfenstein II (TNC). Er installiert eine Kopie der DLC-Karte Gestapo-Büro (c2v1) unter neuem Namen als zusätzliches {dlc|DLC}-Paket und bereitet einen bearbeiteten {savegame|Spielstand} vor, der sie laden soll. Das Spiel startet mit dem Paket stabil, aber das Laden der Karte über den Spielstand ist nicht bestätigt, und die Weltgeometrie ist noch nicht ersetzt.",
+   "oneLine": "Stand eigener Karten in Wolfenstein II: der funktionierende dlc_0-Weg, ganz neue Kartennamen und das frühe Prototyp-Protokoll.",
+   "summary": "Diese Seite verfolgt eigene Karten für Wolfenstein II: The New Colossus (TNC). Der funktionierende Weg, im Spiel bestätigt am 24.09.2026, ist ein {dlc|DLC}-Ordner namens dlc_0, der die Karte c2v1 aus The Freedom Chronicles, Episode 2, übernimmt; der Knopf „Install map“ des Loaders richtet ihn ein. Seit dem 02.10.2026 lädt auch eine Karte unter einem ganz neuen Namen, game/wolfsdk/modtest, im Spiel aus dem Entwicklermenü. Das ältere Prototyp-Protokoll (bearbeitete Spielstände, „unknown command“) bleibt mit Korrekturen auf der Seite.",
    "points": [
-    "Das Paket enthält alle 6.985 Originaleinträge und nutzt die Original-Texturen mit.",
-    "Frühere Versuche zeigten „File Corrupt“; Version 2 korrigiert zusätzlich den Kartennamen in checkpoint.dat.",
-    "Laut dieser Seite melden map und devmap in der Konsole „unknown command“.",
-    "Ein Patch, der die Karte im Entwicklermenü zeigen sollte, ließ das Spiel beim Start abstürzen und wurde entfernt.",
-    "Die Original-Spielstände sind gesichert und jederzeit wiederherstellbar."
+    "dlc_0 wird vor dem Original-Ordner dlc_2 einsortiert, daher wird sein eigenes Kartenarchiv genutzt; eine Karte der Hauptkampagne kann ein DLC-Ordner nie übernehmen.",
+    "Ein neuer Kartenname braucht nur einen Eintrag in der Kartenliste von dlc_0, eine textures.cache-Verknüpfung und die umbenannten Kartendateien; keine Kapiteldaten.",
+    "Die Mod-Testkarte kopiert das Gestapo-Büro, entfernt 304 von 9.206 Entitäten und fügt 23 Pickups und 8 Gegner hinzu; sie lädt im Spiel, das Gegnerverhalten ist noch nicht bestätigt.",
+    "Die Box-Testkarte (ein Raum von 8 × 8 × 4 m mit neuer Geometrie) ist im Spiel noch nicht bestätigt.",
+    "Korrektur: map und devmap sind registriert, nur vor der Konsole verborgen; devmap läuft aus einem Eintrag im Entwicklermenü."
    ]
-  },
-  "update": {
-   "en": "Newer than this page: the wiki's start page now records custom maps as working and measured in The New Colossus – a dlc_0 folder takes over map c2v1, confirmed in game with a relit light layout and a normal mission start. The text below still shows the earlier state.",
-   "de": "Neuer als diese Seite: Die Startseite des Wikis führt eigene Karten in The New Colossus jetzt als funktionierend und gemessen – ein dlc_0-Ordner übernimmt die Karte c2v1, im Spiel bestätigt mit neu beleuchtetem Licht-Layout und normalem Missionsstart. Der Text unten zeigt noch den früheren Stand."
   }
  },
  "Research-Report-C2v1-Identity": {
@@ -2025,24 +2027,24 @@
   "status": "partial",
   "en": {
    "oneLine": "What the hidden Developer Mode in The New Colossus unlocks, compared with the hard retail lock in The New Order.",
-   "summary": "This page compares how both games block cheat settings, using only text strings found in the two game files. The New Order simply refuses locked {cvar|settings} in the retail version. The New Colossus instead asks you to turn on a Developer Mode (devMode_enable), which disables online features and permanently marks save games as cheat saves. None of this was tested in the game; the page lists experiments that would confirm or refute each idea.",
+   "summary": "This page compares how both games block cheat settings. Its original part reads only text strings in the two game files: The New Order simply refuses locked {cvar|settings} in the retail version, while The New Colossus asks you to turn on a Developer Mode (devMode_enable), which disables online features and permanently marks save games as cheat saves. Sections added on 4 October 2026 bring in later results: in The New Colossus the lock that matters is a restriction level, and two routes past it are confirmed in game.",
    "points": [
-    "The New Order has no Developer Mode at all; locked settings show 'CANNOT be set in retail!'.",
-    "The New Colossus replaces that message with 'Attempting to set a developer cvar' and points to devMode_enable.",
+    "The New Order has no Developer Mode at all and shows 'CANNOT be set in retail!'; The New Colossus shows 'Attempting to set a developer cvar' and points to devMode_enable.",
     "The game's own text says Developer Mode turns off network play and marks saves permanently as 'cheat'.",
     "A setting called com_gameMode has a value 5 named MOD; what it does is not documented.",
-    "Everything here comes from reading the game files; no finding was checked in a running game."
+    "Read from code later: 'developer cvar' means a cvar without the NOCHEAT flag set from a restricted context; there is no CHEAT test.",
+    "Confirmed in game: a resourceExec file and developer menu lines run unrestricted (devmap loaded a map), while startup +args for hidden names get 'Unknown command'."
    ]
   },
   "de": {
    "oneLine": "Was der versteckte Entwicklermodus in The New Colossus freischaltet, verglichen mit der Sperre in The New Order.",
-   "summary": "Diese Seite vergleicht, wie beide Spiele Cheat-Einstellungen blockieren, nur anhand von Texten in den Programmdateien. The New Order lehnt gesperrte {cvar|Einstellungen} in der Verkaufsversion einfach ab. The New Colossus verlangt stattdessen, einen Entwicklermodus (devMode_enable) einzuschalten, der Online-Funktionen abschaltet und Spielstände dauerhaft als Cheat markiert. Nichts davon wurde im Spiel getestet; die Seite nennt Experimente, die jede Annahme bestätigen oder widerlegen würden.",
+   "summary": "Diese Seite vergleicht, wie beide Spiele Cheat-Einstellungen blockieren. Ihr ursprünglicher Teil liest nur Texte in den beiden Programmdateien: The New Order lehnt gesperrte {cvar|Einstellungen} in der Verkaufsversion einfach ab, während The New Colossus verlangt, einen Entwicklermodus (devMode_enable) einzuschalten, der Online-Funktionen abschaltet und Spielstände dauerhaft als Cheat markiert. Abschnitte vom 04.10.2026 tragen spätere Ergebnisse nach: In The New Colossus ist die entscheidende Sperre eine Sperrstufe, und zwei Wege daran vorbei sind im Spiel bestätigt.",
    "points": [
-    "The New Order hat gar keinen Entwicklermodus; gesperrte Einstellungen melden 'CANNOT be set in retail!'.",
-    "The New Colossus ersetzt diese Meldung durch 'Attempting to set a developer cvar' und verweist auf devMode_enable.",
+    "The New Order hat gar keinen Entwicklermodus und meldet 'CANNOT be set in retail!'; The New Colossus meldet 'Attempting to set a developer cvar' und verweist auf devMode_enable.",
     "Laut Spieltext schaltet der Entwicklermodus das Netzwerkspiel ab und markiert Spielstände dauerhaft als 'cheat'.",
     "Die Einstellung com_gameMode hat einen Wert 5 namens MOD; was er bewirkt, ist nicht dokumentiert.",
-    "Alles stammt aus dem Lesen der Programmdateien; kein Ergebnis wurde im laufenden Spiel geprüft."
+    "Später aus dem Code gelesen: „developer cvar“ heißt eine Cvar ohne NOCHEAT-Flag, die aus einem gesperrten Kontext gesetzt wird; eine CHEAT-Prüfung gibt es nicht.",
+    "Im Spiel bestätigt: Eine resourceExec-Datei und Zeilen aus dem Entwicklermenü laufen ohne Sperre (devmap lud eine Karte), während Start-Argumente (+args) für versteckte Namen „Unknown command“ ergeben."
    ]
   }
  },
@@ -2249,25 +2251,27 @@
  "Modding-Guide": {
   "status": "reference",
   "en": {
-   "oneLine": "Practical guide to writing mods: weapons, skins, enemies, Wolfenstein II console access and load order.",
-   "summary": "This guide shows how to build mods with the project's tool, mostly for Wolfenstein: The New Order. Almost everything interesting lives in {decl|decls}, small text definitions inside the game archives; a mod is a list of changes to them. It walks through changing weapon damage and handling, swapping weapon skins, and changing enemies' looks, health and weapons, plus the proven console unlock for Wolfenstein II: The New Colossus.",
+   "oneLine": "Where to start modding with WolfSDK 0.2.0, plus a reference for weapons, skins, enemies, Wolfenstein II console access and load order.",
+   "summary": "This guide first sends each reader to the right tool: players to the WolfSDK Loader, modders to the WolfSDK Studio and the mod.json format, programmers to the command line and the SDK packages. The reference part then shows how to change weapon damage and handling, weapon skins and enemies' looks, health and weapons through {decl|decls}, small text definitions inside the game archives, plus the proven console unlock for Wolfenstein II: The New Colossus. All listed paths were tested against the real game files.",
    "points": [
     "Prefer surgical 'set' edits that change single values; mods then stay compatible with each other.",
     "Weapon damage lives in a separate damage decl; a weapon decl like the shotgun's has 169 changeable values.",
-    "A 'new' weapon is a recombination of existing parts, because new 3D models are not possible.",
     "Enemies are entityDefs (3,182 of them); a game-wide change must cover every chapter variant.",
-    "Mods are applied in priority order (low first); conflicts are reported, not blocked."
+    "In Wolfenstein II weapon textures can be replaced with a PNG in the Studio; a custom BC1 pistol skin was seen in a running game.",
+    "Since 0.2.0 the loader starts from the newest patch copy of a duplicated asset in Wolfenstein II; before, a mod could undo official patch changes.",
+    "Mods are applied in priority order (low first); conflicts are reported, and two mods that write the same texture are refused."
    ]
   },
   "de": {
-   "oneLine": "Praktische Anleitung zum Mod-Bau: Waffen, Skins, Gegner, Konsolenzugang in Wolfenstein II und Ladereihenfolge.",
-   "summary": "Diese Anleitung zeigt, wie du mit dem Werkzeug des Projekts Mods baust, vor allem für Wolfenstein: The New Order. Fast alles Interessante steckt in {decl|Decls}, kleinen Textdefinitionen in den Spielarchiven; eine Mod ist eine Liste von Änderungen daran. Sie erklärt, wie du Waffenschaden und Handhabung änderst, Waffen-Skins tauschst und Aussehen, Leben und Waffen von Gegnern anpasst, dazu die bewiesene Konsolen-Freischaltung für Wolfenstein II: The New Colossus.",
+   "oneLine": "Wo du mit WolfSDK 0.2.0 ins Modden einsteigst, dazu eine Referenz für Waffen, Skins, Gegner, die Konsole von Wolfenstein II und die Ladereihenfolge.",
+   "summary": "Diese Anleitung schickt jeden zuerst zum passenden Werkzeug: Spieler zum WolfSDK Loader, Modder zum WolfSDK Studio und zum mod.json-Format, Programmierer zur Kommandozeile und zu den SDK-Paketen. Der Referenzteil zeigt dann, wie du Waffenschaden und Handhabung, Waffen-Skins sowie Aussehen, Leben und Waffen von Gegnern über {decl|Decls} änderst, kleine Textdefinitionen in den Spielarchiven, dazu die bewiesene Konsolen-Freischaltung für Wolfenstein II: The New Colossus. Alle genannten Pfade wurden an den echten Spieldateien geprüft.",
    "points": [
     "Bevorzuge gezielte „set“-Änderungen einzelner Werte; dann bleiben Mods untereinander verträglich.",
     "Waffenschaden steckt in einer eigenen damage-Decl; eine Waffen-Decl wie die der Schrotflinte hat 169 änderbare Werte.",
-    "Eine „neue“ Waffe entsteht durch Neukombination vorhandener Teile, weil neue 3D-Modelle nicht möglich sind.",
     "Gegner sind entityDefs (3.182 Stück); eine spielweite Änderung muss jede Kapitelvariante erfassen.",
-    "Mods werden nach Priorität angewendet (niedrige zuerst); Konflikte werden gemeldet, nicht blockiert."
+    "In Wolfenstein II lassen sich Waffentexturen im Studio durch ein PNG ersetzen; ein eigener BC1-Pistolen-Skin wurde im laufenden Spiel gesehen.",
+    "Seit 0.2.0 geht der Loader bei doppelten Assets in Wolfenstein II von der neuesten Patch-Kopie aus; vorher konnte ein Mod offizielle Patch-Änderungen rückgängig machen.",
+    "Mods werden nach Priorität angewendet (niedrige zuerst); Konflikte werden gemeldet, und zwei Mods, die dieselbe Textur schreiben, werden abgelehnt."
    ]
   }
  },
@@ -2525,24 +2529,26 @@
   "status": "solved",
   "en": {
    "oneLine": "How Wolfenstein II's locked console is opened without patching the game, proven in a real save game.",
-   "summary": "The retail console of Wolfenstein II: The New Colossus only lets you use 34 of 234 commands and 304 of 3,256 settings. Research found that this lock is a single on/off number in the {engine|engine}, and that the built-in command resourceExec turns the lock off while it runs a file. The mod loader puts cheat lines into an unused, encrypted config file and runs it with resourceExec; this was confirmed in the running game, where God mode, Notarget and infinite ammo really worked.",
+   "summary": "The retail console of Wolfenstein II: The New Colossus only lets you use 34 of 234 commands and 304 of 3,256 settings. Research found that this lock is a single number in the {engine|engine}, and that the built-in command resourceExec turns the lock off while it runs a file. The mod loader puts cheat lines into an unused, encrypted config file and runs it with resourceExec; in the running game God mode and infinite ammo worked and Notarget ran. Developer menu lines are a second route past the lock, also confirmed in game, while bound keys run restricted.",
    "points": [
     "Typing 'resourceExec snapdemo.cfg -s' in the normal console runs the file's lines without the restriction; proven in game on 2026-10-01.",
     "God mode and infinite ammo were confirmed by play; Notarget ran but did not stop enemies already in a fight.",
-    "Cheats given as startup arguments (+com_allowConsole and others) are rejected as 'Unknown command', also confirmed in game.",
-    "give, spawn, noclip, lowercase god and SpawnAI do not exist in the retail game at all, under any route.",
-    "Still open: why the DevGUI debug menu did not appear on screen, whether killMonsters works, and the map-script route (only proven by reading code)."
+    "Cheats given as startup arguments are rejected as 'Unknown command' (confirmed in game); give, spawn, noclip, lowercase god and SpawnAI do not exist at all.",
+    "Bound keys run at the restricted level (read from code), so the loader sets no F-key binds for The New Colossus; a key bound to resourceExec works, as Sandbox Tools (F6, F7) and Photo Mode (F8) use.",
+    "Confirmed in game on 2026-10-02: developer menu lines also run unrestricted, so devmap loads maps from the menu.",
+    "Not yet confirmed in game: the Photo Mode mod, the loader's cvar lines in default.cfg and the presets; still open: the DevGUI window, killMonsters and the map-script route."
    ]
   },
   "de": {
    "oneLine": "Wie die gesperrte Konsole von Wolfenstein II ohne Spiel-Patch geöffnet wird, bewiesen in einem echten Spielstand.",
-   "summary": "Die Konsole der Verkaufsversion von Wolfenstein II: The New Colossus lässt nur 34 von 234 Befehlen und 304 von 3.256 Einstellungen zu. Die Forschung hat gezeigt, dass diese Sperre eine einzige Ein/Aus-Zahl in der {engine|Engine} ist und dass der eingebaute Befehl resourceExec die Sperre aufhebt, solange er eine Datei ausführt. Der Mod-Loader legt Cheat-Zeilen in eine ungenutzte, verschlüsselte Konfigurationsdatei und startet sie mit resourceExec; im laufenden Spiel wurde bestätigt, dass Gott-Modus, Notarget und unendliche Munition wirklich funktionieren.",
+   "summary": "Die Konsole der Verkaufsversion von Wolfenstein II: The New Colossus lässt nur 34 von 234 Befehlen und 304 von 3.256 Einstellungen zu. Die Forschung hat gezeigt, dass diese Sperre eine einzige Zahl in der {engine|Engine} ist und dass der eingebaute Befehl resourceExec die Sperre aufhebt, solange er eine Datei ausführt. Der Mod-Loader legt Cheat-Zeilen in eine ungenutzte, verschlüsselte Konfigurationsdatei und startet sie mit resourceExec; im laufenden Spiel wirkten Gott-Modus und unendliche Munition, und Notarget lief. Zeilen aus dem Entwicklermenü sind ein zweiter Weg an der Sperre vorbei, ebenfalls im Spiel bestätigt, während belegte Tasten gesperrt laufen.",
    "points": [
     "„resourceExec snapdemo.cfg -s“ in der normalen Konsole führt die Zeilen der Datei ohne Sperre aus; im Spiel bewiesen am 01.10.2026.",
     "Gott-Modus und unendliche Munition wurden im Spiel bestätigt; Notarget lief, stoppte aber Gegner nicht, die schon kämpften.",
-    "Cheats als Startargumente (+com_allowConsole und andere) werden als „Unknown command“ abgelehnt, ebenfalls im Spiel bestätigt.",
-    "give, spawn, noclip, kleingeschriebenes god und SpawnAI gibt es in der Verkaufsversion überhaupt nicht, auf keinem Weg.",
-    "Noch offen: warum das DevGUI-Debugmenü nicht auf dem Bildschirm erschien, ob killMonsters wirkt, und der Weg über Kartenskripte (nur durch Codelesen belegt)."
+    "Cheats als Startargumente werden als „Unknown command“ abgelehnt (im Spiel bestätigt); give, spawn, noclip, kleingeschriebenes god und SpawnAI gibt es überhaupt nicht.",
+    "Belegte Tasten laufen auf der gesperrten Stufe (aus dem Code gelesen), darum setzt der Loader für The New Colossus keine F-Tasten; eine Taste mit resourceExec funktioniert, so wie Sandbox Tools (F6, F7) und Photo Mode (F8) sie nutzen.",
+    "Im Spiel bestätigt am 02.10.2026: Zeilen aus dem Entwicklermenü laufen ebenfalls ohne Sperre, devmap lädt also Karten aus dem Menü.",
+    "Im Spiel noch nicht bestätigt: die Mod Photo Mode, die Cvar-Zeilen des Loaders in default.cfg und die Presets; weiter offen: das DevGUI-Fenster, killMonsters und der Weg über Kartenskripte."
    ]
   }
  },
@@ -3550,6 +3556,843 @@
     "1.496 davon sind Cheats.",
     "Schreibgeschützte und nur beim Start setzbare Einstellungen wie com_headless oder com_multiplayer sind in der Status-Spalte markiert.",
     "Präfixe mit weniger als 10 Cvars teilen sich eine Tabelle am Ende der Seite."
+   ]
+  }
+ },
+ "WolfSDK-Loader": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Player guide to the WolfSDK Loader 0.2.0: install it, tick and apply mods, revert, cheats, presets and custom maps.",
+   "summary": "The WolfSDK Loader is a free mod manager for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows only). You tick mods, click Apply mods and start the game; Revert puts the original game files back from the loader's backups. It also sets {cvar|cvars} for cheats and quality of life, offers graphics presets for The New Colossus and installs custom maps for that game. The page marks every feature as confirmed in game, not yet confirmed in game, or held back.",
+   "points": [
+    "Confirmed in game: applying and reverting mods with backups, and installing a custom map.",
+    "Both downloads contain 24 mods (8 for The New Colossus, 16 for The New Order); most are only checked structurally, not confirmed in game.",
+    "The cvar list has 3,116 entries for The New Colossus and 3,194 for The New Order; the presets Ultra+ (17 cvars), Clean Image (11) and Photo Mode (3) are not yet confirmed in game.",
+    "In The New Colossus a bound key runs restricted, so the loader sets no F-keys there; Sandbox Tools (god mode and infinite ammo confirmed in game) and Photo Mode bind a key to resourceExec instead.",
+    "Maps loading from the developer menu and the mod test map loading are confirmed in game; the 126 developer start points and Hidden Menu Options are not yet."
+   ]
+  },
+  "de": {
+   "oneLine": "Anleitung für Spieler zum WolfSDK Loader 0.2.0: installieren, Mods anhaken und anwenden, zurücksetzen, Cheats, Presets und eigene Karten.",
+   "summary": "Der WolfSDK Loader ist ein kostenloser Mod-Manager für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (nur Steam-Versionen unter Windows). Du hakst Mods an, klickst auf „Apply mods“ und startest das Spiel; „Revert“ stellt die Original-Spieldateien aus den Sicherungen des Loaders wieder her. Er setzt außerdem {cvar|Cvars} für Cheats und Komfort, bietet Grafik-Presets für The New Colossus und installiert eigene Karten für dieses Spiel. Die Seite kennzeichnet jede Funktion als im Spiel bestätigt, im Spiel noch nicht bestätigt oder zurückgehalten.",
+   "points": [
+    "Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen sowie eine eigene Karte installieren.",
+    "Beide Downloads enthalten 24 Mods (8 für The New Colossus, 16 für The New Order); die meisten sind nur im Aufbau geprüft, nicht im Spiel bestätigt.",
+    "Die Cvar-Liste hat 3.116 Einträge für The New Colossus und 3.194 für The New Order; die Presets Ultra+ (17 Cvars), Clean Image (11) und Photo Mode (3) sind im Spiel noch nicht bestätigt.",
+    "In The New Colossus läuft eine belegte Taste gesperrt, darum belegt der Loader dort keine F-Tasten; Sandbox Tools (God-Mode und unendliche Munition im Spiel bestätigt) und Photo Mode binden stattdessen eine Taste an resourceExec.",
+    "Das Laden von Karten aus dem Entwicklermenü und das Laden der Mod-Testkarte sind im Spiel bestätigt; die 126 Entwickler-Startpunkte und Hidden Menu Options noch nicht."
+   ]
+  }
+ },
+ "WolfSDK-Loader-DE": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Player guide to the WolfSDK Loader 0.2.0: install it, tick and apply mods, revert, cheats, presets and custom maps.",
+   "summary": "The WolfSDK Loader is a free mod manager for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows only). You tick mods, click Apply mods and start the game; Revert puts the original game files back from the loader's backups. It also sets {cvar|cvars} for cheats and quality of life, offers graphics presets for The New Colossus and installs custom maps for that game. The page marks every feature as confirmed in game, not yet confirmed in game, or held back.",
+   "points": [
+    "Confirmed in game: applying and reverting mods with backups, and installing a custom map.",
+    "Both downloads contain 24 mods (8 for The New Colossus, 16 for The New Order); most are only checked structurally, not confirmed in game.",
+    "The cvar list has 3,116 entries for The New Colossus and 3,194 for The New Order; the presets Ultra+ (17 cvars), Clean Image (11) and Photo Mode (3) are not yet confirmed in game.",
+    "In The New Colossus a bound key runs restricted, so the loader sets no F-keys there; Sandbox Tools (god mode and infinite ammo confirmed in game) and Photo Mode bind a key to resourceExec instead.",
+    "Maps loading from the developer menu and the mod test map loading are confirmed in game; the 126 developer start points and Hidden Menu Options are not yet."
+   ]
+  },
+  "de": {
+   "oneLine": "Anleitung für Spieler zum WolfSDK Loader 0.2.0: installieren, Mods anhaken und anwenden, zurücksetzen, Cheats, Presets und eigene Karten.",
+   "summary": "Der WolfSDK Loader ist ein kostenloser Mod-Manager für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (nur Steam-Versionen unter Windows). Du hakst Mods an, klickst auf „Apply mods“ und startest das Spiel; „Revert“ stellt die Original-Spieldateien aus den Sicherungen des Loaders wieder her. Er setzt außerdem {cvar|Cvars} für Cheats und Komfort, bietet Grafik-Presets für The New Colossus und installiert eigene Karten für dieses Spiel. Die Seite kennzeichnet jede Funktion als im Spiel bestätigt, im Spiel noch nicht bestätigt oder zurückgehalten.",
+   "points": [
+    "Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen sowie eine eigene Karte installieren.",
+    "Beide Downloads enthalten 24 Mods (8 für The New Colossus, 16 für The New Order); die meisten sind nur im Aufbau geprüft, nicht im Spiel bestätigt.",
+    "Die Cvar-Liste hat 3.116 Einträge für The New Colossus und 3.194 für The New Order; die Presets Ultra+ (17 Cvars), Clean Image (11) und Photo Mode (3) sind im Spiel noch nicht bestätigt.",
+    "In The New Colossus läuft eine belegte Taste gesperrt, darum belegt der Loader dort keine F-Tasten; Sandbox Tools (God-Mode und unendliche Munition im Spiel bestätigt) und Photo Mode binden stattdessen eine Taste an resourceExec.",
+    "Das Laden von Karten aus dem Entwicklermenü und das Laden der Mod-Testkarte sind im Spiel bestätigt; die 126 Entwickler-Startpunkte und Hidden Menu Options noch nicht."
+   ]
+  }
+ },
+ "WolfSDK-Studio": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Modder guide to the WolfSDK Studio 0.2.0: browse and export game assets, replace textures, texts and decls, edit Kiscule scripts.",
+   "summary": "The WolfSDK Studio is the modding tool in the Studio download of WolfSDK 0.2.0. It shows the maps, videos, sounds, textures, texts and 3D models of Wolfenstein II: The New Colossus and Wolfenstein: The New Order, and exports them, for example models as GLB, glTF or OBJ. Replaced textures, normal maps, texts and {decl|decls}, and edits to {kiscule|Kiscule} mission scripts, are never written into the game directly: each change is saved as a mod that the WolfSDK Loader applies. Replacing sounds and videos is built but held back in this release.",
+   "points": [
+    "Applying and reverting Studio mods through the Loader is confirmed in game.",
+    "The model viewer shows the 17,315 models of The New Colossus; the export is the base pose only, without skeleton or animations.",
+    "Normal maps (BC5) can be replaced if the PNG has exactly the texture's size and a DirectX green channel; not yet confirmed in game.",
+    "The script editor opens the 3,010 Kiscule scripts of The New Colossus with all 205 node types and can add or remove mission objectives; not yet confirmed in game.",
+    "Replacing sounds and videos is held back because Revert does not yet restore them; models and scripts work for The New Colossus only."
+   ]
+  },
+  "de": {
+   "oneLine": "Anleitung für Modder zum WolfSDK Studio 0.2.0: Spiel-Assets ansehen und exportieren, Texturen, Texte und Decls ersetzen, Kiscule-Skripte bearbeiten.",
+   "summary": "Das WolfSDK Studio ist das Modding-Werkzeug im Studio-Download von WolfSDK 0.2.0. Es zeigt Karten, Videos, Sounds, Texturen, Texte und 3D-Modelle von Wolfenstein II: The New Colossus und Wolfenstein: The New Order und exportiert sie, Modelle zum Beispiel als GLB, glTF oder OBJ. Ersetzte Texturen, Normal Maps, Texte und {decl|Decls} sowie Änderungen an {kiscule|Kiscule}-Missionsskripten schreibt es nie direkt ins Spiel: Jede Änderung wird als Mod gespeichert, die der WolfSDK Loader anwendet. Das Ersetzen von Sounds und Videos ist gebaut, in diesem Release aber zurückgehalten.",
+   "points": [
+    "Das Anwenden und Zurücksetzen von Studio-Mods über den Loader ist im Spiel bestätigt.",
+    "Der Modellbetrachter zeigt die 17.315 Modelle von The New Colossus; der Export enthält nur die Grundpose, ohne Skelett und Animationen.",
+    "Normal Maps (BC5) lassen sich ersetzen, wenn das PNG genau so groß wie die Textur ist und einen Grünkanal nach DirectX-Art hat; im Spiel noch nicht bestätigt.",
+    "Der Skript-Editor öffnet die 3.010 Kiscule-Skripte von The New Colossus mit allen 205 Knotentypen und kann Missionsziele hinzufügen oder entfernen; im Spiel noch nicht bestätigt.",
+    "Das Ersetzen von Sounds und Videos ist zurückgehalten, weil Revert sie noch nicht wiederherstellt; Modelle und Skripte gibt es nur für The New Colossus."
+   ]
+  }
+ },
+ "WolfSDK-Studio-DE": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Modder guide to the WolfSDK Studio 0.2.0: browse and export game assets, replace textures, texts and decls, edit Kiscule scripts.",
+   "summary": "The WolfSDK Studio is the modding tool in the Studio download of WolfSDK 0.2.0. It shows the maps, videos, sounds, textures, texts and 3D models of Wolfenstein II: The New Colossus and Wolfenstein: The New Order, and exports them, for example models as GLB, glTF or OBJ. Replaced textures, normal maps, texts and {decl|decls}, and edits to {kiscule|Kiscule} mission scripts, are never written into the game directly: each change is saved as a mod that the WolfSDK Loader applies. Replacing sounds and videos is built but held back in this release.",
+   "points": [
+    "Applying and reverting Studio mods through the Loader is confirmed in game.",
+    "The model viewer shows the 17,315 models of The New Colossus; the export is the base pose only, without skeleton or animations.",
+    "Normal maps (BC5) can be replaced if the PNG has exactly the texture's size and a DirectX green channel; not yet confirmed in game.",
+    "The script editor opens the 3,010 Kiscule scripts of The New Colossus with all 205 node types and can add or remove mission objectives; not yet confirmed in game.",
+    "Replacing sounds and videos is held back because Revert does not yet restore them; models and scripts work for The New Colossus only."
+   ]
+  },
+  "de": {
+   "oneLine": "Anleitung für Modder zum WolfSDK Studio 0.2.0: Spiel-Assets ansehen und exportieren, Texturen, Texte und Decls ersetzen, Kiscule-Skripte bearbeiten.",
+   "summary": "Das WolfSDK Studio ist das Modding-Werkzeug im Studio-Download von WolfSDK 0.2.0. Es zeigt Karten, Videos, Sounds, Texturen, Texte und 3D-Modelle von Wolfenstein II: The New Colossus und Wolfenstein: The New Order und exportiert sie, Modelle zum Beispiel als GLB, glTF oder OBJ. Ersetzte Texturen, Normal Maps, Texte und {decl|Decls} sowie Änderungen an {kiscule|Kiscule}-Missionsskripten schreibt es nie direkt ins Spiel: Jede Änderung wird als Mod gespeichert, die der WolfSDK Loader anwendet. Das Ersetzen von Sounds und Videos ist gebaut, in diesem Release aber zurückgehalten.",
+   "points": [
+    "Das Anwenden und Zurücksetzen von Studio-Mods über den Loader ist im Spiel bestätigt.",
+    "Der Modellbetrachter zeigt die 17.315 Modelle von The New Colossus; der Export enthält nur die Grundpose, ohne Skelett und Animationen.",
+    "Normal Maps (BC5) lassen sich ersetzen, wenn das PNG genau so groß wie die Textur ist und einen Grünkanal nach DirectX-Art hat; im Spiel noch nicht bestätigt.",
+    "Der Skript-Editor öffnet die 3.010 Kiscule-Skripte von The New Colossus mit allen 205 Knotentypen und kann Missionsziele hinzufügen oder entfernen; im Spiel noch nicht bestätigt.",
+    "Das Ersetzen von Sounds und Videos ist zurückgehalten, weil Revert sie noch nicht wiederherstellt; Modelle und Skripte gibt es nur für The New Colossus."
+   ]
+  }
+ },
+ "FAQ": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Short answers to the most common questions about WolfSDK 0.2.0, for players and modders of both games.",
+   "summary": "This FAQ answers what players and modders ask most about WolfSDK 0.2.0, the free mod loader and modding studio for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows). It covers downloading and installing, applying and reverting mods, game updates, other stores, the German version, custom maps and their DLC, both consoles, cheats, making your own mod and replacing textures. Each answer says whether a feature is confirmed in game, not yet confirmed in game, or held back.",
+   "points": [
+    "Confirmed in game: applying and reverting mods with backups, installing a custom map, god mode and infinite ammo from Sandbox Tools, and maps loading from the developer menu.",
+    "Only the Steam versions work: Game Pass locks the game files, GOG and Epic are untested, and WolfSDK has been tested on one PC so far.",
+    "Custom maps for The New Colossus need the DLC The Freedom Chronicles, episode 2; mods, cheats and presets work with the base game.",
+    "In The New Colossus a bound key runs restricted, so mods bind a key to resourceExec instead; 0.2.0 sets no default F-key binds there.",
+    "Replacing sounds and videos is held back in 0.2.0; normal maps, the script editor, the presets and most shipped mods are not yet confirmed in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Kurze Antworten auf die häufigsten Fragen zu WolfSDK 0.2.0, für Spieler und Modder beider Spiele.",
+   "summary": "Diese FAQ beantwortet, was Spieler und Modder am häufigsten zu WolfSDK 0.2.0 fragen, dem kostenlosen Mod-Loader und Modding-Studio für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (Steam-Versionen unter Windows). Es geht um Download und Installation, das Anwenden und Zurücksetzen von Mods, Spiel-Updates, andere Stores, die deutsche Version, eigene Karten und ihr DLC, beide Konsolen, Cheats, eigene Mods und das Ersetzen von Texturen. Jede Antwort sagt, ob eine Funktion im Spiel bestätigt, im Spiel noch nicht bestätigt oder zurückgehalten ist.",
+   "points": [
+    "Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen, eine eigene Karte installieren, God-Mode und unendliche Munition aus Sandbox Tools und das Laden von Karten aus dem Entwicklermenü.",
+    "Nur die Steam-Versionen funktionieren: Game Pass sperrt die Spieldateien, GOG und Epic sind ungetestet, und WolfSDK wurde bisher auf einem PC getestet.",
+    "Eigene Karten für The New Colossus brauchen das DLC The Freedom Chronicles, Episode 2; Mods, Cheats und Presets laufen mit dem Hauptspiel.",
+    "In The New Colossus läuft eine belegte Taste gesperrt, darum binden die Mods eine Taste an resourceExec; 0.2.0 belegt dort keine F-Tasten mehr.",
+    "Sounds und Videos zu ersetzen ist in 0.2.0 zurückgehalten; Normal Maps, der Skript-Editor, die Presets und die meisten mitgelieferten Mods sind im Spiel noch nicht bestätigt."
+   ]
+  }
+ },
+ "FAQ-DE": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Short answers to the most common questions about WolfSDK 0.2.0, for players and modders of both games.",
+   "summary": "This FAQ answers what players and modders ask most about WolfSDK 0.2.0, the free mod loader and modding studio for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows). It covers downloading and installing, applying and reverting mods, game updates, other stores, the German version, custom maps and their DLC, both consoles, cheats, making your own mod and replacing textures. Each answer says whether a feature is confirmed in game, not yet confirmed in game, or held back.",
+   "points": [
+    "Confirmed in game: applying and reverting mods with backups, installing a custom map, god mode and infinite ammo from Sandbox Tools, and maps loading from the developer menu.",
+    "Only the Steam versions work: Game Pass locks the game files, GOG and Epic are untested, and WolfSDK has been tested on one PC so far.",
+    "Custom maps for The New Colossus need the DLC The Freedom Chronicles, episode 2; mods, cheats and presets work with the base game.",
+    "In The New Colossus a bound key runs restricted, so mods bind a key to resourceExec instead; 0.2.0 sets no default F-key binds there.",
+    "Replacing sounds and videos is held back in 0.2.0; normal maps, the script editor, the presets and most shipped mods are not yet confirmed in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Kurze Antworten auf die häufigsten Fragen zu WolfSDK 0.2.0, für Spieler und Modder beider Spiele.",
+   "summary": "Diese FAQ beantwortet, was Spieler und Modder am häufigsten zu WolfSDK 0.2.0 fragen, dem kostenlosen Mod-Loader und Modding-Studio für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (Steam-Versionen unter Windows). Es geht um Download und Installation, das Anwenden und Zurücksetzen von Mods, Spiel-Updates, andere Stores, die deutsche Version, eigene Karten und ihr DLC, beide Konsolen, Cheats, eigene Mods und das Ersetzen von Texturen. Jede Antwort sagt, ob eine Funktion im Spiel bestätigt, im Spiel noch nicht bestätigt oder zurückgehalten ist.",
+   "points": [
+    "Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen, eine eigene Karte installieren, God-Mode und unendliche Munition aus Sandbox Tools und das Laden von Karten aus dem Entwicklermenü.",
+    "Nur die Steam-Versionen funktionieren: Game Pass sperrt die Spieldateien, GOG und Epic sind ungetestet, und WolfSDK wurde bisher auf einem PC getestet.",
+    "Eigene Karten für The New Colossus brauchen das DLC The Freedom Chronicles, Episode 2; Mods, Cheats und Presets laufen mit dem Hauptspiel.",
+    "In The New Colossus läuft eine belegte Taste gesperrt, darum binden die Mods eine Taste an resourceExec; 0.2.0 belegt dort keine F-Tasten mehr.",
+    "Sounds und Videos zu ersetzen ist in 0.2.0 zurückgehalten; Normal Maps, der Skript-Editor, die Presets und die meisten mitgelieferten Mods sind im Spiel noch nicht bestätigt."
+   ]
+  }
+ },
+ "Mod-Format": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Field-by-field guide to the mod.json file that WolfSDK 0.2.0 reads, with real examples from shipped mods.",
+   "summary": "A WolfSDK mod is a folder with a mod.json file. This page explains every field the Loader and Studio read: id and name are required, spiel picks the game (tno or tnc), priority sets the load order, assets lists the changed game files and cvars lists settings sent at game start. A change either sets single values inside a {decl|decl} by dotted paths or replaces a whole file. The page also lists the error messages, how to check a mod before applying it, and how the apps' format differs from the schema of the SDK packages.",
+   "points": [
+    "Only id and name are required; without spiel a mod counts as a The New Order mod, and the apps read spiel, not game.",
+    "Mods are applied lowest priority first (default 100); if two mods set the same value the higher one wins and a conflict is reported, and two mods writing the same texture are refused.",
+    "set can only change paths that already exist in the decl; new fields need a whole-file replacement with file.",
+    "Confirmed in game: set on a The New Colossus decl (the 30-round pistol magazine) and file on an encrypted config (Sandbox Tools god mode and infinite ammo).",
+    "Not yet confirmed in game: cvars sent through default.cfg in The New Colossus or through start arguments and +toggle in The New Order."
+   ]
+  },
+  "de": {
+   "oneLine": "Anleitung Feld für Feld zur Datei mod.json, die WolfSDK 0.2.0 liest, mit echten Beispielen aus mitgelieferten Mods.",
+   "summary": "Eine WolfSDK-Mod ist ein Ordner mit einer Datei mod.json. Diese Seite erklärt jedes Feld, das Loader und Studio lesen: id und name sind Pflicht, spiel wählt das Spiel (tno oder tnc), priority legt die Reihenfolge fest, assets listet die geänderten Spieldateien und cvars die Einstellungen, die beim Spielstart gesendet werden. Eine Änderung setzt entweder einzelne Werte in einer {decl|Decl} über Pfade mit Punkten oder ersetzt eine ganze Datei. Dazu kommen die Fehlermeldungen, die Prüfung einer Mod vor dem Anwenden und der Unterschied zum Schema der SDK-Pakete.",
+   "points": [
+    "Nur id und name sind Pflicht; ohne spiel gilt eine Mod als Mod für The New Order, und die Apps lesen spiel, nicht game.",
+    "Mods werden mit der niedrigsten Priorität zuerst angewendet (Standard 100); setzen zwei Mods denselben Wert, gewinnt die höhere und ein Konflikt wird gemeldet, zwei Mods für dieselbe Textur werden abgelehnt.",
+    "set kann nur Pfade ändern, die es in der Decl schon gibt; neue Felder brauchen einen Ersatz der ganzen Datei mit file.",
+    "Im Spiel bestätigt: set auf eine Decl von The New Colossus (das Pistolenmagazin mit 30 Schuss) und file auf eine verschlüsselte Konfigurationsdatei (God-Mode und unendliche Munition aus Sandbox Tools).",
+    "Im Spiel noch nicht bestätigt: cvars über default.cfg in The New Colossus oder über Startargumente und +toggle in The New Order."
+   ]
+  }
+ },
+ "Mod-Format-DE": {
+  "status": "reference",
+  "en": {
+   "oneLine": "Field-by-field guide to the mod.json file that WolfSDK 0.2.0 reads, with real examples from shipped mods.",
+   "summary": "A WolfSDK mod is a folder with a mod.json file. This page explains every field the Loader and Studio read: id and name are required, spiel picks the game (tno or tnc), priority sets the load order, assets lists the changed game files and cvars lists settings sent at game start. A change either sets single values inside a {decl|decl} by dotted paths or replaces a whole file. The page also lists the error messages, how to check a mod before applying it, and how the apps' format differs from the schema of the SDK packages.",
+   "points": [
+    "Only id and name are required; without spiel a mod counts as a The New Order mod, and the apps read spiel, not game.",
+    "Mods are applied lowest priority first (default 100); if two mods set the same value the higher one wins and a conflict is reported, and two mods writing the same texture are refused.",
+    "set can only change paths that already exist in the decl; new fields need a whole-file replacement with file.",
+    "Confirmed in game: set on a The New Colossus decl (the 30-round pistol magazine) and file on an encrypted config (Sandbox Tools god mode and infinite ammo).",
+    "Not yet confirmed in game: cvars sent through default.cfg in The New Colossus or through start arguments and +toggle in The New Order."
+   ]
+  },
+  "de": {
+   "oneLine": "Anleitung Feld für Feld zur Datei mod.json, die WolfSDK 0.2.0 liest, mit echten Beispielen aus mitgelieferten Mods.",
+   "summary": "Eine WolfSDK-Mod ist ein Ordner mit einer Datei mod.json. Diese Seite erklärt jedes Feld, das Loader und Studio lesen: id und name sind Pflicht, spiel wählt das Spiel (tno oder tnc), priority legt die Reihenfolge fest, assets listet die geänderten Spieldateien und cvars die Einstellungen, die beim Spielstart gesendet werden. Eine Änderung setzt entweder einzelne Werte in einer {decl|Decl} über Pfade mit Punkten oder ersetzt eine ganze Datei. Dazu kommen die Fehlermeldungen, die Prüfung einer Mod vor dem Anwenden und der Unterschied zum Schema der SDK-Pakete.",
+   "points": [
+    "Nur id und name sind Pflicht; ohne spiel gilt eine Mod als Mod für The New Order, und die Apps lesen spiel, nicht game.",
+    "Mods werden mit der niedrigsten Priorität zuerst angewendet (Standard 100); setzen zwei Mods denselben Wert, gewinnt die höhere und ein Konflikt wird gemeldet, zwei Mods für dieselbe Textur werden abgelehnt.",
+    "set kann nur Pfade ändern, die es in der Decl schon gibt; neue Felder brauchen einen Ersatz der ganzen Datei mit file.",
+    "Im Spiel bestätigt: set auf eine Decl von The New Colossus (das Pistolenmagazin mit 30 Schuss) und file auf eine verschlüsselte Konfigurationsdatei (God-Mode und unendliche Munition aus Sandbox Tools).",
+    "Im Spiel noch nicht bestätigt: cvars über default.cfg in The New Colossus oder über Startargumente und +toggle in The New Order."
+   ]
+  }
+ },
+ "TNC-Dev-Menu": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How a data-only mod makes the developer menu of Wolfenstein II load maps again, and what is confirmed in game.",
+   "summary": "Wolfenstein II: The New Colossus still contains its developer menu, but its map entries did nothing: they call a command the retail game never registers. The WolfSDK mod Dev Menu Map Loading rewrites every map entry into plain console lines ending in devmap, which the menu runs without the usual {console|console} restriction, with no program patch. Confirmed in game on 2 October 2026: devmap runs from the menu and the map loads, also for the new map name game/wolfsdk/modtest. The restored developer start points, the main-menu entry from Hidden Menu Options and the box test map are not yet confirmed in game.",
+   "points": [
+    "The map entries failed because the command loadDevMenuOption is missing from all 234 registered commands; map and devmap were never removed.",
+    "The mod rewrites 95 devMenuOption decls with 307 devmap lines (the first version had 220 starts).",
+    "Confirmed in game: devmap loads maps from the menu, and the entry 'WolfSDK: Mod test map' (11 weapons, 8 enemies) loads.",
+    "Not yet confirmed in game: 126 of 158 developer start points restored through marker layers in 12 scripts, Hidden Menu Options and the map 'WolfSDK: Box'.",
+    "Applying the mod changes 107 assets and rebuilds 8 archives, so the backup needs about 1.6 GB; chapter progression and give lines are not reproduced."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie eine reine Daten-Mod das Entwicklermenü von Wolfenstein II wieder Karten laden lässt, und was im Spiel bestätigt ist.",
+   "summary": "Wolfenstein II: The New Colossus enthält sein Entwicklermenü noch, aber die Karteneinträge taten nichts: Sie rufen einen Befehl auf, den die Verkaufsversion nie registriert. Die WolfSDK-Mod Dev Menu Map Loading schreibt jeden Karteneintrag in einfache Konsolenzeilen um, die mit devmap enden; das Menü führt sie ohne die übliche Sperre der {console|Konsole} aus, ganz ohne Programm-Patch. Im Spiel bestätigt am 02.10.2026: devmap läuft aus dem Menü und die Karte lädt, auch unter dem neuen Kartennamen game/wolfsdk/modtest. Die wiederhergestellten Entwickler-Startpunkte, der Hauptmenü-Eintrag aus Hidden Menu Options und die Box-Testkarte sind im Spiel noch nicht bestätigt.",
+   "points": [
+    "Die Karteneinträge scheiterten, weil der Befehl loadDevMenuOption unter allen 234 registrierten Befehlen fehlt; map und devmap wurden nie entfernt.",
+    "Die Mod schreibt 95 devMenuOption-Decls mit 307 devmap-Zeilen um (die erste Version hatte 220 Starts).",
+    "Im Spiel bestätigt: devmap lädt Karten aus dem Menü, und der Eintrag „WolfSDK: Mod test map“ (11 Waffen, 8 Gegner) lädt.",
+    "Im Spiel noch nicht bestätigt: 126 von 158 Entwickler-Startpunkten, wiederhergestellt über Markierungs-Layer in 12 Skripten, sowie Hidden Menu Options und die Karte „WolfSDK: Box“.",
+    "Das Anwenden ändert 107 Assets und baut 8 Archive neu, die Sicherung braucht daher etwa 1,6 GB; Kapitelfortschritt und give-Zeilen werden nicht nachgebildet."
+   ]
+  }
+ },
+ "Research-Report-R10-Modtest-Map": {
+  "status": "partial",
+  "en": {
+   "oneLine": "A test map for mods in Wolfenstein II: a copy of a DLC map under a new name, with weapons and enemies.",
+   "summary": "This round-10 report builds a developer map for trying out mods in Wolfenstein II: The New Colossus, named game/wolfsdk/modtest. Instead of a new room it copies the retail Gestapo office map (c2v1), because that already has working collision, lighting and the walkable {navmesh|navmesh} enemies need; the mission is removed and test content is added. The build keeps every existing entry byte-identical and passes 79 of 79 checks. The report itself lists everything as not yet proven in game.",
+   "points": [
+    "304 of 9,206 entities are removed (mission scripts, hidden enemies, triggers, alarms, retail pickups); 8,902 stay unchanged.",
+    "The armoury gets 23 pickups (11 weapons plus ammo, health and armour) and 5 lights; the office hall gets 8 enemies with their backs to the door.",
+    "The new name needs 18 map-level files and 102 light-probe images copied; 120 entries are added to the archive.",
+    "The LKW and DKW weapons and grenades have no pickup in the game; they can only come from the developer loadout, which may not apply on the devmap path.",
+    "Not proven in game at the time: enemies without a spawner, collision of 91 shared shapes, pickup heights and the light probes; a robot enemy and respawns were left out."
+   ]
+  },
+  "de": {
+   "oneLine": "Eine Testkarte für Mods in Wolfenstein II: eine Kopie einer DLC-Karte unter neuem Namen, mit Waffen und Gegnern.",
+   "summary": "Dieser Bericht aus Runde 10 baut eine Entwicklerkarte zum Ausprobieren von Mods in Wolfenstein II: The New Colossus, mit dem Namen game/wolfsdk/modtest. Statt eines neuen Raums kopiert er die Gestapo-Büro-Karte (c2v1) der Verkaufsversion, weil sie schon funktionierende Kollision, Beleuchtung und das begehbare {navmesh|Navmesh} hat, das Gegner brauchen; die Mission ist entfernt und Testinhalt hinzugefügt. Der Build lässt jeden vorhandenen Eintrag byte-genau unverändert und besteht 79 von 79 Prüfungen. Der Bericht selbst führt alles als im Spiel noch nicht bewiesen.",
+   "points": [
+    "304 von 9.206 Entitäten werden entfernt (Missionsskripte, versteckte Gegner, Auslöser, Alarme, Original-Pickups); 8.902 bleiben unverändert.",
+    "Die Waffenkammer bekommt 23 Pickups (11 Waffen plus Munition, Gesundheit und Rüstung) und 5 Lichter; die Bürohalle bekommt 8 Gegner, die mit dem Rücken zur Tür stehen.",
+    "Der neue Name braucht 18 kopierte Dateien der Kartenebene und 102 Lightprobe-Bilder; 120 Einträge kommen ins Archiv.",
+    "Die Waffen LKW und DKW sowie Granaten haben im Spiel kein Pickup; sie kämen nur aus der Entwickler-Ausrüstung, die auf dem devmap-Weg vielleicht nicht greift.",
+    "Damals im Spiel nicht bewiesen: Gegner ohne Spawner, die Kollision von 91 geteilten Formen, Pickup-Höhen und die Lightprobes; ein Robotergegner und Respawns wurden weggelassen."
+   ]
+  },
+  "update": {
+   "en": "Newer than this page: the TNC Dev Menu and TNC Custom Map Status pages record that this map loads from the developer menu, confirmed in game on 2026-10-02. How the enemies behave and whether the developer loadout applies are still not confirmed.",
+   "de": "Neuer als diese Seite: Die Seiten TNC Dev Menu und TNC Custom Map Status verzeichnen, dass diese Karte aus dem Entwicklermenü lädt, im Spiel bestätigt am 02.10.2026. Wie sich die Gegner verhalten und ob die Entwickler-Ausrüstung greift, ist noch nicht bestätigt."
+  }
+ },
+ "Research-Report-R6-Dynamic-Lights": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How dynamic lights are built in Wolfenstein II and whether a new light can brighten the custom kit map.",
+   "summary": "This report studied the dynamic lights of Wolfenstein II: The New Colossus: one engine class covers every light type (point, spot, probe, area and others), and the look of a light comes from one reusable light {material|material}. Reading the game's data and settings suggests that a new light adds its glow on top of the baked lighting of walls and furniture instead of being ignored by it. The custom kit map already has 12 new lights built and installed, and a much cheaper test with the hidden addLight command is proposed. Everything here is {static|static analysis}: the counts and file checks are proven, but the main claim is only inferred and no light was seen in the running game.",
+   "points": [
+    "All 13,406 placed lights on 39 maps use one engine class; the light type is just one text field (5,903 spot, 4,413 point, 2,529 probe lights).",
+    "133 existing light materials can be reused with a plain text edit; whether a brand-new light image can be added is still open.",
+    "No setting caps the total number of lights; the budgets are a light grid of 3,072 cells (16 x 8 x 24), per-frame culling and throttled shadow updates. Correction: 9 light settings, not 2, have no cheat flag.",
+    "The kit map's 12 lights (9 point, 3 spot) are copies of two real game lights; the built file is installed but has not been loaded in the game yet.",
+    "Open: whether a new light really reaches surfaces with baked lighting; the hidden addLight command, run via resourceExec in any level, is a cheap first test that has not been run."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie dynamische Lichter in Wolfenstein II aufgebaut sind und ob ein neues Licht die eigene Kit-Karte erhellen kann.",
+   "summary": "Dieser Bericht hat die dynamischen Lichter von Wolfenstein II: The New Colossus untersucht: Eine einzige Engine-Klasse deckt jeden Lichttyp ab (Punkt, Spot, Probe, Fläche und andere), und das Aussehen eines Lichts kommt aus einem wiederverwendbaren Licht-{material|Material}. Das Lesen der Spieldaten und Einstellungen spricht dafür, dass ein neues Licht seinen Schein zusätzlich auf die vorberechnete Beleuchtung von Wänden und Möbeln legt, statt von ihr ignoriert zu werden. Die eigene Kit-Karte hat bereits 12 neue Lichter, gebaut und installiert, und ein viel günstigerer Test mit dem versteckten Befehl addLight wird vorgeschlagen. Alles hier ist {static|statische Analyse}: Die Zählungen und Dateiprüfungen sind bewiesen, die Hauptaussage ist aber nur abgeleitet, und im laufenden Spiel wurde kein Licht gesehen.",
+   "points": [
+    "Alle 13.406 platzierten Lichter auf 39 Karten nutzen eine Engine-Klasse; der Lichttyp ist nur ein Textfeld (5.903 Spot-, 4.413 Punkt-, 2.529 Probe-Lichter).",
+    "133 vorhandene Lichtmaterialien lassen sich per einfacher Textänderung wiederverwenden; ob sich ein ganz neues Lichtbild hinzufügen lässt, ist noch offen.",
+    "Keine Einstellung begrenzt die Gesamtzahl der Lichter; die Budgets sind ein Lichtraster aus 3.072 Zellen (16 x 8 x 24), Aussortieren pro Bild und gedrosselte Schattenupdates. Korrektur: 9 Lichteinstellungen, nicht 2, haben kein Cheat-Flag.",
+    "Die 12 Lichter der Kit-Karte (9 Punkt, 3 Spot) sind Kopien von zwei echten Spiellichtern; die gebaute Datei ist installiert, wurde im Spiel aber noch nicht geladen.",
+    "Offen: ob ein neues Licht Flächen mit vorberechneter Beleuchtung wirklich erreicht; der versteckte Befehl addLight, über resourceExec in einem beliebigen Level ausgeführt, ist ein günstiger erster Test, der noch nicht gelaufen ist."
+   ]
+  }
+ },
+ "Research-Report-R6-Engine-Limits": {
+  "status": "partial",
+  "en": {
+   "oneLine": "The hard limits of both Wolfenstein engines (entities, AI, lights, projectiles, settings) and what happens when a mod hits them.",
+   "summary": "This report looks for the built-in limits that matter to modders in Wolfenstein II: The New Colossus (TNC) and Wolfenstein: The New Order (TNO). For TNC, reading the program code found fixed caps, such as 16 projectiles per shot, 64 members per AI group and 8,196 visible lights per frame, and showed which ones only print a warning and which ones crash the game. Many other limits are settings with default values, and the AI population limit is set per spawner by the map author, not by the engine. For TNO only text strings could be scanned, so no numbers are confirmed there. Everything is {static|static analysis}; neither game was launched.",
+   "points": [
+    "The command and setting lists have a fixed size: 234 of 256 commands and 3,256 of 4,096 settings are used, but no current mod route can add new ones.",
+    "Caps read from the code: 16 projectiles per shot (warning, clamped), 64 members per AI group (crash), 128 dynamic reflection volumes and 8,196 visible lights per frame (both warnings).",
+    "Running out of {entity|entity} slots crashes the game, but the exact entity limit could not be found.",
+    "AI count is map data: each spawner has its own maxActiveAIs value (-1 = unlimited, most common 12, median 8).",
+    "Open: physics limits sit inside the Havok middleware with no number found, and TNO's values are unknown; the suggested in-game tests (such as a shotgun set above 16 pellets) have not been run."
+   ]
+  },
+  "de": {
+   "oneLine": "Die festen Grenzen beider Wolfenstein-Engines (Entities, KI, Lichter, Projektile, Einstellungen) und was passiert, wenn eine Mod sie erreicht.",
+   "summary": "Dieser Bericht sucht die eingebauten Grenzen, die für Modder zählen, in Wolfenstein II: The New Colossus (TNC) und Wolfenstein: The New Order (TNO). Für TNC hat das Lesen des Programmcodes feste Obergrenzen gefunden, etwa 16 Projektile pro Schuss, 64 Mitglieder pro KI-Gruppe und 8.196 sichtbare Lichter pro Bild, und gezeigt, welche nur eine Warnung ausgeben und welche das Spiel abstürzen lassen. Viele andere Grenzen sind Einstellungen mit Standardwerten, und die Obergrenze für KI-Gegner legt der Kartenautor pro Spawner fest, nicht die Engine. Für TNO ließen sich nur Textzeichenketten durchsuchen, dort ist also keine Zahl bestätigt. Alles ist {static|statische Analyse}; keines der beiden Spiele wurde gestartet.",
+   "points": [
+    "Befehls- und Einstellungslisten haben eine feste Größe: 234 von 256 Befehlen und 3.256 von 4.096 Einstellungen sind belegt, aber kein heutiger Mod-Weg kann neue hinzufügen.",
+    "Aus dem Code gelesene Grenzen: 16 Projektile pro Schuss (Warnung, wird gekappt), 64 Mitglieder pro KI-Gruppe (Absturz), 128 dynamische Reflexionsvolumen und 8.196 sichtbare Lichter pro Bild (beides Warnungen).",
+    "Gehen die {entity|Entity}-Plätze aus, stürzt das Spiel ab, aber die genaue Entity-Grenze wurde nicht gefunden.",
+    "Die KI-Anzahl ist Kartendaten: Jeder Spawner hat seinen eigenen Wert maxActiveAIs (-1 = unbegrenzt, am häufigsten 12, Median 8).",
+    "Offen: Physikgrenzen stecken in der Havok-Middleware ohne gefundene Zahl, und die Werte von TNO sind unbekannt; die vorgeschlagenen Tests im Spiel (etwa eine Schrotflinte mit mehr als 16 Kugeln) liefen noch nicht."
+   ]
+  }
+ },
+ "Research-Report-R6-Fx-Decls": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How Wolfenstein II's effect definitions (particles, impacts, gore) are built, plus two text-only effect mods.",
+   "summary": "This report surveys the effect {decl|definitions} of Wolfenstein II: The New Colossus: particles, muzzle flashes, bullet impacts, blood streaks, gore wounds and explosions. A fresh count found 1,781 definitions in 12 types, all readable, and size, colour, particle count and lifetime are plain editable values; the chain from weapon to ammo, projectile, impact, effect and particle was followed on the pistol. Two small text-only mods, bigger grenade explosions and a blue muzzle flash, passed the loader's real patch step. All new work here is static: whether the game actually uses an edited particle or effect definition is still open and was not tested in game, while in The New Order such particle edits were already measured to be ignored.",
+   "points": [
+    "1,781 definitions in 12 effect types (corrected from 1,861) all parse without error; 797 of them are particles and 265 are effect compositions.",
+    "Size, colour, count and lifetime edits read back correctly after editing, and whole sub-blocks can be replaced to add fields the original lacks.",
+    "Retail already mixes weapons: the pistol's muzzle flash uses a battle-rifle texture and the shotgun uses SMG and battle-rifle particles, so new looks can reuse existing textures.",
+    "Most typical edits (22 of 25) fit into the existing {archive|archive} space without a rebuild, and both mods ran through the loader's real patch path with 0 errors.",
+    "Open: whether the game loads edited particle and effect definitions; the code structure points to yes, but nothing was tested in game, and in The New Order particle edits are proven to be ignored."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie die Effekt-Definitionen von Wolfenstein II (Partikel, Einschläge, Gore) aufgebaut sind, plus zwei reine Text-Mods für Effekte.",
+   "summary": "Dieser Bericht untersucht die Effekt-{decl|Definitionen} von Wolfenstein II: The New Colossus: Partikel, Mündungsfeuer, Einschläge, Blutspuren, Gore-Wunden und Explosionen. Eine frische Zählung ergab 1.781 Definitionen in 12 Typen, alle lesbar, und Größe, Farbe, Partikelanzahl und Lebensdauer sind einfache, änderbare Werte; die Kette von Waffe über Munition, Projektil, Einschlag und Effekt bis zum Partikel wurde an der Pistole nachverfolgt. Zwei kleine reine Text-Mods, größere Granatenexplosionen und ein blaues Mündungsfeuer, haben den echten Patch-Schritt des Loaders bestanden. Alle neue Arbeit hier ist statisch: Ob das Spiel eine geänderte Partikel- oder Effekt-Definition wirklich verwendet, ist noch offen und wurde nicht im Spiel getestet; in The New Order wurde dagegen schon gemessen, dass solche Partikeländerungen ignoriert werden.",
+   "points": [
+    "1.781 Definitionen in 12 Effekttypen (korrigiert von 1.861) lassen sich alle fehlerfrei einlesen; 797 davon sind Partikel, 265 Effekt-Zusammenstellungen.",
+    "Änderungen an Größe, Farbe, Anzahl und Lebensdauer werden nach dem Bearbeiten korrekt zurückgelesen, und ganze Unterblöcke lassen sich ersetzen, um Felder hinzuzufügen, die im Original fehlen.",
+    "Das Originalspiel mischt schon Waffen: Das Mündungsfeuer der Pistole nutzt eine Sturmgewehr-Textur, die Schrotflinte nutzt MP- und Sturmgewehr-Partikel; neue Looks können also vorhandene Texturen wiederverwenden.",
+    "Die meisten typischen Änderungen (22 von 25) passen ohne Neuaufbau in den vorhandenen {archive|Archivplatz}, und beide Mods liefen mit 0 Fehlern durch den echten Patch-Weg des Loaders.",
+    "Offen: ob das Spiel geänderte Partikel- und Effekt-Definitionen lädt; die Codestruktur spricht dafür, aber im Spiel wurde nichts getestet, und in The New Order werden Partikeländerungen nachweislich ignoriert."
+   ]
+  }
+ },
+ "Research-Report-R6-Photo-Camera": {
+  "status": "partial",
+  "en": {
+   "oneLine": "A free-camera and photo-mode setup for Wolfenstein II, built from hidden settings, carrier files and key binds.",
+   "summary": "This report collects everything in Wolfenstein II: The New Colossus that can serve as a photo mode: a hidden photomode switch, free-camera and time-freeze settings, depth of field, post effects, HUD hiding and screenshot quality. 16 of these settings already work from the normal {console|console}; the rest are cheat-locked and need the proven resourceExec route. Reading the code showed that a key bound directly to a locked setting does not work, so the recipe binds keys to small resourceExec files instead, the same trick the sandbox_tools mod already uses for God mode. The resourceExec route itself is confirmed in game, but the photo-mode files and key binds are only {static|static analysis} and have not been run.",
+   "points": [
+    "39 photo-mode settings were checked against the real list of 3,256 settings; 16 of them work from the normal console, such as g_fov, r_dof and g_showHud.",
+    "Key binds run at the locked level, so a key bound straight to g_freezeTime fails; bound to 'resourceExec <file> -s' it works, as sandbox_tools already proves in game for God mode.",
+    "Recipe: F9 runs photomode_enter (photomode on, world frozen with a free camera, HUD and crosshair off), F10 runs photomode_exit.",
+    "No noclip, freecam, photomode or third-person command exists; the camera settings listed for The New Order are only unverified candidates from text strings.",
+    "Open: what g_setting_photomode 1 does on its own, whether the automatic default.cfg route works in game, and whether devgui 4 opens a window (the one in-game try showed none)."
+   ]
+  },
+  "de": {
+   "oneLine": "Ein Aufbau für freie Kamera und Fotomodus in Wolfenstein II, aus versteckten Einstellungen, Trägerdateien und Tastenbelegungen.",
+   "summary": "Dieser Bericht sammelt alles in Wolfenstein II: The New Colossus, was als Fotomodus dienen kann: einen versteckten Fotomodus-Schalter, Einstellungen für freie Kamera und Zeitstopp, Tiefenschärfe, Nachbearbeitungseffekte, HUD-Ausblendung und Screenshot-Qualität. 16 dieser Einstellungen funktionieren schon in der normalen {console|Konsole}; der Rest ist als Cheat gesperrt und braucht den bewährten resourceExec-Weg. Das Lesen des Codes zeigte, dass eine Taste, die direkt auf eine gesperrte Einstellung gelegt wird, nicht funktioniert; das Rezept legt Tasten deshalb auf kleine resourceExec-Dateien, derselbe Trick, den die Mod sandbox_tools schon für den Gottmodus nutzt. Der resourceExec-Weg selbst ist im Spiel bestätigt, die Fotomodus-Dateien und Tastenbelegungen sind aber nur {static|statische Analyse} und wurden nicht ausgeführt.",
+   "points": [
+    "39 Fotomodus-Einstellungen wurden gegen die echte Liste mit 3.256 Einstellungen geprüft; 16 davon funktionieren in der normalen Konsole, etwa g_fov, r_dof und g_showHud.",
+    "Tastenbelegungen laufen auf der gesperrten Stufe, eine Taste direkt auf g_freezeTime scheitert also; auf 'resourceExec <Datei> -s' gelegt funktioniert sie, wie sandbox_tools im Spiel für den Gottmodus schon beweist.",
+    "Rezept: F9 startet photomode_enter (Fotomodus an, Welt eingefroren mit freier Kamera, HUD und Fadenkreuz aus), F10 startet photomode_exit.",
+    "Einen Befehl noclip, freecam, photomode oder für die Third-Person-Ansicht gibt es nicht; die für The New Order gelisteten Kamera-Einstellungen sind nur ungeprüfte Kandidaten aus Textzeichenketten.",
+    "Offen: was g_setting_photomode 1 allein bewirkt, ob der automatische default.cfg-Weg im Spiel greift und ob devgui 4 ein Fenster öffnet (der eine Versuch im Spiel zeigte keins)."
+   ]
+  }
+ },
+ "Research-Report-R6-Physics": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Which Havok physics values (gravity, ragdolls, explosions, breakables, vehicles) modders can reach in Wolfenstein II and The New Order.",
+   "summary": "This report checks which physics values can be changed in Wolfenstein II: The New Colossus (TNC) and Wolfenstein: The New Order (TNO), both built on Havok physics. In TNC, gravity and time speed are cheat-locked settings, while explosion pushes, ragdoll hits and breakable objects are text {decl|definitions} that can be edited; the Panzerhund is a possessed creature, not a vehicle, and the Monowheel cannot be ridden. In TNO, gravity and player movement are locked, but per-object physics such as 1,205 breakable objects and one drivable car stay editable as text. TNO's lock was measured earlier from a real game log; everything new about TNC is static, and setting these TNC values through resourceExec is only inferred, not tested in game.",
+   "points": [
+    "TNC's g_gravity (default 9.82) has no minimum or maximum in the code, and timescale is clamped to 0.1–10.0; both are cheat-locked and should be reachable through resourceExec, which is not yet tested.",
+    "Only 3 creatures (kampfhund, drone, alligator) have editable ragdoll text in TNC; all others use binary Havok files, and TNC has no ragdoll gravity per creature.",
+    "Push from explosions and weapons is set in the 154 damage definitions, and 175 breakable definitions hold the full destruction tuning (strength, density, radius).",
+    "In TNO, g_gravity and the movement settings failed through all 5 tested channels in a real game log, but its breakable objects even carry their own gravity value.",
+    "Open: whether setting g_gravity or timescale in TNC changes gameplay or only the stored value, and where the 'default' physics preset for movable props lives."
+   ]
+  },
+  "de": {
+   "oneLine": "Welche Havok-Physikwerte (Schwerkraft, Ragdolls, Explosionen, Zerstörbares, Fahrzeuge) Modder in Wolfenstein II und The New Order erreichen.",
+   "summary": "Dieser Bericht prüft, welche Physikwerte sich in Wolfenstein II: The New Colossus (TNC) und Wolfenstein: The New Order (TNO) ändern lassen, beide mit Havok-Physik. In TNC sind Schwerkraft und Zeitgeschwindigkeit als Cheat gesperrte Einstellungen, während Explosionsstöße, Ragdoll-Treffer und zerstörbare Objekte in änderbaren Text-{decl|Definitionen} stehen; der Panzerhund ist eine übernommene Kreatur, kein Fahrzeug, und auf dem Monowheel kann man nicht fahren. In TNO sind Schwerkraft und Spielerbewegung gesperrt, aber Physik pro Objekt wie 1.205 zerstörbare Objekte und ein fahrbares Auto bleibt als Text änderbar. Die TNO-Sperre wurde früher aus einem echten Spiel-Log gemessen; alles Neue zu TNC ist statisch, und das Setzen dieser TNC-Werte über resourceExec ist nur abgeleitet, nicht im Spiel getestet.",
+   "points": [
+    "g_gravity in TNC (Standard 9,82) hat im Code kein Minimum oder Maximum, timescale ist auf 0,1–10,0 begrenzt; beide sind als Cheat gesperrt und sollten über resourceExec erreichbar sein, was noch nicht getestet ist.",
+    "Nur 3 Kreaturen (Kampfhund, Drohne, Alligator) haben in TNC bearbeitbaren Ragdoll-Text; alle anderen nutzen binäre Havok-Dateien, und TNC hat keine eigene Ragdoll-Schwerkraft pro Kreatur.",
+    "Der Stoß von Explosionen und Waffen steht in den 154 damage-Definitionen, und 175 breakable-Definitionen enthalten die volle Zerstörungs-Abstimmung (Festigkeit, Dichte, Radius).",
+    "In TNO scheiterten g_gravity und die Bewegungseinstellungen laut echtem Spiel-Log über alle 5 getesteten Wege, doch seine zerstörbaren Objekte haben sogar einen eigenen Schwerkraftwert.",
+    "Offen: ob g_gravity oder timescale in TNC das Spielgeschehen ändern oder nur den gespeicherten Wert, und wo das Physik-Preset „default“ für bewegliche Requisiten steht."
+   ]
+  }
+ },
+ "Research-Report-R6-Player-Systems": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How Wolfenstein II handles movement, perks, contraptions, dual wielding and weapon upgrade kits, plus three mod designs.",
+   "summary": "This report studies the player systems of Wolfenstein II: The New Colossus (TNC); The New Order (TNO) is only cited from earlier file studies. Basic movement (run, sprint, jump, crouch height) is almost entirely hidden {cvar|settings}, 88 of them starting with pm_, so a movement mod needs the proven resourceExec route; perks, health caps, contraptions and weapon upgrades are text {decl|definitions} the loader can edit. Perks switch on by themselves when a tracked count such as headshot kills passes a threshold; there are no skill points. The stock developer loadout already hands out all three contraptions (Battle Walker, Ram Shackles, Constrictor Harness) at once. Everything here is static, read from game files and code; only the reused magazine-size edit (pistol 10 to 30) and the resourceExec route were confirmed in game earlier, and none of the three new mods has been run.",
+   "points": [
+    "18 perk chains of 5 levels each switch on by themselves once a tracked count passes a threshold (e.g. 25 headshot kills); no skill points are spent.",
+    "Correction of pass 1: headshotter, triggerhappy, secretagent and heavymetal boost all their listed weapons (6, 5, 2 and 4), so no perk data is orphaned.",
+    "Movement is 88 pm_ cvars, nearly all hidden, so run, sprint and jump values need the resourceExec route proven in game; the exact values in the mod are untested.",
+    "The stock developer loadout lists all three contraptions together; whether a built-in limit (MAX_CONTRAPTIONS) then cuts this down is still open.",
+    "The magazine-size edit is confirmed in game (pistol 10 to 30); extending it to other guns, e.g. SMG 45 to 90, and the three mod designs are not tested in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie Wolfenstein II Bewegung, Perks, Kampfanzüge, Beidhändigkeit und Waffen-Upgrade-Kits regelt, plus drei Mod-Entwürfe.",
+   "summary": "Dieser Bericht untersucht die Spielersysteme von Wolfenstein II: The New Colossus (TNC); The New Order (TNO) wird nur aus früheren Dateistudien zitiert. Die Grundbewegung (Laufen, Sprinten, Springen, Duckhöhe) besteht fast nur aus versteckten {cvar|Einstellungen}, 88 davon beginnen mit pm_, eine Bewegungs-Mod braucht daher den bewährten resourceExec-Weg; Perks, Lebens-Obergrenzen, Kampfanzüge und Waffen-Upgrades sind dagegen Text-{decl|Definitionen}, die der Loader ändern kann. Perks schalten sich von selbst frei, wenn ein gezählter Wert wie Kopfschuss-Kills eine Schwelle überschreitet; Skillpunkte gibt es nicht. Die mitgelieferte Entwickler-Ausrüstung verteilt bereits alle drei Kampfanzüge (Battle Walker, Ram Shackles, Constrictor Harness) auf einmal. Alles hier ist statisch, aus Spieldateien und Code gelesen; nur die wiederverwendete Magazingrößen-Änderung (Pistole 10 auf 30) und der resourceExec-Weg wurden früher im Spiel bestätigt, keine der drei neuen Mods wurde ausprobiert.",
+   "points": [
+    "18 Perk-Ketten mit je 5 Stufen schalten sich von selbst frei, sobald ein gezählter Wert eine Schwelle überschreitet (z. B. 25 Kopfschuss-Kills); Skillpunkte werden nicht ausgegeben.",
+    "Korrektur von Durchgang 1: headshotter, triggerhappy, secretagent und heavymetal verstärken alle ihre aufgeführten Waffen (6, 5, 2 und 4), es gibt also keine verwaisten Perk-Daten.",
+    "Bewegung besteht aus 88 pm_-Cvars, fast alle versteckt; Lauf-, Sprint- und Sprungwerte gehen daher nur über den im Spiel bewiesenen resourceExec-Weg, die konkreten Werte der Mod sind ungetestet.",
+    "Die mitgelieferte Entwickler-Ausrüstung enthält alle drei Kampfanzüge zusammen; ob eine eingebaute Grenze (MAX_CONTRAPTIONS) das dann beschneidet, ist noch offen.",
+    "Die Magazingrößen-Änderung ist im Spiel bestätigt (Pistole 10 auf 30); die Übertragung auf andere Waffen, etwa Maschinenpistole 45 auf 90, und die drei Mod-Entwürfe sind im Spiel nicht getestet."
+   ]
+  }
+ },
+ "Research-Report-R6-Render-Plus": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Which hidden Wolfenstein II graphics settings go beyond the Ultra preset, and two presets built from them.",
+   "summary": "This report searched the 3,256 {cvar|settings} of Wolfenstein II: The New Colossus (TNC) for graphics options beyond the Ultra preset and picked 67 that matter, such as shadows, texture streaming, sharpness, foliage, post effects and field of view. Reading the decompiled code proved that one shared function pulls every setting with a declared range (131 of them) back into that range when it is set up or reset; whether a value typed into the console is also limited is still open. From this, two presets ('Ultra+' and 'Clean image') were built for the loader's default.cfg route, while The New Order (TNO) only gets a list of names because its code could not be read. Everything here comes from {static|static analysis}: nothing was seen in the running game, and two risks (a stock Ultra config that may overwrite 5 lines at every start, and a possible reset of cheat-flagged settings) are left for the in-game test.",
+   "points": [
+    "Of 3,256 cvars, 304 are exposed; 1,020 carry render or streaming prefixes, and 67 of them were picked as real graphics-quality settings (pass 1 wrongly said 336).",
+    "Some settings go a step past Ultra, e.g. r_decalFilteringQuality 4 ('Nightmare', 16x) and g_fov up to 120 instead of the default 90.",
+    "Depth of field, motion blur, chromatic aberration and film grain can be switched off directly without any unlock; only the vignette needs the default.cfg route.",
+    "No setting gives true supersampling: resolution scaling only lowers the image (floor 0.7, range 0 to 1), and the raw MSAA modes are not recommended.",
+    "Open and not tested in game: whether the stock initial_video_ultra.cfg overwrites 5 Ultra+ lines at every start, and whether cheat-flagged lines get reset (TNC's reset-message code has no direct callers)."
+   ]
+  },
+  "de": {
+   "oneLine": "Welche versteckten Grafikeinstellungen in Wolfenstein II über das Ultra-Preset hinausgehen, und zwei Presets daraus.",
+   "summary": "Dieser Bericht hat die 3.256 {cvar|Einstellungen} von Wolfenstein II: The New Colossus (TNC) nach Grafikoptionen jenseits des Ultra-Presets durchsucht und 67 relevante ausgewählt, etwa Schatten, Textur-Streaming, Schärfe, Vegetation, Nachbearbeitung und Sichtfeld. Das Lesen des dekompilierten Codes hat bewiesen, dass eine gemeinsame Funktion jede Einstellung mit festgelegtem Bereich (131 Stück) beim Anlegen oder Zurücksetzen in diesen Bereich zurückholt; ob auch ein in der Konsole getippter Wert begrenzt wird, ist noch offen. Daraus wurden zwei Presets („Ultra+“ und „Clean image“) für den default.cfg-Weg des Loaders gebaut, während The New Order (TNO) nur eine Namensliste bekommt, weil sich dessen Code nicht lesen ließ. Alles hier stammt aus {static|statischer Analyse}: Im laufenden Spiel wurde nichts gesehen, und zwei Risiken (eine mitgelieferte Ultra-Konfiguration, die bei jedem Start 5 Zeilen überschreiben könnte, und ein mögliches Zurücksetzen von Cheat-markierten Einstellungen) bleiben dem Test im Spiel überlassen.",
+   "points": [
+    "Von 3.256 Cvars sind 304 freigegeben; 1.020 tragen Render- oder Streaming-Präfixe, und 67 davon wurden als echte Grafikqualitäts-Einstellungen ausgewählt (Durchgang 1 nannte fälschlich 336).",
+    "Manche Einstellungen gehen eine Stufe über Ultra hinaus, z. B. r_decalFilteringQuality 4 („Nightmare“, 16x) und g_fov bis 120 statt der Vorgabe 90.",
+    "Tiefenunschärfe, Bewegungsunschärfe, chromatische Aberration und Filmkorn lassen sich ohne Freischaltung direkt abschalten; nur die Vignette braucht den default.cfg-Weg.",
+    "Echtes Supersampling bietet keine Einstellung: Die Auflösungsskalierung senkt das Bild nur ab (Untergrenze 0,7, Bereich 0 bis 1), und die rohen MSAA-Modi werden nicht empfohlen.",
+    "Offen und nicht im Spiel getestet: ob die mitgelieferte initial_video_ultra.cfg bei jedem Start 5 Ultra+-Zeilen überschreibt und ob Cheat-markierte Zeilen zurückgesetzt werden (der Code für die Rücksetz-Meldung hat in TNC keine direkten Aufrufer)."
+   ]
+  }
+ },
+ "Research-Report-R6-Tno-Audio": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How to replace a sound effect or a voice line in The New Order, proven by round trips on copies.",
+   "summary": "This report works out every step needed to swap a sound in Wolfenstein: The New Order (TNO): the small sound description in the {archive|archive}, the pointer to where the audio sits in the big streamed sound file, and the {ogg|Ogg Vorbis} audio itself. All steps were proven on copies: a bullet-impact sound and a voice line were replaced with bigger audio from other game sounds, and a brand-new 1.5-second beep made with ffmpeg fit in the same way. Neither the archive nor the sound file has a checksum; the only one is Ogg's own per-page check, which a valid stream already carries. Nothing was written to the game install and nothing was tested in the running game, and the loader cannot yet apply or undo such changes by itself.",
+   "points": [
+    "Each sound has a 74-byte description; because it is binary it does not always fit its old place (51 to 51 bytes in one case, 59 to 60 in the other), so a full rebuild must be the fallback.",
+    "The audio container has no index of its own: new audio is simply appended at the end and the sound's pointer is changed; nothing else has to move.",
+    "Voice lines need no special handling; they are normal sound entries stored in english.streamed instead of streamed.resources.",
+    "All checks passed for the impact-sound case, the voice-line case and the ffmpeg case, including deliberate damage tests that were correctly caught.",
+    "Open: whether the game really plays the new audio, what the unconfirmed hash/ID field means, and adding backup and undo for the two sound containers to the loader."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie man in The New Order einen Soundeffekt oder eine Sprachzeile ersetzt, bewiesen durch Roundtrips an Kopien.",
+   "summary": "Dieser Bericht erarbeitet jeden Schritt, um in Wolfenstein: The New Order (TNO) einen Sound auszutauschen: die kleine Sound-Beschreibung im {archive|Archiv}, den Zeiger auf die Stelle in der großen Streaming-Sounddatei und die {ogg|Ogg-Vorbis}-Audiodaten selbst. Alle Schritte wurden an Kopien bewiesen: Ein Einschlagsound und eine Sprachzeile wurden durch größere Audiodaten anderer Spielsounds ersetzt, und auch ein ganz neuer, mit ffmpeg erzeugter Piepton von 1,5 Sekunden passte auf dieselbe Weise hinein. Weder das Archiv noch die Sounddatei hat eine Prüfsumme; die einzige ist Oggs eigene Prüfung pro Seite, die ein gültiger Stream schon mitbringt. In die Spielinstallation wurde nichts geschrieben, im laufenden Spiel wurde nichts getestet, und der Loader kann solche Änderungen noch nicht selbst anwenden oder rückgängig machen.",
+   "points": [
+    "Jeder Sound hat eine 74-Byte-Beschreibung; weil sie binär ist, passt sie nicht immer an ihren alten Platz (in einem Fall 51 zu 51 Bytes, im anderen 59 zu 60), daher muss ein vollständiger Neuaufbau als Ausweichweg bereitstehen.",
+    "Der Audio-Container hat keinen eigenen Index: Neue Audiodaten werden einfach ans Ende angehängt und der Zeiger des Sounds umgestellt; sonst muss nichts verschoben werden.",
+    "Sprachzeilen brauchen keine Sonderbehandlung; es sind normale Sound-Einträge, die in english.streamed statt in streamed.resources liegen.",
+    "Für den Einschlagsound, die Sprachzeile und den ffmpeg-Fall bestanden alle Prüfungen, auch absichtliche Beschädigungstests, die korrekt erkannt wurden.",
+    "Offen: ob das Spiel die neuen Audiodaten wirklich abspielt, was das unbestätigte Hash/ID-Feld bedeutet, und Sicherung und Rückgängigmachen der beiden Sound-Container im Loader."
+   ]
+  }
+ },
+ "Research-Report-R6-Tno-Console": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Does The New Order lock its console like Wolfenstein II, and is there a way around it?",
+   "summary": "This report asked whether The New Order (TNO) restricts its console the same way Wolfenstein II: The New Colossus (TNC) does, and whether TNC's resourceExec trick works there. It does not: TNO has no resourceExec command at all and no flags that mark commands as allowed or hidden; its lock only covers cheat-flagged {cvar|settings}, which are refused from config files and otherwise reset once after start. Two tables were mined from text inside the game program: 2,031 commands and settings, and 55 button-to-command pairs from the hidden {devgui|DevGUI} menu. Everything is static because TNO's code could not be read at the time; the only in-game evidence is an earlier game log, and a later round (R7) re-checked and corrected some of these readings.",
+   "points": [
+    "The text resourceExec appears 0 times in TNO's program; one exec command runs every config file, and default.cfg is blocked for cheat settings like any other config.",
+    "A real game log shows the cheat reset wiping com_skipIntroVideo, so the loader's 'always skip intro videos' option does not work on retail TNO.",
+    "The DevGUI table holds 55 clean pairs, including notarget, give, spawn, killMonsters and NoPlayerDeath; the 'God Mode' button only holds a placeholder ('TEMP 5').",
+    "The mined command list was cleaned of noise and shrank from 5,026 to 2,031 entries; in a fresh sample 18 of 20 entries were genuine.",
+    "Untested: whether commands bound to keys at start run without any lock, and whether map scripts can set cheats through setcvar or executeCommandText."
+   ]
+  },
+  "de": {
+   "oneLine": "Sperrt The New Order seine Konsole wie Wolfenstein II, und gibt es einen Weg daran vorbei?",
+   "summary": "Dieser Bericht hat gefragt, ob The New Order (TNO) seine Konsole genauso einschränkt wie Wolfenstein II: The New Colossus (TNC) und ob TNCs resourceExec-Trick dort funktioniert. Das tut er nicht: TNO hat gar keinen resourceExec-Befehl und keine Markierungen, die Befehle als erlaubt oder versteckt kennzeichnen; seine Sperre betrifft nur Cheat-markierte {cvar|Einstellungen}, die aus Konfigurationsdateien abgelehnt und sonst einmal nach dem Start zurückgesetzt werden. Aus Text im Spielprogramm wurden zwei Tabellen gewonnen: 2.031 Befehle und Einstellungen sowie 55 Schaltfläche-zu-Befehl-Paare aus dem versteckten {devgui|DevGUI}-Menü. Alles ist statisch, weil sich TNOs Code damals nicht lesen ließ; der einzige Beleg aus dem Spiel ist ein früheres Spielprotokoll, und eine spätere Runde (R7) hat einige dieser Deutungen erneut geprüft und korrigiert.",
+   "points": [
+    "Der Text resourceExec kommt im TNO-Programm 0-mal vor; ein einziger exec-Befehl führt jede Konfigurationsdatei aus, und default.cfg ist für Cheat-Einstellungen genauso gesperrt wie jede andere.",
+    "Ein echtes Spielprotokoll zeigt, wie das Cheat-Zurücksetzen com_skipIntroVideo löscht; die Loader-Option „Intro-Videos immer überspringen“ wirkt im Verkaufs-TNO also nicht.",
+    "Die DevGUI-Tabelle enthält 55 saubere Paare, darunter notarget, give, spawn, killMonsters und NoPlayerDeath; die Schaltfläche „God Mode“ enthält nur einen Platzhalter („TEMP 5“).",
+    "Die gewonnene Befehlsliste wurde von Störeinträgen bereinigt und schrumpfte von 5.026 auf 2.031 Einträge; in einer neuen Stichprobe waren 18 von 20 Einträgen echt.",
+    "Ungetestet: ob beim Start auf Tasten gelegte Befehle ganz ohne Sperre laufen und ob Kartenskripte über setcvar oder executeCommandText Cheats setzen können."
+   ]
+  }
+ },
+ "Research-Report-R6-Tno-Decls": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How The New Order's game definitions are built, what the loader can change, and which TNC tricks fail there.",
+   "summary": "This report catalogues the text {decl|definitions} of Wolfenstein: The New Order (TNO) for weapons, ammo, damage, enemies and the player. They use the same format and patch method as Wolfenstein II, but TNO has one flat set of 14 archives with no DLC or patch layer, and the loader patches every copy, so the {dlc|DLC} folder trap from Wolfenstein II cannot happen. A real difference: 252 of 255 enemy definitions set their own health, so one shared edit cannot reach all enemies, while the aim spread of 26 of 29 enemy weapons can be changed with just 10 edits. Everything is static: the patcher applied 8 installed mods cleanly to the real archives, but the game was not launched and none of the three mod designs was tried.",
+   "points": [
+    "'set' edits can only change values that already exist; adding a new field, as the aimAssistRange mod does, needs a full file replacement.",
+    "252 of 255 enemy definitions set their own health, so a health mod needs a generator over all 252 entries; the TNC-style single shared edit fails here.",
+    "Editing spread in 10 enemy weapon definitions reaches 26 of 29 through inheritance (correction: pass 1 said 10); whether spread really controls hits is not confirmed.",
+    "Adding brand-new entries to a TNO archive is still open with no tool yet; the end of each entry was decoded as 9 zero bytes plus an ID unique per chunk and type for definition types.",
+    "Static only: 8 installed mods were patched cleanly (377 assets), but the three designs (health slider, full arsenal from chapter 1, accuracy slider) are untested in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie die Spieldefinitionen von The New Order aufgebaut sind, was der Loader ändern kann und welche TNC-Tricks dort scheitern.",
+   "summary": "Dieser Bericht katalogisiert die Text-{decl|Definitionen} von Wolfenstein: The New Order (TNO) für Waffen, Munition, Schaden, Gegner und Spieler. Sie nutzen dasselbe Format und dieselbe Patch-Methode wie Wolfenstein II, aber TNO hat nur einen flachen Satz aus 14 Archiven ohne DLC- oder Patch-Ebene, und der Loader patcht jede Kopie, sodass die {dlc|DLC}-Ordner-Falle aus Wolfenstein II nicht auftreten kann. Ein echter Unterschied: 252 von 255 Gegnerdefinitionen setzen ihre Gesundheit selbst, eine einzige gemeinsame Änderung erreicht also nicht alle Gegner, während sich die Zielstreuung von 26 der 29 Gegnerwaffen mit nur 10 Änderungen anpassen lässt. Alles ist statisch: Der Patcher hat 8 installierte Mods sauber auf die echten Archive angewendet, aber das Spiel wurde nicht gestartet und keiner der drei Mod-Entwürfe ausprobiert.",
+   "points": [
+    "„set“-Änderungen können nur vorhandene Werte ändern; ein neues Feld hinzuzufügen, wie es die aimAssistRange-Mod tut, braucht einen kompletten Dateiersatz.",
+    "252 von 255 Gegnerdefinitionen setzen ihre Gesundheit selbst, eine Gesundheits-Mod braucht also einen Generator über alle 252 Einträge; die TNC-artige einzelne gemeinsame Änderung scheitert hier.",
+    "Eine Änderung der Streuung in 10 Gegnerwaffen-Definitionen erreicht durch Vererbung 26 von 29 (Korrektur: Durchgang 1 nannte 10); ob die Streuung wirklich die Treffer steuert, ist nicht bestätigt.",
+    "Ganz neue Einträge in ein TNO-Archiv einzufügen ist noch offen, ein Werkzeug dafür fehlt; das Ende jedes Eintrags wurde als 9 Null-Bytes plus eine ID entschlüsselt, die für Definitionstypen pro Chunk und Typ eindeutig ist.",
+    "Nur statisch: 8 installierte Mods wurden sauber gepatcht (377 Assets), aber die drei Entwürfe (Gesundheitsregler, volles Arsenal ab Kapitel 1, Treffgenauigkeitsregler) sind im Spiel ungetestet."
+   ]
+  }
+ },
+ "Research-Report-R6-Tno-Dump": {
+  "status": "partial",
+  "en": {
+   "oneLine": "A safe, read-only tool that copies The New Order's unpacked program code from memory so it can be decompiled.",
+   "summary": "Wolfenstein: The New Order (TNO) keeps its program code encrypted on disk under Steam's copy protection ({steamstub|SteamStub}), so it cannot be read directly. This report copies the method already used for Wolfenstein II (TNC): a small tool that only reads the running game's memory and saves the unpacked code, plus a prepared {ghidra|Ghidra} import to decompile it. The tool was tested only against a harmless stand-in program; neither game was launched for this report. A real TNO capture was made afterwards and is the basis of the reports from round 7 on.",
+   "points": [
+    "The tool only asks Windows for read access and copies four sections of the program, each checked with its own hash; nothing is ever written into the game.",
+    "Its self-test on a stand-in program passed: a real capture, a repeat capture with identical hashes, and three failure cases that all leave zero bytes on disk.",
+    "The reviewer found a first-pass bug (files could stay on disk after a failed capture); it was fixed and the third failure case was added to test it.",
+    "The prepared import read 506 of 506 function ranges correctly from a test capture; about 50,884 functions are expected for TNO, against 121,682 for TNC.",
+    "The game was never started for this report, and finding TNO's console command table was left open for a later track."
+   ]
+  },
+  "de": {
+   "oneLine": "Ein sicheres Werkzeug, das den entpackten Programmcode von The New Order nur lesend aus dem Speicher kopiert, damit er dekompiliert werden kann.",
+   "summary": "Wolfenstein: The New Order (TNO) speichert seinen Programmcode unter Steams Kopierschutz ({steamstub|SteamStub}) verschlüsselt auf der Festplatte, deshalb lässt er sich nicht direkt lesen. Dieser Bericht übernimmt die schon für Wolfenstein II (TNC) genutzte Methode: ein kleines Werkzeug, das den Speicher des laufenden Spiels nur liest und den entpackten Code speichert, dazu ein vorbereiteter {ghidra|Ghidra}-Import zum Dekompilieren. Getestet wurde das Werkzeug nur an einem harmlosen Ersatzprogramm; für diesen Bericht wurde keines der beiden Spiele gestartet. Ein echtes Speicherabbild von TNO wurde danach erstellt und ist die Grundlage der Berichte ab Runde 7.",
+   "points": [
+    "Das Werkzeug fordert von Windows nur Lesezugriff an und kopiert vier Abschnitte des Programms, jeden mit eigenem Hash geprüft; ins Spiel wird nie etwas geschrieben.",
+    "Sein Selbsttest an einem Ersatzprogramm bestand: ein echtes Abbild, ein Wiederholungsabbild mit identischen Hashes und drei Fehlerfälle, die alle null Bytes auf der Festplatte hinterlassen.",
+    "Der Prüfer fand einen Fehler aus dem ersten Durchgang (nach einem gescheiterten Abbild konnten Dateien liegen bleiben); er wurde behoben und der dritte Fehlerfall dafür ergänzt.",
+    "Der vorbereitete Import las aus einem Testabbild 506 von 506 Funktionsbereichen korrekt; für TNO werden etwa 50.884 Funktionen erwartet, gegenüber 121.682 bei TNC.",
+    "Für diesen Bericht wurde das Spiel nie gestartet, und die Konsolenbefehlstabelle von TNO zu finden blieb für eine spätere Untersuchung offen."
+   ]
+  }
+ },
+ "Research-Report-R6-Tno-Megatexture": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How The New Order's MegaTexture page files are built, and a writer that repaints their shine layers on copies.",
+   "summary": "Wolfenstein: The New Order (TNO) stores the large, unique textures of its levels in 'MegaTexture' page files ({vt|virtual textures}). This report decoded one region to a viewable picture (wooden planks with a shadowed figure) and built a writer that puts new images into the two shine layers (specular/gloss and power), either in place or by appending a new page at the end of the file. It also worked out how a map's surfaces point into these files: the map's settings name the page file directly, and the map geometry's own texture coordinates already give the page position. Everything was proven only on copies of the files; the colour layer still cannot be read or written, and nothing was tested in the running game.",
+   "points": [
+    "The file layout is re-confirmed on one level's file: 9,031 page records, with every one of its 27,244,700 bytes accounted for.",
+    "In place, a 4,768-byte gloss block was replaced by a 953-byte smiley image; reading it back gave the intended picture (mean error 9.68/255) and the original file stayed byte-identical.",
+    "A 'grow' path appends a new page record when the new image does not fit; it was proven for the gloss block and for the small 32×32 power block.",
+    "On all 25 TNO maps the {decl|decl} names the page file directly and the land size × 8 equals the pages across; real map texture coordinates hit stored pages 66–85% of the time at the finest level, random ones only 5–34%.",
+    "Still open: the colour (diffuse) layer cannot be decoded or written, and how the game would load a patched file was not addressed; nothing was tested in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie die MegaTexture-Seitendateien von The New Order aufgebaut sind, und ein Schreiber, der ihre Glanzebenen auf Kopien neu bemalt.",
+   "summary": "Wolfenstein: The New Order (TNO) speichert die großen, einmaligen Texturen seiner Level in „MegaTexture“-Seitendateien ({vt|Virtual Textures}). Dieser Bericht hat einen Bereich zu einem sichtbaren Bild entschlüsselt (Holzplanken mit einer beschatteten Figur) und einen Schreiber gebaut, der neue Bilder in die beiden Glanzebenen (Specular/Gloss und Power) einsetzt, entweder an Ort und Stelle oder indem er eine neue Seite ans Dateiende anhängt. Außerdem wurde geklärt, wie die Oberflächen einer Karte auf diese Dateien zeigen: Die Einstellungen der Karte nennen die Seitendatei direkt, und die eigenen Texturkoordinaten der Kartengeometrie geben schon die Seitenposition an. Alles ist nur an Dateikopien bewiesen; die Farbebene lässt sich weiterhin weder lesen noch schreiben, und im laufenden Spiel wurde nichts getestet.",
+   "points": [
+    "Der Dateiaufbau ist an der Datei eines Levels erneut bestätigt: 9.031 Seiteneinträge, und jedes ihrer 27.244.700 Bytes ist zugeordnet.",
+    "An Ort und Stelle wurde ein 4.768 Byte großer Glanzblock durch ein 953 Byte großes Smiley-Bild ersetzt; beim Zurücklesen kam das gewünschte Bild heraus (mittlerer Fehler 9,68/255), und die Originaldatei blieb Byte für Byte unverändert.",
+    "Ein „Wachsen“-Weg hängt einen neuen Seiteneintrag an, wenn das neue Bild nicht passt; er ist für den Glanzblock und für den kleinen 32×32-Power-Block bewiesen.",
+    "Auf allen 25 TNO-Karten nennt die {decl|Decl} die Seitendatei direkt, und die Land-Größe × 8 ergibt die Zahl der Seiten in der Breite; echte Texturkoordinaten der Karte treffen auf der feinsten Stufe zu 66–85 % gespeicherte Seiten, zufällige nur zu 5–34 %.",
+    "Weiter offen: Die Farbebene (Diffuse) lässt sich weder entschlüsseln noch schreiben, und wie das Spiel eine geänderte Datei laden würde, wurde nicht behandelt; im Spiel wurde nichts getestet."
+   ]
+  }
+ },
+ "Research-Report-R6-Tno-Script": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How The New Order runs map events: a text-based trigger network plus a compiled script language.",
+   "summary": "This report studied how Wolfenstein: The New Order (TNO) makes things happen in its levels. It found two layers of one system: plain-text {entity|entities} in each map that trigger each other through target lists, and a real compiled scripting language from the Doom 3 family that those triggers can call. New relays and new script functions could be written with the existing tools, but brand-new trigger volumes cannot, because their shapes live in baked {collision|collision} files that cannot be newly added. Everything comes from reading game files and text strings in the program (TNO's code was still encrypted then); nothing was tested in the running game.",
+   "points": [
+    "The program contains 197 trigger and target entity types; 112 of them are used in the 25 retail maps and 85 never are, including an unused type that sets cvars.",
+    "The script language has 211 bytecode instructions (found in 3 identical copies) and 913 built-in commands such as spawn, openDoor, startSoundShader, devMap and setcvar.",
+    "513 of 516 (99.4%) 'call' links from map entities point to a real script function; the 3 misses are retail defects (one commented out, two missing entirely).",
+    "Correction from pass 1: entities bind behaviour templates through a scriptObject block, 173 times in 20 of 25 maps, with 24 template types.",
+    "Not tested in game: the recipe for custom events and whether the unused cvar trigger works; also open is whether a moved trigger volume's shape moves with it."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie The New Order Kartenereignisse steuert: ein textbasiertes Trigger-Netz plus eine kompilierte Skriptsprache.",
+   "summary": "Dieser Bericht hat untersucht, wie Wolfenstein: The New Order (TNO) in seinen Leveln Ereignisse auslöst. Er fand zwei Ebenen eines Systems: {entity|Entities} in Klartext in jeder Karte, die sich über Ziellisten gegenseitig auslösen, und eine echte kompilierte Skriptsprache aus der Doom-3-Familie, die diese Trigger aufrufen können. Neue Relais und neue Skriptfunktionen ließen sich mit den vorhandenen Werkzeugen schreiben, ganz neue Trigger-Volumen aber nicht, weil ihre Form in fest gebackenen Dateien für die {collision|Kollision} liegt, die sich nicht neu hinzufügen lassen. Alles stammt aus dem Lesen von Spieldateien und Textstellen im Programm (TNOs Code war damals noch verschlüsselt); im laufenden Spiel wurde nichts getestet.",
+   "points": [
+    "Das Programm enthält 197 Trigger- und Target-Entity-Typen; 112 davon kommen in den 25 Karten der Verkaufsversion vor, 85 nie, darunter ein ungenutzter Typ, der Cvars setzt.",
+    "Die Skriptsprache hat 211 Bytecode-Befehle (in 3 identischen Kopien gefunden) und 913 eingebaute Befehle wie spawn, openDoor, startSoundShader, devMap und setcvar.",
+    "513 von 516 (99,4 %) „call“-Verknüpfungen von Karten-Entities zeigen auf eine echte Skriptfunktion; die 3 Fehltreffer sind Fehler der Verkaufsversion (eine auskommentiert, zwei fehlen ganz).",
+    "Korrektur aus Durchgang 1: Entities binden Verhaltensvorlagen über einen scriptObject-Block, 173-mal in 20 von 25 Karten, mit 24 Vorlagentypen.",
+    "Nicht im Spiel getestet: das Rezept für eigene Ereignisse und ob der ungenutzte Cvar-Trigger funktioniert; offen ist auch, ob die Form eines verschobenen Trigger-Volumens mitwandert."
+   ]
+  }
+ },
+ "Research-Report-R7-Tno-Add-Entry": {
+  "status": "partial",
+  "en": {
+   "oneLine": "A working tool that adds a brand-new entry to The New Order's game archives, proven on copies.",
+   "summary": "Game content in Wolfenstein: The New Order (TNO) sits in {archive|archives} where, until now, existing entries could only be replaced. This report built a writer that appends one brand-new material entry to a copy of one archive, and read the matching loader code in the newly decrypted game program to see how the engine would find it. All 4,241 old entries came back unchanged and the new one was found, and the code shows the engine builds a fresh name {hash|lookup table} for each archive at every start, so nothing else would need updating. This is proven on file copies and by reading code; whether the running game actually finds the new entry was not tested.",
+   "points": [
+    "14 of 14 checks passed: all 4,241 original entries are byte-identical and the new entry's data reads back exactly.",
+    "The engine stops with a fatal error if entries are not in ascending order in the file, so the writer always appends at the very end; the check for this was read directly in the code.",
+    "The engine reads exactly as many entries as the count in the file header says, so the count must be raised; the project's own reader is more lenient and would hide this mistake.",
+    "Each of the 14 archives gets its own lookup table, built fresh from its index file at every game start; there is no cached list that would need updating.",
+    "Open: the in-game test, whether the lookup uses the name alone or type plus name, and about 4 unexplained bytes in each entry's 13-byte tail."
+   ]
+  },
+  "de": {
+   "oneLine": "Ein funktionierendes Werkzeug, das den Spielarchiven von The New Order einen ganz neuen Eintrag hinzufügt, bewiesen an Kopien.",
+   "summary": "Spielinhalte von Wolfenstein: The New Order (TNO) liegen in {archive|Archiven}, in denen bisher nur vorhandene Einträge ersetzt werden konnten. Dieser Bericht hat einen Schreiber gebaut, der an die Kopie eines Archivs einen ganz neuen Material-Eintrag anhängt, und dazu den passenden Ladecode im neu entschlüsselten Spielprogramm gelesen, um zu sehen, wie die Engine ihn finden würde. Alle 4.241 alten Einträge kamen unverändert zurück und der neue wurde gefunden; der Code zeigt, dass die Engine bei jedem Start für jedes Archiv eine frische {hash|Nachschlagetabelle} über die Namen baut, sodass sonst nichts angepasst werden müsste. Das ist an Dateikopien und durch Codelesen bewiesen; ob das laufende Spiel den neuen Eintrag wirklich findet, wurde nicht getestet.",
+   "points": [
+    "14 von 14 Prüfungen bestanden: Alle 4.241 ursprünglichen Einträge sind Byte für Byte gleich, und die Daten des neuen Eintrags lassen sich exakt zurücklesen.",
+    "Die Engine bricht mit einem fatalen Fehler ab, wenn die Einträge in der Datei nicht aufsteigend liegen; deshalb hängt der Schreiber immer ganz am Ende an, und die Prüfung dafür wurde direkt im Code gelesen.",
+    "Die Engine liest genau so viele Einträge, wie der Zähler im Dateikopf angibt, also muss der Zähler erhöht werden; der projekteigene Leser ist großzügiger und würde diesen Fehler verdecken.",
+    "Jedes der 14 Archive bekommt eine eigene Nachschlagetabelle, die bei jedem Spielstart frisch aus seiner Indexdatei gebaut wird; eine zwischengespeicherte Liste, die man anpassen müsste, gibt es nicht.",
+    "Offen: der Test im Spiel, ob die Suche nur den Namen oder Typ plus Name nutzt, und rund 4 ungeklärte Bytes im 13 Byte langen Endstück jedes Eintrags."
+   ]
+  }
+ },
+ "Research-Report-R7-Tno-Cheat-Gate": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Where The New Order blocks cheat settings in code, and console routes around that block without patching.",
+   "summary": "This report read the decrypted program code of Wolfenstein: The New Order (TNO) to find what blocks cheat settings ({cvar|cvars}). It is one hidden number that is always 0 and is never changed anywhere in the program: it resets all cheat cvars at startup and rejects a plain 'name value' line. A second pass found that this check only covers that plain form: commands like toggle, the script command setcvar and DevGUI sliders set cheat cvars past it, and the {console|console} opens with Ctrl plus the ^/~ key, not that key alone. All of this comes from reading code; an older measurement shows the toggle route accepted on the command line, but nobody has tried Ctrl+^ in the game yet.",
+   "points": [
+    "The block is one number that no instruction in the 12,436,956-byte code section ever writes (80 reads, 0 writes), and it read 0 in the capture of the running game.",
+    "At startup every cheat cvar is reset to its default, and a plain 'name value' line, typed or from a config file, prints 'CANNOT be set in retail!'.",
+    "Correction in pass 2: toggle, cvarAdd and four similar commands, the script command sys.setcvar and DevGUI sliders set cvars with a force flag that skips the block.",
+    "Every cvar registered without one of four exemption flags (saved options are exempt) counts as a cheat, including devgui, which is why the stock F10 bind 'devgui 1' never opened the DevGUI.",
+    "god, noclip and give are not commands, but toggle g_permaGodMode 0 1 should work because its code ignores the block; untested, since nobody has pressed Ctrl+^ in TNO yet."
+   ]
+  },
+  "de": {
+   "oneLine": "Wo The New Order Cheat-Einstellungen im Code sperrt, und Konsolenwege an dieser Sperre vorbei ohne Patch.",
+   "summary": "Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um herauszufinden, was Cheat-Einstellungen ({cvar|Cvars}) blockiert. Es ist eine einzige versteckte Zahl, die immer 0 ist und nirgends im Programm geändert wird: Sie setzt beim Start alle Cheat-Cvars zurück und lehnt eine einfache Zeile „Name Wert“ ab. Ein zweiter Durchgang fand, dass diese Prüfung nur genau diese einfache Form abdeckt: Befehle wie toggle, der Skriptbefehl setcvar und DevGUI-Schieberegler setzen Cheat-Cvars an ihr vorbei, und die {console|Konsole} öffnet sich mit Strg plus der ^/~-Taste, nicht mit dieser Taste allein. Das alles stammt aus Codelesen; eine ältere Messung zeigt, dass der toggle-Weg auf der Kommandozeile angenommen wird, aber Strg+^ hat in TNO noch niemand im Spiel ausprobiert.",
+   "points": [
+    "Die Sperre ist eine Zahl, die kein Befehl im 12.436.956 Byte großen Codeabschnitt je schreibt (80 Lesezugriffe, 0 Schreibzugriffe), und im Abbild des laufenden Spiels stand sie auf 0.",
+    "Beim Start wird jede Cheat-Cvar auf ihren Standardwert zurückgesetzt, und eine einfache Zeile „Name Wert“, getippt oder aus einer Konfigurationsdatei, meldet „CANNOT be set in retail!“.",
+    "Korrektur im zweiten Durchgang: toggle, cvarAdd und vier ähnliche Befehle, der Skriptbefehl sys.setcvar und DevGUI-Schieberegler setzen Cvars mit einem Erzwingen-Schalter, der die Sperre überspringt.",
+    "Jede Cvar, die ohne eines von vier Ausnahme-Flags registriert ist (gespeicherte Optionen sind ausgenommen), gilt als Cheat, auch devgui; deshalb öffnete die Standardbelegung F10 = „devgui 1“ das DevGUI nie.",
+    "god, noclip und give sind keine Befehle, aber toggle g_permaGodMode 0 1 sollte wirken, weil sein Code die Sperre nicht prüft; ungetestet, denn Strg+^ hat in TNO noch niemand gedrückt."
+   ]
+  }
+ },
+ "Research-Report-R7-Tno-Commands": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Code-reading study of which console commands really exist in The New Order and which are only menu labels.",
+   "summary": "This report read the decrypted program code of Wolfenstein: The New Order (TNO) to list every registered console command. It found 192 real commands, including map, devmap, kill, teleport and screenshot, and showed that TNO's command registration has no place for cheat or lock flags at all, unlike Wolfenstein II. The well-known cheat names god, noclip, notarget, give and spawn are not commands; they only appear as button text in the hidden DevGUI menu, which corrects an earlier report. Everything here is {static|static analysis}; the suggested key-bind test with start arguments has not been run in the game.",
+   "points": [
+    "192 real commands were found by two independent methods: 147 from direct registration calls and 45 from a self-registering list, with no name overlap.",
+    "Registration takes only a name, a function, a description and auto-completion; there is no flags field, so there is no split into exposed and hidden commands as in Wolfenstein II.",
+    "8 DevGUI rows (such as God Mode, No Clip, No Target and Give Grenades) point to commands that were never registered; this corrects round 6.",
+    "timescale is a setting ({cvar|cvar}) with default 1, not a command, and the real description of map is 'loads a combo map'.",
+    "Open: whether the console can be opened at all in retail (com_allowConsole); the +bind key test (F5 to F10) has not been run in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Code-Analyse, welche Konsolenbefehle es in The New Order wirklich gibt und welche nur Menütexte sind.",
+   "summary": "Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um jeden registrierten Konsolenbefehl aufzulisten. Er fand 192 echte Befehle, darunter map, devmap, kill, teleport und screenshot, und zeigte, dass die Befehlsregistrierung in TNO überhaupt keinen Platz für Cheat- oder Sperr-Flags hat, anders als in Wolfenstein II. Die bekannten Cheat-Namen god, noclip, notarget, give und spawn sind keine Befehle; sie stehen nur als Schaltflächentext im versteckten DevGUI-Menü, was einen früheren Bericht korrigiert. Alles hier ist {static|statische Analyse}; der vorgeschlagene Tastentest mit Startargumenten wurde im Spiel noch nicht ausgeführt.",
+   "points": [
+    "192 echte Befehle wurden mit zwei unabhängigen Methoden gefunden: 147 aus direkten Registrierungsaufrufen und 45 aus einer selbstregistrierenden Liste, ohne doppelte Namen.",
+    "Die Registrierung nimmt nur einen Namen, eine Funktion, eine Beschreibung und eine Autovervollständigung; ein Flag-Feld gibt es nicht, also auch keine Trennung in freigegebene und versteckte Befehle wie in Wolfenstein II.",
+    "8 DevGUI-Zeilen (etwa God Mode, No Clip, No Target und Give Grenades) verweisen auf Befehle, die nie registriert wurden; das korrigiert Runde 6.",
+    "timescale ist eine Einstellung ({cvar|Cvar}) mit Standardwert 1, kein Befehl, und die echte Beschreibung von map lautet „loads a combo map“.",
+    "Offen: ob sich die Konsole in der Verkaufsversion überhaupt öffnen lässt (com_allowConsole); der Tastentest mit +bind (F5 bis F10) wurde im Spiel nicht ausgeführt."
+   ]
+  }
+ },
+ "Research-Report-R7-Tno-Limits": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Hard engine limits in The New Order read from code: entities, AI groups, scripts, physics, render and audio.",
+   "summary": "This report read the decrypted program code of Wolfenstein: The New Order (TNO) to find the fixed limits at which the game warns or crashes. It found that at most 8,189 {entity|entities} can exist at the same time, that an AI group with more than 64 members crashes the game exactly as in Wolfenstein II, and that scripts crash beyond 64 nested calls or 32 KiB of global memory. Some limits only print a warning, like the per-spawner AI population cap, and none of the about 20 decompiled functions behind them reads a {cvar|console setting}. Everything is static code reading; the game was never launched.",
+   "points": [
+    "Entities: 8,192 slots, of which 8,189 are usable at the same time, plus a lifetime spawn counter capped at 524,287; both overflows crash the game.",
+    "An AI 'Group' is capped at 64 members and crashes when exceeded, the same value and behaviour as in Wolfenstein II; the 'Too many AIs' cap is a per-spawner field (-1 = unlimited) and only warns.",
+    "Scripts crash at 65 or more nested calls or more than 32,768 bytes of global memory; a cloth sheet with more than 100 particles crashes; an env decl allows at most 80 renderParms.",
+    "Soft limits that warn instead of crashing: physics trace models (32 vertices, 32 edges, 16 polygons), 256 GUI surfaces, 128 dynamic environment probes, 2 sound listeners and 180 nodes in an AI path search.",
+    "Open: the script limits for functions and statements, the AI blackboard and weapon-stats capacities, and whether TNO has any setting-controlled limit at all; nothing was tested in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Feste Engine-Grenzen in The New Order aus dem Code: Entities, KI-Gruppen, Skripte, Physik, Rendern und Audio.",
+   "summary": "Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um die festen Grenzen zu finden, bei denen das Spiel warnt oder abstürzt. Ergebnis: Höchstens 8.189 {entity|Entities} können gleichzeitig existieren, eine KI-Gruppe mit mehr als 64 Mitgliedern lässt das Spiel genau wie in Wolfenstein II abstürzen, und Skripte stürzen ab, wenn sie mehr als 64 Aufrufe tief verschachtelt sind oder mehr als 32 KiB globalen Speicher belegen. Manche Grenzen geben nur eine Warnung aus, etwa die KI-Obergrenze pro Spawner, und keine der rund 20 dekompilierten Funktionen dahinter liest eine {cvar|Konsolen-Einstellung}. Alles beruht auf statischem Codelesen; das Spiel wurde nie gestartet.",
+   "points": [
+    "Entities: 8.192 Plätze, davon 8.189 gleichzeitig nutzbar, dazu ein Zähler für alle jemals erzeugten Entities mit Obergrenze 524.287; beide Überläufe lassen das Spiel abstürzen.",
+    "Eine KI-„Group“ ist auf 64 Mitglieder begrenzt und stürzt beim Überschreiten ab, gleicher Wert und gleiches Verhalten wie in Wolfenstein II; die Grenze „Too many AIs“ ist ein Feld pro Spawner (-1 = unbegrenzt) und warnt nur.",
+    "Skripte stürzen ab bei 65 oder mehr verschachtelten Aufrufen oder mehr als 32.768 Bytes globalem Speicher; ein Stoffobjekt mit mehr als 100 Partikeln stürzt ab; eine env-Decl erlaubt höchstens 80 renderParms.",
+    "Weiche Grenzen, die warnen statt abzustürzen: Physik-Kollisionsmodelle (32 Eckpunkte, 32 Kanten, 16 Polygone), 256 GUI-Flächen, 128 dynamische Umgebungssonden, 2 Sound-Zuhörer und 180 Knoten bei einer KI-Wegsuche.",
+    "Offen: die Skript-Grenzen für Funktionen und Anweisungen, die Kapazitäten von KI-Blackboard und Waffenstatistik und ob TNO überhaupt eine per Einstellung steuerbare Grenze hat; im Spiel wurde nichts getestet."
+   ]
+  }
+ },
+ "Research-Report-R7-Tno-Map-Loading": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How The New Order's code picks and loads a map, and a newly found DLC folder route for custom content.",
+   "summary": "This report read the decrypted program code of Wolfenstein: The New Order (TNO) to see how map commands and archive mounting work. map, devmap and three related commands all run through one shared function, and in a normal retail launch a missing pre-built combo map file only causes a warning, not an abort. The biggest result: TNO scans a dlc folder next to base for subfolders with an info.txt, checks the listed app ID against Steam ownership, and adds that folder's own archives to the game, which an earlier report thought did not exist. All of this is {static|static code reading}; the dlc folder route has not been tried in the running game.",
+   "points": [
+    "map, cmap, devmap, devcmap and checkmap are real commands that all run through the same map-loading function.",
+    "In retail, a missing _combo .proc file only logs 'You need to build the combo map'; what happens later during loading was not traced.",
+    "A {dlc|DLC} subfolder with an info.txt (an appID owned on Steam, a dlcID from 1 to 16) gets its own master.index and chunks added to the 14 base chunk pairs; it adds content, it does not override existing content.",
+    "Using TNO's own app ID 201810 so that the ownership check passes is a guess; mapInfo also has a previously unknown dlcId field.",
+    "Open and untested in game: whether the dlc scan runs in retail and whether the app ID check passes; a test with an empty test folder under dlc, then an info.txt, is described."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie der Code von The New Order Karten auswählt und lädt, und ein neu gefundener DLC-Ordner-Weg für eigene Inhalte.",
+   "summary": "Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um zu sehen, wie Kartenbefehle und das Einbinden von Archiven funktionieren. map, devmap und drei verwandte Befehle laufen alle über eine gemeinsame Funktion, und bei einem normalen Start der Verkaufsversion führt eine fehlende vorgebaute Combo-Kartendatei nur zu einer Warnung, nicht zum Abbruch. Das wichtigste Ergebnis: TNO durchsucht einen dlc-Ordner neben base nach Unterordnern mit einer info.txt, prüft die dort eingetragene App-ID gegen den Steam-Besitz und bindet die eigenen Archive dieses Ordners ins Spiel ein, was ein früherer Bericht für nicht vorhanden hielt. Alles beruht auf {static|statischem Codelesen}; der dlc-Ordner-Weg wurde im laufenden Spiel noch nicht ausprobiert.",
+   "points": [
+    "map, cmap, devmap, devcmap und checkmap sind echte Befehle, die alle über dieselbe Kartenlade-Funktion laufen.",
+    "In der Verkaufsversion schreibt eine fehlende _combo-.proc-Datei nur „You need to build the combo map“ ins Log; was danach beim Laden passiert, wurde nicht verfolgt.",
+    "Ein {dlc|DLC}-Unterordner mit einer info.txt (eine auf Steam besessene appID, eine dlcID von 1 bis 16) bekommt seine eigene master.index und Chunks zu den 14 Basis-Chunk-Paaren hinzugefügt; er fügt Inhalte hinzu, überschreibt aber keine vorhandenen.",
+    "TNOs eigene App-ID 201810 zu nutzen, damit die Besitzprüfung besteht, ist eine Vermutung; mapInfo hat außerdem ein bisher unbekanntes Feld dlcId.",
+    "Offen und im Spiel ungetestet: ob der dlc-Scan in der Verkaufsversion läuft und ob die App-ID-Prüfung besteht; ein Test mit einem leeren Testordner unter dlc und danach einer info.txt ist beschrieben."
+   ]
+  }
+ },
+ "Research-Report-R7-Tno-Script-Vm": {
+  "status": "partial",
+  "en": {
+   "oneLine": "How The New Order compiles and runs its map scripts, and a small custom trigger-to-script event built on a copy.",
+   "summary": "This report read the decrypted program code of Wolfenstein: The New Order (TNO) to understand its script system (DoomScript). Map scripts are plain text files compiled fresh every time they load, by the same routine the script console command uses, and every trigger or relay goes through one shared activate function that can call a script. A newly found console command, trigger, can fire any named {entity|entity} without walking into a trigger zone. A small custom event (a trigger, then a script that fires a spawn, a sound and a door) was built on a copy of the chapter 1 map and passed all structural checks, but nothing was tested in the running game.",
+   "points": [
+    "Map scripts (.script) and maps (.entities) are ordinary 'file' entries; there is no precompiled bytecode, the script is compiled from text at every load.",
+    "Every trigger and relay funnels into one shared activate function (121 call sites), which can run the onTrigger method of a bound script.",
+    "TNO has a script command (runs one typed line of script) and a trigger command (fires any named entity), both newly found testing tools.",
+    "The custom event on map c01p1 passed every check on a copy: 37/37 call links resolve, and the {chunk|chunk} rebuild left 25/25 unrelated entries unchanged.",
+    "Open: whether script and trigger can be reached in the retail console, and whether the edited event really fires in game; nothing was run in game."
+   ]
+  },
+  "de": {
+   "oneLine": "Wie The New Order seine Kartenskripte kompiliert und ausführt, und ein kleines eigenes Auslöser-Skript-Ereignis, gebaut auf einer Kopie.",
+   "summary": "Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um sein Skriptsystem (DoomScript) zu verstehen. Kartenskripte sind einfache Textdateien, die bei jedem Laden neu kompiliert werden, und zwar von derselben Routine, die auch der Konsolenbefehl script nutzt; jeder Auslöser und jedes Relais läuft über eine gemeinsame Aktivierungsfunktion, die ein Skript aufrufen kann. Ein neu gefundener Konsolenbefehl, trigger, kann jede benannte {entity|Entity} auslösen, ohne dass man in eine Auslösezone laufen muss. Ein kleines eigenes Ereignis (ein Auslöser, dann ein Skript, das einen Spawn, einen Sound und eine Tür auslöst) wurde auf einer Kopie der Karte aus Kapitel 1 gebaut und bestand alle strukturellen Prüfungen, aber im laufenden Spiel wurde nichts getestet.",
+   "points": [
+    "Kartenskripte (.script) und Karten (.entities) sind gewöhnliche „file“-Einträge; es gibt keinen vorkompilierten Bytecode, das Skript wird bei jedem Laden aus Text kompiliert.",
+    "Jeder Auslöser und jedes Relais läuft über eine gemeinsame Aktivierungsfunktion (121 Aufrufstellen), die die onTrigger-Methode eines gebundenen Skripts ausführen kann.",
+    "TNO hat einen Befehl script (führt eine eingetippte Skriptzeile aus) und einen Befehl trigger (löst jede benannte Entity aus), beides neu gefundene Testwerkzeuge.",
+    "Das eigene Ereignis auf Karte c01p1 bestand jede Prüfung auf einer Kopie: 37/37 call-Verweise lösen auf, und beim Neuaufbau des {chunk|Chunks} blieben 25/25 unbeteiligte Einträge unverändert.",
+    "Offen: ob script und trigger in der Konsole der Verkaufsversion erreichbar sind und ob das bearbeitete Ereignis im Spiel wirklich auslöst; im Spiel wurde nichts ausgeführt."
+   ]
+  }
+ },
+ "Research-Report-R8-Devmenu-Fix-Verify": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Code-reading check of the mod that makes Wolfenstein II's developer menu load maps: all four claims hold, nothing run in game.",
+   "summary": "This round-8 report checked, only by reading the {binary|program code} of Wolfenstein II: The New Colossus, whether the mod that makes the developer menu load maps can work. It tested four claims: the menu has a branch that runs an entry's command lines, those lines run at the unrestricted level, devmap and the needed si_ settings are reachable there, and escaped quotes in the menu text are read correctly. All four hold, one with a gap, and the build tool needed no change. Nothing was run in game for this report.",
+   "points": [
+    "Menu entries with command lines and no map name take a branch that runs every line; the unrestricted buffer always runs at level 0.",
+    "A full scan found one more place that raises the restriction: the key-bind dispatcher, so bound keys run restricted.",
+    "devmap is among the 234 registered commands but not among the 34 exposed ones; the si_ settings carry no flag that blocks them at level 0.",
+    "Gap: the call chain from the menu up to the frame loop was not traced, so 'nothing raises the level there' is argued, not proven.",
+    "Escaped quotes are only proven indirectly: none of the 168 retail menu lines contains one, so the first in-game run is the real test."
+   ]
+  },
+  "de": {
+   "oneLine": "Code-Prüfung der Mod, die das Entwicklermenü von Wolfenstein II Karten laden lässt: alle vier Annahmen halten, nichts im Spiel ausgeführt.",
+   "summary": "Dieser Bericht aus Runde 8 hat nur durch Lesen des {binary|Programmcodes} von Wolfenstein II: The New Colossus geprüft, ob die Mod funktionieren kann, die das Entwicklermenü Karten laden lässt. Geprüft wurden vier Annahmen: Das Menü hat einen Zweig, der die Befehlszeilen eines Eintrags ausführt; diese Zeilen laufen ohne Sperre; devmap und die nötigen si_-Einstellungen sind dort erreichbar; und maskierte Anführungszeichen im Menütext werden richtig gelesen. Alle vier halten, eine mit einer Lücke, und das Bauwerkzeug musste nicht geändert werden. Für diesen Bericht lief nichts im Spiel.",
+   "points": [
+    "Menüeinträge mit Befehlszeilen und ohne Kartennamen nehmen einen Zweig, der jede Zeile ausführt; der freie Puffer läuft immer auf Stufe 0.",
+    "Ein vollständiger Scan fand eine weitere Stelle, die die Sperre anhebt: die Tastenbelegung, gebundene Tasten laufen also gesperrt.",
+    "devmap gehört zu den 234 registrierten Befehlen, aber nicht zu den 34 freigegebenen; die si_-Einstellungen tragen kein Flag, das sie auf Stufe 0 blockiert.",
+    "Lücke: Die Aufrufkette vom Menü bis zur Bildschleife wurde nicht verfolgt; dass dort nichts die Stufe anhebt, ist begründet, nicht bewiesen.",
+    "Maskierte Anführungszeichen sind nur indirekt belegt: Keine der 168 Menüzeilen der Verkaufsversion enthält eins, der erste Lauf im Spiel ist also der echte Test."
+   ]
+  },
+  "update": {
+   "en": "Newer than this page: the TNC Dev Menu page records devmap running from the developer menu and the map loading, confirmed in game on 2026-10-02.",
+   "de": "Neuer als diese Seite: Die Seite TNC Dev Menu verzeichnet, dass devmap aus dem Entwicklermenü läuft und die Karte lädt, im Spiel bestätigt am 02.10.2026."
+  }
+ },
+ "Research-Report-R8-Tno-Cvars": {
+  "status": "partial",
+  "en": {
+   "oneLine": "The full list of The New Order's 3,194 settings with cheat flags, and a loader fix so cheat settings survive startup.",
+   "summary": "This report walked the full list of console settings ({cvar|cvars}) in the decrypted program code of Wolfenstein: The New Order (TNO): 3,194 of them, 2,865 marked as cheat. It also traced the startup order and found that the game wipes cheat settings after reading the start arguments, so many of the project loader's tweaks, like run speed or gravity, never took effect. The loader now also sends cheat settings as +toggle name value value, which runs after that reset. The list and the loader checks are proven by code and offline tests, and +g_showHud 0 and +toggle devgui were measured in the game earlier, but the new +toggle route has not been run in game yet.",
+   "points": [
+    "3,194 cvars: 2,865 CHEAT and 329 NOCHEAT, 8 ROM, 38 INIT, 169 ARCHIVE; none of the 192 console commands is also a cvar.",
+    "Start arguments are applied before and again after the config files, so a +name value beats the user's wolfConfig.cfg; after that the cheat reset wipes cheat values.",
+    "Cheat cvars set by the loader (such as g_infiniteAmmo, g_gravity, pm_runspeed) were wiped and are now also sent as +toggle; g_permaGodMode is not a cheat cvar and always worked, which corrects round 7.",
+    "god, noclip, notarget, give and spawn are neither commands nor cvars; F3 now toggles the free camera g_freeCam, and the god-mode equivalent is toggle g_permaGodMode 0 1.",
+    "Open: nobody has run +toggle name value value in game yet, and it is unproven that the intro video is really skipped; a one-launch test is described."
+   ]
+  },
+  "de": {
+   "oneLine": "Die vollständige Liste der 3.194 Einstellungen von The New Order mit Cheat-Flags und ein Loader-Fix, damit Cheat-Einstellungen den Start überleben.",
+   "summary": "Dieser Bericht hat die vollständige Liste der Konsoleneinstellungen ({cvar|Cvars}) im entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) durchlaufen: 3.194 Stück, davon 2.865 als Cheat markiert. Er hat außerdem die Startreihenfolge verfolgt und festgestellt, dass das Spiel Cheat-Einstellungen nach dem Einlesen der Startargumente zurücksetzt, sodass viele Tweaks des Projekt-Loaders, etwa Laufgeschwindigkeit oder Schwerkraft, nie wirkten. Der Loader schickt Cheat-Einstellungen jetzt zusätzlich als +toggle name value value, was nach diesem Zurücksetzen läuft. Die Liste und die Loader-Prüfungen sind durch Code und Offline-Tests belegt, und +g_showHud 0 sowie +toggle devgui wurden früher im Spiel gemessen, aber der neue +toggle-Weg wurde im Spiel noch nicht ausprobiert.",
+   "points": [
+    "3.194 Cvars: 2.865 CHEAT und 329 NOCHEAT, 8 ROM, 38 INIT, 169 ARCHIVE; keiner der 192 Konsolenbefehle ist zugleich eine Cvar.",
+    "Startargumente werden vor und noch einmal nach den Konfigurationsdateien angewendet, daher schlägt ein +name value die wolfConfig.cfg des Nutzers; danach löscht der Cheat-Reset die Cheat-Werte.",
+    "Vom Loader gesetzte Cheat-Cvars (etwa g_infiniteAmmo, g_gravity, pm_runspeed) wurden gelöscht und werden jetzt zusätzlich als +toggle geschickt; g_permaGodMode ist keine Cheat-Cvar und hat immer funktioniert, was Runde 7 korrigiert.",
+    "god, noclip, notarget, give und spawn sind weder Befehle noch Cvars; F3 schaltet jetzt die freie Kamera g_freeCam um, und das Gegenstück zum Gottmodus ist toggle g_permaGodMode 0 1.",
+    "Offen: +toggle name value value hat noch niemand im Spiel ausgeführt, und dass das Intro-Video wirklich übersprungen wird, ist unbewiesen; ein Test mit einem einzigen Spielstart ist beschrieben."
+   ]
+  }
+ },
+ "Research-Report-R9-Box-Map": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Can a Wolfenstein II custom map use a brand-new map name? A test box room is built; not yet seen in game.",
+   "summary": "This round-9 report asked whether a custom map for Wolfenstein II: The New Colossus can use a name the retail game never had. Reading the code found no step that limits map names to the retail list: the name only has to be listed in the dlc_0 folder's map list. A closed grey test room (8 × 8 × 4 m) was built under the name game/wolfsdk/box as a third map in the same archive, and all 31 build checks pass. Everything is {static|static analysis}; the box was not loaded in the game, and the route depended on the developer menu, which was itself still unconfirmed at the time.",
+   "points": [
+    "The name lookup is a plain case-insensitive text compare over the map lists, with no hash and no fixed list; base maps are checked before DLC maps.",
+    "The box adds 29 entries (17 map-level files copied under the new name, 12 new model and collision entries); all 7,130 existing entries stay unchanged.",
+    "The new name needs its own textures.cache file, provided as a link to c2v1's; without it the game warns 'Failed to open'.",
+    "No chapter data is needed: without it the player falls back to the generic player definition; map sound banks are missing, so ambience is silent.",
+    "Not proven in game: devmap with a non-retail name, new model and collision entries, and the lighting, which may look blotchy or dark."
+   ]
+  },
+  "de": {
+   "oneLine": "Kann eine eigene Karte für Wolfenstein II einen ganz neuen Namen tragen? Ein Test-Raum ist gebaut, im Spiel noch nicht gesehen.",
+   "summary": "Dieser Bericht aus Runde 9 fragte, ob eine eigene Karte für Wolfenstein II: The New Colossus einen Namen tragen kann, den die Verkaufsversion nie hatte. Das Lesen des Codes fand keinen Schritt, der Kartennamen auf die Liste des Spiels beschränkt: Der Name muss nur in der Kartenliste des Ordners dlc_0 stehen. Ein geschlossener grauer Testraum (8 × 8 × 4 m) wurde unter dem Namen game/wolfsdk/box als dritte Karte im selben Archiv gebaut, und alle 31 Prüfungen des Builds bestehen. Alles ist {static|statische Analyse}; die Box wurde im Spiel nicht geladen, und der Weg hing vom Entwicklermenü ab, das damals selbst noch unbestätigt war.",
+   "points": [
+    "Die Namenssuche ist ein einfacher Textvergleich ohne Beachtung der Groß- und Kleinschreibung über die Kartenlisten, ohne Hash und ohne feste Liste; Basis-Karten werden vor DLC-Karten geprüft.",
+    "Die Box fügt 29 Einträge hinzu (17 Dateien der Kartenebene unter neuem Namen kopiert, 12 neue Modell- und Kollisionseinträge); alle 7.130 vorhandenen Einträge bleiben unverändert.",
+    "Der neue Name braucht eine eigene textures.cache-Datei, als Verknüpfung auf die von c2v1; ohne sie meldet das Spiel „Failed to open“.",
+    "Kapiteldaten sind nicht nötig: Ohne sie wird der Spieler zur allgemeinen Spielerdefinition; Karten-Soundbanks fehlen, die Umgebung bleibt also stumm.",
+    "Im Spiel nicht bewiesen: devmap mit einem Namen außerhalb der Verkaufsversion, neue Modell- und Kollisionseinträge und die Beleuchtung, die fleckig oder dunkel aussehen kann."
+   ]
+  },
+  "update": {
+   "en": "Newer than this page: another map under a new name, game/wolfsdk/modtest, has since loaded in game (2026-10-02, see TNC Custom Map Status); the box map itself is still not confirmed in game.",
+   "de": "Neuer als diese Seite: Eine andere Karte unter neuem Namen, game/wolfsdk/modtest, lädt inzwischen im Spiel (02.10.2026, siehe TNC Custom Map Status); die Box-Karte selbst ist im Spiel noch nicht bestätigt."
+  }
+ },
+ "Research-Report-R9-Dev-Starts": {
+  "status": "partial",
+  "en": {
+   "oneLine": "Bringing back Wolfenstein II's developer start points after map load, through marker layers and map scripts.",
+   "summary": "Many developer menu entries of Wolfenstein II: The New Colossus used to run extra commands after the map loaded, such as a teleport or a scene start, but those commands do not exist in the retail game. This round-9 report shows by reading the code that a made-up 'marker' layer name, passed when the map starts, lets each map's own {kiscule|Kiscule} script send the same events instead. Version 0.2.0 of the dev menu mod restores 126 of the 158 such entries, and every offline check passes. Nothing was tested in game, and one timing difference stays open.",
+   "points": [
+    "The marker must go into both layer lists: the active one so the script check sees it, the fill one so the chapter lookup ignores it.",
+    "63 layer checks in 12 base scripts on 12 maps restore 126 of 158 entries; 2 more are only partly served.",
+    "32 are not restored: 14 DLC entries, 14 whose events have no receiver, and 4 that only had give lines.",
+    "Fixed on the way: 32 Fergus/Wyatt timeline entries matched no chapter part before; the timeline layers now go into both lists.",
+    "Open risk: the old commands ran before the map's start event, the new chain runs during it; two maps (c01p1, c09p1) gate their intro on such an event."
+   ]
+  },
+  "de": {
+   "oneLine": "Die Entwickler-Startpunkte von Wolfenstein II nach dem Kartenladen zurückholen, über Markierungs-Layer und Kartenskripte.",
+   "summary": "Viele Einträge im Entwicklermenü von Wolfenstein II: The New Colossus führten früher nach dem Laden der Karte zusätzliche Befehle aus, etwa einen Teleport oder den Start einer Szene, aber diese Befehle gibt es in der Verkaufsversion nicht. Dieser Bericht aus Runde 9 zeigt durch Codelesen, dass ein ausgedachter „Markierungs“-Layername, beim Kartenstart übergeben, das eigene {kiscule|Kiscule}-Skript jeder Karte dieselben Ereignisse senden lässt. Version 0.2.0 der Dev-Menü-Mod stellt 126 von 158 solcher Einträge wieder her, und jede Offline-Prüfung besteht. Im Spiel wurde nichts getestet, und ein Unterschied im Zeitablauf bleibt offen.",
+   "points": [
+    "Die Markierung muss in beide Layer-Listen: in die aktive, damit die Skriptprüfung sie sieht, und in die Füll-Liste, damit die Kapitelsuche sie ignoriert.",
+    "63 Layer-Prüfungen in 12 Basis-Skripten auf 12 Karten stellen 126 von 158 Einträgen wieder her; 2 weitere werden nur teilweise bedient.",
+    "32 werden nicht wiederhergestellt: 14 DLC-Einträge, 14, deren Ereignisse keinen Empfänger haben, und 4, die nur give-Zeilen hatten.",
+    "Nebenbei behoben: 32 Fergus/Wyatt-Einträge der Zeitlinien fanden vorher keinen Kapitelteil; die Zeitlinien-Layer stehen jetzt in beiden Listen.",
+    "Offenes Risiko: Die alten Befehle liefen vor dem Startereignis der Karte, die neue Kette läuft währenddessen; zwei Karten (c01p1, c09p1) knüpfen ihr Intro an ein solches Ereignis."
    ]
   }
  }

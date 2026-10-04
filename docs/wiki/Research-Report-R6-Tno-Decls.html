@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Decl System: Catalogue, Loader Capability, New Entries, Load-Order Traps – Wolfenstein Modloader</title>
+<meta name="description" content="How The New Order&#x27;s game definitions are built, what the loader can change, and which TNC tricks fail there.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Decl System: Catalogue, Loader Capability, New Entries, Load-Order Traps</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Tno-Decls"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#0-a-methodology-note-that-changed-several-readings">0. A methodology note that changed several readings</a></li><li><a href="#answer-in-one-paragraph">Answer in one paragraph</a></li><li><a href="#pass-1-errors-fixed-in-round-2">Pass-1 errors (fixed in round 2)</a></li><li><a href="#1-decl-field-catalogue-weapon-ammo-damage-ai-player">1. Decl field catalogue: weapon, ammo, damage, AI, player</a></li><li><a href="#2-what-the-loader-can-already-change--proven-by-the-installed-mods">2. What the loader can already change — proven by the installed mods</a></li><li><a href="#3-can-new-type-name-entries-be-added-to-a-tno-archive">3. Can NEW (type, name) entries be added to a TNO archive?</a></li><li><a href="#4-inherit--load-order-traps--does-tno-have-a-dlc_0-style-trap">4. Inherit / load-order traps — does TNO have a dlc_0-style trap?</a></li><li><a href="#5-three-ready-to-build-tno-mod-designs">5. Three ready-to-build TNO mod designs</a></li><li><a href="#proven">PROVEN</a></li><li><a href="#inferred">INFERRED</a></li><li><a href="#failed-hypotheses">FAILED HYPOTHESES</a></li><li><a href="#open-questions--next-step">Open questions / next step</a></li><li><a href="#in-game-test-for-the-maintainer">In-game test (for the maintainer)</a></li><li><a href="#files">Files</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report catalogues the text <span class="t" data-t="decl">definitions</span> of Wolfenstein: The New Order (TNO) for weapons, ammo, damage, enemies and the player. They use the same format and patch method as Wolfenstein II, but TNO has one flat set of 14 archives with no DLC or patch layer, and the loader patches every copy, so the <span class="t" data-t="dlc">DLC</span> folder trap from Wolfenstein II cannot happen. A real difference: 252 of 255 enemy definitions set their own health, so one shared edit cannot reach all enemies, while the aim spread of 26 of 29 enemy weapons can be changed with just 10 edits. Everything is static: the patcher applied 8 installed mods cleanly to the real archives, but the game was not launched and none of the three mod designs was tried.</p><ul><li>&#x27;set&#x27; edits can only change values that already exist; adding a new field, as the aimAssistRange mod does, needs a full file replacement.</li><li>252 of 255 enemy definitions set their own health, so a health mod needs a generator over all 252 entries; the TNC-style single shared edit fails here.</li><li>Editing spread in 10 enemy weapon definitions reaches 26 of 29 through inheritance (correction: pass 1 said 10); whether spread really controls hits is not confirmed.</li><li>Adding brand-new entries to a TNO archive is still open with no tool yet; the end of each entry was decoded as 9 zero bytes plus an ID unique per chunk and type for definition types.</li><li>Static only: 8 installed mods were patched cleanly (377 assets), but the three designs (health slider, full arsenal from chapter 1, accuracy slider) are untested in game.</li></ul></div><div class="de"><p class="lede">Dieser Bericht katalogisiert die Text-<span class="t" data-t="decl">Definitionen</span> von Wolfenstein: The New Order (TNO) für Waffen, Munition, Schaden, Gegner und Spieler. Sie nutzen dasselbe Format und dieselbe Patch-Methode wie Wolfenstein II, aber TNO hat nur einen flachen Satz aus 14 Archiven ohne DLC- oder Patch-Ebene, und der Loader patcht jede Kopie, sodass die <span class="t" data-t="dlc">DLC</span>-Ordner-Falle aus Wolfenstein II nicht auftreten kann. Ein echter Unterschied: 252 von 255 Gegnerdefinitionen setzen ihre Gesundheit selbst, eine einzige gemeinsame Änderung erreicht also nicht alle Gegner, während sich die Zielstreuung von 26 der 29 Gegnerwaffen mit nur 10 Änderungen anpassen lässt. Alles ist statisch: Der Patcher hat 8 installierte Mods sauber auf die echten Archive angewendet, aber das Spiel wurde nicht gestartet und keiner der drei Mod-Entwürfe ausprobiert.</p><ul><li>„set“-Änderungen können nur vorhandene Werte ändern; ein neues Feld hinzuzufügen, wie es die aimAssistRange-Mod tut, braucht einen kompletten Dateiersatz.</li><li>252 von 255 Gegnerdefinitionen setzen ihre Gesundheit selbst, eine Gesundheits-Mod braucht also einen Generator über alle 252 Einträge; die TNC-artige einzelne gemeinsame Änderung scheitert hier.</li><li>Eine Änderung der Streuung in 10 Gegnerwaffen-Definitionen erreicht durch Vererbung 26 von 29 (Korrektur: Durchgang 1 nannte 10); ob die Streuung wirklich die Treffer steuert, ist nicht bestätigt.</li><li>Ganz neue Einträge in ein TNO-Archiv einzufügen ist noch offen, ein Werkzeug dafür fehlt; das Ende jedes Eintrags wurde als 9 Null-Bytes plus eine ID entschlüsselt, die für Definitionstypen pro Chunk und Typ eindeutig ist.</li><li>Nur statisch: 8 installierte Mods wurden sauber gepatcht (377 Assets), aber die drei Entwürfe (Gesundheitsregler, volles Arsenal ab Kapitel 1, Treffgenauigkeitsregler) sind im Spiel ungetestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on The New Order's decl system: a field catalogue for weapon, ammo, damage, AI and player decls, what the loader can already change, whether brand-new <code>(type, name)</code> entries can be added to a TNO archive, and whether TNO has TNC-style load-order traps. TNO uses the same decl dialect and patch mechanics as TNC but a simpler single-tier archive, and the loader patches every duplicate copy, so the TNC <code>dlc_0</code> precedence trap does not exist; instead, almost every AI decl overrides health individually. Three TNO mod designs are included. <strong>Static only; no game was launched.</strong> The append-entry writer this round could not build follows in <a href="Research-Report-R7-Tno-Add-Entry.html">Adding new entries to TNO archives (R7)</a>.</p>
+<p>Track <code>tnodecls</code>, round 6, 2026-10-01. Scope: <strong>TNO only</strong>
+(<code>&lt;Steam library&gt;\steamapps\common\Wolfenstein.The.New.Order</code>, id Tech 5,
+<code>WolfNewOrder_x64.exe</code>, 14 <code>chunkN.index</code>/<code>chunkN.resources</code> pairs via
+<code>master.index</code>, no DLC/patch tier at all). Read-only against the game
+install and every project file except this track's own folder
+<code>re_probes/tnodecls/</code> and this report. The game was <strong>not</strong> launched, no
+debugger attached, no process touched. <strong>TNO has no runtime image</strong> (unlike
+TNC's <code>re_probes/runtime_87400/module.bin</code> + <code>tools/decomp.py</code>) — every claim
+here about what the <em>engine</em> does with a decl field comes from the shipped
+decl text itself, from <code>docs/*.md</code>'s own prior binary-string findings (never
+re-derived), or from this project's own patcher code (<code>wolfsdk/resources.py</code>,
+<code>wolfsdk/patch.py</code>, <code>wolfsdk/decl.py</code>) and the archive bytes it reads/writes.
+No disassembly was done this round; where a TNC report's method (tracing a
+field into <code>.text</code>) would have settled a question, it is flagged as <strong>not
+settleable without a TNO runtime image</strong>, not silently skipped.</p>
+<p><strong>Built on, not redone:</strong> <code>docs/moddingflaeche-tno.md</code> (full corpus census,
+105 types, 25 559 parsed text decls, the <code>gamemodesp</code>/<code>faction</code>/<code>enigma</code>
+cheat routes, <code>startingInventory</code>, 20 largest unused types) — treated as
+ground truth and cited, not re-measured, except where I independently
+re-verified a specific field against the <strong>pristine backup</strong> (see §0). The
+existing TNO mods in <code>mods/</code> (<code>cheats_gamemode</code>, <code>enigma_frei</code>,
+<code>fraktionen_hass</code>, <code>supersoldaten_c15</code>, <code>zielhilfe_alle</code>, <code>wucht_treffer</code>,
+<code>wucht_waffen</code>, <code>menue_marke</code>, <code>widerstand</code>, <code>ragdoll_gore</code>, <code>gore_*</code>,
+<code>example_*</code>) were read as <strong>proof of the loader's capability</strong>, not
+re-explained. <code>docs/formats.md</code>/<code>docs/limits.md</code> (archive format, the
+ascending-offset invariant). <code>docs/ladepfade.md</code> Teil 1 (TNO's
+<code>fs_overlaypath</code>/loose-file findings — relevant to §3). <code>wolfsdk/cvars.py</code>
+(the 25 measured <code>RETAIL_BLOCKED</code> TNO cvars — why the decl route is needed
+at all). TNC's <code>r2_newassets.md</code>/<code>r3_newassetsv.md</code> (their append-entry
+technique for id Tech 6's <em>different</em> IDCL format) are cited only as a
+contrast in §3 — their method does not transfer; TNO's <code>chunkN.index</code> is a
+structurally different, simpler format.</p>
+<h2 id="0-a-methodology-note-that-changed-several-readings">0. A methodology note that changed several readings</h2>
+<p><code>D:\...\Wolfenstein.The.New.Order\base\</code> is <strong>not pristine</strong> — a prior
+session already ran <code>apply()</code> with 8 TNO mods (<code>gore_tief</code>, <code>gore_ultimativ</code>,
+<code>enigma_frei</code>, <code>ragdoll_gore</code>, <code>gore_realistisch</code>, <code>zielhilfe_alle</code>,
+<code>gore_texturen</code>, <code>widerstand</code>; <code>_wolfsdk_backup/journal.json</code>: <code>"missing":
+[]</code>, <code>"state": "applied"</code>, 377 assets, all 14 chunks rebuilt, 0 in-place
+slots). The pristine originals live in <code>base/_wolfsdk_backup/</code>. Every decl
+quoted below was <strong>re-read from <code>_wolfsdk_backup</code></strong>, diffed against the live
+copy, and the diff is reported where it mattered — twice this caught my own
+first read quoting an already-modded value (<code>weapon/handgun_base</code>'s
+<code>clipSize</code>, <code>projectile/handgun</code>'s <code>aimAssistRange</code>) as if it were retail.
+<code>re_probes/tnodecls/pristine_*.decl</code> holds the 7 confirmed-pristine extracts
+this report draws field names from.</p>
+<pre><code class="language-bash">python re_probes/tnodecls/probe_tail.py   # §3's tail-byte measurement, read-only
+</code></pre>
+<h2 id="answer-in-one-paragraph">Answer in one paragraph</h2>
+<p>TNO's decl system is <strong>the same dialect and the same patcher mechanics as
+TNC</strong> (confirmed directly: <code>aiHealth.components.components[0].max/cur</code>,
+<code>actorEditable.damageGroups</code> with 13 zones, <code>faction.myFaction</code>,
+<code>startingInventory.item[].{startSlot,inventoryDecl}</code> all exist byte-for-byte
+under the same paths in TNO's <code>entityDef:ai/enemies/default</code> and
+<code>entityDef:player/game/wolf/*</code>), but the <strong>archive container is a different,
+simpler, single-tier format</strong> (<code>chunkN.index</code>, no DLC/patch layering) and the
+<strong>loader already patches every one of the 14 chunks for every duplicate
+copy of an asset</strong> (<code>Installation.find()</code>/<code>apply()</code>, confirmed by code
+read, §2), which <strong>removes the TNC-style "wrong archive wins" trap
+entirely</strong> — there is no equivalent of TNC's <code>dlc_0</code> precedence to get
+wrong, because TNO has no DLC/patch tier to begin with (§4). What TNO <em>does</em>
+have, and TNC's corpus doesn't share, is a <strong>structural AI trap</strong>: where TNC
+can flip HP for 125 enemies by editing one shared root decl
+(<code>soldier_base</code>), TNO's AI decls <strong>override <code>aiHealth</code> individually in 252
+of 255 corpus entries</strong> (measured, §1.4) — there is no cheap single-point
+health lever, only a generator-script lever. The loader's <code>set</code> mechanism
+can only touch <strong>paths that already exist</strong> in a decl
+(<code>wolfsdk/decl.py:apply_patch</code> raises <code>DeclError</code> on an unknown path) —
+inserting a genuinely new field (as <code>zielhilfe_alle</code> does for
+<code>aimAssistRange</code>, confirmed absent from the pristine
+<code>projectile/handgun</code>, §0) requires a full <code>"file"</code> replacement, not <code>set</code>.
+<strong>Adding a brand-new <code>(type, name)</code> entry to a TNO archive has no code path
+in this project</strong> (<code>resources.py</code>'s <code>rebuild()</code> explicitly rejects any
+payload whose key matches no existing entry, §3) <strong>and was never attempted
+here</strong> — but the format itself looks more tractable than TNC's IDCL: no
+header hash chain, no checksum anywhere, and this round's own measurement
+(§3, re-verified across all 14 chunks in round 2 after the verifier caught
+an overgeneralized version of this claim) confirms <code>docs/formats.md</code>'s guess
+that the mysterious 13-byte entry tail is <code>9 zero bytes + a BE u32 ID</code>,
+unique <strong>per chunk per type</strong> for decl-ish types (not globally, and not for
+audio/particle types) — a concrete, previously-unverified fact, but turning
+it into a working "append a new entry" writer, round-tripped
+through the game itself, is <strong>out of this round's scope</strong> (no runtime
+image to validate against, and the task's time budget does not cover
+building and testing a second archive-format writer from scratch). Three
+ready-to-build designs follow in §5, each scoped to mechanisms already
+proven safe by the existing mods: a corpus-wide AI-health scaler (252
+<code>set</code> edits, generator script), a "full arsenal from chapter 1" loadout
+swap (one <code>file</code> replace, using retail's own late-game array as the exact
+donor text — zero guessing), and a 10-decl AI-accuracy slider (<code>set</code> on
+<code>accuracySettings[].spread</code>, the one true single-point AI combat lever this
+round found).</p>
+<h2 id="pass-1-errors-fixed-in-round-2">Pass-1 errors (fixed in round 2)</h2>
+<p>The verifier ran an independent re-check and found three real defects in
+pass 1. All three are now re-verified with broader, fresh measurements
+(all 14 chunks, not just <code>chunk1</code>/<code>chunk1.index</code>'s 40-sample spot check);
+details are inline at each affected section (§1.1, §3), and the corrected
+<code>PROVEN</code>/<code>INFERRED</code> lists below reflect the fixes. Short version:</p>
+<ol>
+<li><strong>§3's tail-id claim was overgeneralized.</strong> Pass 1 said "the 13-byte
+   entry tail is 9 zero bytes + a BE u32 id that increments by exactly 1
+   between successive same-type entries" as a blanket fact, checked on 40
+   consecutive <code>entityDef</code> entries in one chunk. <strong>Fixed</strong>: re-measured
+   across all 14 chunks, every type, with <code>re_probes/tnodecls/probe_tail_v2.py</code>
+   through <code>_v5.py</code>. The claim holds — but only <strong>per chunk</strong>, and only for
+   decl-ish types (<code>entityDef</code>, <code>weapon</code>, <code>damage</code>, <code>ammo</code>, <code>projectile</code>,
+   <code>aiBehavior</code>, <code>material</code>, <code>trackingParms</code>, <code>faction</code>, <code>gamemodesp</code>,
+   <code>soundmixing</code>: zero within-chunk id collisions in all 14 chunks, every
+   type). It is <strong>false</strong> for <code>sound</code>/<code>particle</code>/<code>renderProg</code>/<code>cuttableResource</code>
+   (real same-chunk, same-id duplicates — e.g. 50 <code>sound</code> entries all named
+   <code>weapons/smg/ai/smg_ai_fire_nearmid</code> sharing id <code>111</code> in <code>chunk1</code>), and the
+   verifier's own counter-claim ("ZERO duplicates… even stronger than the
+   report's own check") was <strong>also wrong as a blanket statement</strong> — it
+   silently combined ids <strong>across all 14 chunks</strong>, where the same id value
+   legitimately recurs for unrelated content in different chunks (the id's
+   real scope is per-chunk, not global — see §3). The verifier's specific
+   counter-examples (<code>sound</code>, <code>particle</code>, <code>renderProg</code>, <code>cuttableResource</code>
+   showing duplication) are independently confirmed correct. <code>cm</code> is clean
+   in 11 of 14 chunks and near-clean in the rest (2 dup entries out of 983 in
+   one chunk) — closer to the decl-type behaviour than to <code>sound</code>'s.</li>
+<li><strong>§1.1's negative control didn't check <code>inherit =</code>.</strong> Pass 1 classified
+   the 19 <code>weapon/ai/*</code> decls lacking their own <code>accuracySettings[].spread</code>
+   as "melee/static, no spread concept" by presence/absence in the decl's
+   own text only. <strong>Fixed</strong>: <code>re_probes/tnodecls/probe_weaponai_inherit.py</code>
+   resolves every one of the 19 decls' <code>inherit =</code> chains. <strong>16 of 19
+   cascade</strong> to one of the 10 spread-bearing base decls (e.g.
+   <code>submachinegun1946 → assaultrifle1960</code>, <code>pistol1946 → pistol</code>,
+   <code>shotgun_lefthand → shotgun</code>); only <code>weapon/ai/baton</code> and
+   <code>weapon/ai/fists/supersoldat1946</code> are genuinely melee with no inherit;
+   <code>weapon/ai/mg46/supersoldat1946</code> is a real, unexplained standalone
+   exception (60 own fields, no <code>inherit</code>, no spread). §5.3's actual reach
+   is <strong>26 of 29</strong> <code>weapon/ai/*</code> decls, not 10 — corrected below.</li>
+<li><strong>Minor</strong>: §5.2 described <code>c01p1</code>'s pristine knife as plain
+   <code>weapon/knife</code>; the real value is <code>weapon/knife46cutonly</code> (confirmed by
+   direct re-read). Does not change the recipe (a full-block replace), only
+   the description — fixed below.</li>
+</ol>
+<p><strong>New this round, not in the verifier's list</strong> (answering its "missed"
+items and pushing the open questions further): the unexplained 154
+<code>probe_tail.py</code> mismatches are now explained (narrowing the search window
+from 64 to 256 bytes drops the all-14-chunks total from 30 506 to 2 793, and
+<strong>100% of what's left is type <code>sound</code></strong> — the window was simply too narrow,
+exactly as the verifier suspected, §3); and <code>docs/formats.md</code>'s open
+"Zähler A" ("counter A") question is now <strong>substantially resolved</strong>, not just left open:
+counter A equals the number of distinct <code>(type,name)</code> pairs in that chunk,
+confirmed <strong>exact</strong> in 12 of 14 chunks and off by ≤16 (&lt;0.1%) in the other 2
+(§3).</p>
+<h2 id="1-decl-field-catalogue-weapon-ammo-damage-ai-player">1. Decl field catalogue: weapon, ammo, damage, AI, player</h2>
+<p>All field names below are read directly from <code>_wolfsdk_backup</code> (pristine)
+unless marked "live (modded)". <code>python -m wolfsdk --title tno cat &lt;type&gt;:&lt;name&gt;</code>
+reproduces every one of these reads against the live install;
+<code>re_probes/tnodecls/pristine_*.decl</code> holds the pristine bytes.</p>
+<h3 id="11-weapon--weaponhandgun_base-4-577-b-pristine">1.1 <code>weapon</code> — <code>weapon/handgun_base</code> (4 577 B, pristine)</h3>
+<p>Confirms and extends <code>moddingflaeche-tno.md</code>'s "already used" entry with the
+full field surface (not previously dumped in any doc):</p>
+<pre><code>killStat, allowOneHandedReload, lowerWhenNoTension, isDualWieldable,
+internalName, pickupName/pickupNameMulti, handsFovScale, quickSlotGroup,
+giveable, dropable, numHands, sellPrice, itemUse, weaponFX,
+silencedGunfireEventDecl, gunfireEventDecl, initialAmmoDecl,
+validAmmoClips.item[0].{validAmmoDecl, clipSize}        # clipSize = 20 pristine
+initialBurstMode, burstCounts.burstCounts[0..2],
+firingIntervals.firingIntervals[0..2]                   # [150, 80, -1] pristine
+ammoPerShot, weaponSlot, weaponSelectionPrio, selectionSlot,
+maxRange, maxOptimalRange, reloadInterval,
+handLag.{clamp,scale,retain,recenter,offsetAtMaxPitch,offsetAtMinPitch,
+         offsetByPitch,offsetByYaw},
+handRotation.{minAngles,maxAngles,scale,retain,accelMaxDipAngle,
+              accelRotChangeSpeed,strafeRightTiltAngle,strafeLeftTiltAngle},
+handCoverMovRot.* (12 offset/rot sub-blocks for cover poses),
+weaponIdleRotation, dwWeaponModeOffset(Sec), weaponOffset(Sec),
+dwWeaponModeRollAngle(Sec), weaponRollAngle(Sec),
+weaponAnimSet, pistolWhipProjectile, lockTime, zoomMode,
+ironSightZoom.{zoomedFOV, mouse/joy_sensitivity_scale, zoomTime,
+               spreadReductionWithZoom, scopeGuiNum},
+weaponDof/weaponZoomDof.{focus,nearDist,scale},
+movementScale.{stand_zoom_scale,crouch_zoom_scale,stand_dw_scale,crouch_dw_scale},
+spreadReductionWithCrouch, spreadIncreasedByMovement,       # 0.5 pristine
+introAnimationID, shellEmitter.{breakableEmitter,baseSpeed,deltaSpeed,deltaAngle},
+shellEjectLeftTagName/FirstPersonOffset, hideShellsOnZoom,
+allowSprintFire(Sec), allowSprintDW, twoHandsswitchAnim,
+meshesHiddenOnPrimFiremode.item[N]
+</code></pre>
+<p><code>widerstand</code>'s live diff against this pristine (confirmed by
+<code>difflib.unified_diff</code>, 3 hunks only): <code>clipSize 20→30</code>,
+<code>firingIntervals[0] 150→90</code>, <code>firingIntervals[1] 80→55</code>,
+<code>spreadIncreasedByMovement 0.5→0.2</code> — exactly the fields the mod's own
+description claims, independently re-verified against the real archive
+bytes, not just trusted from the mod's <code>description</code> string.</p>
+<p><strong>AI-side weapon</strong>, <code>weapon/ai/assaultrifle1960</code> (pristine, unaffected by
+any installed mod): same top-level shape, but with the field this round's
+§5.3 design needs:</p>
+<pre><code>accuracySettings.accuracySettings[0..5].spread = 100, 75, 60, 50, 40, 25
+  # indices = ACCURACY_HORRIBLE..ACCURACY_PERFECT, same 6-tier enum TNC uses
+accuracySettings[N].wanderingAim.aimCorrectionDuration = 1000 (every tier)
+</code></pre>
+<p>Measured corpus-wide (<code>re_probes/tnodecls/probe_weaponai_inherit.py</code>,
+re-runnable, all 14 chunks): <strong>29 distinct <code>weapon/ai/*</code> decls</strong>, of which
+<strong>10 carry their own <code>accuracySettings[].spread</code></strong> (the ranged ones —
+shotgun, assaultrifle1960, pistol, drone, robot, mg60/supersoldat1960,
+wol000d_pistol, assaultrifle1960rocket, mechadeathshead_laser,
+prototyperobot_lkw); spread values range <code>15.0</code> (wol000d_pistol, flat
+across all 6 tiers — a boss/unique) to <code>160.0</code> (shotgun's worst tier).</p>
+<p><strong>Round-2 fix (verifier-confirmed defect, see "Pass-1 errors" above)</strong>: pass
+1 classified the 19 decls <em>without</em> their own <code>accuracySettings[].spread</code> as
+a clean negative control ("melee/static, no spread concept") by checking
+only each decl's own text, the same inheritance blind spot this report
+elsewhere warns about for TNC's AI-health lever (§1.4). Re-checked this
+round by resolving every one of the 19 decls' <code>inherit =</code> target chain
+(<code>probe_weaponai_inherit.py</code>): <strong>16 of the 19 transitively inherit a working
+<code>accuracySettings[].spread</code> from one of the 10 base decls</strong> —
+<code>assaultrifle1946</code>/<code>assaultrifle1960_bakedreverb</code>/<code>submachinegun1946</code>(<code>_nh</code>)/
+<code>dummy/submachinegun1946</code>(<code>_noflash</code>) → <code>assaultrifle1960</code>;
+<code>pistol1946</code>/<code>pistol_white</code> → <code>pistol</code>;
+<code>shotgun_lefthand</code>/<code>shotgun_shrapnel</code>(<code>_lefthand</code>) → <code>shotgun</code>;
+<code>heavy_robot_laser</code>(<code>_strong</code>)/<code>robot_c03p2</code>/<code>robot_temp</code> → <code>robot</code>;
+<code>mechadeathshead_laser_stage3</code> → <code>mechadeathshead_laser</code>. Only
+<strong><code>weapon/ai/baton</code></strong> and <strong><code>weapon/ai/fists/supersoldat1946</code></strong> are
+genuinely melee with no <code>inherit</code> and no spread concept — the negative
+control pass 1 claimed. <strong><code>weapon/ai/mg46/supersoldat1946</code></strong> is a real,
+unexplained exception: standalone (no <code>inherit</code>), 60 own fields, genuinely
+no spread field of any kind — not resolved this round, a real open item, not
+a missed inherit edge. Net effect, and it's a <strong>better</strong> result for §5.3
+than pass 1 claimed: editing the 10 base decls' <code>spread</code> cascades to <strong>26 of
+29</strong> <code>weapon/ai/*</code> decls corpus-wide (not just the 10 edited directly) —
+corrected in §5.3 below.</p>
+<h3 id="12-damage--damagetungstenmg46-372-b-pristine-vs-461-b-live">1.2 <code>damage</code> — <code>damage/tungsten/mg46</code> (372 B pristine vs 461 B live)</h3>
+<pre><code>damageParms.{damageName, damageTypes, goreTypes, declGoreBehavior,
+             minDamage, maxDamage, ragdollImpulseMag}
+</code></pre>
+<p>Pristine: <code>minDamage=10, maxDamage=15, ragdollImpulseMag=500</code>, <strong>no</strong>
+<code>cuttableRadius</code>/<code>ragdollOnDeath</code> key at all. Live (both <code>widerstand</code> and
+<code>ragdoll_gore</code> touch this same decl, confirmed from both mods' <code>assets</code>
+lists): <code>minDamage=22, maxDamage=30, ragdollImpulseMag=1100,
+cuttableRadius=14.0, ragdollOnDeath=true</code> — i.e. <strong><code>ragdollOnDeath</code> and
+<code>cuttableRadius</code> were inserted as new keys</strong>, which per §2.3 means that
+specific edit must have shipped as a <code>"file"</code> replacement for this decl
+(not <code>set</code>), consistent with <code>ragdoll_gore</code>'s own stated technique. Two
+independent mods editing the same decl applied cleanly in one <code>apply()</code> run
+(journal shows 0 "missing", <code>state: applied</code>) — confirms the loader resolves
+multi-mod collisions on one asset without erroring (last-applied-wins by mod
+<code>priority</code>, not re-derived here, already documented behaviour of
+<code>mod.build_payloads</code>).</p>
+<h3 id="13-ammo--ammohandgun-401-b">1.3 <code>ammo</code> — <code>ammo/handgun</code> (401 B)</h3>
+<pre><code>inherit = &quot;ammo/light&quot;;
+edit = { projectileDecl, lowAmmoInClip, lowAmmoInPocket,
+         minRandomCount, maxRandomCount, icon, icons.icons[0..2] }
+</code></pre>
+<p>Matches <code>moddingflaeche-tno.md</code> §2.15's <code>ammo/rocketlauncher</code> field set
+(same type, this is a second, independently-read instance: <code>lowAmmoInClip</code>,
+<code>lowAmmoInPocket</code>, <code>minRandomCount</code>/<code>maxRandomCount</code> confirmed present on
+both). No <code>maxCount</code>/<code>count</code>/<code>giveable</code> on this particular decl — those are
+present on other <code>ammo/*</code> entries per the prior doc, so the schema is a
+superset, not every decl using every field (expected for a decl format with
+optional keys).</p>
+<h3 id="14-ai--entitydefaienemiesdefault-5-079-b-pristine--corpus-census">1.4 AI — <code>entityDef:ai/enemies/default</code> (5 079 B pristine) + corpus census</h3>
+<p>Full structure (same shape as TNC's <code>idAI2</code> decls, confirmed field-for-field,
+see also <code>r4_aidecl.md</code> for the TNC side — not re-derived, independently
+re-confirmed to exist in TNO too):</p>
+<pre><code>class = &quot;idAI2&quot;; inherit = &quot;ai/default&quot;;
+edit.renderModelInfo / clipModelInfo / dormancy / afProperties
+edit.actorConstants.{perception, footstepEffectTables, waterInteraction}
+edit.faction.myFaction = &quot;faction/auth&quot;
+edit.mass
+edit.aiConstants.{physics, movement, animation}
+edit.aiEditable.{perception, sounds, behaviors, death, interactions,
+                  rollBonesDecl}
+edit.aiHealth.components.components[0] = { max = 50; cur = 50; }
+edit.aiHealth.components.components[1] = { max = 0;  cur = 0; }   # dead 2nd slot, same as TNC's r4_aidecl finding
+edit.fxDecl
+edit.actorEditable.damageGroups.item[0..12]   # 13 zones, same groupName/tagName/fxTagID set as TNC
+edit.actorEditable.radiusDamageJoints.item[0..5]
+edit.factionType = &quot;FACTIONTYPE_AUTHORITY&quot;
+edit.takedownTypes.{stealthSWFWD, stealthSWREV, stealthDWFWD, stealthDWREV,
+                     stunnedSWFWD, stunnedSWREV, groundFront, groundRear,
+                     AITakedowns}
+edit.walkIKDecl; edit.targetLockJoints.item[0..5]
+</code></pre>
+<p><strong>Corpus census</strong> (<code>entityDef</code> type, name starts <code>ai/</code>, all 14 pristine
+chunks, de-duplicated by name): <strong>255 distinct <code>ai/*</code> entityDefs, 444 raw
+entries</strong> (1.74× duplication across chunks on average — confirming the
+loader's "patch every copy" design in §2 is load-bearing, not
+theoretical). Of the 255, <strong>252 carry their own
+<code>aiHealth.components.components[0]</code> override</strong>; only 3 do not
+(<code>ai/groupmanager</code>, <code>ai/scriptedanimweb</code>,
+<code>ai/tungsten/wol000d/guard_spriteanimator</code> — all three non-combat/utility,
+not health-bearing bodies). This is the key structural difference from TNC:</p>
+<blockquote>
+<p><strong>FAILED HYPOTHESIS</strong>: "Editing <code>ai/enemies/default</code>'s <code>aiHealth</code> will
+cascade to every inheriting enemy, the same lever <code>r4_aidecl.md</code> found for
+TNC's <code>soldier_base</code> (125/185 combat archetypes inherit it without their
+own override)." <strong>Refuted</strong> by direct corpus measurement: 252/255 TNO
+<code>ai/*</code> decls set their own <code>aiHealth</code>, so an edit to the root changes at
+most 3 non-combat entries. TNO's AI health is authored per-leaf, not
+inherited — a corpus-wide health mod needs a generator over all 252
+decls (exactly what §5.1 below builds), not a one-line edit to a shared
+root.</p>
+</blockquote>
+<p><code>aiBehavior:behaviors/enemies/default</code> (1 293 B, pristine, unmodified by any
+installed mod — confirmed identical live/pristine):</p>
+<pre><code>traversalAttackTolerance, canUseTraversals, usesSearch, usesAvoid,
+damageBehaviors.{longPainDamageFilter, hasDeathAnims},
+friendlyAttitudeAdjust, itemSelect.itemSelect[N],
+canGreetPlayers, investigatesBody,
+takeCoverBehaviors.{maxWaitTimeAfterReachingCover, minWaitInCoverTime,
+                     maxWaitInCoverTime}.setting.setting[N],
+has157Turns, min/maxCloseMeleeInterval, min/maxChargeInterval,
+min/maxChargeDistance,
+dodging.{tooCloseDist, aimHeavyCoverHideChance, damageHideBailChance,
+         damageHideBailMaxChance, minAimDodgeInterval, maxAimDodgeInterval},
+min/maxThrowInterval
+</code></pre>
+<p><code>trackingParms:trackingparms/aim_default</code> (referenced by name from
+<code>aiEditable.behaviors.aimTrackingParms</code> on every AI that doesn't override
+it — same indirection pattern TNC's <code>r4_aidecl.md</code> found): <code>parms.item[0..6]
+= { kickScale, rate.value, acceleration.value, deceleration.value,
+springMaxLength }</code> — <strong>this is tracking-speed/smoothing, not a hit/miss
+probability field</strong> (no <code>aimError</code> key exists in TNO's version of this
+decl, unlike the TNC decl <code>r4_aidecl.md</code> describes under the same type name
+— <strong>a real, measured difference between the two games' use of the same
+decl type</strong>, not a mistake in either report). The actual accuracy lever in
+TNO is the weapon-side <code>accuracySettings[].spread</code> shown in §1.1, confirmed
+by direct read, not inferred from TNC's shape.</p>
+<h3 id="15-player--entitydefplayergamewolfchapter_start_default-28-459-b-pristine-unmodified">1.5 Player — <code>entityDef:player/game/wolf/chapter_start_default</code> (28 459 B, pristine, unmodified)</h3>
+<pre><code>edit.clipModelInfo / fxDecl / afProperties
+edit.actorConstants.{alwaysUsePlayerClip, perception, actorSounds,
+                      footstepEffectTables, footstepEvents}
+edit.faction.myFaction = &quot;faction/player&quot;
+edit.startingInventory = { num = 1; item[0] = { startSlot = &quot;EQUIPPED&quot;;
+                                                 inventoryDecl = &quot;weapon/knife&quot;; } }
+edit.walkIKDecl; edit.lightDebugHelperTypes.item[0..4]
+edit.thirdPersonHandsDef/LegsDef, handsModel, handsAnimWebName(+Secondary/Additive)
+edit.playerProps = &quot;player/default&quot;
+edit.standDecay / crouchDecay = { time, linear, lambda }
+edit.playerHealth.components.components[1] = { cur = 100; }   # index 1, not 0 -- differs from TNC's aiHealth[0] convention, confirmed by direct read
+edit.prtUnderwater; edit.maxTimeUnderwater.value = 50000;
+edit.maxFreeTimeUnderwater.value = 10000; edit.sprintAirReductionScale = 1
+edit.suffocationDamage / suffocationDamageLong /
+     suffocationStep1/2/3Sound / suffocationDeathSound
+edit.grappleTypes.item[0..2]
+edit.perkAbilities.perkAbilities[0..36]   # name/desc/icon/icon_locked/picture/ablilityModifier [sic, shipped typo]
+edit.perks.perks[0..31]   # perkName/perkDesc/countRequired/countDesc/
+                           # additionalCount/addCountDesc/additionalRequirement/addReqDesc/
+                           # requiredPerks.item[]/unlockedAbilities.item[]
+edit.upgradeInfo.upgradeInfo[N] = { is46, foundOnMap, allowedOnMap,
+                                     linkUpgrade46, linkUpgrade60 }
+</code></pre>
+<p><code>example_dev_loadout</code>'s target (<code>playerHealth.components.components[1].cur</code>)
+is confirmed real and exactly as <code>moddingflaeche-tno.md</code> §4.4 already
+reported — independently re-read here, not re-derived.</p>
+<p><strong>30 <code>player/game/wolf/*</code> entityDefs exist corpus-wide</strong> (one per
+chapter-part, plus <code>chapter_common_default</code>/<code>chapter_part_default</code>/
+<code>chapter_start_default</code>). Every chapter-part decl carries its <strong>own</strong>
+<code>startingInventory</code> (never just inherits the 1-item default) — read directly
+for <code>c11p1</code> (5 items incl. <code>weaponupgrades/shotgun_shrapnel</code>), <code>c13p1</code> (2
+items), <code>c14p1</code> (4 items incl. <code>weapon/laserkraftwerk</code> equipped), <code>c15</code> (6
+items — the richest found: knife, laserkraftwerk, assaultrifle1960
+equipped, shotgun, ar60marksman, handgun), <code>c16p2</code> (<code>num = 0</code> — an endgame
+chapter that intentionally starts the player with nothing, presumably items
+are granted mid-level by script instead). This is the exact real-retail
+donor array §5.2 uses verbatim.</p>
+<h2 id="2-what-the-loader-can-already-change--proven-by-the-installed-mods">2. What the loader can already change — proven by the installed mods</h2>
+<p>Not re-explained (each mod's own <code>description</code> in <code>mods/*/mod.json</code> already
+states its mechanism); what's new here is independently confirming, via
+<code>_wolfsdk_backup/journal.json</code>, that <strong>all 8 currently-enabled TNO mods
+applied cleanly against the real archives</strong>: <code>"missing": []</code>, <code>"state":
+"applied"</code>, 377 distinct <code>(type,name)</code> assets written, all 14 chunks
+rebuilt (0 fit in-place — every touched chunk needed a full
+<code>Archive.rebuild()</code>, not <code>write_in_place()</code>; expected when several mods
+touch many small decls scattered across a chunk, each individually too
+large or too small to fit its own slot via <code>deflate_exact</code>'s padding
+search). This is end-to-end proof the <strong>patcher mechanism</strong> (not the
+in-game effect, which the harness's own RUNTIME-PROVEN section already
+asserts generically for TNO) works against the live archive set, not just
+in isolated test fixtures.</p>
+<p>Decl types the loader already touches in a shipped TNO mod, with mechanism:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Mod</th>
+<th>Mechanism</th>
+<th>Field(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gamemodesp</code></td>
+<td><code>cheats_gamemode</code></td>
+<td><code>file</code> (field absent in <code>campaign</code>)</td>
+<td><code>startingHealth</code>, <code>gameModeFlags</code></td>
+</tr>
+<tr>
+<td><code>enigma</code></td>
+<td><code>enigma_frei</code></td>
+<td><code>set</code> (8 surgical edits)</td>
+<td><code>requiredSecrets.num = 0</code></td>
+</tr>
+<tr>
+<td><code>faction</code></td>
+<td><code>fraktionen_hass</code></td>
+<td><code>file</code> (new <code>relationships</code> block)</td>
+<td><code>relationships.relationships.item[N]</code></td>
+</tr>
+<tr>
+<td><code>file:*.entities</code></td>
+<td><code>supersoldaten_c15</code></td>
+<td><code>file</code>, inherit-target string swap only</td>
+<td>one <code>entityDef</code> block's <code>inherit</code></td>
+</tr>
+<tr>
+<td><code>projectile</code></td>
+<td><code>zielhilfe_alle</code></td>
+<td><code>file</code> (field inserted, absent in all 23 pristine targets)</td>
+<td><code>aimAssistRange</code></td>
+</tr>
+<tr>
+<td><code>soundmixing</code></td>
+<td><code>wucht_waffen</code></td>
+<td><code>set</code></td>
+<td>two mix-bus gain values</td>
+</tr>
+<tr>
+<td><code>sound</code></td>
+<td><code>wucht_treffer</code></td>
+<td><code>set</code>/<code>file</code></td>
+<td>burst-impact count, random-volume range</td>
+</tr>
+<tr>
+<td><code>file:strings/english.lang</code></td>
+<td><code>menue_marke</code></td>
+<td><code>set</code>, byte-length-exact (raw-stored type)</td>
+<td>3 UI string lines</td>
+</tr>
+<tr>
+<td><code>weapon</code></td>
+<td><code>example_big_magazine</code>, <code>example_fast_shotgun</code>, <code>widerstand</code></td>
+<td><code>set</code></td>
+<td><code>clipSize</code>, <code>firingIntervals[N]</code>, <code>spreadIncreasedByMovement</code></td>
+</tr>
+<tr>
+<td><code>entityDef</code> (player)</td>
+<td><code>example_dev_loadout</code></td>
+<td><code>set</code></td>
+<td><code>playerHealth.components.components[1].cur</code>, <code>maxTimeUnderwater.value</code></td>
+</tr>
+<tr>
+<td><code>damage</code></td>
+<td><code>example_weapon_tuning</code>, <code>widerstand</code>, <code>ragdoll_gore</code></td>
+<td><code>set</code> + <code>file</code> (new keys)</td>
+<td><code>minDamage</code>/<code>maxDamage</code>, <code>ragdollOnDeath</code>/<code>cuttableRadius</code>/<code>ragdollImpulseMag</code></td>
+</tr>
+<tr>
+<td><code>material</code></td>
+<td><code>example_white_handgun</code>, <code>widerstand</code></td>
+<td><code>set</code></td>
+<td><code>diffusemap</code>, <code>usevirtualmapping</code> redirect</td>
+</tr>
+<tr>
+<td><code>entityDef</code> (AI)</td>
+<td><code>widerstand</code></td>
+<td><code>set</code></td>
+<td>per-chapter AI <code>startingInventory</code>/health overrides</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>New, not previously documented anywhere</strong>: <code>set</code> on an existing path and
+<code>file</code> (full replacement) are <strong>not interchangeable</strong> —
+<code>wolfsdk/decl.py:apply_patch()</code> raises <code>DeclError("unknown path(s): …")</code> the
+moment a patch dict names a path absent from the target decl's own parsed
+<code>Decl.values</code>. Every mod above that <strong>adds</strong> a field
+(<code>zielhilfe_alle</code>'s <code>aimAssistRange</code>, <code>ragdoll_gore</code>'s <code>ragdollOnDeath</code>/
+<code>cuttableRadius</code>, <code>fraktionen_hass</code>'s <code>relationships</code> block,
+<code>cheats_gamemode</code>'s whole flag set) <strong>must</strong> ship as <code>"file"</code>, confirmed by
+reading their <code>mod.json</code> (<code>{"file": "assets/…"}</code>, not <code>{"set": {...}}</code>).
+Every mod that only <strong>changes a number already present</strong> uses <code>set</code>. This is
+the exact mechanical boundary a mod author needs to know and was not stated
+this precisely in any prior doc.</p>
+<h2 id="3-can-new-type-name-entries-be-added-to-a-tno-archive">3. Can NEW <code>(type, name)</code> entries be added to a TNO archive?</h2>
+<p><strong>No code path exists in this project for it</strong> (<code>PROVEN</code>, by code read):</p>
+<ul>
+<li><code>wolfsdk/resources.py:Archive.rebuild()</code> builds its payload set only from
+  <code>self.entries</code> (the entries the pristine index already parsed) and
+  explicitly <strong>raises</strong> <code>ResourceError</code> if any payload key matches no
+  existing entry (<code>missed = set(payloads) - applied</code>, §"rebuild", lines
+  288–298). There is no insert/append function anywhere in <code>resources.py</code>
+  or <code>patch.py</code>.</li>
+<li><code>ResourceIndex</code> is held as its <strong>original byte buffer</strong>
+  (<code>self.buf = bytearray(buf)</code>) and only ever mutated via
+  <code>set_sizes()</code>, which overwrites 12 bytes <strong>at an existing entry's known
+  <code>pos</code></strong> — there is no code that grows the buffer or inserts a new trio +
+  size-fields run.</li>
+<li>Appending data to the end of a <code>.resources</code> file <strong>while leaving the
+  index's entry <em>order</em> unchanged</strong> is the exact failure mode
+  <code>docs/formats.md</code>/<code>docs/limits.md</code> already document as measured in a
+  real game launch: <code>FATAL ERROR:
+  idBackgroundLoader::BeginBackgroundLoads: FileTable is out of order</code>. A
+  <strong>new</strong> entry row placed at the very end of the entry list, pointing at
+  data appended at the very end of the <code>.resources</code> file, would <strong>not</strong>
+  trigger that specific failure (offsets would still ascend) — but this is
+  reasoning from the invariant's stated cause, not a tested claim, and I
+  did not build or test it.</li>
+</ul>
+<p><strong>What this round newly measured, not just inferred</strong> (<code>PROVEN</code>, by direct
+byte read, round 2 widened from 1 chunk/40 samples to <strong>all 14 pristine
+chunks, every type</strong>: <code>re_probes/tnodecls/probe_tail_v2.py</code> through <code>_v5.py</code>,
+re-runnable):</p>
+<pre><code>entries (chunk1 alone): 4241   header counters @0x20/0x24: (3508, 4241)
+tail length distribution (all 14 chunks): 13 bytes dominates for
+  entityDef/weapon/damage/ammo/projectile/aiBehavior/material/trackingParms/
+  faction/gamemodesp/soundmixing/cm; &quot;sample&quot; is mostly 37/109 bytes; &quot;sound&quot;
+  is mostly 13 bytes but has rarer 133/205-byte tails too (heterogeneous).
+</code></pre>
+<p><code>docs/formats.md</code>'s own hedge — "meist 13 Bytes (9 Nullen plus eine
+fortlaufende BE-u32-ID)" ("mostly 13 bytes (9 zeros plus a running BE u32 ID)") — is <strong>confirmed, with a corrected scope</strong> (this is
+the round-2 fix for the verifier's first finding, see "Pass-1 errors"
+above): 9 zero bytes, then a BE u32 that behaves as a <strong>per-(chunk,type)</strong>
+counter, <strong>not</strong> a global one:</p>
+<ul>
+<li><strong>Unique within one chunk, per type, for every decl-ish type checked</strong>
+  (<code>entityDef</code>, <code>weapon</code>, <code>damage</code>, <code>ammo</code>, <code>projectile</code>, <code>aiBehavior</code>,
+  <code>material</code>, <code>trackingParms</code>, <code>faction</code>, <code>gamemodesp</code>, <code>soundmixing</code>): <strong>0
+  within-chunk id collisions in any of the 14 chunks</strong>, for any of these
+  types (<code>probe_tail_v3.py</code>). <code>cm</code> is clean in 11/14 chunks and near-clean
+  in the other 3 (at most 2 duplicate entries out of 983 in the worst
+  chunk) — closer to decl-type behaviour.</li>
+<li><strong>NOT unique across chunks</strong>, and this is expected, not an error: the
+  <em>same</em> id value recurs for <em>completely unrelated</em> <code>(type,name)</code> pairs in
+  different chunks (e.g. <code>entityDef</code> id <code>12189</code> is
+  <code>ai/tungsten/c03/part_02/soldier_07</code> in one chunk and
+  <code>breakable/environment/1946_crate_pieces</code> in another; <code>probe_tail_v4.py</code>).
+  Symmetrically, the <strong>same name</strong> gets a <strong>different</strong> id in each chunk it
+  has a copy in (e.g. <code>weapon/ai/submachinegun1946</code>: ids <code>{3491, 14445,
+  17814}</code> across its 3 chunk copies). This <strong>answers pass 1's own open
+  question</strong> ("unique only within one chunk, or across all 14?"): <strong>within
+  one chunk only</strong> — a new entry's id only needs to avoid collision with
+  existing ids of its own type <strong>in the one chunk being edited</strong>, not across
+  the whole 14-chunk install. This also means the verifier's own
+  "independent re-check" claiming "ZERO duplicate ids across all 14 chunks"
+  for these same types was <strong>itself wrong as stated</strong> — it silently combined
+  ids across chunks, which was bound to show "duplicates" under the real
+  per-chunk-scoped counter; see "Pass-1 errors" above.</li>
+<li><strong>NOT unique even within one chunk</strong> for <code>sound</code>/<code>particle</code>/<code>renderProg</code>/
+  <code>cuttableResource</code> — confirmed real, e.g. in <code>chunk1</code> id <code>111</code> is shared by
+  <strong>50</strong> <code>sound</code> entries all named <code>weapons/smg/ai/smg_ai_fire_nearmid</code>
+  (<code>probe_tail_v5.py</code>), and <code>chunk0</code>'s <code>renderProg</code> has 421 of 846 entries
+  in duplicate-id pairs. These are plausibly variant/take indices into a
+  shared audio-cue or shader-permutation table rather than per-entry unique
+  ids — <strong>not traced further, INFERRED only</strong>, same caveat as below.</li>
+</ul>
+<p>It is <strong>not</strong> a global file-position counter either way (it jumps
+discontinuously between type boundaries within a chunk), consistent with a
+<strong>per-(chunk,type) sequential id assigned at content-build time</strong> for
+decl-ish types (plausibly a decl-manager array index the engine fills once
+per chunk's build, not something resolved by name at load time — this
+specific mechanism is still <strong>INFERRED</strong>, not traced into any code, because
+there is no TNO runtime image to trace it into).</p>
+<p><strong>The 154-mismatch question (verifier's "missed" item), now explained</strong>: pass
+1's own <code>probe_tail.py</code> reported "154 mismatches (pattern not found nearby)"
+for <code>chunk1</code> without investigating it. Re-run with the search window widened
+from 64 to 256 bytes (<code>probe_tail_v2.py</code>, all 14 chunks): total mismatches
+drop from <strong>30 506 to 2 793</strong>, and <strong>100% of what remains is type <code>sound</code></strong>
+— confirming the verifier's suspicion that 64 bytes was simply too narrow
+for some tails (consistent with <code>sound</code>'s occasional 133/205-byte tails
+above), not a sign of a different, unexplained format.</p>
+<p><strong><code>Zähler A</code>, substantially resolved (was fully open after pass 1)</strong>:
+re-checked the "count of entries whose name is the first occurrence in this
+chunk" guess directly: counter A equals the number of <strong>distinct
+<code>(type,name)</code> pairs</strong> in that chunk, confirmed <strong>exact</strong> in 12 of 14 chunks
+(e.g. chunk1: 3508 distinct pairs = counter A exactly) and off by a tiny
+amount (16 of 15069 in chunk0, 1 of 21400 in chunk2 — both &lt;0.1%, plausibly
+this project's own resync parser picking up a handful of extra/fewer
+entries, not a different counting rule) in the remaining 2. Not pinned to
+100% exactness in all 14, but strong enough to treat as answered rather than
+open.</p>
+<p>What is still <strong>open, explicitly not attempted this round</strong>:</p>
+<ul>
+<li>Whether a hand-built new entry (synthetic trio + size fields + a tail
+  matching this pattern, appended at the end of both the index's entry
+  list and the <code>.resources</code> payload area) is even accepted by <strong>this
+  project's own</strong> <code>ResourceIndex.load()</code> resync parser, let alone the real
+  engine — <strong>not built or tested this round</strong>. Building and byte-level
+  self-testing a writer was judged out of scope for the time available
+  (unlike <code>r2_newassets.md</code>'s TNC work, which had a runtime image to
+  validate the <em>engine's own</em> lookup path against — TNO has none, so even
+  a working writer here would only prove "our own reader accepts it," not
+  "the game does"). Round 2's per-chunk-scope finding above makes this
+  concretely easier than pass 1 left it: the writer only needs <code>max(existing
+  ids of this type in this one chunk) + 1</code>, not a cross-chunk scan.</li>
+<li>What a <code>sound</code>/<code>particle</code>/<code>renderProg</code> duplicate id actually indexes
+  (shared cue/permutation table?) — newly measured as real this round, but
+  not traced into any mechanism; irrelevant to the append-entry writer since
+  §5's designs never touch these types.</li>
+</ul>
+<p><strong>Net answer</strong>: structurally more promising than TNC's IDCL (no checksum,
+no header hash chain, a resync-tolerant parser), and this round adds real,
+previously-unverified facts (the tail's exact shape, its per-chunk — not
+global — scope, and which types the "unique id" property actually holds
+for) — but turning that into a working append path, proven even at the "our
+own tooling round-trips it" level TNC's <code>r2_newassets.md</code> reached, is
+unbuilt and is the single most concrete next step (§6).</p>
+<h2 id="4-inherit--load-order-traps--does-tno-have-a-dlc_0-style-trap">4. Inherit / load-order traps — does TNO have a <code>dlc_0</code>-style trap?</h2>
+<p><strong>No equivalent exists, and the reason is structural, not luck</strong>
+(<code>PROVEN</code>, by code + file-listing read):</p>
+<ul>
+<li>TNO's <code>base/master.index</code> names exactly <strong>14 <code>chunkN.index</code>/
+  <code>chunkN.resources</code> pairs, flat, no DLC folders, no <code>patch_*.resources</code></strong>
+  (confirmed: <code>ls</code> of the TNO install root lists <code>chunk0</code>..<code>chunk13</code> plus
+  <code>master.index</code> and nothing else archive-shaped; contrast with TNC's
+  <code>base/</code>+<code>dlc/dlc_0..5/</code>+<code>patch_1..4.resources</code> tiers that
+  <code>docs/patchvorrang.md</code>/the TNC custom-map memory note are all about).
+  There is no "which layer wins" question to get wrong, because there is
+  only one layer.</li>
+<li><code>wolfsdk.patch.Installation.lookup</code>/<code>find()</code> is built once, over <strong>all</strong>
+  <code>self.archives</code> (= all 14 chunks, always, every <code>apply()</code> call — not a
+  subset chosen per-mod or per-map), and <code>find()</code> returns <strong>every</strong> hit for
+  a <code>(type, name)</code> key across however many of the 14 chunks carry it
+  (confirmed by code read, §2 above). <code>_apply()</code> then iterates <code>for
+  archive, entry in hits:</code> and writes to <strong>every</strong> one. Measured duplication
+  is real and non-trivial (§1.4: 444 raw <code>ai/*</code> entries for 255 distinct
+  names, a 1.74× average) — so this "patch every copy" behaviour is
+  load-bearing, not a theoretical safety net: a mod that only patched the
+  first hit would silently leave 189 duplicate AI entries unpatched.</li>
+<li>The one genuinely open question in this space, carried over unresolved
+  from <code>docs/ladepfade.md</code> Teil 1 (not re-tested here, no game launch):
+  whether <code>fs_overlaypath</code>/loose files in <code>base/generated/</code> could let a
+  <strong>loose file on disk</strong> shadow an <strong>archived</strong> decl of the same path. If
+  that is real, it would be a <em>different</em> kind of trap than TNC's (a
+  loose-file override silently beating an applied archive patch) —
+  <code>docs/ladepfade.md</code> itself says this needs a 10-minute in-game
+  experiment (its own "E1–E3") that was out of scope for a read-only
+  round and still is.</li>
+</ul>
+<p><strong>One real trap this round did find, inside the decl layer itself, not the
+archive layer</strong>: the §1.4 "FAILED HYPOTHESIS" above — assuming a TNC-style
+shared-root AI lever exists in TNO when it structurally does not (252/255
+decls override their own health). Anyone porting a TNC AI-difficulty recipe
+to TNO by analogy would silently affect almost nothing.</p>
+<h2 id="5-three-ready-to-build-tno-mod-designs">5. Three ready-to-build TNO mod designs</h2>
+<p>All three use only mechanisms independently confirmed safe in §2/§1 above
+(<code>set</code> on an existing path, or <code>file</code> with a verbatim donor array already
+shipping in retail) — no new patcher capability required, no new archive
+entries needed.</p>
+<h3 id="51-ai-health-slider-corpus-wide-generator-script-set">5.1 AI health slider, corpus-wide (generator script, <code>set</code>)</h3>
+<p><strong>What</strong>: scale every <code>ai/*</code> entityDef's <code>aiHealth.components.components[0].max</code>
+<em>and</em> <code>.cur</code> by a constant factor (e.g. ×0.4 for "glass cannon enemies",
+×2.5 for "bullet sponge"). Both <code>max</code> and <code>cur</code> must move together — moving
+only <code>max</code> leaves an enemy's actual spawn HP at the old (lower or higher)
+<code>cur</code> value, since the decl ships both set to the same number in every
+sampled entry (§1.4).</p>
+<p><strong>Why this needs a generator, not three hand-written edits</strong>: §1.4 proved
+252 of 255 <code>ai/*</code> entityDefs carry their <strong>own</strong> override — there is no
+single shared decl to edit.</p>
+<p><strong>Build steps</strong>:</p>
+<ol>
+<li>Enumerate every <code>(type="entityDef", name starts "ai/")</code> key via
+   <code>Installation.lookup</code>, de-duplicated by name (the loader already patches
+   every chunk copy per §4 — the generator only needs one representative
+   read per name to compute the new value).</li>
+<li>For each, <code>Decl(text)</code> (<code>wolfsdk/decl.py</code>), read
+   <code>edit.aiHealth.components.components[0].max</code>/<code>.cur</code>, skip the 3 decls
+   missing the path (§1.4's negative control — <code>set</code> would raise
+   <code>DeclError</code> on them anyway, so skipping is both correct and the cheap
+   path).</li>
+<li>Emit one <code>mod.json</code> with ~252 <code>"set"</code> assets:
+   <code>{"entityDef:ai/&lt;name&gt;": {"set": {"edit.aiHealth.components.components[0].max": "&lt;new&gt;", "edit.aiHealth.components.components[0].cur": "&lt;new&gt;"}}}</code>.</li>
+<li>No new decl type, no <code>file</code> replacement, no risk beyond what
+   <code>widerstand</code>'s 11-asset <code>set</code> edit already proved end-to-end (§2).</li>
+</ol>
+<h3 id="52-full-arsenal-from-chapter-1-file-exact-retail-donor-text">5.2 Full arsenal from chapter 1 (<code>file</code>, exact retail donor text)</h3>
+<p><strong>What</strong>: replace <code>entityDef:player/game/wolf/c01/c01p1</code>'s
+<code>startingInventory</code> block (pristine: <code>num = 1</code>, one item,
+<code>inventoryDecl = "weapon/knife46cutonly"</code> — a chapter-specific knife variant,
+<strong>not</strong> plain <code>weapon/knife</code> as pass 1 imprecisely said; corrected this
+round by direct re-read, does not change the recipe since it's a full-block
+replace either way) with the exact
+array already shipping in <code>player/game/wolf/c05_07_09_15/c15</code> (§1.5):</p>
+<pre><code>startingInventory = {
+  num = 6;
+  item[0] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/knife&quot;; }
+  item[1] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/laserkraftwerk&quot;; }
+  item[2] = { startSlot = &quot;EQUIPPED&quot;; inventoryDecl = &quot;weapon/assaultrifle1960&quot;; }
+  item[3] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/shotgun&quot;; }
+  item[4] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/ar60marksman&quot;; }
+  item[5] = { startSlot = &quot;BACKPACK&quot;; inventoryDecl = &quot;weapon/handgun&quot;; }
+}
+</code></pre>
+<p><strong>Why this is "ready", not just an idea</strong>: <code>moddingflaeche-tno.md</code> §4.4
+already proposed this exact move in the abstract ("den
+startingInventory-Block von c16p0 nach c01p1 kopieren", i.e. "copy the startingInventory block from c16p0 to c01p1"); this round turns it
+into an exact recipe by reading the <strong>real retail text</strong> of the richest
+donor (<code>c15</code>, not <code>c16p0</code> — c16p0 does not exist as a key in the 30-name
+census, <code>c15</code> does and is confirmed richer than the next-best <code>c11p1</code>/<code>c14p1</code>
+candidates) and confirming every one of its 6 <code>inventoryDecl</code> targets is a
+real, resolvable weapon decl name (all appear as <code>weapon:</code> entries
+elsewhere in the same corpus, §1.1/§1.5). <strong>Build</strong>: copy
+<code>_wolfsdk_backup</code>'s <code>c01p1.decl</code> text verbatim, string-replace only the
+<code>startingInventory = { num = 1; … }</code> span with the block above, ship as
+<code>{"file": "assets/entityDef__player_game_wolf_c01_c01p1.decl"}</code> — one asset,
+zero guessing, matches <code>supersoldaten_c15</code>'s already-proven "copy and
+surgically edit one span" build pattern.</p>
+<h3 id="53-ai-accuracy-slider-10-decls-set-single-real-combat-lever">5.3 AI accuracy slider, 10 decls (<code>set</code>, single real combat lever)</h3>
+<p><strong>What</strong>: <code>set</code> every tier of <code>accuracySettings.accuracySettings[0..5].spread</code>
+to a new value, in each of the 10 <code>weapon/ai/*</code> decls that carry their
+<strong>own</strong> copy of the field (§1.1: <code>shotgun</code>, <code>assaultrifle1960</code>, <code>pistol</code>,
+<code>drone</code>, <code>robot</code>, <code>mg60/supersoldat1960</code>, <code>wol000d_pistol</code>,
+<code>assaultrifle1960rocket</code>, <code>mechadeathshead_laser</code>, <code>prototyperobot_lkw</code>).
+<strong>Corrected this round</strong> (§1.1's inheritance-aware re-check, see "Pass-1
+errors"): editing just these 10 decls' <code>spread</code> actually reaches <strong>26 of the
+29</strong> <code>weapon/ai/*</code> decls corpus-wide, because 16 more decls inherit the field
+transitively from one of these 10 (e.g. <code>submachinegun1946</code> inherits from
+<code>assaultrifle1960</code>) — only <code>weapon/ai/baton</code>,
+<code>weapon/ai/fists/supersoldat1946</code> (genuinely melee) and
+<code>weapon/ai/mg46/supersoldat1946</code> (unexplained standalone exception) are
+unreachable by this design. 10 edited decls, 26 affected — a bigger reach
+than pass 1 claimed, at the same build cost. Two directions in one
+mechanism: set all 6 tiers to <code>0</code> per decl (enemies hit every shot they take
+— "deadeye" mode) or scale every tier up by e.g. 2× (much more forgiving
+aim — an accessibility/easy-mode variant, distinct from the HP-based easy
+mode in §5.1 and composable with it).</p>
+<p><strong>Why this is the clean lever and not <code>trackingParms</code></strong>: §1.4 found TNO's
+shared <code>trackingparms/aim_default</code> decl has <strong>no</strong> hit-probability field
+(<code>parms.item[]</code> is tracking <em>speed</em>, not spread) — the field TNC's doc
+describes under the same decl type name does not exist in TNO's copy. The
+actual, verified accuracy knob lives on the <strong>weapon</strong> side instead, and
+because <code>weapon/ai/*</code> decls are referenced by name from AI behaviour (not
+duplicated per enemy instance), 10 edited decls affect every AI that fires
+one of these 10 weapons corpus-wide — the one genuine single-point combat
+lever this round found for TNO AI (contrast with §5.1's health, which has
+none).</p>
+<p><strong>Build</strong>: 10 <code>"set"</code> assets, each with 6 leaf-path edits
+(<code>edit.accuracySettings.accuracySettings[N].spread</code>), all paths confirmed
+present in the pristine decls read this round — no <code>file</code> replacement
+needed anywhere in this design.</p>
+<h2 id="proven">PROVEN</h2>
+<ul>
+<li>TNO's <code>entityDef</code> AI/player decl shape (aiHealth, actorEditable.damageGroups,
+  faction, startingInventory, perkAbilities/perks/upgradeInfo) matches TNC's
+  field paths exactly, confirmed by direct pristine read (§1.4/§1.5).</li>
+<li><code>weapon/handgun_base</code>'s <code>widerstand</code> diff is exactly 3 hunks, matching the
+  mod's own claimed fields, confirmed byte-for-byte against the pristine
+  backup (§1.1).</li>
+<li><code>damage/tungsten/mg46</code> pristine lacks <code>cuttableRadius</code>/<code>ragdollOnDeath</code>;
+  both exist live, inserted by a <code>"file"</code> edit (§1.2).</li>
+<li><code>projectile/handgun</code> pristine lacks <code>aimAssistRange</code> entirely; it exists
+  live (<code>zielhilfe_alle</code>), confirming the loader can insert brand-new decl
+  keys via <code>"file"</code> (§0/§2).</li>
+<li>252/255 TNO <code>ai/*</code> entityDefs carry their own <code>aiHealth</code> override; only 3
+  do not (§1.4, full corpus count).</li>
+<li><code>wolfsdk/decl.py:apply_patch()</code> rejects any <code>"set"</code> path absent from the
+  target decl's own parsed values (code read, §2).</li>
+<li><code>wolfsdk/resources.py:Archive.rebuild()</code> has no path to insert a new
+  <code>(type,name)</code> entry; it raises on any payload key matching no existing
+  entry (code read, §3).</li>
+<li>TNO's archive tier is flat (14 chunks via <code>master.index</code>, no DLC/patch
+  layer) and <code>Installation.find()</code>/<code>apply()</code> patches every duplicate copy
+  across all 14 chunks in one call (code read, §4).</li>
+<li>The 13-byte entry tail in <code>chunkN.index</code> is 9 zero bytes + a BE u32 id that
+  is unique <strong>per chunk, per type</strong> (0 collisions in any of the 14 chunks)
+  for every decl-ish type checked (<code>entityDef</code>, <code>weapon</code>, <code>damage</code>, <code>ammo</code>,
+  <code>projectile</code>, <code>aiBehavior</code>, <code>material</code>, <code>trackingParms</code>, <code>faction</code>,
+  <code>gamemodesp</code>, <code>soundmixing</code>) — but <strong>not</strong> unique across chunks (the same
+  id legitimately recurs for unrelated content in different chunks) and
+  <strong>not</strong> unique even within one chunk for <code>sound</code>/<code>particle</code>/<code>renderProg</code>/
+  <code>cuttableResource</code> (real same-chunk duplicate ids measured directly).
+  Round-2 correction of a pass-1 overgeneralization; measured on all 14
+  chunks' real bytes (§3, <code>re_probes/tnodecls/probe_tail_v2.py</code> through
+  <code>_v5.py</code>).</li>
+<li><code>docs/formats.md</code>'s open "Zähler A" question is substantially resolved:
+  it equals the count of distinct <code>(type,name)</code> pairs in that chunk, exact
+  in 12 of 14 chunks, off by &lt;0.1% in the other 2 (§3).</li>
+<li>All 8 currently-installed TNO mods applied cleanly against the real
+  14-chunk archive set (<code>journal.json</code>: 377 assets, 0 missing,
+  <code>state: applied</code>) — the patcher mechanism works end to end on live data,
+  independent of the harness's generic in-game claim.</li>
+<li>16 of the 19 <code>weapon/ai/*</code> decls lacking their own <code>accuracySettings[].spread</code>
+  inherit it transitively from one of the 10 base decls that carry it; only
+  2 are genuinely melee with no spread concept and 1 (<code>mg46/supersoldat1946</code>)
+  is a real unexplained exception — round-2 fix of a pass-1 negative-control
+  defect, resolved by tracing every <code>inherit =</code> chain
+  (§1.1, <code>re_probes/tnodecls/probe_weaponai_inherit.py</code>).</li>
+</ul>
+<h2 id="inferred">INFERRED</h2>
+<ul>
+<li>That the per-(chunk,type) sequential tail id is assigned at content-build
+  time, once per chunk (not resolved by name at load time, and not a single
+  global counter across the install) — plausible from its behaviour
+  (confirmed per-chunk unique, confirmed NOT per-name-consistent across
+  chunks), not traced into any code (no TNO runtime image exists to trace
+  into).</li>
+<li>That a new entry appended as the <em>last</em> row of both the index's entry
+  list and the <code>.resources</code> payload area would respect the
+  ascending-offset invariant and thus not reproduce the known
+  <code>FileTable is out of order</code> crash — reasoned from the invariant's stated
+  cause, never built or tested.</li>
+<li>That <code>accuracySettings[].spread</code> is the primary AI hit/miss lever (as
+  opposed to some other, unread field) — supported by it being the only
+  numeric field named "spread"/"accuracy" found on the 10 ranged
+  <code>weapon/ai/*</code> decls (and, transitively, 16 more via <code>inherit</code>), but the
+  actual to-hit math is in the encrypted <code>.text</code> and was not traced.</li>
+<li>That <code>sound</code>/<code>particle</code>/<code>renderProg</code>/<code>cuttableResource</code>'s within-chunk
+  duplicate tail ids index some shared cue/permutation table (rather than
+  being a parsing artifact) — plausible given the duplicate groups share the
+  same decl <code>name</code> (e.g. 50 identically-named <code>sound</code> entries sharing one
+  id), not traced into any code and not needed for any §5 design.</li>
+</ul>
+<h2 id="failed-hypotheses">FAILED HYPOTHESES</h2>
+<ul>
+<li>"A TNC-style shared AI-health root decl exists in TNO, so one edit
+  cascades corpus-wide." Refuted by direct count: 252/255 <code>ai/*</code> entityDefs
+  override <code>aiHealth</code> themselves (§1.4).</li>
+<li>"<code>trackingParms:trackingparms/aim_default</code> carries TNO's AI miss-chance
+  field, the same shape TNC's decl of that name has." Refuted by direct
+  read: TNO's copy has no <code>aimError</code>/<code>trackerRange</code> key, only tracking-speed
+  fields (§1.4). The real lever is the weapon-side <code>accuracySettings[].spread</code>
+  instead (§1.1, used in §5.3).</li>
+<li>My own first-pass reads of <code>weapon/handgun_base</code>, <code>damage/tungsten/mg46</code>,
+  and <code>projectile/handgun</code> from the <strong>live</strong> install, initially taken as
+  "what retail ships" — caught and corrected by re-reading from
+  <code>_wolfsdk_backup</code> once the backup folder was noticed (§0); flagged here so
+  the same mistake isn't repeated by a reader skimming only this report.</li>
+<li>"The 19 <code>weapon/ai/*</code> decls without their own <code>accuracySettings[].spread</code>
+  have no spread concept at all" — refuted by tracing <code>inherit =</code> chains:
+  16 of the 19 inherit a working <code>spread</code> from one of the 10 base decls; a
+  pass-1 negative control that skipped the exact inheritance check this
+  report itself applies elsewhere (§1.1, verifier-found, round-2 fix).</li>
+<li>"The 13-byte tail's 9-zero-plus-BE-u32-id pattern increments by exactly 1
+  and never repeats, full stop" — refuted as a blanket claim: true only
+  per chunk and only for decl-ish types; <code>sound</code>/<code>particle</code>/<code>renderProg</code>/
+  <code>cuttableResource</code> have real same-chunk duplicate ids (§3, verifier-found,
+  round-2 fix).</li>
+</ul>
+<h2 id="open-questions--next-step">Open questions / next step</h2>
+<ol>
+<li><strong>Build and self-test an append-entry writer for <code>chunkN.index</code>+
+   <code>.resources</code></strong>, at the level <code>r2_newassets.md</code> reached for TNC (own
+   parser round-trips a synthetic new entry) — still the concrete, scoped
+   next step, still not built. Round 2 removed one blocker: the per-type
+   tail id only needs to be unique <strong>within the one chunk being edited</strong>
+   (confirmed, not just assumed, §3), so the writer's id-assignment rule is
+   now known (<code>max(existing ids of this type in this chunk) + 1</code>) and
+   <code>Zähler A</code> is understood well enough to compute a correct replacement
+   header value (count of distinct <code>(type,name)</code> pairs, §3). What's still
+   unbuilt: the writer itself, and whether <strong>this project's own</strong>
+   <code>ResourceIndex.load()</code> resync parser (let alone the real engine) accepts
+   a hand-built entry — no TNO runtime image exists to check the latter.</li>
+<li>Whether <code>fs_overlaypath</code>/loose <code>base/generated/</code> files can shadow an
+   archived decl (§4) — <code>docs/ladepfade.md</code>'s own unfinished E1 experiment,
+   relevant here because it's the one place a TNO-specific load-order trap
+   <em>could</em> still exist, just not in the archive-precedence shape TNC has.</li>
+<li>A TNO runtime image (the TNC-side <code>tools/decomp.py</code> equivalent) would
+   turn several <code>INFERRED</code> items here into <code>PROVEN</code> — in particular, what a
+   <code>sound</code>/<code>particle</code>/<code>renderProg</code> duplicate tail id actually indexes (§3),
+   and whether <code>accuracySettings[].spread</code> really is the engine's hit/miss
+   lever (§1.1/§5.3). None of this round's findings required it to be
+   useful, but these specifically do.</li>
+</ol>
+<h2 id="in-game-test-for-the-maintainer">In-game test (for the maintainer)</h2>
+<p><em>(Translated from German.)</em></p>
+<p>Not a single one of the three designs from §5 was started — everything below is the
+smallest test step, not a result.</p>
+<ol>
+<li><strong>The easy-to-check variant, design 5.2 (full arsenal in chapter 1):</strong>
+   build the mod (one <code>.decl</code> file, <code>entityDef:player/game/wolf/c01/c01p1</code>,
+   <code>startingInventory</code> as in §5.3 above), install it with <code>wolfsdk apply</code>,
+   load chapter 1. Expected: the weapon wheel immediately shows six weapons
+   (knife, Laserkraftwerk, assault rifle equipped, shotgun,
+   sniper variant, pistol) instead of only the knife. This is the
+   lowest-risk of the three tests — a single <code>file</code> replacement with exactly
+   the values that chapter 15 itself uses in the original game.</li>
+<li><strong>Design 5.3 (AI accuracy):</strong> set one of the ten <code>weapon/ai/*</code> decls
+   (e.g. <code>weapon/ai/assaultrifle1960</code>) experimentally to <code>spread = 0</code> in all
+   six levels, play a single early encounter with rifle carriers
+   (e.g. chapter 1). Expected: clearly more frequent hits by the
+   enemies, without anything else changing (no new animation, no
+   new sound). Shows whether <code>accuracySettings[].spread</code> really is the
+   hit lever (§1.4 INFERRED) or whether the engine reads it differently than
+   assumed here.</li>
+<li><strong>Design 5.1 (AI health generator):</strong> before the full 252-decl run,
+   first test <strong>one</strong> enemy type by hand — set <code>ai/enemies/default</code>'s
+   <code>aiHealth.components.components[0].max</code>/<code>cur</code> to e.g. <code>5</code> (as
+   already proposed in <code>docs/moddingflaeche-tno.md</code> for TNC), play a short
+   encounter with standard enemies. Expected according to §1.4: <strong>only</strong> the
+   three non-combat decls would be affected if one touches only the
+   root instead — that directly confirms whether the "no shared lever" finding
+   measured in this report holds, before the
+   252-decl generator is built.</li>
+</ol>
+<h2 id="files">Files</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>re_probes/tnodecls/probe_tail.py</code></td>
+<td>Pass-1: read-only tail-byte measurement over <code>chunk1.index</code> only (§3), re-runnable; superseded in scope by <code>_v2</code>–<code>_v5</code> below but kept for its raw-tail printout.</td>
+</tr>
+<tr>
+<td><code>re_probes/tnodecls/probe_tail_v2.py</code></td>
+<td>Pass-2: same measurement widened to all 14 chunks, window=64 vs 256, per-type duplicate-id summary (§3, "Pass-1 errors").</td>
+</tr>
+<tr>
+<td><code>re_probes/tnodecls/probe_tail_v3.py</code></td>
+<td>Pass-2: per-chunk vs cross-chunk id-uniqueness check for 7 mod-relevant types (§3).</td>
+</tr>
+<tr>
+<td><code>re_probes/tnodecls/probe_tail_v4.py</code></td>
+<td>Pass-2: confirms cross-chunk id reuse maps to <em>different</em> names, not the same decl (§3).</td>
+</tr>
+<tr>
+<td><code>re_probes/tnodecls/probe_tail_v5.py</code></td>
+<td>Pass-2: within-chunk duplicate-id check for <code>sound</code>/<code>particle</code>/<code>renderProg</code>/<code>cm</code> vs <code>entityDef</code> (§3).</td>
+</tr>
+<tr>
+<td><code>re_probes/tnodecls/probe_cuttable.py</code></td>
+<td>Pass-2: within-chunk duplicate-id check for <code>cuttableResource</code> (§3).</td>
+</tr>
+<tr>
+<td><code>re_probes/tnodecls/probe_weaponai_inherit.py</code></td>
+<td>Pass-2: <code>weapon/ai/*</code> corpus census + <code>inherit =</code> chain resolution for the <code>accuracySettings[].spread</code> negative control (§1.1, "Pass-1 errors").</td>
+</tr>
+<tr>
+<td><code>re_probes/tnodecls/pristine_*.decl</code> (7 files)</td>
+<td>Pristine (<code>_wolfsdk_backup</code>) extracts of every decl quoted in §1, saved so a reader can diff them against the live install without touching the game dir again.</td>
+</tr>
+<tr>
+<td><code>re_probes/agent_reports/r6_tnodecls.md</code></td>
+<td>This report.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Related: <a href="Research-Report-R2-Newassets.html">Research Report: R2 Newassets</a>, <a href="Research-Report-R3-Newassetsv.html">Research Report: R3 Newassetsv</a>, <a href="Research-Report-R4-Ai-Decls.html">Research Report: R4 Ai Decls</a>, <a href="Research-Report-R7-Tno-Add-Entry.html">Research Report: R7 Tno Add Entry</a>, <a href="TNO-Modding-Surface.html">TNO Modding Surface</a>, <a href="File-Formats.html">File Formats</a>, <a href="Modding-Limits.html">Modding Limits</a>, <a href="Asset-Loading-Paths.html">Asset Loading Paths</a>, <a href="Patch-Precedence.html">Patch Precedence</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Tno-Console.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Console and Cvars: Does the TNC Restriction Model Carry Over?</a><a class="next" href="Research-Report-R6-Tno-Dump.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Tnodump: A Read-Only Runtime Capture Tool for TNO, and the Ghidra Import Prepared for the Moment a TNO Image Exists</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

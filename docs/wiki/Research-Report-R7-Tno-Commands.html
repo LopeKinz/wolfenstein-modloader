@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Console Commands: Registration, Flags, and What&#x27;s Reachable Right Now – Wolfenstein Modloader</title>
+<meta name="description" content="Code-reading study of which console commands really exist in The New Order and which are only menu labels.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Console Commands: Registration, Flags, and What&#x27;s Reachable Right Now</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R7-Tno-Commands"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#question">Question</a></li><li><a href="#answer-short">Answer (short)</a></li><li><a href="#1-the-registration-call-read-out-of-its-own-decompiled-body">1. The registration call, read out of its own decompiled body</a></li><li><a href="#2-147-commands-from-147-direct-call-sites-across-12-functions">2. 147 commands from 147 direct call sites across 12 functions</a></li><li><a href="#3-45-more-from-a-self-registering-linked-list-ghidras-xrefs-missed-entirely">3. +45 more from a self-registering linked list Ghidra&#x27;s xrefs missed entirely</a></li><li><a href="#4-where-godnoclipnotargetgivespawn-actually-live">4. Where god/noclip/notarget/give/spawn actually live</a></li><li><a href="#5-timescale-is-a-cvar-not-a-command">5. timescale is a cvar, not a command</a></li><li><a href="#proven-this-track--decompiled-code-andor-live-data-values-not-string-adjacency">PROVEN (this track — decompiled code and/or live .data values, not string adjacency)</a></li><li><a href="#inferred-plausible-not-fully-nailed-down">INFERRED (plausible, not fully nailed down)</a></li><li><a href="#failed-hypotheses--dead-ends-this-track">Failed hypotheses / dead ends (this track)</a></li><li><a href="#recipe">Recipe</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#smallest-in-game-test">Smallest in-game test</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report read the decrypted program code of Wolfenstein: The New Order (TNO) to list every registered console command. It found 192 real commands, including map, devmap, kill, teleport and screenshot, and showed that TNO&#x27;s command registration has no place for cheat or lock flags at all, unlike Wolfenstein II. The well-known cheat names god, noclip, notarget, give and spawn are not commands; they only appear as button text in the hidden DevGUI menu, which corrects an earlier report. Everything here is <span class="t" data-t="static">static analysis</span>; the suggested key-bind test with start arguments has not been run in the game.</p><ul><li>192 real commands were found by two independent methods: 147 from direct registration calls and 45 from a self-registering list, with no name overlap.</li><li>Registration takes only a name, a function, a description and auto-completion; there is no flags field, so there is no split into exposed and hidden commands as in Wolfenstein II.</li><li>8 DevGUI rows (such as God Mode, No Clip, No Target and Give Grenades) point to commands that were never registered; this corrects round 6.</li><li>timescale is a setting (<span class="t" data-t="cvar">cvar</span>) with default 1, not a command, and the real description of map is &#x27;loads a combo map&#x27;.</li><li>Open: whether the console can be opened at all in retail (com_allowConsole); the +bind key test (F5 to F10) has not been run in game.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um jeden registrierten Konsolenbefehl aufzulisten. Er fand 192 echte Befehle, darunter map, devmap, kill, teleport und screenshot, und zeigte, dass die Befehlsregistrierung in TNO überhaupt keinen Platz für Cheat- oder Sperr-Flags hat, anders als in Wolfenstein II. Die bekannten Cheat-Namen god, noclip, notarget, give und spawn sind keine Befehle; sie stehen nur als Schaltflächentext im versteckten DevGUI-Menü, was einen früheren Bericht korrigiert. Alles hier ist <span class="t" data-t="static">statische Analyse</span>; der vorgeschlagene Tastentest mit Startargumenten wurde im Spiel noch nicht ausgeführt.</p><ul><li>192 echte Befehle wurden mit zwei unabhängigen Methoden gefunden: 147 aus direkten Registrierungsaufrufen und 45 aus einer selbstregistrierenden Liste, ohne doppelte Namen.</li><li>Die Registrierung nimmt nur einen Namen, eine Funktion, eine Beschreibung und eine Autovervollständigung; ein Flag-Feld gibt es nicht, also auch keine Trennung in freigegebene und versteckte Befehle wie in Wolfenstein II.</li><li>8 DevGUI-Zeilen (etwa God Mode, No Clip, No Target und Give Grenades) verweisen auf Befehle, die nie registriert wurden; das korrigiert Runde 6.</li><li>timescale ist eine Einstellung (<span class="t" data-t="cvar">Cvar</span>) mit Standardwert 1, kein Befehl, und die echte Beschreibung von map lautet „loads a combo map“.</li><li>Offen: ob sich die Konsole in der Verkaufsversion überhaupt öffnen lässt (com_allowConsole); der Tastentest mit +bind (F5 bis F10) wurde im Spiel nicht ausgeführt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-7 research pass on The New Order's console commands, read from decompiled code: the registration call has no flags parameter at all, and every registered command was enumerated (from direct call sites plus a self-registering list Ghidra's xrefs missed). <code>map</code>, <code>devmap</code>, <code>kill</code>, <code>teleport</code>, <code>setviewpos</code>, <code>screenshot</code> and many more are real commands; <code>god</code>, <code>noclip</code>, <code>notarget</code>, <code>give</code> and <code>spawn</code> are not — they exist only as DevGUI label text, which corrects round 6. <code>timescale</code> is a cvar. <strong>Static only; the start-argument test at the end has not been run.</strong></p>
+<p>Track <code>tnocommands</code>. Builds on <code>re_probes/agent_reports/r6_tnoconsole.md</code> (TNO's
+restriction model, static-only: no runtime image existed yet, DevGUI table mined
+from raw <code>.rdata</code> string adjacency). This track has something r6 didn't: TNO now
+has a <strong>decrypted, live runtime capture</strong> (<code>re_probes/runtime_tno_186352/module.bin</code>,
+base <code>0x7ff74a390000</code>, pid 186352, <code>.text</code>/<code>.rdata</code>/<code>.data</code>/<code>.pdata</code> all captured)
+and a Ghidra decompiler over it (<code>tools/decomp.py ... --gzf
+D:/wolf-decomp/ghidra/tno_runtime.gzf</code>). Everything below is either decompiled C
+read straight out of that capture, or bytes read directly from the capture's
+<code>.data</code> (which holds <strong>real, live pointer values</strong> from the process that was
+running when it was captured, not static-image placeholders) — not string
+adjacency. Read-only throughout: nothing was launched, nothing attached, no file
+was written outside <code>re_probes/tnocommands/</code> and this report. New files:
+<code>re_probes/tnocommands/mine_commands.py</code> (the miner, reproducible,
+<code>--self-check</code>-free but every address it prints is independently re-derivable
+from the comments inline) and <code>re_probes/tnocommands/commands.json</code> (192
+commands: name, flags, description, callback RVA, arg-completion RVA, source).</p>
+<h2 id="question">Question</h2>
+<p>Find TNO's command registration call (<code>AddCommand</code>-equivalent: name/callback/
+flags/description), dump every registered command with its flags, and
+determine which of <code>map</code>/<code>devmap</code>/<code>god</code>/<code>noclip</code>/<code>notarget</code>/<code>give</code>/<code>spawn</code>/
+<code>kill</code>/<code>teleport</code>/<code>setviewpos</code>/<code>timescale</code>/<code>screenshot</code> are usable from the
+retail console right now.</p>
+<h2 id="answer-short">Answer (short)</h2>
+<p><strong><code>idCmdSystem::AddCommand</code> genuinely has no flags parameter in TNO — proven
+from decompiled code, not inferred from an absent string.</strong> The singleton is
+<code>idCmdSystemLocal</code> (RVA <code>0x15ba120</code>, vtable RVA <code>0x104fa68</code>, identity confirmed
+against <code>docs/ghidra/rtti_tno.json</code>, not just by convention). Its <code>AddCommand</code>
+(vtable slot <code>+0x18</code>, RVA <code>0x9edf30</code>) takes exactly four arguments —
+<code>(name, callback, description, argCompletion)</code> — read directly out of its own
+decompiled body (§1) and confirmed again by independently reading every one of
+<strong>192</strong> distinct real call sites this track found (§2/§3): not one passes a
+fifth, integer "flags" argument; the slot is either <code>0</code> or an <code>argCompletion</code>
+function pointer. There is no <code>CMD_EXPOSE</code>/<code>CMD_CHEAT</code>/<code>CMD_SHIPPINGDISABLED</code>
+bit to find because <strong>the call simply has nowhere to put one</strong> — this closes
+out r6's inference ("no <code>CMD_*</code> enum found by string search") with the
+stronger claim the task asked for: the registration call itself has no such
+parameter, full stop.</p>
+<p><code>map</code>/<code>devmap</code>/<code>cmap</code>/<code>checkmap</code>/<code>kill</code>/<code>teleport</code>/<code>setviewpos</code>/<code>getviewpos</code>/
+<code>centerview</code>/<code>where</code>/<code>screenshot</code>/<code>rawscreenshot</code>/<code>envshot</code>/<code>toggle</code>/<code>bind</code>/
+<code>unbind</code>/<code>reset</code>/<code>exec</code>/<code>vstr</code>/<code>listCmds</code>/<code>killMonsters</code> and 172 more are all
+<strong>real, registered commands</strong> (full table in <code>commands.json</code>), and since
+there is no flags concept at all, there is no "exposed vs. non-exposed" split
+the way TNC has — once the console/dispatcher is reached at all (the still-open
+<code>com_allowConsole</code> question from r6 §2), any of these 192 should be callable by
+name with no further per-command gate.</p>
+<p><strong><code>god</code>, <code>noclip</code>, <code>notarget</code>, <code>give</code>, <code>spawn</code>, <code>killPlayer</code> (bare), <code>changeTeam</code>,
+<code>NoPlayerDeath</code> are <em>not</em> in this table — this corrects r6, which called some of
+these "clean, wired Label→Action pairs."</strong> §4 shows exactly where those strings
+actually live: inside the DevGUI row-builder function, passed to a widget
+constructor that itself calls <code>idCmdSystemLocal</code>'s <em>lookup</em> function
+(<code>CommandExists</code>, vtable <code>+0x28</code>, decompiled in §4) to validate the string before
+treating it as runnable — and that lookup walks the <strong>exact same linked list</strong>
+<code>AddCommand</code> populates (both read/write the same <code>[this+8]</code> head pointer,
+confirmed in each one's own decompiled body). Since these names are absent from
+that list under both of this track's independent enumeration methods (§2
+direct-call-site scan, §3 self-registrar-list walk) <strong>and</strong> have no second code
+reference anywhere outside the DevGUI table (§4b), they would fail that very
+validation — they are DevGUI label text for commands that were apparently
+planned but never wired to a real <code>AddCommand</code> call in this retail build, not
+functioning commands with a cheat flag. <code>timescale</code> is real but is a <strong>cvar</strong>,
+not a command (§5) — <code>timescale .1</code> works as <code>&lt;cvar&gt; &lt;value&gt;</code>, the same syntax
+DevGUI's own "Slow Time" row uses.</p>
+<h2 id="1-the-registration-call-read-out-of-its-own-decompiled-body">1. The registration call, read out of its own decompiled body</h2>
+<p>String search (direct <code>bytes.find</code>, not adjacency) locates
+<code>"idCmdSystemLocal::AddCommand: %s already defined\n"</code> at RVA <code>0x1053d20</code>.
+<code>tools/tnc_runtime_code.py</code>'s <code>Image.xrefs()</code> (a RIP-relative-<code>lea</code> byte scanner
+over the whole <code>.text</code>, independent of Ghidra) finds exactly <strong>one</strong> reference
+to it anywhere in the binary: RVA <code>0x9ee014</code>, inside the function
+<code>(0x9edf30, 0x9ee025)</code>. Decompiled (<code>tools/decomp.py 0x9edf30</code>):</p>
+<pre><code class="language-c">void FUN_7ff74ad7df30(longlong param_1 /*this*/, undefined8 param_2 /*name*/,
+                       longlong param_3 /*callback*/, undefined8 param_4 /*description*/,
+                       undefined8 param_5 /*argCompletion*/)
+{
+  puVar1 = *(undefined8 **)(param_1 + 8);      // walk the command list head
+  while (true) {
+    if (puVar1 == 0) {                          // not found -&gt; allocate + link new node
+      ... puVar1 = Heap::Alloc(0x28);            // 5 x 8-byte fields = 40 bytes
+      puVar1[1] = param_2;  puVar1[3] = param_5;  puVar1[2] = param_3;  puVar1[4] = param_4;
+      *puVar1 = *(undefined8*)(param_1+8);        // node-&gt;next = old head
+      *(undefined8**)(param_1+8) = puVar1;        // head = node
+      return;
+    }
+    if (0 == func_0x7ff74ad559d0(param_2, puVar1[1])) break;  // name match (idStr::Cmp)
+    puVar1 = (undefined8*)*puVar1;
+  }
+  if (param_3 == puVar1[2]) return;               // same callback already registered -&gt; no-op
+  FUN_7ff74ad5a710(s_idCmdSystemLocal__AddCommand___s_already_defined, param_2);  // warn
+}
+</code></pre>
+<p>Node layout, read straight from the storage order above:
+<code>{next, name, callback, argCompletion, description}</code> — <strong>four data fields,
+not five</strong>. There is no slot for flags anywhere in this struct. This one
+function is called through vtable slot <code>+0x18</code> on the <code>idCmdSystemLocal</code>
+singleton (global pointer at RVA <code>0x15ba108</code>, which this capture shows
+pointing at <code>0x7ff74b94a120</code>, RVA <code>0x15ba120</code> — a static object in <code>.data</code>,
+vtable RVA <code>0x104fa68</code>). Cross-checked against <code>docs/ghidra/rtti_tno.json</code>
+(adjusting for its static image base <code>0x140000000</code> vs. this capture's runtime
+base): <code>0x14104fa68 → "idCmdSystemLocal"</code> — an independent, RTTI-sourced
+confirmation this is the right object, not just the right-shaped one.</p>
+<p><code>idCmdSystemLocal</code>'s lookup method (vtable <code>+0x28</code>, RVA <code>0x9edc20</code>) walks
+<strong>the same</strong> <code>[this+8]</code> head:</p>
+<pre><code class="language-c">undefined4 FUN_7ff74ad7dc20(longlong this, undefined8 text, char tokenize)
+{
+  puVar1 = *(undefined8**)(this + 8);
+  while (puVar1) {
+    if (tokenize == 0) { if (0 == idStr_Cmp(text, puVar1[1])) return 1; }     // exact match
+    else               { if (-1 != idStr_Icmpn_or_similar(text, puVar1[1],0,0,0xffffffff)) return 1; } // prefix match
+    puVar1 = (undefined8*)*puVar1;
+  }
+  return 0;
+}
+</code></pre>
+<p>(<code>idCVarSystemLocal</code>'s own equivalent, RVA <code>0x9dd630</code>, is the same two-mode
+shape over its own hash table — confirmed by decompiling it too, not assumed
+by symmetry.)</p>
+<h2 id="2-147-commands-from-147-direct-call-sites-across-12-functions">2. 147 commands from 147 direct call sites across 12 functions</h2>
+<p><code>Image.xrefs()</code>-independent, <code>tools/decomp.py 0x9edf30 --xrefs</code> lists every
+<code>xref TO</code> the registration function: <strong>152 <code>COMPUTED_CALL</code>s across 12 distinct
+caller functions</strong> (Ghidra resolved these because the vtable pointer chain is
+concrete data in this live capture, not a relocation it has to guess).
+11 of the 12 are large, flat <code>Init()</code>-style functions that just call
+<code>AddCommand</code> once per command in a row (e.g. <code>FUN_7ff74abddb00</code>, RVA
+<code>0x84db00</code>, 67 calls — engine/AI/debug commands: <code>kill</code>, <code>teleport</code>
+(argCompletion <code>0x852d90</code>, entity-name completion), <code>setviewpos</code>, <code>getviewpos</code>,
+<code>centerview</code>, <code>where</code>, <code>killMonsters</code>, <code>killAI</code>, <code>healAI</code>, <code>testWeapon</code>,
+<code>DebugUnlockPerkByAbility</code>, ...; <code>FUN_7ff74a4c7950</code>, RVA <code>0x137950</code>, 45 calls —
+<code>map</code>/<code>cmap</code>/<code>devmap</code>/<code>checkmap</code>/<code>slowmap</code> (shared argCompletion <code>0x9ef070</code>,
+a map-name completer), <code>quit</code>/<code>exit</code>, <code>writeConfig</code>, <code>saveGame</code>/<code>loadGame</code>,
+<code>vid_restart</code>, <code>demorecord*</code>, ...). The 12th caller is the one call inside a
+<code>for</code> loop over a <strong>second</strong> mechanism (§3) — Ghidra's computed-call analysis
+found it as one call site (correct: it's one instruction, executed N times at
+runtime), but resolving <em>what</em> it registers needs the linked-list walk below,
+not decompiled text.</p>
+<p><code>re_probes/tnocommands/mine_commands.py</code> parses every one of these direct call
+sites' decompiled C: resolves <code>name</code>/<code>description</code> by re-reading the <strong>full,
+untruncated</strong> string straight from <code>module.bin</code> at the VA Ghidra's own label
+encodes (Ghidra's auto-labels truncate — e.g. its label says
+<code>exportDuplicateCollisionGeometry</code>, the real, in-game name is
+<code>exportDuplicateCollisionGeometryModel</code>, recovered correctly by this script
+precisely because it never trusts the label text, only the VA suffix it
+contains), and takes <code>callback</code>/<code>argCompletion</code> RVAs directly from Ghidra's
+<code>FUN_&lt;va&gt;</code>/<code>SUB_&lt;va&gt;</code> naming (which already <em>is</em> the VA). <strong>147 unique names</strong>
+resolved (151 individual call instructions minus 4 incidental name collisions);
+one call (the loop) correctly flagged <code>UNRESOLVED</code> by the script and handled
+separately.</p>
+<h2 id="3-45-more-from-a-self-registering-linked-list-ghidras-xrefs-missed-entirely">3. +45 more from a self-registering linked list Ghidra's xrefs missed entirely</h2>
+<p><code>idCmdSystemLocal::Init</code> itself (RVA <code>0x9efa70</code>, found the same way as §1 — by
+locating the six always-present built-ins <code>listCmds</code>/<code>exec</code>/<code>vstr</code>/<code>echo</code>/
+<code>parse</code>/<code>wait</code> via <code>Image.xrefs()</code> and decompiling their containing function)
+registers those six, then:</p>
+<pre><code class="language-c">for (puVar3 = func_0x7ff74ad95fd0(); puVar3 != 0; puVar3 = *puVar3)
+    AddCommand(this, puVar3[1], puVar3[2], puVar3[3], puVar3[4]);
+</code></pre>
+<p><code>func_0x7ff74ad95fd0</code> (RVA <code>0xa05fd0</code>) is a one-line <code>mov rax,[rip+disp]; ret</code>
+reading a global at RVA <code>0x1f01640</code> — the head of a <strong>static, self-registering</strong>
+command list (same shape as TNC's own, see <code>re_probes/agent_reports/
+cmdtable.md</code> §2: C++ global objects that link themselves into a list at load
+time; the matching node-constructor is at RVA <code>0xa05fe0</code>). This is exactly the
+registration path the task brief warned about ("Ghidra's static xrefs are
+incomplete... find references yourself"): <code>idCmdSystemLocal::AddCommand</code>'s own
+<code>xrefs TO</code> list (§2) does <strong>not</strong> include this loop's callees individually —
+only the one loop-call instruction — because the five arguments it passes come
+from runtime-walked heap data, not compile-time constants Ghidra's constant
+propagation can fold.</p>
+<p>Walked directly from the capture (<code>re_probes/tnocommands/mine_commands.py</code>
+<code>walk_registrar_list()</code>, live pointer values, not guessed): head
+<code>0x1f01640 → 0x7ff74c294f20</code>, <strong>45 nodes</strong>, 0 cycles, terminates cleanly at
+null. This is where <code>toggle</code> ("toggles a cvar"), <code>bind</code>/<code>unbind</code>/<code>unbindAll</code>/
+<code>listBinds</code>, <code>reset</code> ("resets a cvar to its default value"), <code>cvar_restart</code>,
+<code>listCvars</code>, <code>connect</code>/<code>startServer</code>, <code>messagemode</code>, <code>print</code>/<code>clear</code>/<code>history</code>/
+<code>con_watch</code>/<code>con_unwatch</code>/<code>activateConsole</code>, <code>idStudio</code> ("design studio for the
+game"), <code>makeDeclTree</code>, three <code>ps3_test*</code> leftovers, and more come from — none
+of these were in §2's direct-call-site set, and all of them are commands TNC
+has too (per <code>cmdtable.md</code>), which is why their total absence from §2 alone
+would have been a red flag, not a clean result.</p>
+<p><strong>147 + 45 = 192 distinct commands, zero overlap in name between the two
+sources</strong> (<code>re_probes/tnocommands/commands.json</code>, full table with <code>callback_rva</code>/
+<code>arg_completion_rva</code>/<code>source</code> per entry). <code>flags</code> is kept as a JSON field for
+parity with TNC's table shape and is <code>null</code> on every single entry — not a
+placeholder, a fact (§1).</p>
+<h2 id="4-where-godnoclipnotargetgivespawn-actually-live">4. Where <code>god</code>/<code>noclip</code>/<code>notarget</code>/<code>give</code>/<code>spawn</code> actually live</h2>
+<p>Direct string search in <code>module.bin</code> for <code>god\0</code>, <code>noclip\0</code>, <code>notarget\0</code>,
+<code>give throwable/player/grenade</code>, <code>killPlayer %d</code>: each exists <strong>exactly once</strong>
+in the whole 36 MB capture, all clustered at RVA <code>0x103a0a4</code>–<code>0x103b600</code> — the
+DevGUI label/action table region r6 already found by string adjacency. This
+track's addition: <code>Image.xrefs()</code> shows each of those five strings has
+<strong>exactly one</strong> code reference (a RIP-relative <code>lea</code>) anywhere in <code>.text</code>, and
+all five land inside the <em>same</em> function, <code>FUN_7ff74ad1a100</code> (RVA <code>0x98a100</code>)
+— the DevGUI page builder. Decompiled excerpt (full page-builder function is
+~230 lines; this is the "God Mode" row, byte-identical pattern for every
+checkbox row on the page):</p>
+<pre><code class="language-c">uVar10 = FUN_7ff74ad1fee0(&amp;list);
+uVar10 = FUN_7ff74ad200c0(uVar10, s_God_Mode);        // set row label &quot;God Mode&quot;
+uVar10 = FUN_7ff74ad20380(uVar10, &amp;DAT_...&quot;god&quot;, bVar15); // set row's command text = &quot;god&quot;
+FUN_7ff74ad20690(uVar10, uVar6);                       // set row's current-checked bool
+</code></pre>
+<p><code>FUN_7ff74ad20380</code> (RVA <code>0x990380</code>) is the actual widget constructor, and this
+is where the lookup from §1 gets used:</p>
+<pre><code class="language-c">longlong FUN_7ff74ad20380(longlong this, undefined8 commandText, char doCheck) {
+  ... allocate a &amp;vtbl_cellCmd_t node, store commandText in it ...
+  if (doCheck != '\0') {
+    bool ok = idCVarSystemLocal-&gt;Exists(commandText, 1);        // vtable+0x28 on DAT_..a110
+    if (!ok) ok = idCmdSystemLocal-&gt;Exists(commandText, 1);      // vtable+0x28 on DAT_..a108 (§1)
+    if (!ok) FUN_7ff74ad5a7b0(s_idGuiListBox__Command___Command___not_found, commandText);
+  }
+  ...
+}
+</code></pre>
+<p><code>DAT_7ff74b94a110</code> and <code>DAT_7ff74b94a108</code> are two adjacent globals; reading
+their <em>live</em> pointee vtables from the capture and matching against
+<code>docs/ghidra/rtti_tno.json</code> identifies them unambiguously:
+<code>0x14104fa68 → idCmdSystemLocal</code>, <code>0x14104f968 → idCVarSystemLocal</code>. So this
+widget validates its command text against <strong>both real systems</strong>, using the
+tokenize/prefix mode (<code>doCheck</code>'s 3rd arg <code>1</code>) — meaning a multi-word action
+like <code>"toggle g_showHud 0 1"</code> is checked by its first token (<code>toggle</code>, a real
+command, §3) and a bare word like <code>"god"</code> is checked as a whole — and <code>"god"</code>
+is in neither system's list (§2/§3 exhaustively enumerate both). Per-string
+verdict, all re-derived the same way:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>DevGUI label</th>
+<th>action text</th>
+<th>first-token check target</th>
+<th>found in §2/§3?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>God Mode</td>
+<td><code>god</code></td>
+<td><code>idCmdSystemLocal</code> (cmd)</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>No Clip</td>
+<td><code>noclip</code></td>
+<td><code>idCmdSystemLocal</code> (cmd)</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>No Target</td>
+<td><code>notarget</code></td>
+<td><code>idCmdSystemLocal</code> (cmd)</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>Give Grenades</td>
+<td><code>give throwable/player/grenade</code></td>
+<td><code>give</code> (cmd)</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>Spawn Imp</td>
+<td><code>spawn zion/ai/imp/demon_imp</code></td>
+<td><code>spawn</code> (cmd)</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>Suicide</td>
+<td><code>killPlayer %d</code></td>
+<td><code>killPlayer</code> (cmd)</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>No Player Death</td>
+<td><code>NoPlayerDeath</code></td>
+<td><code>NoPlayerDeath</code> (cmd)</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>Set Team Red/Blue</td>
+<td><code>changeTeam 1</code>/<code>2</code></td>
+<td><code>changeTeam</code> (cmd)</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>Remove AI</td>
+<td><code>killMonsters</code></td>
+<td><code>killMonsters</code> (cmd)</td>
+<td><strong>yes</strong> (§2)</td>
+</tr>
+<tr>
+<td>Show Hud</td>
+<td><code>toggle g_showHud 0 1</code></td>
+<td><code>toggle</code> (cmd)</td>
+<td><strong>yes</strong> (§3)</td>
+</tr>
+<tr>
+<td>Show Hands</td>
+<td><code>toggle hands_show</code></td>
+<td><code>toggle</code> (cmd)</td>
+<td><strong>yes</strong> (§3)</td>
+</tr>
+<tr>
+<td>Slow Time</td>
+<td><code>timescale .1</code></td>
+<td><code>timescale</code> (<strong>cvar</strong>, §5)</td>
+<td><strong>yes</strong> (cvar list)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>This both confirms and corrects r6.</strong> r6 correctly found <code>notarget</code>/<code>give.../
+spawn.../killMonsters</code>/<code>NoPlayerDeath</code>/<code>changeTeam</code> as DevGUI-row strings and
+called them (hedged, but still) "clean, wired Label→Action pairs." This track
+shows <code>killMonsters</code> is the only one of that list that is actually a real,
+reachable command; the rest are row text for a validation check (shown above,
+decompiled) that they would fail. Whether that check actually <em>runs</em> at
+runtime in retail (<code>doCheck</code>/<code>bVar15</code>, computed once per DevGUI page from
+<code>*(char*)(pageObject+0x58)</code>, meaning untested — purpose of that one byte is
+not identified) doesn't change the practical answer: even if the check is
+skipped, clicking the row still has to eventually dispatch <code>"god"</code> through
+<code>idCmdSystemLocal</code>'s executor, which — per §2/§3's exhaustive enumeration of
+every node that executor can find — doesn't have an entry for it either.</p>
+<h2 id="5-timescale-is-a-cvar-not-a-command">5. <code>timescale</code> is a cvar, not a command</h2>
+<p>Raw string search: <code>timescale\0\0\01\0\0\0puts the game in slowmo\0</code> — name,
+then a bare numeric-literal token (<code>1</code>, the cvar's default), then the
+description, in that exact order. This is the standard cvar-registration
+string-adjacency shape (<code>docs/cvars_tnc.json</code>'s own method, and r6 §4's for
+TNO) — a command's registration (§1/§2) never has a literal token between name
+and description, only a cvar's does. Consistent with <code>swf_timescale</code> existing
+right next to it (a second, UI-animation-speed cvar with the same naming
+pattern). Not in <code>commands.json</code> by design — it is a real, working cvar, just
+not a command, so <code>timescale .1</code> at the console works as "set this cvar to
+.1", not as a command invocation with an argument.</p>
+<h2 id="proven-this-track--decompiled-code-andor-live-data-values-not-string-adjacency">PROVEN (this track — decompiled code and/or live <code>.data</code> values, not string adjacency)</h2>
+<ul>
+<li><code>idCmdSystemLocal</code> singleton RVA <code>0x15ba120</code> (pointer at <code>0x15ba108</code>), vtable
+  RVA <code>0x104fa68</code>, RTTI-confirmed (<code>docs/ghidra/rtti_tno.json</code>,
+  <code>0x14104fa68 → "idCmdSystemLocal"</code>).</li>
+<li><code>AddCommand</code> (vtable <code>+0x18</code>, RVA <code>0x9edf30</code>) takes exactly
+  <code>(name, callback, description, argCompletion)</code> — <strong>no flags field exists in
+  the node or the call</strong>, read from the function's own decompiled body, not
+  inferred from a missing string.</li>
+<li><code>CommandExists</code>-equivalent (vtable <code>+0x28</code>, RVA <code>0x9edc20</code>) walks the exact
+  same <code>[this+8]</code> linked list <code>AddCommand</code> writes to, in two modes (exact /
+  tokenize-prefix).</li>
+<li><code>idCVarSystemLocal</code> singleton identified the same RTTI-confirmed way
+  (<code>0x14104f968</code>), its own <code>+0x28</code> lookup (RVA <code>0x9dd630</code>) decompiled and
+  confirmed to be the same two-mode shape over its own hash table.</li>
+<li><strong>192 distinct, real, registered commands</strong> recovered by two independent
+  methods (147 via 12 direct <code>AddCommand</code> call-site functions, §2; 45 via
+  walking the self-registering linked list at RVA <code>0x1f01640</code>, §3) —
+  <code>re_probes/tnocommands/commands.json</code>. Zero name overlap between the two
+  sources.</li>
+<li><code>god</code>, <code>noclip</code>, <code>notarget</code>, <code>give</code>, <code>spawn</code>, <code>killPlayer</code> (bare),
+  <code>NoPlayerDeath</code>, <code>changeTeam</code> are <strong>absent from both sources</strong>, and have
+  <strong>zero</strong> code references anywhere outside the single DevGUI-table-builder
+  function that stores them as display/validation text (<code>Image.xrefs()</code>,
+  independent of Ghidra, one hit each).</li>
+<li><code>timescale</code> is a cvar (default <code>1</code>, description "puts the game in slowmo"),
+  not a command.</li>
+<li><code>map</code>'s real description is "loads a combo map" (§2/<code>commands.json</code>) —
+  corrects r6 §4's adjacency-mined guess ("shows collision model info", which
+  r6 itself flagged as a likely-wrong neighbour grab).</li>
+</ul>
+<h2 id="inferred-plausible-not-fully-nailed-down">INFERRED (plausible, not fully nailed down)</h2>
+<ul>
+<li>Whether the DevGUI's <code>doCheck</code>/<code>bVar15</code> validation (§4) actually executes in
+  the shipped retail build, or whether <code>*(char*)(pageObject+0x58)</code> is always
+  the value that skips it — not identified; doesn't change the practical
+  conclusion (§4, last paragraph) either way.</li>
+<li>r6's standing conclusion that TNO's command dispatch is architecturally
+  ungated (no per-command restriction level the way TNC has) is now proven at
+  one more remove: not just "no flag enum found by string search" but "the
+  registration call has no parameter for one." Whether the console itself
+  (<code>com_allowConsole</code>) is reachable in retail remains exactly as open as r6
+  left it — this track is about the <em>command table</em>, not the console-open
+  gate, and found nothing new on that front.</li>
+</ul>
+<h2 id="failed-hypotheses--dead-ends-this-track">Failed hypotheses / dead ends (this track)</h2>
+<ul>
+<li><strong>A second, flagged <code>AddCommand</code> overload for "cheat" commands</strong> (the TNC
+  pattern, <code>0x200000</code>-flagged <code>God</code>/<code>InfiniteHealth</code>/<code>NoPlayerDeath</code>/
+  <code>Notarget</code>, per <code>cmdtable.md</code> §6): searched for by checking every one of
+  §2/§3's 192 call sites for an extra integer argument distinct from <code>0</code> or a
+  function pointer — none found; also checked whether <code>idCmdSystemLocal</code> has
+  a second vtable slot with an AddCommand-shaped signature (5 args) — vtable
+  slots <code>+0x18</code> (AddCommand) and <code>+0x28</code> (Exists) are the only two this track
+  needed and found; no evidence of a third. Concluded: this engine version
+  genuinely predates that TNC-only mechanism, not just "didn't look hard
+  enough" (same conclusion r6 reached from the negative string search, now
+  from the call-site shape itself).</li>
+<li><strong>A naive full-<code>.text</code> linear capstone disassembly scanning for direct
+  <code>call 0xa05fe0</code></strong> (the registrar-node constructor), to cross-check the
+  linked-list walk's node count independently: 0 hits, almost certainly
+  because linear disassembly of a 12 MB section desyncs after the first
+  embedded-data byte run (jump tables, padding) — this is exactly why every
+  other tool in this repo disassembles per-<code>.pdata</code>-function-range instead of
+  linearly; dead end, abandoned in favor of the (already-working,
+  cross-validated) linked-list walk.</li>
+<li><strong>Treating the DevGUI label/action table (r6 §4b) as itself a command
+  registry</strong>: it isn't one — it is the <em>consumer</em> of <code>idCmdSystemLocal</code>'s
+  table (§4), one level downstream, which is exactly why 8 of its entries
+  reference commands that were never actually registered.</li>
+</ul>
+<h2 id="recipe">Recipe</h2>
+<pre><code># find a command/cvar's registration site from scratch, same method as this track:
+python3 - &lt;&lt;'EOF'
+data = open(&quot;re_probes/runtime_tno_186352/module.bin&quot;,&quot;rb&quot;).read()
+i = data.find(b&quot;YOUR_NAME_HERE\x00&quot;)   # NUL-bounded, exact
+print(hex(i))
+EOF
+
+PYTHONPATH=re_probes/python_deps python3 -c &quot;
+import sys; sys.path.insert(0,'tools')
+from tnc_runtime_code import Image
+im = Image('re_probes/runtime_tno_186352')
+print(im.xrefs('YOUR_NAME_HERE'))&quot;   # -&gt; containing function's RVA range
+
+python tools/decomp.py &lt;that RVA&gt; --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+
+# regenerate the full table (12 direct-call functions + the self-registrar walk):
+python re_probes/tnocommands/mine_commands.py --text &lt;decomp.py dump of all 12&gt; \
+    --out re_probes/tnocommands/commands.json
+</code></pre>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Is <code>com_allowConsole</code> reachable in retail (r6's own open question — this
+  track adds nothing new here, since it studied the command <em>table</em>, not the
+  console-open gate).</li>
+<li>What is <code>*(char*)(devguiPage+0x58)</code> ("doCheck"/<code>bVar15</code> in §4) actually
+  wired to — a build config, an edit-mode flag, something else? Static-only
+  answer wasn't findable without walking that object's constructor(s), which
+  this track judged not worth the budget given the practical conclusion
+  doesn't depend on it.</li>
+<li>Were <code>god</code>/<code>noclip</code>/<code>notarget</code>/<code>give</code>/<code>spawn</code>/etc. commands in an earlier
+  build (pre-release, debug) that got stripped, leaving only their DevGUI
+  label text behind? Plausible given the naming (<code>DebugUnlockPerkByAbility</code>
+  etc. did survive) but unverifiable from one retail binary alone.</li>
+</ul>
+<h2 id="smallest-in-game-test">Smallest in-game test</h2>
+<p><em>(Translated from German.)</em></p>
+<p><strong>Without a mod, only start arguments:</strong></p>
+<pre><code>WolfNewOrder_x64.exe +bind F5 god +bind F6 noclip +bind F7 notarget +bind F8 kill +bind F9 teleport +bind F10 &quot;map test&quot;
+</code></pre>
+<p>Start the game (console not needed — according to <code>docs/limits.md</code>/r6, <code>+bind</code> is processed
+even without console access), load a save, then press F5, F6,
+F7 in order and search <code>qconsole.log</code>
+(<code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein The New Order\base\qconsole.log</code>)
+afterwards:</p>
+<ul>
+<li>If <strong><code>Unknown command 'god'</code></strong> or <code>'noclip'</code>/
+  <code>'notarget'</code> appears after F5/F6/F7 → confirms this report directly: these three are
+  not real, callable commands in retail, regardless of whether the console is open or not
+  (section 4 — they exist only as text in the DevGUI table, never as an
+  <code>AddCommand</code> call).</li>
+<li>F8 (<code>kill</code>) and F9 (<code>teleport</code>), by contrast, should go through <strong>without</strong> <code>Unknown command</code>
+  (<code>kill</code> kills the player immediately, <code>teleport</code> without a target
+  probably does nothing visible except producing no error message) — both are documented in
+  <code>re_probes/tnocommands/commands.json</code> with a real callback RVA.</li>
+<li>F10 (<code>map test</code>) should <strong>not</strong> show <code>Unknown command</code>, but
+  either load or abort with a different, map-specific error message
+  (<code>map</code>/<code>devmap</code> are registered, §2) — that is the difference
+  from r6's so far unanswered question of whether the dispatcher is reached at all:
+  an <code>Unknown command 'map'</code> line, on the other hand, would mean that even
+  registered commands do not arrive via <code>+bind</code>, which would
+  put this whole report into perspective (negative control for the central claim).</li>
+</ul>
+<p><strong>Back up saves first</strong> (as already recommended in r6) — unclear whether TNO
+marks saves when entering a cheat state.</p>
+<p>Related: <a href="Research-Report-R6-Tno-Console.html">Research Report: R6 Tno Console</a>, <a href="Research-Report-Cmdtable.html">Research Report: Cmdtable</a>, <a href="Research-Report-R7-Tno-Cheat-Gate.html">Research Report: R7 Tno Cheat Gate</a>, <a href="Modding-Limits.html">Modding Limits</a>, <a href="TNO-CVar-Catalog.html">TNO CVar Catalog</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R7-Tno-Cheat-Gate.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Cheat Gate: The Actual Code, Now That <code>.text</code> Is Decrypted</a><a class="next" href="Research-Report-R7-Tno-Limits.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Engine Limits from Decompiled Code: Entities, AI, Script VM, Physics, Decls, Audio, Render</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

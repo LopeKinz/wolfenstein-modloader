@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO MegaTexture (`virtualtextures/*.pages`): Page Table, Codec, One Decoded Region, and a Round-Trip-Proven Writer – Wolfenstein Modloader</title>
+<meta name="description" content="How The New Order&#x27;s MegaTexture page files are built, and a writer that repaints their shine layers on copies.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO MegaTexture (<code>virtualtextures/*.pages</code>): Page Table, Codec, One Decoded Region, and a Round-Trip-Proven Writer</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Tno-Megatexture"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#pass-1-errors-second-pass">Pass 1 errors (second pass)</a></li><li><a href="#question">Question</a></li><li><a href="#answer-in-one-paragraph">Answer, in one paragraph</a></li><li><a href="#evidence">Evidence</a></li><li><a href="#proven-vs-inferred">PROVEN vs INFERRED</a></li><li><a href="#failed-hypotheses-this-round">Failed hypotheses (this round)</a></li><li><a href="#mod-design-repainting-a-levels-speculargloss-via-a-patched-pages-file">Mod design: repainting a level&#x27;s specular/gloss via a patched .pages file</a></li><li><a href="#open-questions-updated-this-pass">Open questions (updated this pass)</a></li><li><a href="#smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">Wolfenstein: The New Order (TNO) stores the large, unique textures of its levels in &#x27;MegaTexture&#x27; page files (<span class="t" data-t="vt">virtual textures</span>). This report decoded one region to a viewable picture (wooden planks with a shadowed figure) and built a writer that puts new images into the two shine layers (specular/gloss and power), either in place or by appending a new page at the end of the file. It also worked out how a map&#x27;s surfaces point into these files: the map&#x27;s settings name the page file directly, and the map geometry&#x27;s own texture coordinates already give the page position. Everything was proven only on copies of the files; the colour layer still cannot be read or written, and nothing was tested in the running game.</p><ul><li>The file layout is re-confirmed on one level&#x27;s file: 9,031 page records, with every one of its 27,244,700 bytes accounted for.</li><li>In place, a 4,768-byte gloss block was replaced by a 953-byte smiley image; reading it back gave the intended picture (mean error 9.68/255) and the original file stayed byte-identical.</li><li>A &#x27;grow&#x27; path appends a new page record when the new image does not fit; it was proven for the gloss block and for the small 32×32 power block.</li><li>On all 25 TNO maps the <span class="t" data-t="decl">decl</span> names the page file directly and the land size × 8 equals the pages across; real map texture coordinates hit stored pages 66–85% of the time at the finest level, random ones only 5–34%.</li><li>Still open: the colour (diffuse) layer cannot be decoded or written, and how the game would load a patched file was not addressed; nothing was tested in game.</li></ul></div><div class="de"><p class="lede">Wolfenstein: The New Order (TNO) speichert die großen, einmaligen Texturen seiner Level in „MegaTexture“-Seitendateien (<span class="t" data-t="vt">Virtual Textures</span>). Dieser Bericht hat einen Bereich zu einem sichtbaren Bild entschlüsselt (Holzplanken mit einer beschatteten Figur) und einen Schreiber gebaut, der neue Bilder in die beiden Glanzebenen (Specular/Gloss und Power) einsetzt, entweder an Ort und Stelle oder indem er eine neue Seite ans Dateiende anhängt. Außerdem wurde geklärt, wie die Oberflächen einer Karte auf diese Dateien zeigen: Die Einstellungen der Karte nennen die Seitendatei direkt, und die eigenen Texturkoordinaten der Kartengeometrie geben schon die Seitenposition an. Alles ist nur an Dateikopien bewiesen; die Farbebene lässt sich weiterhin weder lesen noch schreiben, und im laufenden Spiel wurde nichts getestet.</p><ul><li>Der Dateiaufbau ist an der Datei eines Levels erneut bestätigt: 9.031 Seiteneinträge, und jedes ihrer 27.244.700 Bytes ist zugeordnet.</li><li>An Ort und Stelle wurde ein 4.768 Byte großer Glanzblock durch ein 953 Byte großes Smiley-Bild ersetzt; beim Zurücklesen kam das gewünschte Bild heraus (mittlerer Fehler 9,68/255), und die Originaldatei blieb Byte für Byte unverändert.</li><li>Ein „Wachsen“-Weg hängt einen neuen Seiteneintrag an, wenn das neue Bild nicht passt; er ist für den Glanzblock und für den kleinen 32×32-Power-Block bewiesen.</li><li>Auf allen 25 TNO-Karten nennt die <span class="t" data-t="decl">Decl</span> die Seitendatei direkt, und die Land-Größe × 8 ergibt die Zahl der Seiten in der Breite; echte Texturkoordinaten der Karte treffen auf der feinsten Stufe zu 66–85 % gespeicherte Seiten, zufällige nur zu 5–34 %.</li><li>Weiter offen: Die Farbebene (Diffuse) lässt sich weder entschlüsseln noch schreiben, und wie das Spiel eine geänderte Datei laden würde, wurde nicht behandelt; im Spiel wurde nichts getestet.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on The New Order's MegaTexture files: page table, mip structure, tile codec, the mapping from world UV to pages, one region decoded to a viewable image, and a writer. The writer is round-trip-proven on copies for two paths — an in-place replacement and a growth path that appends a new page record — for the specular/gloss and power channel blocks; the colour (diffuse) blocks still cannot be written. <strong>Proven on file copies only; how a patched <code>.pages</code> file reaches the running game is not addressed, and nothing was tested in game.</strong></p>
+<p>Track: <code>tnomegatex</code>. Game: Wolfenstein: The New Order (id Tech 5). Builds on
+<code>docs/virtualtextures.md</code>, <code>docs/vt-planes.md</code>, <code>wolfsdk/tnomaptex.py</code>,
+<code>wolfsdk/tnomap.py</code>, and the existing read-only tools <code>tools/probe_vtpages.py</code>,
+<code>tools/vtdecode.py</code>, <code>tools/vtplanes.py</code>, <code>tools/vtpixel.py</code>,
+<code>tools/probe_tno_tex.py</code>. All new code for this round lives under
+<code>re_probes/tnomegatex/</code> (this track's own folder, incl. this pass's
+<code>check_mapping.py</code>, a set of read-only, re-runnable statistical checks over
+existing tools, added so §4's new claims are independently reproducible, not
+just pasted-in numbers); nothing shared was modified. No game was launched.
+The only writes happened to throwaway copies under
+<code>D:\wolf-decomp\tmp\tnomegatex\</code>, deleted again at the end of every writer
+run (see <strong>Evidence</strong> for how to reproduce and verify this yourself).</p>
+<h2 id="pass-1-errors-second-pass">Pass 1 errors (second pass)</h2>
+<p>The verifier refuted one claim and flagged a weaker overstatement; both are
+fixed below, and every "missed" item it listed was followed up (one of them
+turned into this round's biggest new result):</p>
+<ol>
+<li><strong>Refuted, fixed</strong>: pass 1 said the primary per-map megatexture's <code>.pages</code>
+   file "could not even be reached" because <code>landDefinitionFile</code>'s <code>.land</code>
+   target has zero archive hits. True but beside the point -- the verifier
+   found the decl sitting right next to it, <code>landPageFile "c01p1"</code>, which
+   names the <code>.pages</code> file directly, and pass 1 had already quoted the same
+   decl block while only showing part of it. §4 now starts from
+   <code>landPageFile</code>, confirms it live across all 25 TNO maps (not 4), and goes
+   substantially further: see point 2.</li>
+<li><strong>New this round, not just a fix</strong>: following the "missed" item up found
+   that <code>landDimensions x 8 == pagesAcross</code> exactly, zero exceptions, on all
+   25 maps, and that a map's megatexture geometry's own UV0 channel (already
+   shipped, already parsed by <code>wolfsdk/tnomap.py</code>) is itself the page-space
+   UV -- no <code>.land</code> file needed at all. Checked on 3 maps with a 2000-sample
+   real-vs-random-UV statistical test at every mip. This resolves most of
+   what pass 1 called unresolved; see §4.</li>
+<li><strong>Overstated, fixed</strong>: pass 1 called the <code>virtualMapping</code> mip 7-&gt;0 chain
+   "8 independent hits". The verifier ran a negative control pass 1 had not
+   (20 random offsets, 5/20 landed a full 8/8 by chance, because <code>_vmtr.pages</code>'
+   mip chains are complete beneath any occupied coarse node) and showed the
+   8 hits are one real test cascading, not 8 independent ones. Reproduced
+   independently this round (my own 50-trial control: 8/50 full by chance,
+   8.8-11.4% occupancy per mip) -- §4 now states this honestly.</li>
+<li><strong>Followed up, still a dead end</strong>: whether <code>landGenModel</code>'s
+   <code>world.genmodel</code> embeds the UV table instead of a separate <code>.land</code> file --
+   checked directly (zero archive hits for <code>.genmodel</code> either, same 14-archive
+   scan, same as <code>.land</code>), consistent with point 2's finding that the mapping
+   is baked into shipped geometry at compile time and neither file is loaded
+   at runtime at all.</li>
+<li><strong>Followed up, now implemented and proven</strong>: the "grow a replacement block
+   past its original slot" design from pass 1 (append past EOF, repoint one
+   parent) is now built and round-trip-proven on a copy, including a real,
+   previously-undiscovered wrinkle (an orphaned-space bookkeeping invariant
+   that only pristine files satisfy) -- see §6b.</li>
+<li><strong>Followed up, now proven</strong>: block 3 (power, 32x32px, 2x2 macroblocks) run
+   through the writer for the first time -- see §6c.</li>
+<li><strong>Followed up</strong>: the ~4.8/255 lossy round-trip baseline the writer's
+   9.68/255 is compared against is <code>tools/vtdecode.py</code>'s own module docstring
+   (line 23), now cited explicitly in §3.</li>
+</ol>
+<h2 id="question">Question</h2>
+<p>Decode the <code>.pages</code> virtual-texture page file format fully (page table, tile
+codec/compression, mip levels, world-UV → page/tile mapping), decode one
+region to a viewable image, and design + round-trip-prove (on a copy) a
+writer that replaces one tile/region so part of a level could be repainted.
+State exactly what is still unknown.</p>
+<h2 id="answer-in-one-paragraph">Answer, in one paragraph</h2>
+<p>The container (file header, quad-tree of page records, per-page sub-header,
+four channel blocks) was already fully decoded and verified by prior rounds;
+this round re-confirmed it live (<code>probe_vtpages.py selftest</code> on
+<code>c03p1.pages</code>: 9031 records, 9030 parent/child edges, every byte of the
+27,244,700-byte file accounted for). Of the four JPEG-XR-derived channel
+blocks per page, two (block 2 = specular/gloss, block 3 = power, both single
+channel) were already proven to real pixels by prior rounds; this round
+<strong>decoded one such region to a viewable PNG</strong> (a clearly recognisable plank
+surface with a shadowed figure, <code>re_probes/tnomegatex/evidence/before.png</code>)
+and <strong>built and round-trip-proved a writer with two paths</strong>: (a) in-place --
+a synthetic image is JPEG-XR-encoded with Windows' own encoder, repackaged
+under a hand-built retail-style <code>NCOMPONENT</code>/1-channel plane header (a
+capability that did not exist before), spliced into a replacement block no
+larger than the original; (b) <strong>new this (second) pass</strong>: grow -- when the
+replacement does not fit, a whole new page record is appended past the
+current end of file, the page's one parent record is repointed at it, the
+orphaned old record is zeroed, and the file header's own size field is
+grown; both paths were run against a <strong>copy</strong> of a real <code>.pages</code> file, which
+is then re-opened cold and proven correct: the container's tree invariants
+all still hold (a growth edit trips one pristine-file-only bookkeeping
+invariant in <code>probe_vtpages.py selftest</code>, itself a new, deliberately
+investigated and explained finding -- see §6b), and decoding the edited page
+again (fresh process, fresh file handle) reproduces the intended image
+(mean pixel error 9.68/255 for the in-place smiley, matching this codebase's
+established lossy-round-trip baseline of ~4.8/255, <code>tools/vtdecode.py</code>'s own
+module docstring). Block 3 (power, 32×32px, 2×2 macroblocks) was run through
+the same writer for the first time this pass and round-trips too (§6c). The
+original game file is proven byte-for-byte unchanged (SHA1 compared
+before/after) in every one of these runs. Also new: the world-UV → page
+mapping formula for <em>shared</em> virtual materials (<code>virtualMapping</code> scale/offset
+in a material decl) was checked against a real decl and real file occupancy
+-- it holds exactly, though the mip 7-0 "hits" are one cascading test, not 8
+independent ones (a pass-1 overstatement the verifier caught, reproduced and
+fixed here with a negative control). <strong>Reworked this pass</strong>: the UV→tile
+mapping for the <em>primary</em> per-map megatexture, which pass 1 wrongly called
+unreachable, turns out to be the biggest result of this round -- the decl
+field pass 1 quoted only part of also contains <code>landPageFile</code>, which names
+the <code>.pages</code> file directly (confirmed on all 25 TNO maps), and
+<code>landDimensions x 8 == pagesAcross</code> exactly on all 25. Going further still:
+the shipped map geometry's own UV0 channel (the same one <code>wolfsdk/tnomap.py</code>
+already parses for every other material) turns out to <em>be</em> the page-space
+UV already -- <code>page = floor(uv * pagesAcross-at-mip)</code>, no offset, no
+<code>.land</code> file, checked with a 2000-sample real-vs-random-UV statistical test
+against 3 maps' real <code>.pages</code> files at 3-6 mip levels each (66-100% real hit
+rate vs. 5-33% random). <code>landDefinitionFile</code>'s <code>.land</code> file (and
+<code>landGenModel</code>'s <code>.genmodel</code>) remain unreachable in every one of the 14 base
+chunk archives -- now understood as expected, not a dead end: the mapping is
+baked into the shipped geometry at compile time and neither file is ever
+loaded at runtime. What remains unknown, unchanged from before: the diffuse
+colour plane (block 0) still cannot be turned into pixels at all (no decoder
+<em>or</em> encoder oracle for it exists), so the writer cannot repaint colour yet,
+on either megatexture family; and the 120-vs-128-texel page pitch and block
+0/1's exact macroblock shape are both still open (§3, §4).</p>
+<h2 id="evidence">Evidence</h2>
+<p>All commands run from the repo root; all <code>.pages</code> reads are against the
+retail install, read-only. <code>python tools/probe_vtpages.py selftest &lt;file&gt;</code>
+and <code>python tools/vtdecode.py selftest &lt;file&gt;</code> were re-run live for this
+report (not just cited from docs):</p>
+<pre><code>selftest ok: c03p1.pages, 9031 records, 9030 parent/child links,
+  27216028 bytes claimed + 28672 bytes reserved slack in 14 holes
+  = 27244700 bytes
+selftest ok: c03p1.pages, 1999 pages, 4 JPEG XR plane headers each
+</code></pre>
+<h3 id="1-the-page-table--container-proven-re-confirmed-this-round">1. The page table / container (PROVEN, re-confirmed this round)</h3>
+<p>32-byte file header, 40-byte record headers in a sparse quad-tree
+(<code>child_off</code>/<code>child_size</code> in units of the header's <code>offset_scale</code>, always 2
+in retail), 16-byte page sub-header (magic, layout code, four <strong>big-endian</strong>
+<code>u16</code> block sizes, a reserved <code>u16</code> that must be 0), then the four raw
+channel blocks back to back, the whole payload padded to even length. Full
+field list and byte offsets: <code>docs/virtualtextures.md</code> §2–§4. Verified this
+round by <code>read_header</code>/<code>read_record</code>/<code>find_page</code>/<code>read_blocks</code> in
+<code>tools/probe_vtpages.py</code>, used directly in the writer below (see
+<code>re_probes/tnomegatex/writer_poc.py::patch_block2</code>, which documents the exact
+on-disk byte offsets it writes: page magic/layout at <code>rec.offset+40</code>, the
+four BE <code>u16</code> sizes at <code>rec.offset+46</code>, block bytes starting at
+<code>rec.offset+56</code>).</p>
+<h3 id="2-mip-levels-and-the-childparent-relationship-proven-re-confirmed">2. Mip levels and the child/parent relationship (PROVEN, re-confirmed)</h3>
+<p><code>across = 2^(levels-1)</code>; child index <code>= (y&amp;1)*2 + (x&amp;1)</code>; <code>kind.mip =
+parent.mip-1</code>; coordinates halve with each mip step up. Used directly in the
+UV→page check below (walking mip 7→0 of <code>_vmtr.pages</code> by repeatedly
+right-shifting the same base coordinate, and finding a real stored record at
+every single step — see §4).</p>
+<h3 id="3-tile-codec-proven-for-blocks-23-newly-re-confirmed-with-a-fresh-example-unchanged-open-status-for-blocks-01">3. Tile codec (PROVEN for blocks 2/3, newly re-confirmed with a fresh example; unchanged open status for blocks 0/1)</h3>
+<p>The four channel blocks are JPEG-XR/HD-Photo <code>IMAGE_PLANE_HEADER</code> +
+entropy-coded payload with the 16-byte <code>WMPHOTO\0</code> + <code>IMAGE_HEADER</code> prefix
+stripped (constant, rebuildable: <code>tools/vtdecode.py::image_header</code>). This
+round re-extracted a real page's block 2 (page (92,81), mip 0,
+<code>c03p1.pages</code>): <code>INTERNAL_CLR_FMT=NCOMPONENT, 1 channel, SB_NO_FLEXBITS,
+QP=25</code> for DC/LP/HP alike — the exact constant the whole file family uses
+per <code>docs/virtualtextures.md</code> §8, reproduced live rather than taken on
+faith. Decode status, unchanged from <code>docs/vt-planes.md</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Role (inferred)</th>
+<th>Macroblocks</th>
+<th>Bits</th>
+<th>Pixels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>specular/gloss</td>
+<td>8×8 (128×128 px)</td>
+<td>100% of sampled pages</td>
+<td><strong>proven</strong> (seam test, visual)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>power/gloss exponent</td>
+<td>2×2 (32×32 px)</td>
+<td>100%</td>
+<td><strong>proven</strong></td>
+</tr>
+<tr>
+<td>1</td>
+<td>part of normal map (2ch)</td>
+<td>64 MB, shape unproven</td>
+<td>18% of pages (dense pages desync)</td>
+<td>channel 0 <strong>proven</strong> (seam), channel 1 open</td>
+</tr>
+<tr>
+<td>0</td>
+<td>diffuse colour (3ch YUV_444)</td>
+<td>64 MB, shape unproven</td>
+<td>19–21% under a corrected chroma rule</td>
+<td><strong>not proven</strong> — no decoder/encoder oracle decodes it to a sane image (jxrlib and WIC both lose the stream after the first macroblock; <code>docs/vt-planes.md</code> §10.6)</td>
+</tr>
+</tbody>
+</table></div>
+<p>The writer's 9.68/255 figure (§6) is compared against the lossy round-trip
+baseline <code>tools/vtdecode.py</code> states in its own module docstring (line 23:
+"mean error 4.8/255") — that citation was implicit in pass 1 and is named
+explicitly here per the verifier's "missed" list.</p>
+<h3 id="4-world-uv--pagetile-mapping">4. World-UV → page/tile mapping</h3>
+<p><strong>Shared virtual materials (<code>virtualMapping</code>): PROVEN against a real decl and real file occupancy; the mip-chain "hits" are one cascading test, not 8 independent ones (fixed this pass).</strong></p>
+<p>Pulled a real material decl straight from the game archives
+(<code>wolfsdk.resources.Archive</code>/<code>load_master</code>, chunk 0 of
+<code>base/chunk0.resources</code>):</p>
+<pre><code>models/weapons/combatknife/combatknife_hg
+  diffusemap       &quot;models/weapons/CombatKnife/CombatKnife_hg&quot;
+  virtualmapping    { 0.015625, 0.015625, 0.015625, 0.000000 }
+  usevirtualmapping 1.000000
+</code></pre>
+<p><code>{scaleX, scaleY, offsetX, offsetY} = {1/64, 1/64, 1/64, 0}</code>. Chunk 0 has
+<strong>no</strong> <code>chunk0_vmtr.pages</code> on disk (only chunks 1–13 do — confirmed by
+<code>probe_vtpages.py list</code>), so this material's pages live in the <strong>global</strong>
+<code>_vmtr.pages</code> (<code>across=1024</code>, <code>levels=11</code>). The formula from
+<code>docs/virtualtextures.md</code> §7 predicts, at mip 0, page <code>x = floor(offsetX *
+across) = floor(0.015625*1024) = 16</code>, <code>y = floor(offsetY*across) = 0</code>, and
+at mip <code>m</code> the same page right-shifted by <code>m</code>. Checked with
+<code>find_page()</code> against the real file, mip 7 down to mip 0 — still exactly
+where the formula places them, re-verified live this pass:</p>
+<pre><code>across 1024 levels 11
+mip 7 coord (0, 0) exists  ...  mip 0 coord (16, 0) exists   (all 8 exist)
+</code></pre>
+<p><strong>Pass 1 called this "8 independent hits". It is not, and the verifier was
+right to call that out.</strong> Re-ran its negative control independently this
+pass (<code>re_probes/tnomegatex/check_mapping.py vmtr_control</code>: 50 random
+<code>(offsetX, offsetY)</code> pairs through the identical mip 7→0 chain-check, plus a
+direct per-mip occupancy measurement against 500 random single points
+each):</p>
+<pre><code>real decl offset (1/64, 1/64):        8/8
+50 random offsets, hit histogram:     {0: 41, 1: 1, 8: 8}   (8/50 = 16% full by chance)
+mip occupancy (500 random points/mip): 8.8% .. 11.4%, every mip 0-7
+</code></pre>
+<p><code>_vmtr.pages</code>' quadtree has essentially uniform ~10% occupancy at <em>every</em>
+mip level, and — because a stored coarse node's descendants are themselves
+near-fully populated beneath it — hitting the correct mip-7 cell (odds
+~1/64, which is exactly what the decl's un-fudged <code>1/64</code> scale produces,
+not a coincidence) cascades automatically into 7 more hits. The outcome is
+bimodal (0 or 8 of 8), never partial, confirming the verifier's reading
+exactly: this is <strong>one real, meaningful test</strong> (does the formula land in the
+right 1-of-64 mip-7 cell), not 8 independent confirmations. The underlying
+conclusion is unchanged — the formula is correct — only the pass-1 framing
+of how much evidence that one hit represents was wrong, and is corrected
+here. (Caveat inherited from <code>docs/virtualtextures.md</code> §7, still open: this
+check cannot distinguish a <code>×128</code>-texel from a <code>×120</code>-texel page pitch,
+because <code>offsetX*across</code> cancels the pitch out of the page <em>index</em> — only
+the sub-pixel UV→texel mapping within a page is still ambiguous.)</p>
+<p><strong>Unique per-map megatexture (<code>landDefinitionFile</code>): this pass's main result — reworked completely, most of what pass 1 called unresolved now has a proven answer.</strong></p>
+<p>Pass 1 quoted this decl but only showed two of its nine fields. The verifier
+pulled the whole block; re-confirmed here, plus all 25 TNO maps, not the one
+the verifier spot-checked:</p>
+<pre><code>maps/game/wolf/c01/c01p1/mega.decl   (also: .../megaanimbump.decl, same fields)
+{
+stageProgram landUniqueBump
+depthFillProgram occluderUnique
+landDimensions 128
+layoutDownscale 1.000000
+landPageFile &quot;c01p1&quot;
+landDefinitionFile &quot;maps/game/wolf/c01/c01p1.land&quot;
+landGenModel &quot;maps/game/wolf/c01/c01p1/_combo/world.genmodel&quot;
+landLayoutVersion 321
+}
+</code></pre>
+<p><code>landPageFile</code> names <code>virtualtextures/&lt;value&gt;.pages</code> directly — no file
+search needed at all, the pass-1 claim that the file "could not even be
+reached" was simply wrong (the verifier is right, and <code>c03p1.pages</code>, used
+for every proof in this report, is itself one of these primary-megatexture
+files). This is also not a new discovery in this codebase: <code>tools/probe_tno_tex.py</code>'s
+existing <code>page_file()</code>/<code>cmd_mega</code> (unmodified, read-only, pre-dating this
+track) already resolves every map's <code>.pages</code> file this same way — pass 1
+should have found this by reading the existing tools before concluding the
+file was unreachable, and did not.</p>
+<p>Two things checked fresh this pass, both new:</p>
+<ol>
+<li><strong><code>landDimensions x 8 == pagesAcross</code>, exactly, on all 25 TNO maps, zero
+   exceptions</strong> (<code>re_probes/tnomegatex/check_mapping.py landpagefile</code>,
+   against <code>wolfsdk.tnomaptex</code>'s decl reader + <code>probe_vtpages</code>'s header):</li>
+</ol>
+<p><code>dim= 16  pagefile=c03p1.pages   across= 128   (c03p1, c12p1)
+   dim= 32  pagefile=c01p4.pages   across= 256   (c01p4, c02p0, c03p3)
+   dim= 64  pagefile=c04p1.pages   across= 512   (c04p1, c06p2, c16p0, c16p2)
+   dim=128  pagefile=c01p1.pages   across=1024   (12 of the 25 maps)
+   dim=256  pagefile=c01p2.pages   across=2048   (c01p2, c06p1, c13p1, c14p1)
+   MATCHES: 25 of 25</code></p>
+<p><code>landDimensions</code> ranges over a 16x spread (16..256) and the <code>x8</code> ratio
+   holds at every one, a clean, reproducible, PROVEN numeric fact — not yet
+   independently explained (INFERRED reading: 1 "land unit" = an 8x8 page
+   grid, by analogy to the shared-material page being internally 128 texels
+   = <code>PAGE_WIDTH</code>; not confirmed from any other source).</p>
+<ol start="2">
+<li><strong>The map geometry's own UV0 channel already is the page-space UV — no
+   <code>.land</code> file needed.</strong> <code>wolfsdk/tnomap.py::surface_arrays()</code> (existing,
+   unmodified, already used for every other material by the map viewer)
+   returns <code>uv0</code> per vertex for every surface, including the ones classified
+   <code>"mega"</code> by <code>wolfsdk/tnomaptex.py::classify()</code> (also existing, unmodified).
+   Pulled those UVs straight from <code>_world.bmodel</code> for 3 maps and found their
+   range is already normalised <code>[0, 1]</code> (not world-space metres) — exactly
+   what <code>page = floor(uv * pagesAcross-at-mip)</code> with <strong>no offset and no
+   <code>v</code>-flip</strong> would need. Tested directly: for each map, sampled 2000 real
+   <code>mega</code>-material vertex UVs and 2000 uniform-random UVs, mapped both
+   through that formula at several mip levels, and checked <code>find_page()</code>
+   hit rate against the map's own real <code>.pages</code> file (random UVs are the
+   negative control):</li>
+</ol>
+<p><code>c03p1.pages (across=128):   mip0 real 84.8% vs random 33.7%  |  mip2 real 99.8% vs random 69.5%  |  mip4 real 100% vs random 94.8%
+   c01p4.pages (across=256):   mip0 real 75.6% vs random 25.2%  |  mip2 real 99.8% vs random 59.0%  |  mip4 real 100% vs random 72.4%
+   c16p0.pages (across=512):   mip0 real 66.3% vs random  5.0%  |  mip2 real 98.8% vs random  9.4%  |  mip4 real 100% vs random 16.2%</code></p>
+<p>Real UVs land on a stored page far above the random baseline at every
+   mip on all 3 maps (different <code>pagesAcross</code> each: 128/256/512), reach
+   100% by mip 4, and a flipped-<code>v</code> control on <code>c03p1.pages</code> scores
+   <strong>worse than random</strong> at mip 0 (22.6% vs. 33.7%), ruling out the one
+   plausible alternative convention. The mip 0 shortfall (66-85%, not 100%)
+   is consistent with the already-known fact that not every finest-mip page
+   is actually stored for every point on the mesh (prior rounds' <code>mega.json</code>
+   shows exactly this kind of partial coverage at fine mips); it is not
+   evidence against the formula, which a random control at the same mip
+   confirms (5-34%, far lower).</p>
+<p>Reproduce with <code>python re_probes/tnomegatex/check_mapping.py uvmap</code>
+   (new this pass, read-only, reuses <code>wolfsdk.tnomap._Store</code> +
+   <code>parse_bmodel</code>/<code>surface_arrays</code> to pull UVs, <code>tools.probe_vtpages.find_page</code>
+   to test them, <code>tools.probe_tno_tex.page_file</code> to resolve the <code>.pages</code>
+   path — no new decoder, just a new statistical test over existing,
+   unmodified readers). <code>check_mapping.py landpagefile</code> reproduces the
+   25/25 <code>landDimensions x 8</code> table above, <code>check_mapping.py land_scan</code> the
+   <code>.land</code>/<code>.genmodel</code> zero-hits scan, and <code>check_mapping.py vmtr_control</code>
+   the negative control below.</p>
+<p><strong><code>.land</code> / <code>.genmodel</code>: still zero hits — now understood as expected, not a dead end.</strong></p>
+<p>Re-ran the archive scan (<code>re_probes/tnomegatex/check_mapping.py land_scan</code>:
+all 14 <code>base/chunk*.resources</code> pairs, <code>wolfsdk.resources.load_master</code>,
+203,843 entries, every entry type) for <code>*.land</code> <strong>and</strong>, following up the
+verifier's "missed" suggestion, for <code>*.genmodel</code> (the file <code>landGenModel</code>
+names): <strong>zero hits for both</strong>, same as pass 1 found for <code>.land</code> alone. Given point 2 above — the UV→page mapping
+is already baked into the shipped geometry's UV0 channel, measured and
+confirmed working with no <code>.land</code> file anywhere in reach — this is no longer
+a loose end pointing at "a file we haven't found yet". Both <code>.land</code> and
+<code>.genmodel</code> are read naturally as <strong>build-time-only</strong> artifacts of
+MachineGames' internal map compiler (which presumably <em>writes</em> the UV
+values into <code>_world.bmodel</code> using whatever <code>.land</code>/<code>.genmodel</code> describe,
+then never ships either file), not as something a runtime loader reads and
+this round's scan missed. This is now a settled negative result, not an open
+file-location search.</p>
+<h3 id="5-one-region-decoded-to-a-viewable-image-proven-new-png-this-round">5. One region decoded to a viewable image (PROVEN, new PNG this round)</h3>
+<pre><code>python tools/vtpixel.py png c03p1.pages 92 81 0 --block 2 --out &lt;dir&gt;
+  -&gt; c03p1_92_81_m0_b2_ch0.png   spread 92.6   bit walk lands
+</code></pre>
+<p>Saved at <code>re_probes/tnomegatex/evidence/before.png</code> (also
+<code>evidence/paint_source.png</code> is the separate synthetic image used for the
+writer test below, not to be confused with this one). This is a <strong>real
+decoded page</strong>, not an occupancy map: planks with a shadowed figure, clearly
+structured image content, pixel spread 92.6/255. Decoded via the same
+<code>jxrlib</code>-based pipeline the prior rounds calibrated bit-exact against
+Windows' own WIC decoder (<code>docs/vt-planes.md</code> §9.2, 324/324 and 60/60 byte
+identical).</p>
+<h3 id="6-a-round-trip-proven-writer-proven-new-this-round">6. A round-trip-proven writer (PROVEN, new this round)</h3>
+<p>Code: <code>re_probes/tnomegatex/writer_poc.py</code> (self-contained, read-only on the
+game install, copies to <code>D:\wolf-decomp\tmp\tnomegatex\</code> and deletes them
+when done unless <code>--keep</code> is passed). Run:</p>
+<pre><code>python re_probes/tnomegatex/writer_poc.py
+</code></pre>
+<p>What it does, each step reusing an already-proven piece of
+<code>tools/vtdecode.py</code> / <code>tools/vtplanes.py</code> / <code>tools/vtpixel.py</code> wherever one
+existed, and adding only what did not:</p>
+<ol>
+<li>Copies <code>c03p1.pages</code> to the scratch directory. <strong>Never opens the
+   original for writing.</strong></li>
+<li>Loads page (92,81,0), its block 2 (NCOMPONENT, 1ch, QP 25, 4768 bytes on
+   disk) — the same page as §5 — and decodes it as the "before" picture.</li>
+<li>Renders a 128×128 synthetic image (a smiley face — unambiguously not
+   game art) and JPEG-XR-encodes it with Windows' own <code>WmpBitmapEncoder</code>
+   (<code>OverlapLevel=1</code>, <code>ImageDataDiscardLevel=1</code> = <code>SB_NO_FLEXBITS</code>, matching
+   what every retail block uses) via the same PowerShell/WIC call
+   <code>vtplanes.py refgen</code> already uses for reference streams.</li>
+<li>Extracts WIC's own codestream and locates the entropy payload using
+   <code>vtplanes._ref_params</code> (which already parses both of JPEG-XR's two
+   <code>SUBSEQUENT_BYTES</code> encodings — WIC did not pick the same one as retail
+   files always do here, which is exactly why this step needed the existing
+   parser and not the stricter <code>vtdecode.parse_plane_header</code>, which only
+   accepts retail's form).</li>
+<li><strong>New capability</strong>: <code>ncomponent_plane_header()</code> builds a retail-style
+   <code>IMAGE_PLANE_HEADER</code> for <code>INTERNAL_CLR_FMT=NCOMPONENT</code>, 1 channel — the
+   mirror image of <code>vtdecode.y_only_plane_header</code>, which only ever builds
+   the <em>other</em> direction (repackaging an existing retail block for WIC to
+   read). The new block is <code>header(6B) + FF 00 00 01 00 + &lt;WIC's payload
+   bytes, copied verbatim&gt;</code> — byte-for-byte the same shape as a real block 2.</li>
+<li><strong>Standalone check, before the file is touched at all</strong>: feeds the new
+   block straight back through the <em>existing, proven</em> <code>gray_jxr()</code> +
+   <code>JxrDecApp.exe</code> path and diffs against the source image:
+   <code>mean |error| 9.68/255</code>. (Also cross-checked through the same
+   NCOMPONENT/3-channel decode path <code>vtpixel.plane_pixels</code> uses for real
+   block 2/3 — same result once the interleaved-channel output is unpacked
+   correctly; an initial run that skipped that unpacking is noted under
+   <strong>Failed hypotheses</strong>, since it is a real trap for anyone else using
+   <code>plane_pixels</code> on a 1-channel block.)</li>
+<li><strong>Splices the new block into the copy, in place.</strong> The replacement
+   (953 bytes) is smaller than the slot it replaces (4768 bytes), so blocks
+   0/1 stay untouched, block 3 moves to sit right after the new, shorter
+   block 2, and the page sub-header's four big-endian size fields are
+   rewritten. Nothing else in the file moves, and no parent <code>child_off</code>/
+   <code>child_size</code> needs to change, <strong>because</strong> a smaller record can only ever
+   still fit inside whatever span its parent already reserved for the
+   original (larger) one — this is checked, not assumed (see step 8).</li>
+<li><strong>Re-opens the copy cold</strong> (fresh Python process via <code>subprocess</code>, for
+   <code>probe_vtpages.py selftest</code>; a fresh <code>find_page</code>/<code>read_blocks</code> call for
+   the rest) and proves the edit two independent ways:<ul>
+<li><code>probe_vtpages.py selftest</code> on the <strong>whole patched file</strong>:
+ <code>9031 records, 9030 parent/child links, 27212214 bytes claimed +
+ 32486 bytes reserved slack in 15 holes = 27244700 bytes</code> — same record
+ count and total size as the unmodified file's own selftest above; the
+ claimed-bytes delta (27216028 → 27212214 = <strong>−3814</strong>) matches
+ <code>4768 − 953 = 3815</code> to within one pad byte, and the hole count went
+ from 14 to 15 — exactly the one new gap this edit created. The
+ container is still 100% self-consistent.</li>
+<li>Re-decoding page (92,81,0)'s block 2 from the patched file:
+ <code>mean |error| 9.68/255</code> against the intended smiley (same number as
+ the standalone check — because splicing is byte-exact, diffed at
+ <code>0.00/255</code> against the standalone decode), and visually: compare
+ <code>re_probes/tnomegatex/evidence/before.png</code> (original plank/shadow
+ texture) against <code>evidence/after.png</code> (the smiley, decoded fresh from
+ the patched copy).</li>
+</ul>
+</li>
+<li>Confirms the <strong>original</strong> <code>c03p1.pages</code> is still byte-identical
+   (SHA1 compared before/after: unchanged), then deletes the scratch copy
+   and temp files (unless <code>--keep</code>).</li>
+</ol>
+<p>Live output of the run that produced the evidence PNGs:</p>
+<pre><code>page (92,81) mip 0: block sizes (4451, 6879, 4768, 36), block 2 QP 25, subband 1
+WIC encode: QP 90, subband 1, payload 942 bytes (budget 4768 bytes)
+new block 2: 953 bytes (fits in the 4768 byte slot)
+standalone round trip (before touching the file): mean |error| 9.68/255
+selftest ok: c03p1_writetest.pages, 9031 records, 9030 parent/child links,
+  27212214 bytes claimed + 32486 bytes reserved slack in 15 holes = 27244700 bytes
+re-read from the PATCHED FILE vs. the painted source: mean |error| 9.68/255
+re-read from the PATCHED FILE vs. the standalone check: mean |error| 0.00/255
+original file sha1 unchanged: True (de2770b5bdd0...)
+RESULT: PASS
+</code></pre>
+<h3 id="6b-growing-a-replacement-block-past-its-slot-proven-new-this-pass--was-only-a-design-in-pass-1">6b. Growing a replacement block past its slot (PROVEN, new this pass — was only a design in pass 1)</h3>
+<p>Pass 1's recipe step 6 described this but did not build it; the verifier
+listed the untested <code>--grow</code> flag (advertised in the module docstring but
+absent from <code>argparse</code>) as a gap. Both are fixed: <code>--grow</code> now exists and
+works. Design, as implemented in <code>patch_grow()</code>:</p>
+<ol>
+<li>Find the one parent record that references the target page's
+   <code>child_off</code>/<code>child_size</code> slot (<code>find_page_with_parent()</code>, a new local
+   descent that tracks the parent alongside the existing <code>find_page()</code>
+   logic).</li>
+<li>Build a whole new leaf record (40 byte header + 16 byte page sub-header +
+   all four blocks, one of them the oversized replacement) and <strong>append</strong>
+   it past the current end of file.</li>
+<li><strong>Zero</strong> the orphaned old record's bytes in place (its magic must not
+   survive — <code>probe_vtpages.py selftest</code>'s hole scan would otherwise read it
+   as a stray, unreferenced record and fail for a real reason).</li>
+<li>Repoint the one parent's <code>child_off</code>/<code>child_size</code> for that slot at the
+   new record.</li>
+<li>Grow the file header's own <code>file_size</code> field (offset +24) to match the
+   new, larger actual file size — a detail pass 1's design did not mention
+   and that is easy to miss, since nothing <em>looks</em> broken without it until
+   <code>probe_vtpages.py selftest</code>'s very first assertion (<code>file_size == actual
+   size</code>) catches it.</li>
+</ol>
+<p>Tested by deliberately targeting a page with a tiny block 2 slot (62 bytes,
+page (0,18,0) of <code>c03p1.pages</code>) and a synthetic <strong>noise</strong> image (not the
+smiley — noise is close to incompressible, guaranteeing the encoded block
+outgrows almost any real slot, which is the point of this test):</p>
+<pre><code>page (0,18) mip 0: block sizes (170, 111, 62, 103), block 2 QP 25, subband 1
+WIC encode: QP 100, subband 1, payload 2568 bytes (budget 62 bytes)
+new block 2: 2579 bytes (TOO BIG in the 62 byte slot)
+standalone round trip (before touching the file): mean |error| 39.93/255
+grow: old record (502 bytes) zeroed, new record (3020 bytes) appended at offset 27244700, parent repointed
+re-read from the PATCHED FILE vs. the painted source: mean |error| 39.93/255
+re-read from the PATCHED FILE vs. the standalone check: mean |error| 0.00/255
+original file sha1 unchanged: True
+RESULT: PASS
+</code></pre>
+<p>(39.93/255 is noise's own lossy round-trip error at this codec/quality, not
+a writer defect — <code>err_vs_standalone</code> of 0.00/255 shows the on-disk bytes
+are bit-identical to what was encoded; the higher number is simply harder
+for JPEG-XR to represent than a smooth synthetic image like the smiley.)</p>
+<p><strong>A genuinely new finding surfaced by actually building this, not just
+designing it</strong>: <code>probe_vtpages.py selftest</code> <strong>fails</strong> on a grown file —
+<code>reserved slack 28672 != unclaimed bytes 29174</code>, a difference of exactly 502
+bytes, i.e. exactly the one record this edit zeroed and orphaned. This is
+not a bug in the edit. <code>selftest</code> checks one invariant beyond tree
+correctness: that every unclaimed byte in the file is accounted for by some
+parent's "reserved but currently unused" declaration (true of all 39
+pristine retail files, because their only unclaimed bytes are packer
+padding some parent still formally reserves). An appended <code>--grow</code> record's
+old slot is unclaimed by <em>construction</em> — nothing references it any more —
+so it can never satisfy that bookkeeping equality, no matter how correct the
+edit is. <code>writer_poc.py</code> now ships its own <code>verify_structure()</code> (new this
+pass, reusing only the already-proven read-only <code>iter_records</code>/<code>read_record</code>)
+that checks every invariant that <em>does</em> matter structurally (every claimed
+child fits its declared slot, parent/child mip and position agree, no
+record hides unreferenced in any hole) <strong>minus</strong> that one pristine-only
+equality, confirms the orphan is exactly the one old record's span, and the
+run above calls it explicitly rather than silently papering over the
+<code>selftest</code> failure.</p>
+<h3 id="6c-block-3-power-3232px-22-macroblocks-through-the-writer-proven-new-this-pass">6c. Block 3 (power, 32×32px, 2×2 macroblocks) through the writer (PROVEN, new this pass)</h3>
+<p>The verifier flagged that only block 2 had ever been run through the
+writer, despite block 3 being the other plane proven to pixels, with a
+different macroblock grid (2×2 vs. 8×8) that exercises different code paths
+(<code>fits()</code>/<code>plane_pixels()</code>'s <code>shape</code> parameter, previously only ever called
+with <code>(8, 8)</code>). <code>run_block3_test()</code> (<code>python
+re_probes/tnomegatex/writer_poc.py --block3</code>) repaints block 3 of the same
+page used throughout, via the <code>--grow</code> path (block 3's slots are tiny — 36
+bytes here — so any real image outgrows them, making the grow path the
+relevant one to exercise):</p>
+<pre><code>page (92,81) mip 0: block 3 is 36 bytes, 32x32px, 2x2 macroblocks
+new block 3: 194 bytes (old slot 36 bytes)
+standalone round trip: mean |error| 101.24/255
+grow: old record (16190 bytes) zeroed, new record (16348 bytes) appended, parent repointed
+verify_structure: 9031 records, 9030 links, orphan 16190 bytes (expected)
+re-read from the patched copy vs. painted source: mean |error| 101.24/255
+re-read vs. standalone: mean |error| 0.00/255 (should be ~0)
+original file sha1 unchanged: True
+RESULT: PASS
+</code></pre>
+<p>(101.24/255 is, again, noise's own lossy-codec error at a coarse 2×2
+macroblock grid, not a writer bug — <code>err_vs_standalone</code> of 0.00/255 is the
+number that actually speaks to correctness.) This confirms the writer's
+mechanism — plane header, splice/grow, container repair — generalises
+across both proven single-channel planes, not just block 2.</p>
+<h2 id="proven-vs-inferred">PROVEN vs INFERRED</h2>
+<p><strong>PROVEN (with live commands and numbers above, not just cited):</strong></p>
+<ul>
+<li>The container/page-table model, re-walked end to end on a real file.</li>
+<li>Block 2's plane header is a fixed, reproducible <code>NCOMPONENT/1ch/QP25/SB_NO_FLEXBITS</code>
+  shape, re-extracted from a fresh page.</li>
+<li>One real region decodes to a genuine, structured viewable image (not an
+  occupancy map).</li>
+<li>A full write → splice → cold re-open → re-decode round trip for block 2,
+  on a copy, with the original file proven untouched (in-place/shrink path).</li>
+<li><strong>New this pass</strong>: the same round trip via the grow path (append past
+  EOF, repoint one parent, zero the orphan, grow the file header), on both
+  block 2 and block 3, each proven on a copy with the original untouched.</li>
+<li>The <code>virtualMapping</code> UV→page formula, against a real decl and real file
+  occupancy — corrected this pass: one cascading mip-chain test (not 8
+  independent ones), backed by a negative control (50 random offsets: 8/50
+  land a full chain by chance, matching the quadtree's ~10% per-mip
+  occupancy).</li>
+<li><strong>New this pass, the primary result</strong>: <code>landPageFile</code> names the primary
+  per-map megatexture's <code>.pages</code> file directly, on all 25 TNO maps, with no
+  search needed — pass 1's "unreachable" claim was wrong.</li>
+<li><strong>New this pass</strong>: <code>landDimensions x 8 == pagesAcross</code>, exactly, on all 25
+  maps, zero exceptions.</li>
+<li><strong>New this pass</strong>: the primary megatexture's own UV0 channel (already
+  shipped in <code>_world.bmodel</code>, already parsed by <code>wolfsdk/tnomap.py</code>) is
+  itself the page-space UV at <code>page = floor(uv * pagesAcross-at-mip)</code>, no
+  offset, no <code>.land</code> file — backed by a 2000-sample real-vs-random-UV test
+  against 3 maps' real <code>.pages</code> files at 3-6 mip levels each (real UV hit
+  rate 66-100% vs. random 5-33%, and a flipped-<code>v</code> control scoring <em>below</em>
+  random, ruling out that alternative).</li>
+<li><code>landDefinitionFile</code>'s <code>.land</code> target, and <code>landGenModel</code>'s <code>.genmodel</code>
+  target (checked new this pass), are not loadable archive entries under any
+  name/type in any of the 14 base chunk archives — now understood as
+  expected (build-time-only artifacts), not an open file-location search.</li>
+</ul>
+<p><strong>INFERRED:</strong></p>
+<ul>
+<li>Block 0/1's macroblock <em>shape</em> (8×8 vs. any other 64-MB arrangement) —
+  still only an analogy to block 2, per <code>docs/vt-planes.md</code> §3.2/§9.5/§10.7.</li>
+<li>The 128-vs-120-texel page pitch ambiguity (<code>docs/virtualtextures.md</code> §7) —
+  unaffected by this pass's <code>landDimensions x 8</code> finding, which is about
+  page <em>count</em>, not per-page texel width.</li>
+<li>Block-role-to-texture-slot (0=diffuse,1=normal,2=specular,3=power) —
+  still inferred from byte-share statistics, not from a cvar name lookup or
+  disassembly (<code>docs/virtualtextures.md</code> §8).</li>
+<li><strong>New this pass</strong>: <em>why</em> <code>landDimensions x 8 == pagesAcross</code> (reading:
+  one "land unit" = an 8x8 page grid, by analogy to a shared-material page
+  being internally <code>PAGE_WIDTH</code>=128 texels) — the correlation itself is
+  proven (25/25, zero exceptions), the mechanism behind it is not confirmed
+  from any other source.</li>
+</ul>
+<h2 id="failed-hypotheses-this-round">Failed hypotheses (this round)</h2>
+<ol>
+<li><strong>"<code>plane_pixels()</code>'s return value is already a single-channel pixel
+   array."</strong> It is not — it always returns <code>PF_3CHANNELS</code>-interleaved data
+   (<code>spp=3</code>) even for a 1-channel <code>NCOMPONENT</code> plane, because that is the
+   output format <code>vtpixel.py</code> standardises on for both 1- and 2-channel
+   blocks. Using the raw buffer directly gave <code>mean |error| 156/255</code>
+   (garbage) on the very first full writer run even though every earlier
+   step (header, QP, payload, splice, container selftest) was already
+   correct. Fixed by extracting <code>data[0::spp]</code>. Recorded here because it is
+   an easy trap for the next person calling <code>plane_pixels</code> on a block 2/3.</li>
+<li><strong>Finding <code>c01p1.land</code> (or any <code>*.land</code> file) by exact or case-insensitive
+   name in the 14 scanned <code>base/chunk*.resources</code> archives.</strong> Zero hits, in
+   any entry type — and, this pass, zero hits for <code>.genmodel</code> either, the
+   same scan. Not a failure any more in the sense of blocking progress:
+   §4 shows the mapping does not need either file, it is baked into the
+   shipped geometry's own UV0 channel.</li>
+<li><strong>(Pass 1's own mistake, not re-made here, recorded for the second-pass
+   record.)</strong> Pass 1 concluded "the file could not even be reached" from
+   the <code>.land</code> zero-hits result, without checking whether the decl it had
+   already quoted contained a more direct field. It did (<code>landPageFile</code>),
+   one line away from the field pass 1's excerpt stopped at. The lesson
+   generalised: a zero-hits <em>negative</em> result for one named field does not
+   by itself mean "the whole question is unreachable" — the decl's other
+   fields (and existing codebase tooling, see §4's <code>probe_tno_tex.page_file()</code>
+   note) needed checking first.</li>
+<li><strong>Forcing <code>--grow</code> to trigger with the smiley image and <code>QualityLevel</code>
+   100 on the normal 128×128 page.</strong> <code>WmpBitmapEncoder.QualityLevel=100</code>
+   is not literally lossless in WIC's JPEG-XR encoder — a 128×128 noise
+   image at quality 100 still only reached 2579 bytes, short of the normal
+   test page's 4768-byte block 2 slot. Fixed by targeting a <em>different</em>,
+   deliberately tiny real slot (62 bytes, found by scanning the file for
+   small block 2 sizes) instead of fighting the encoder for a bigger output
+   on a page that already has a generous budget.</li>
+</ol>
+<h2 id="mod-design-repainting-a-levels-speculargloss-via-a-patched-pages-file">Mod design: repainting a level's specular/gloss via a patched <code>.pages</code> file</h2>
+<p>What is proven: a specular/gloss page (block 2 and block 3, both tested) can
+be replaced with modder-authored content, on a copy, with the container
+staying valid and the pixels round-tripping — for <strong>both</strong> virtual-material
+families now, shared <code>vmtr</code> <em>and</em> a map's own primary megatexture (the
+page-location and UV-mapping blocker from pass 1 is resolved, §4). The
+recipe, generalised from <code>writer_poc.py</code>:</p>
+<ol>
+<li>Find the page(s) covering the area to repaint:<ul>
+<li>shared <code>vmtr</code> material: <code>virtualMapping</code> scale/offset + <code>find_page()</code>
+ (§4);</li>
+<li>a map's own primary megatexture (floors/walls/terrain): <code>landPageFile</code>
+ for the <code>.pages</code> file, then <code>page = floor(uv * pagesAcross-at-mip)</code>
+ against that surface's own UV0 channel (new this pass, §4) — no
+ <code>.land</code> file needed;</li>
+<li>or pick any already-occupied page directly for an experiment (as this
+ report does throughout).</li>
+</ul>
+</li>
+<li>Render the new content at 128×128 (block 2) or 32×32 (block 3),
+   grayscale.</li>
+<li>JPEG-XR-encode via WIC (<code>OverlapLevel=1</code>, <code>ImageDataDiscardLevel=1</code>).</li>
+<li>Wrap under <code>ncomponent_plane_header()</code> + <code>FF 00 00 01 00</code> + WIC's payload
+   bytes.</li>
+<li>If the new block is <strong>no larger</strong> than the original, splice it in place
+   (<code>patch_block2()</code>, the proven in-place path for block 2): no other byte
+   in the file moves. (Block 3 was only tested via the grow path this pass,
+   §6c — its slots are small enough that a real repaint will usually need
+   growing anyway.)</li>
+<li>If the new block is <strong>larger</strong> than the original slot: <strong>now implemented
+   and proven, not just designed</strong> (§6b) — <code>patch_grow()</code> appends a whole
+   new record past EOF, repoints the page's one parent, zeros the orphaned
+   old record, and grows the file header's <code>file_size</code>. One caveat
+   discovered by building it: the growth path trips <code>probe_vtpages.py
+   selftest</code>'s pristine-file-only slack-accounting invariant (expected,
+   explained in §6b, not a correctness problem — <code>verify_structure()</code>
+   checks the invariants that do matter and passes).</li>
+<li>Verify with <code>probe_vtpages.py selftest</code> on the copy (in-place) or
+   <code>verify_structure()</code> (grow), and by re-decoding the target page, before
+   ever touching anything the game loads from.</li>
+</ol>
+<p><strong>What this recipe cannot do yet:</strong> repaint <em>colour</em> (block 0, diffuse) —
+there is still no decoder or encoder oracle for it at all, so step 2–4 have
+no analogue for colour content, on <strong>either</strong> megatexture family. This is
+now the single biggest remaining gap: the location and UV-mapping problem
+that pass 1 thought blocked the primary megatexture is solved, but the
+pixel-format problem (block 0) blocks colour on both families equally and
+is unrelated to that fix.</p>
+<p><strong>What this round deliberately did not attempt:</strong> wiring a patched
+<code>.pages</code> file into the mod loader or the game's own file search
+(<code>vt_filePath</code>/<code>vt_filePathVmtrOverride</code>/<code>vt_setSource</code> per
+<code>docs/virtualtextures.md</code> §9–§10) — that cvar route was flagged by a
+prior round as unverified in the retail build and is outside this round's
+scope (file-format decode + writer proof only). No game was launched.</p>
+<h2 id="open-questions-updated-this-pass">Open questions (updated this pass)</h2>
+<ul>
+<li>Block 0 (diffuse) pixels: still unsolved, the one thing this pass did not
+  move forward at all; needs a from-scratch inverse transform (coefficient
+  values, dequantisation with the QPs already known, two stages of inverse
+  PCT, overlap filter) per <code>docs/vt-planes.md</code> §10.6, not another bitstream
+  search. This blocks colour repainting on <em>both</em> megatexture families now
+  that the primary family's location/mapping problem is resolved.</li>
+<li>Block 1 channel 1: bits land, image is smooth, but it sits at the wrong
+  spatial position relative to channel 0 — open per <code>docs/vt-planes.md</code> §11.</li>
+<li>Block 0/1 macroblock <em>shape</em> and the 120-vs-128 page pitch: both open,
+  unchanged (the <code>landDimensions x 8</code> finding is about page <em>count</em>, not
+  per-page texel width, so it does not touch the pitch ambiguity).</li>
+<li><strong>Resolved this pass, was open before</strong>: <code>landDefinitionFile</code>'s <code>.land</code>
+  file target, and therefore the UV→page mapping for the primary per-map
+  megatexture — see §4 (<code>landPageFile</code> + <code>landDimensions x 8</code> +
+  UV0-is-already-page-space-UV).</li>
+<li><em>Why</em> the <code>landDimensions x 8</code> ratio holds (INFERRED reading above, not
+  independently confirmed) — low priority, since the correlation itself is
+  already reliable enough to use.</li>
+<li>The mip 0 shortfall in the UV→page statistical test (66-85% hit rate,
+  not 100%, §4) — read as expected sparse-quadtree coverage by analogy with
+  prior rounds' <code>mega.json</code> figures, not independently confirmed as the
+  exact cause.</li>
+<li>Whether any <code>vt_*</code> cvar actually reaches the retail build's console (the
+  file-format side of "repaint a level" is now proven on a copy, for both
+  megatexture families and both growable/in-place writer paths; the
+  in-game delivery side is still not addressed by this track at all — no
+  game was launched).</li>
+</ul>
+<h2 id="smallest-in-game-test-for-the-maintainer">Smallest in-game test for the maintainer</h2>
+<p><em>(Translated from German.)</em></p>
+<p>This run deliberately tested <strong>nothing</strong> in the game (only copies
+of a <code>.pages</code> file on disk) — that was explicitly not allowed and
+not the assignment either. The next sensible step, if you want to see this live,
+would first need a way to get the game to load the patched copy at all
+(e.g. via the mod loader or
+<code>vt_filePathVmtrOverride</code>, if that is reachable in retail — unproven,
+see above). Two concrete, small tests, once that is in place:</p>
+<ol>
+<li><strong>As in pass 1</strong>: replace <code>virtualtextures/_vmtr.pages</code> with a copy
+   in which page (16,0) on every mip (the region of the
+   combat knife <code>combatknife_hg</code>, see §4) has been rewritten to a
+   conspicuous pattern with <code>writer_poc.py</code> logic, then look at the
+   combat knife in hand in the game — the gloss/specular part of the blade
+   should change visibly, diffuse/colour would stay unchanged (because
+   block 0 cannot be written yet).</li>
+<li><strong>Newly possible since this pass</strong>: the same idea on the primary
+   map megatexture instead of on a shared vmtr material — e.g.
+   copy <code>virtualtextures/c03p1.pages</code> (the file from <code>landPageFile</code> for
+   <code>game/wolf/c03/c03p1</code>), rewrite any large, clearly visible
+   floor/wall page in it on specular (§4 shows how to find the
+   right page via <code>landPageFile</code> + the UV0 channel instead of via the
+   non-loadable <code>.land</code> file) and look at the same map in the game.
+   That would show for the first time whether the
+   file round trip proven here also works on the surface type that makes up the
+   bulk of a map (floor/walls/terrain), not only on
+   individual shared materials like weapons.</li>
+</ol>
+<p>Both tests connect the file round trip proven here for the first time
+with a real in-game image.</p>
+<p>Related: <a href="TNO-Virtual-Textures.html">TNO Virtual Textures</a>, <a href="Virtual-Texture-Planes.html">Virtual Texture Planes</a>, <a href="TNO-Maps.html">TNO Maps</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Tno-Dump.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Tnodump: A Read-Only Runtime Capture Tool for TNO, and the Ghidra Import Prepared for the Moment a TNO Image Exists</a><a class="next" href="Research-Report-R6-Tno-Script.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Tnoscript: How The New Order Drives Map Events (Trigger Graph + a Real idTech4 Script VM)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

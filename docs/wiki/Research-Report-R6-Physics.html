@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Physics: Havok Parameters Reachable by Decl/Cvar in TNC and TNO – Wolfenstein Modloader</title>
+<meta name="description" content="Which Havok physics values (gravity, ragdolls, explosions, breakables, vehicles) modders can reach in Wolfenstein II and The New Order.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Physics: Havok Parameters Reachable by Decl/Cvar in TNC and TNO</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Physics"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#question">Question</a></li><li><a href="#answer-short">Answer (short)</a></li><li><a href="#1-the-havok-middleware-actually-compiled-into-tnc">1. The Havok middleware actually compiled into TNC</a></li><li><a href="#2-tnc-cvars--exact-names-flags-defaults-clamps">2. TNC cvars — exact names, flags, defaults, clamps</a></li><li><a href="#3-tnc-decl-types-that-do-not-exist">3. TNC decl types that do not exist</a></li><li><a href="#4-rideables--panzerhund-and-monowheel">4. Rideables — Panzerhund and Monowheel</a></li><li><a href="#5-tnc-reachability-the-resourceexec-generalisation-inferred-not-individually-tested">5. TNC reachability: the resourceExec generalisation (inferred, not individually tested)</a></li><li><a href="#6-tno--the-contrast">6. TNO — the contrast</a></li><li><a href="#7-open-questions">7. Open questions</a></li><li><a href="#8-recipe-sketch-for-a-fun-mod-design-not-built">8. Recipe sketch for a fun mod (design, not built)</a></li><li><a href="#smallest-in-game-test-for-the-maintainer">Smallest in-game test (for the maintainer)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report checks which physics values can be changed in Wolfenstein II: The New Colossus (TNC) and Wolfenstein: The New Order (TNO), both built on Havok physics. In TNC, gravity and time speed are cheat-locked settings, while explosion pushes, ragdoll hits and breakable objects are text <span class="t" data-t="decl">definitions</span> that can be edited; the Panzerhund is a possessed creature, not a vehicle, and the Monowheel cannot be ridden. In TNO, gravity and player movement are locked, but per-object physics such as 1,205 breakable objects and one drivable car stay editable as text. TNO&#x27;s lock was measured earlier from a real game log; everything new about TNC is static, and setting these TNC values through resourceExec is only inferred, not tested in game.</p><ul><li>TNC&#x27;s g_gravity (default 9.82) has no minimum or maximum in the code, and timescale is clamped to 0.1–10.0; both are cheat-locked and should be reachable through resourceExec, which is not yet tested.</li><li>Only 3 creatures (kampfhund, drone, alligator) have editable ragdoll text in TNC; all others use binary Havok files, and TNC has no ragdoll gravity per creature.</li><li>Push from explosions and weapons is set in the 154 damage definitions, and 175 breakable definitions hold the full destruction tuning (strength, density, radius).</li><li>In TNO, g_gravity and the movement settings failed through all 5 tested channels in a real game log, but its breakable objects even carry their own gravity value.</li><li>Open: whether setting g_gravity or timescale in TNC changes gameplay or only the stored value, and where the &#x27;default&#x27; physics preset for movable props lives.</li></ul></div><div class="de"><p class="lede">Dieser Bericht prüft, welche Physikwerte sich in Wolfenstein II: The New Colossus (TNC) und Wolfenstein: The New Order (TNO) ändern lassen, beide mit Havok-Physik. In TNC sind Schwerkraft und Zeitgeschwindigkeit als Cheat gesperrte Einstellungen, während Explosionsstöße, Ragdoll-Treffer und zerstörbare Objekte in änderbaren Text-<span class="t" data-t="decl">Definitionen</span> stehen; der Panzerhund ist eine übernommene Kreatur, kein Fahrzeug, und auf dem Monowheel kann man nicht fahren. In TNO sind Schwerkraft und Spielerbewegung gesperrt, aber Physik pro Objekt wie 1.205 zerstörbare Objekte und ein fahrbares Auto bleibt als Text änderbar. Die TNO-Sperre wurde früher aus einem echten Spiel-Log gemessen; alles Neue zu TNC ist statisch, und das Setzen dieser TNC-Werte über resourceExec ist nur abgeleitet, nicht im Spiel getestet.</p><ul><li>g_gravity in TNC (Standard 9,82) hat im Code kein Minimum oder Maximum, timescale ist auf 0,1–10,0 begrenzt; beide sind als Cheat gesperrt und sollten über resourceExec erreichbar sein, was noch nicht getestet ist.</li><li>Nur 3 Kreaturen (Kampfhund, Drohne, Alligator) haben in TNC bearbeitbaren Ragdoll-Text; alle anderen nutzen binäre Havok-Dateien, und TNC hat keine eigene Ragdoll-Schwerkraft pro Kreatur.</li><li>Der Stoß von Explosionen und Waffen steht in den 154 damage-Definitionen, und 175 breakable-Definitionen enthalten die volle Zerstörungs-Abstimmung (Festigkeit, Dichte, Radius).</li><li>In TNO scheiterten g_gravity und die Bewegungseinstellungen laut echtem Spiel-Log über alle 5 getesteten Wege, doch seine zerstörbaren Objekte haben sogar einen eigenen Schwerkraftwert.</li><li>Offen: ob g_gravity oder timescale in TNC das Spielgeschehen ändern oder nur den gespeicherten Wert, und wo das Physik-Preset „default“ für bewegliche Requisiten steht.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass on which Havok physics parameters a modder can reach through decls or cvars in TNC and TNO. TNC runs Havok Physics 2, Havok Destruction and Havok Cloth; gravity and time scale are plain cvars, ragdoll text decls exist for only three creatures, and explosion/weapon impulses, breakables and separable props are decl levers. In TNO, gravity and player movement are cvars and therefore locked by the retail cheat gate, while per-object physics is decl-driven. <strong>Read-only; reaching these cvars through <code>resourceExec</code> is inferred from the proven route, not tested individually in game.</strong></p>
+<p>Read-only track. Builds on and does not redo: <code>re_probes/agent_reports/r4_consolecmds.md</code>
+and <code>r5_kisculecmd.md</code> (the TNC restriction-level gate and the <code>resourceExec &lt;file&gt; -s</code>
+bypass — cited here, not re-derived), <code>re_probes/cvartable/cvars_tnc_v2.json</code> (3256-cvar
+TNC catalogue with flags/min/max, built by <code>w-cvartable-a1</code>'s <code>tools/probe_cvartable.py</code>
+from the live runtime image — spot-checked against the decompiler in §2.4 below, not
+retaken), <code>docs/moddingflaeche-tnc.md</code> (TNC decl-type survey, <code>tools/survey_tnc.py</code>),
+<code>docs/limits.md</code> and <code>docs/devmodus.md</code> (TNO's retail cvar lock, measured from a real
+<code>qconsole.log</code> — this is the authoritative TNO evidence, no runtime image exists for TNO
+so it could not be re-measured here). Tools used directly in this track: <code>tools/decomp.py</code>
+(TNC runtime decompiler, ~15 s/call) against <code>re_probes/runtime_87400/module.bin</code>;
+<code>tools/survey_tnc.py --type/--grep</code> (TNC decl sampling, idcl.py + oodle.py, read-only);
+<code>wolfsdk/patch.py Installation</code> against the live TNO install (read-only) for direct decl
+reads, reusing the already-proven TNO archive reader. Three small scripts kept for
+reproducibility in <code>re_probes/physics/</code>: <code>verify_tnc_grep.py</code> (one-pass multi-pattern
+grep over all 43 309 unique TNC text decls, ~2m40s), <code>verify_tnc_entitydefs.py</code> (five
+named TNC <code>entityDef</code> reads), <code>verify_tno_samples.py</code> (TNO decl samples by type via
+<code>Installation.lookup</code>). <strong>No game was launched, no process attached.</strong> Nothing was
+written under either game install; all three scripts above only read.</p>
+<h2 id="question">Question</h2>
+<p>TNC physics: which Havok parameters are reachable by decl or cvar — gravity, timescale,
+ragdoll strength/weight, explosion/weapon impulse on props and bodies, destructible/
+separable entities (<code>func/separable</code>), throwable props, rideable vehicles/mechs
+(Panzerhund, Monowheel) — with exact fields/cvars, code clamps, and what a "low gravity /
+super-ragdoll / everything breaks" fun-mod would touch. Both engines, with evidence.</p>
+<h2 id="answer-short">Answer (short)</h2>
+<p><strong>TNC (id Tech 6) runs on Havok Physics 2 (<code>hknp*</code>) + Havok Destruction (<code>hknd*</code>) + Havok
+Cloth (<code>idHavokCloth</code>) + a Havok-based AI/navmesh bridge (<code>hkai*</code>, <code>idNavMesh_Havok</code>) — all
+confirmed by RTTI class names, not inferred.</strong> A global gravity cvar (<code>g_gravity</code>,
+default <code>9.82</code>, <strong>no engine-side min/max clamp</strong> — confirmed both in the cvar table and
+independently in the cvar's own constructor via the decompiler) and a time-scale cvar
+(<code>timescale</code>, default <code>1</code>, <strong>clamped <code>0.1–10.0</code> in the constructor</strong>) exist and are plain
+floats with no decl equivalent. Ragdoll behaviour is split: a global force multiplier
+(<code>af_forceScale</code>, default <code>0.3</code>, no clamp) and blend duration (<code>af_blendDuration</code>) are
+cvars; <strong>only 3 creatures ship a text <code>articulatedFigure</code> decl in TNC</strong> (<code>ai/kampfhund</code>,
+<code>ai/drone</code>, <code>ai/alligator</code>) with full Havok solver constants (<code>solverConstants.*
+ErrorReduction*</code>, <code>*LcpEpsilon</code>, per-body <code>density</code>/<code>linearFriction</code>/<code>angularFriction</code>/
+<code>contactFriction</code>/<code>bouncyness</code>) exposed as plain text — <strong>every other creature's ragdoll
+is a binary <code>.hkt</code> Havok Cloth/AF setup, not decl-editable</strong>, and TNC's <code>articulatedFigure</code>
+dropped the per-creature gravity-scale field that TNO's format had (confirmed: 0 hits for
+"gravity" in a full-byte scan of all 3 decls). Impulse on props/bodies from explosions and
+weapons is a <strong>decl</strong> lever, not a cvar: <code>damage.damageParms.ragdollImpulseMag</code>,
+<code>.physicsExplosionParms.{radius,intensity}</code>, <code>.physicsParms.{forceBreakOff,
+projectileMass}</code>, <code>.minKnockBack/.maxKnockBack</code>, <code>.kickAmplitude/.kickTime</code> — all plain
+<code>key = value;</code> TNC-dialect, all editable today with <code>decl.py</code>, used by 154 <code>damage</code> decls
+(37/22/19/16/55/55/13 resp.). Destructible/separable props are <code>breakable</code> decls (175, full
+Havok Destruction tuning: <code>density</code>, <code>breakingStrength</code>, <code>elasticity</code>,
+<code>destructionRadius</code>, <code>minConnectionArea</code>, <code>collision.{convexRadius,shrinkByRadius,
+maxHullVertices}</code>, <code>fx.vaporizeThreshold</code>) plus <code>entityDef class="idBreakable"</code>
+(<code>prop/breakable</code>) and 8 <code>aiComponent_BreakableLimbs</code> decls (wound-triggered AI gib
+thresholds); <code>func/separable/compound</code> (<code>idSeparableEntity</code>) and <code>func/separable/part</code>
+(<code>idSeparablePartEntity</code>) exist as entityDef base classes but ship with an <strong>empty</strong>
+<code>edit</code> block — their actual per-object physics values live only inside the 397 MiB
+<code>.entities</code> map text (29 maps, not sampled here, see <code>docs/moddingflaeche-tnc.md</code> §5.1).
+<strong>No <code>vehicle</code>, <code>throwable</code>, <code>destructiblePiece</code> or text <code>glass</code> decl type exists in TNC
+at all</strong> (confirmed by a full <code>--types</code> scan) — despite Havok Vehicle middleware being
+compiled in (<code>hknpVehicleViewer</code> RTTI class exists). <strong>Panzerhund is not a vehicle: it is
+a player-possession swap</strong> — <code>entityDef:player/playercontrolled/panzerhund</code>,
+<code>class = "idPlayerControlled"</code>, with <code>mountScenes</code>/<code>dismountScenes</code> and its own 800-HP
+<code>aiHealth</code>, driven afterwards by ordinary <code>pm_*</code> cvars (<code>pm_jumpHeightPanzerRide</code>).
+<strong>Monowheel is not player-rideable at all</strong> — every hit for it is <code>md6Def</code>/<code>animSys</code>/
+<code>material</code> (NPC-ridden scripted animation + skin), no physics decl of any kind.</p>
+<p><strong>All of the TNC cvars above (<code>g_gravity</code>, <code>timescale</code>, <code>af_forceScale</code>,
+<code>af_blendDuration</code>, <code>pm_lineardamping_free/grounded</code>, <code>g_knockback</code>,
+<code>g_breakableVaporizeMultiplier</code>) carry the identical flag shape — <code>CVAR_CHEAT</code>,
+<code>exposed=False</code>, <code>settable_in_retail=False</code> — as <code>g_infiniteAmmo</code>, which r4/r5 already
+proved reachable and settable through <code>resourceExec &lt;loader-replaced cfile&gt; -s</code> (same
+gate, same bypass). This generalisation is INFERRED by mechanism, not yet individually
+retested for each physics cvar</strong> — the smallest in-game test to close that gap is below.
+<code>+args</code> is proven rejected for this cvar class (prior finding, not redone).</p>
+<p><strong>TNO (id Tech 5) is the opposite story for the player-global levers and the better one
+for per-object levers.</strong> <code>g_gravity</code> and every <code>pm_*</code> movement cvar are <strong>proven locked
+in TNO retail</strong> — measured from a real <code>qconsole.log</code>, not inferred: config-file
+assignment is flatly rejected (<code>%s CANNOT be set in retail!</code>), command-line assignment is
+accepted but wiped one frame later by a startup cheat-reset (<code>Resetting cheat cvar: %s</code>),
+and the one channel that survives both (<code>+toggle</code>) does nothing because the retail build
+never wired the functionality behind it (<code>docs/limits.md</code> §1–2, 5 channels tested, all
+failed; <code>docs/limits.md</code> §5 also already ran a full-text search for a player-gravity decl
+equivalent across all 60 210 TNO text assets and found <strong>none</strong>). <strong>No TNO runtime image
+exists, so whether TNC's <code>resourceExec</code> bypass has a TNO analogue is unknown</strong> — open
+question, not testable with current tools. But TNO's <strong>per-object</strong> physics are plain-text
+decls, not cvars, so the retail lock never touches them at all: <code>breakable</code> (1205 decls —
+<code>linearFriction</code>/<code>angularFriction</code>/<code>contactFriction</code>/<code>bouncyness</code>/vector <code>gravity</code>/
+<code>worldCollisionOnly</code>/<code>maxSimulationTime</code> plus an <code>explosion{radius,impulse,falloff,
+angular,delay,duration}</code> block with real retail values up to <code>impulse 325000</code>),
+<code>articulatedFigure</code> (9 decls, richer than TNC's — <strong>each has its own
+<code>defaultGravityScale</code></strong>, e.g. <code>1</code> for <code>human/base</code>/<code>human/supersoldat</code>, independent of the
+locked global cvar), <code>cloth</code> (30 decls — <code>mass</code>, <code>gravity</code>, <code>friction</code>,
+<code>springFriction</code>), <code>destructiblePiece</code> (22 decls — <code>health</code>, <code>breakDelay</code>,
+<code>obliterateChance</code>, <code>obliterateInfo.entityToSpawn</code>). <strong>TNO ships exactly one <code>vehicle</code>
+decl</strong> — <code>vehicle:car/c04/escapecar_base_def</code>, the one drivable-car chase (chapter 4) —
+with full Havok vehicle tuning in plain text: <code>maxSpeed</code>, <code>maxReverseSpeed</code>,
+<code>handBrakeForce</code>, <code>brakeForce</code>, <code>motorTorque</code> (table ref), <code>frictionForce</code>,
+<code>pitchStabilization</code>/<code>rollStabilization</code>, <code>skidRoll</code>, per-wheel <code>wheels.item[N]</code>, plus a
+matching <code>vehicleWindowKit</code> for breakable glass.</p>
+<h2 id="1-the-havok-middleware-actually-compiled-into-tnc">1. The Havok middleware actually compiled into TNC</h2>
+<p><strong>Grade: proven, from RTTI class names in <code>docs/ghidra/rtti_tnc.json</code> (5627 classes,
+static MSVC-RTTI parse, preferred base <code>0x140000000</code>).</strong> A substring scan for
+<code>Havok|^hkn|Physics|Vehicle|Breakable|Ragdoll</code> returns 835 hits; the module families:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Namespace/class prefix</th>
+<th>What it is</th>
+<th>TNC-relevant hit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hknp*</code></td>
+<td>Havok Physics 2 ("next-gen") — rigid bodies, queries</td>
+<td><code>hknpCollisionQueryCollector</code>, <code>hknpAllHitsCollector</code>, <code>hknpClosestHitCollector</code>, <code>hknpWorld</code>, <code>hknpVehicleViewer</code></td>
+</tr>
+<tr>
+<td><code>hknd*</code></td>
+<td>Havok Destruction — fracture simulation</td>
+<td><code>hkndBreakableBody</code>, <code>hkndCutOutFracture</code>, <code>hkndDebrisFracture</code>, <code>hkndConvexDecompositionAction</code>, <code>hkndDefaultController::ComputeBrokenConnections/Fragments</code> (≈150 classes)</td>
+</tr>
+<tr>
+<td><code>hkd*</code></td>
+<td>Havok Destruction (older "2012" shape layer)</td>
+<td><code>hkdBreakableBody</code>, <code>hkdBreakableShape</code>, <code>hkdDeformableBreakableShape</code></td>
+</tr>
+<tr>
+<td><code>hkai*</code></td>
+<td>Havok AI — navmesh built from live physics geometry</td>
+<td><code>hkaiPhysicsBodyObstacleGenerator</code>, <code>hkaiPhysicsWorldListener</code>, <code>hkaiPhysicsBridgeBase</code></td>
+</tr>
+<tr>
+<td><code>idHavok*</code></td>
+<td>id Software's own wrapper layer</td>
+<td><code>idHavokPhysics</code>, <code>idHavokPhysics_Player</code>, <code>idHavokPhysicsSignalHandler</code>, <code>idHavokCloth</code>, <code>idHavokDestructionLocal</code>, <code>idNavMesh_Havok</code></td>
+</tr>
+<tr>
+<td><code>idAFJointMod</code> / <code>idAnimSysNode_Ragdoll</code></td>
+<td>anim-to-ragdoll blend</td>
+<td>confirms <code>af_blendDuration</code>'s target</td>
+</tr>
+<tr>
+<td><code>idDeclInfoTemplate&lt;idDeclBreakable&gt;</code>, <code>&lt;idDeclAIComponent_BreakableLimbs&gt;</code>, <code>&lt;idDeclProp_BreakableComponent&gt;</code>, <code>&lt;idDeclProp_PhysicsAttribs&gt;</code></td>
+<td>decl-system glue for the decl types in §3</td>
+<td>ties <code>breakable</code>/<code>aiComponent_BreakableLimbs</code> decls to their C++ handler classes</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong><code>hknpVehicleViewer</code> exists</strong> — Havok's vehicle component is linked into the TNC binary —
+<strong>but, per §4, zero <code>vehicle</code> decls ship and no entityDef references vehicle physics.</strong>
+Whatever uses it (if anything live) is not reachable through decls; treat TNC "vehicles"
+as unused middleware, not a modding surface.</p>
+<p><code>idDeclProp_PhysicsAttribs</code> matches <code>entityDef:prop/moveable</code>'s
+<code>edit.physicsAttributes = "default"</code> field (§4.3) — a named physics preset. <strong>No decl
+type by a matching name was found in the <code>--types</code> scan</strong>; where <code>"default"</code> resolves to
+concrete density/friction/bounce values is unresolved — open question, §7.</p>
+<h2 id="2-tnc-cvars--exact-names-flags-defaults-clamps">2. TNC cvars — exact names, flags, defaults, clamps</h2>
+<p>Source: <code>re_probes/cvartable/cvars_tnc_v2.json</code> (built by <code>w-cvartable-a1</code>'s
+<code>tools/probe_cvartable.py</code> against the live runtime image; methodology in
+<code>re_probes/agent_reports/cvartable.md</code> §1 — cited, not rebuilt). All entries below were
+re-read directly from that JSON in this track, and <code>g_gravity</code>'s registration site was
+independently re-verified by decompiling its constructor (§2.4) rather than trusting the
+table blind.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th style="text-align: right;">default</th>
+<th>type</th>
+<th>flags</th>
+<th>exposed</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">max</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>g_gravity</code></td>
+<td style="text-align: right;"><code>9.82</code></td>
+<td>float</td>
+<td><code>CHEAT, NETWORKSYNC</code> (<code>0x200c</code>)</td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>control the force of gravity on physics objects</td>
+</tr>
+<tr>
+<td><code>timescale</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td>float</td>
+<td><code>CHEAT</code> (<code>0xc</code>)</td>
+<td><strong>no</strong></td>
+<td style="text-align: right;"><code>0.1</code></td>
+<td style="text-align: right;"><code>10.0</code></td>
+<td>scales the time</td>
+</tr>
+<tr>
+<td><code>af_forceScale</code></td>
+<td style="text-align: right;"><code>0.3</code></td>
+<td>float</td>
+<td><code>CHEAT</code> (<code>0xc</code>)</td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>(no description string) — global ragdoll force multiplier</td>
+</tr>
+<tr>
+<td><code>af_blendDuration</code></td>
+<td style="text-align: right;"><code>0.2</code></td>
+<td>float</td>
+<td><code>CHEAT</code> (<code>0xc</code>)</td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>duration over which animation blends into ragdoll once active</td>
+</tr>
+<tr>
+<td><code>af_syncTestMargin</code></td>
+<td style="text-align: right;"><code>0.1</code></td>
+<td>float</td>
+<td><code>CHEAT</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>collision fraction margin (AF/ragdoll network sync)</td>
+</tr>
+<tr>
+<td><code>af_syncVoidCheckDistance</code></td>
+<td style="text-align: right;"><code>0.4</code></td>
+<td>float</td>
+<td><code>CHEAT</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>how far to do the "void" (fell through world) test</td>
+</tr>
+<tr>
+<td><code>af_spamJointWarnings</code></td>
+<td style="text-align: right;"><code>0</code></td>
+<td>bool</td>
+<td><code>CHEAT</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>spam console with AF joint warnings</td>
+</tr>
+<tr>
+<td><code>pm_lineardamping_free</code></td>
+<td style="text-align: right;"><code>5.0</code></td>
+<td>float</td>
+<td><code>CHEAT, NETWORKSYNC</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>linear damping on the <strong>havok body</strong> when free floating (air, swimming)</td>
+</tr>
+<tr>
+<td><code>pm_lineardamping_grounded</code></td>
+<td style="text-align: right;"><code>0.01</code></td>
+<td>float</td>
+<td><code>CHEAT, NETWORKSYNC</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>linear damping on the <strong>havok body</strong> when connected with the ground</td>
+</tr>
+<tr>
+<td><code>g_knockback</code></td>
+<td style="text-align: right;"><code>-1</code></td>
+<td>int</td>
+<td><code>CHEAT</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td><code>-1</code> = use damage decl's knockback; <code>&gt;-1</code> overrides every decl's value globally</td>
+</tr>
+<tr>
+<td><code>g_breakableVaporizeMultiplier</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td>float</td>
+<td><code>CHEAT</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>vaporize threshold multiplier; higher = larger pieces vaporized</td>
+</tr>
+<tr>
+<td><code>pm_jumpHeightPanzerRide</code></td>
+<td style="text-align: right;"><code>1.15</code></td>
+<td>float</td>
+<td><code>CHEAT</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>jump height while possessing the Panzerhund</td>
+</tr>
+<tr>
+<td><code>pm_wheelchairfriction</code>/<code>height</code>/<code>Speed</code>/<code>StrafeSpeedRatio</code>/<code>printspeed</code></td>
+<td style="text-align: right;">various</td>
+<td>float</td>
+<td><code>CHEAT</code>(+<code>NETWORKSYNC</code>)</td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>wheelchair sequence movement (c01 prologue)</td>
+</tr>
+<tr>
+<td><code>pm_rammbockactivationtime</code></td>
+<td style="text-align: right;"><code>200</code></td>
+<td>int</td>
+<td><code>CHEAT, NETWORKSYNC</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>ms after sprint start before rammbock (BJ's charge) activates</td>
+</tr>
+<tr>
+<td><code>pm_rammbockDotChecker</code></td>
+<td style="text-align: right;"><code>-0.69</code></td>
+<td>float</td>
+<td><code>CHEAT, NETWORKSYNC</code></td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>facing-angle threshold for a valid rammbock hit</td>
+</tr>
+<tr>
+<td><code>g_infiniteAmmo</code> (reference)</td>
+<td style="text-align: right;"><code>0</code></td>
+<td>int</td>
+<td><code>CHEAT</code> (<code>0xa</code>)</td>
+<td><strong>no</strong></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td><strong>already proven settable via <code>resourceExec -s</code></strong> — same flag shape as every row above</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>No cvar above has an engine-registered min/max except <code>timescale</code>.</strong> That is not an
+assumption: <code>min</code>/<code>max</code> in the table come from whichever <code>idCVar</code> constructor overload
+was called (the 2-float-arg one passes bounds, the bare one does not), and §2.4 confirms
+by direct disassembly that <code>g_gravity</code>'s constructor call is the bare overload.</p>
+<h3 id="21-ragdoll-af-decls--exact-fields-3-creatures-total">2.1 Ragdoll AF decls — exact fields (3 creatures total)</h3>
+<p><code>python tools/survey_tnc.py --type articulatedFigure --samples 3</code> (TNC dialect, no <code>=</code>,
+no <code>;</code> — the id-Tech-5 <code>key value</code> style, which <code>decl.py</code> parses <strong>correctly</strong> for this
+type per <code>docs/moddingflaeche-tnc.md</code> §2.3's exception list). <code>ai/kampfhund</code>:</p>
+<pre><code>settings {
+    defaultBouncyness 0.3000000119
+    defaultLinearFriction 0.0099999998
+    defaultAngularFriction 0.0099999998
+    defaultContactFriction 0.8000000119
+    defaultConstraintFriction 0.5
+    suspendSpeed 20, 30, 40, 60
+    contents corpse
+    clipMask solid, corpse
+    selfCollision 1
+    solverConstants {
+        errorReduction 0.5          errorReductionMax 256
+        lcpEpsilon 0.00001          maxLcpEpsilon 0.001
+        limitErrorReduction 0.3     limitErrorReductionMax 256
+        limitLcpEpsilon 0.0001
+        contactErrorReduction 0.2   contactErrorReductionMax 256
+        contactLcpEpsilon 0.000001
+        universalErrorReduction 0.5 universalErrorReductionMax 256
+        universalTorsionLcpEpsilon 0.1
+        minTwistErrorReduction 0.1  maxTwistErrorReduction 0.5
+    }
+    syncSolverConstants { ...same fields, separate values for networked sync... }
+}
+body &quot;hips&quot; {
+    joint &quot;hips&quot;
+    model dodecahedron( (-0.1,-0.15,-0.1), (0.1,0.15,0.1) )
+    density 1000
+    linearFriction 0.0099999998
+    angularFriction 0.0099999998
+    contactFriction 0.8000000119
+    bouncyness 0.3000000119
+    clipMask solid, moveableclip, corpse, ikclip
+    selfCollision 1
+}
+</code></pre>
+<p>The other two (<code>ai/drone</code>, <code>ai/alligator</code>) repeat the same <code>settings</code>/<code>solverConstants</code>/
+per-<code>body</code> shape with their own numbers. <strong>No <code>gravity</code> field anywhere in any of the 3</strong>
+(verified: <code>--bytes 14300</code> full-length read, 0 case-insensitive hits for "gravity"). This
+contrasts with TNO's format (§6) — TNC's AF dialect dropped per-creature gravity scaling;
+the only gravity lever left for ragdolls is the global <code>g_gravity</code> cvar plus the global
+<code>af_forceScale</code> multiplier.</p>
+<h3 id="22-damage-decl-physics-fields-154-decls">2.2 Damage-decl physics fields (154 decls)</h3>
+<p>Field frequency across all 154 <code>damage</code> decls (<code>survey_tnc.py --type damage</code>):
+<code>ragdollImpulseMag</code> 37×, <code>minKnockBack</code>/<code>maxKnockBack</code> 55× each, <code>physicsExplosionParms</code>
+22× (with <code>.radius</code> 19×, <code>.intensity</code> rarer), <code>physicsParms.forceBreakOff</code> 19×,
+<code>physicsParms.projectileMass</code> 16×, <code>kickAmplitude</code>/<code>kickTime</code> 13–15×. Example,
+<code>damage/explosions/misc/radius_car_explosion</code>:</p>
+<pre><code>minDamage = 75; maxDamage = 100; minKnockBack = 250; maxKnockBack = 250;
+radius = 8; radiusInner = 3; ragdollImpulseMag = 400;
+</code></pre>
+<p><code>damage/player/ground_pound</code> and <code>damage/player/rammbock</code> (BJ's two physics-pushback
+abilities) both carry <code>physicsParms.forceBreakOff = true</code> and a <code>physicsExplosionParms</code>
+block — these are the two decls to raise for a "ground pound launches everything" mod.</p>
+<h3 id="23-destructibleseparable-175-breakable--8-aicomponent_breakablelimbs">2.3 Destructible/separable (175 <code>breakable</code> + 8 <code>aiComponent_BreakableLimbs</code>)</h3>
+<p><code>breakable:breakable/covers/submarine_railings_cover_100cm.breakable</code> (full Havok
+Destruction tuning surface):</p>
+<pre><code>breakable = {
+    density = 1000; breakingStrength = 1; elasticity = 200;
+    destructionRadius = 1; minConnectionArea = 0.0001;
+    maxDistanceForConnection = 0.05; smallestPlayerCollidable = 0.125;
+    fx = { vaporizeThreshold = 0.02; vaporize = { particleSystem; soundEvent; } }
+    integrity = { enable = false; delay = 0.5; breakingLength = 1; }
+    collision = { convexRadius = 0.01; shrinkByRadius = 0.01; maxHullVertices = 16;
+        pieceDecomposition = { enable = false; maxError = 0.05; } }
+}
+</code></pre>
+<p><code>density = 2800</code> is the most common concrete value (41×, concrete pieces); <code>breakingStrength</code>
+and <code>destructionRadius</code> are the direct "make it shatter at a touch" levers.
+<code>aiComponent_BreakableLimbs</code> (<code>panzerhund_death_breakablelimbs</code>, <code>zerstorer_breakablelimbs</code>,
+<code>soldier_limbs</code>, <code>supersoldat_breakablelimbs</code>, …) is wound-triggered gib logic
+(<code>triggeredByWound</code>, <code>limbFlags = "DESTRUCTLIMB_*"</code>, <code>requiredOtherLimbsToKill</code>,
+<code>explosionDecl</code>), not raw mass/impulse — it decides <em>which</em> limb detaches, not <em>how hard</em>.</p>
+<p><code>func/separable/compound</code> (<code>class = "idSeparableEntity"</code>) and <code>func/separable/part</code>
+(<code>class = "idSeparablePartEntity"</code>) both read, both ship an <strong>empty</strong> <code>edit = {}</code> —
+confirmed via <code>re_probes/physics/verify_tnc_entitydefs.py</code>. These are base classes only;
+every placed separable object (a car losing its doors, etc.) sets its real physics
+per-instance inside a <code>.entities</code> map, which this track did not open (397 MiB × 29 maps,
+already surveyed structurally in <code>docs/moddingflaeche-tnc.md</code> §5.1 — reuse that, not
+redone here).</p>
+<h3 id="24-g_gravity-has-no-code-side-clamp--direct-disassembly-not-inferred">2.4 <code>g_gravity</code> has no code-side clamp — direct disassembly, not inferred</h3>
+<p><code>python tools/decomp.py --strings "g_gravity"</code> finds the registration constructor
+(<code>FUN_7ff62c485bc0</code>, RVA <code>0x275bc0</code>); decompiled:</p>
+<pre><code class="language-c">PTR_s_g_gravity_7ff62f1bd798 = s_g_gravity_7ff62e8347c8;        // name
+PTR_s_control_the_force_of_gravity_on_p..._7ff62f1bd7a8 = ...;  // description
+DAT_7ff62f1bd7b0 = 0x200c;                                      // flags: CHEAT|FLOAT|NETWORKSYNC
+</code></pre>
+<p>No call to the min/max-taking <code>idCVar</code> constructor overload, no comparison against a
+literal bound anywhere in the function — matches the table's <code>min=None, max=None</code>.
+(<code>timescale</code>'s constructor was not independently redisassembled this run; its <code>0.1–10.0</code>
+bound is taken from the table as built by <code>w-cvartable-a1</code>, whose methodology — reading
+the same constructor-argument pattern — was spot-verified here on <code>g_gravity</code>.)</p>
+<h2 id="3-tnc-decl-types-that-do-not-exist">3. TNC decl types that do <strong>not</strong> exist</h2>
+<p>Full <code>--types</code> scan (<code>PYTHONIOENCODING=utf-8 python tools/survey_tnc.py --types --limit 0</code>
+— needs that env var, the default console codepage crashes on one UTF-8 byte in the
+output; this is a pre-existing script issue, not touched here): <strong>141 text types, 32
+binary, 1 mixed, 174 total.</strong> None of <code>vehicle</code>, <code>throwable</code>, <code>destructiblePiece</code>, <code>glass</code>
+appear as <strong>text</strong> types at all. <code>glass</code> exists only as binary <code>glassmodel</code> (136 entries);
+<code>hkcloth</code> (40) and <code>hknavmesh</code> (45) are binary too — <strong>TNC cloth physics (mass, gravity,
+friction) are opaque Havok Cloth setup blobs</strong>, not decl-editable, unlike TNO (§6).
+<code>destructionmodeldata</code> (177, binary) is <code>breakable</code>'s precomputed fracture-piece geometry
+companion.</p>
+<h2 id="4-rideables--panzerhund-and-monowheel">4. Rideables — Panzerhund and Monowheel</h2>
+<h3 id="41-panzerhund-a-player-possession-entity-not-a-vehicle">4.1 Panzerhund: a player-possession entity, not a vehicle</h3>
+<p><code>entityDef:player/playercontrolled/panzerhund</code> (<code>re_probes/physics/verify_tnc_entitydefs.py</code>):</p>
+<pre><code>class = &quot;idPlayerControlled&quot;;
+renderModelInfo.model = &quot;old/robots/panzerhund/panzerhund.md6&quot;;
+mountScenes = { item[0].scene = &quot;interact/panzerhund/mount_leftside&quot;; item[1]... }
+dismountScenes = { ...dismount_leftside/rightside... }
+actorEditable.faction.myFaction = &quot;faction/player&quot;;
+</code></pre>
+<p>Per <code>docs/moddingflaeche-tnc.md</code> §3.2, this same entityDef carries <code>aiHealth.max = 800</code>.
+Movement while possessing it is governed by the ordinary <code>pm_*</code> cvar set
+(<code>pm_jumpHeightPanzerRide</code> is the one Panzerhund-specific override found; everything else
+is the shared player physics capsule). <strong>There is no separate "Panzerhund physics" decl
+or cvar block</strong> — tuning it means tuning the player movement cvars (§2) while possessed,
+or this entityDef's <code>aiHealth</code>/scenes.</p>
+<h3 id="42-monowheel-scripted-prop-never-player-rideable">4.2 Monowheel: scripted prop, never player-rideable</h3>
+<p>Every TNC hit for "monowheel" (<code>verify_tnc_grep.py</code>, pattern <code>monowheel</code>) is one of:
+<code>entityDef:prop/pickup/collectible/gold/gold_25</code> (a gold-coin pickup model that happens to
+be monowheel-shaped — unrelated), <code>material:models/vehicles/military/monowheel_01/...</code>
+(skin textures), <code>md6Def:old/vehicles/military/monowheel_01.md6</code> (the mesh/skeleton),
+and four <code>md6Def</code>/<code>animSys</code> entries under <code>old/animation/ev/c05p1_roswell/.../monowheel/</code>
+(<code>monowheel/officer01</code>, <code>monowheel/soldier02_mh</code> — <strong>NPC riding animations inside a
+cutscene <code>midnightScene</code></strong>). <strong>No <code>entityDef class="idPlayerControlled"</code>, no physics decl,
+no <code>vehicle</code> decl.</strong> Monowheels in TNC are set dressing an NPC rides through a scripted
+animation, not a drivable Havok vehicle — confirmed negative, not merely unsearched.</p>
+<h3 id="43-propmoveable-and-the-unresolved-physicsattributes-preset">4.3 <code>prop/moveable</code> and the unresolved <code>physicsAttributes</code> preset</h3>
+<p><code>entityDef:prop/moveable</code> (<code>inherit = "prop/default"</code>): <code>edit.physicsAttributes =
+"default"</code>, <code>edit.damageComponentDecl = "propmoveable_hit"</code>, <code>edit.lootStyle =
+"LOOT_LOOK_USE"</code>. <code>physicsAttributes</code> matches the RTTI class
+<code>idDeclInfoTemplate&lt;idDeclProp_PhysicsAttribs&gt;</code> (§1), implying a decl type exists for
+named density/friction/bounce presets ("default" being one), but no decl type with a
+matching name turned up in the <code>--types</code> scan. <strong>Open question</strong> (§7) — likely either a
+differently-named decl type not yet grepped for, or a hardcoded table in <code>.text</code>.</p>
+<h2 id="5-tnc-reachability-the-resourceexec-generalisation-inferred-not-individually-tested">5. TNC reachability: the resourceExec generalisation (inferred, not individually tested)</h2>
+<p>Every cvar in §2's table has the exact flag shape (<code>CVAR_CHEAT</code>, <code>exposed=False</code>,
+<code>settable_in_retail=False</code>) that <code>g_infiniteAmmo</code> and <code>God</code> have — and r4/r5 already
+<strong>proved</strong> (runtime-proven, per the task's own prior-findings list) that a
+loader-replaced <code>cfile</code> executed via <code>resourceExec &lt;file&gt; -s</code> reaches the dispatcher at
+restriction level <code>0</code> (full 234-command/3256-cvar catalogue, no exposed-only filter) and
+successfully sets both of those. Because the gate is the single shared restriction-level
+integer (<code>0x41244d8</code> in <code>re_probes/runtime_87400</code>, documented in r4) and not a per-cvar
+check, <strong>the same route should reach <code>g_gravity</code>, <code>timescale</code>, <code>af_forceScale</code>,
+<code>af_blendDuration</code>, <code>pm_lineardamping_free/grounded</code>, <code>g_knockback</code>,
+<code>g_breakableVaporizeMultiplier</code> with no code difference</strong> — this is the mechanism
+generalising, not a new mechanism. It has <strong>not</strong> been individually retested for any of
+these seven cvars in this track (no game launch permitted). <code>+args</code> is separately proven
+rejected for this whole cvar class by r4 (not redone here).</p>
+<p><strong>What "settable" does not prove: effect.</strong> r5's own caveat applies identically here —
+<code>Notarget</code> was confirmed <em>set</em> via this route but engaged enemies kept attacking, i.e. the
+cvar value changed without the gameplay behaviour changing. The same gap could exist for
+<code>g_gravity</code>/<code>af_forceScale</code>: the cvar may update while the Havok world was already
+initialized with the old value and never re-reads it per-frame. <strong>Unverified either way.</strong></p>
+<h2 id="6-tno--the-contrast">6. TNO — the contrast</h2>
+<h3 id="61-proven-locked-gravity-and-player-movement-are-cvars-and-cvars-are-blocked">6.1 Proven locked: gravity and player movement are cvars, and cvars are blocked</h3>
+<p>Not re-derived, cited from <code>docs/limits.md</code> §1–2 (measured from an actual retail
+<code>qconsole.log</code>, 21.09.2026 run): <code>g_gravity</code>, <code>pm_jumpheight</code>, <code>pm_runspeed</code>,
+<code>pm_walkspeed</code>, <code>pm_sprintspeed</code>, <code>pm_crouchspeed</code>, <code>pm_noclipspeed</code>, <code>pm_sprintMaxTime</code>,
+<code>pm_autoSprint</code>, <code>pm_noBob</code> are all in the measured <strong>blocked</strong> list — <code>"%s CANNOT be set
+in retail!"</code> from a config line, silently wiped (<code>Resetting cheat cvar: %s</code>) one frame
+later from the command line. Five channels were tested (<code>binary.cfg</code>/<code>default.cfg</code>,
+<code>+cvar</code>, <code>+set cvar</code>, <code>+exec file.cfg</code>, <code>+toggle cvar</code>) and <strong>all five failed</strong> to produce
+a working change — <code>+toggle</code> is the only one that survives both gates, and it does nothing
+because <code>devgui</code>-class functionality is not wired in the retail build (same shape of
+"present but inert" that r4 found for TNC's <code>devMode_enable</code> branch). <code>docs/limits.md</code> §5
+already ran the natural decl-equivalent search — full text over all 60 210 TNO text assets
+for <code>runSpeed|sprintSpeed|walkSpeed|jumpHeight|gravity</code> — and found <strong>nothing for the
+player</strong>. TNO's lock mechanism (<code>docs/devmodus.md</code> §2) is the single <code>CVAR_CHEAT</code> flag
+plus a reject-string (<code>"%s CANNOT be set in retail!"</code>), structurally different from TNC's
+two-tier exposed-list system — <strong>no runtime image exists for TNO, so whether an
+analogue of TNC's <code>resourceExec</code> bypass exists is genuinely unknown</strong>, not merely untested.</p>
+<h3 id="62-open-and-fully-decl-driven-everything-per-object">6.2 Open and fully decl-driven: everything per-object</h3>
+<p>The retail lock in §6.1 is a <strong>cvar</strong> lock; none of the following are cvars, so it never
+applies (<code>re_probes/physics/verify_tno_samples.py</code>, direct reads via
+<code>wolfsdk/patch.py Installation</code> against the live TNO install):</p>
+<ul>
+<li><strong><code>breakable</code> — 1205 decls</strong>, the largest physics-decl type in either game. Full sample
+  (<code>breakable/c01/condor9_01</code>):</li>
+</ul>
+<p><code>linearFriction 0.6  angularFriction 0.6  contactFriction 0.5
+  bouncyness 0.5                      // bounce amount
+  gravity 0 2000 -900                 // default g_gravity (vector, per-object override!)
+  worldCollisionOnly 1                // 0 = collide with other breakables too
+  maxSimulationTime 30
+  explosion {
+      radius 5000  impulse 325000  falloff 0.05  angular 1500  delay 0  duration 0.25
+      randomangular 16 16 16
+      randomlinearminmax 0 12000 0 0 18000 0
+  }</code>
+  <strong>This is the single richest "everything breaks" lever found in either game</strong> — a
+  per-object <code>gravity</code> <strong>vector override</strong> that already exists in retail content
+  (explicitly commented "default g_gravity", i.e. the engine lets each breakable opt out
+  of the locked global), plus a full impulse/falloff/duration explosion block, on 1205
+  objects, all plain <code>key value</code> text.
+* <strong><code>articulatedFigure</code> — 9 decls</strong> (<code>human/base</code>, <code>human/supersoldat</code>, <code>kamphund/base</code>,
+  +6 more), same <code>solverConstants</code> shape as TNC §2.1 but <strong>with a <code>defaultGravityScale</code>
+  field TNC's format lacks</strong> (<code>1</code> in both samples read) — a per-creature ragdoll-gravity
+  multiplier, fully open, cvar-lock-proof.
+* <strong><code>cloth</code> — 30 decls</strong>: <code>mass</code>, <code>springFriction</code>, <code>gravity</code> (scalar here, e.g. <code>-1800</code>
+  for <code>gore/entrails_a</code>, <code>-450</code> for a fan streamer), <code>friction</code>, <code>collisionFriction</code>,
+  <code>springMaxLengthMultiplier</code>.
+* <strong><code>destructiblePiece</code> — 22 decls</strong>: <code>health</code> (as low as <code>2</code>, e.g. medicine bottles),
+  <code>breakDelay</code>, <code>obliterateChance</code> (up to <code>1</code> = always fully destroyed),
+  <code>obliterateInfo.entityToSpawn</code>/<code>entitiesInPool</code>.
+* <strong><code>glass</code> — 9 decls</strong>: thin — <code>decalSize</code>, <code>destroyParticle</code>, <code>impactSound</code>/
+  <code>destroySound</code> only. No mass/impulse fields; glass breaking physics ride on <code>breakable</code>
+  or <code>vehicleWindowKit</code>, not on <code>glass</code> itself.
+* <strong><code>vehicle</code> — exactly 1 decl</strong>: <code>vehicle:car/c04/escapecar_base_def</code> (the chapter-4
+  escape-car chase, the only drivable vehicle in the game):</p>
+<p><code>maxSpeed = 90; maxReverseSpeed = 25; handBrakeForce = 600; brakeForce = 2400;
+  motorTorque = "vehicle/physics/c04/escapecar/motortorque";   // table reference
+  frictionForce = 10; pitchStabilization = 1; rollStabilization = 1;
+  skidRoll = 0.0003; skidRollBoostMult = 0.8;
+  wheels = { item[0] = { wheelJoint = "left_front_tire"; ... } }</code>
+  plus a matching <code>vehicleWindowKit:c04/escapecar</code> (breakable windows:
+  <code>normalModelName</code>/<code>brokenModelName</code>/<code>collisionModelName</code>, <code>maxDecals</code>, <code>traceDepth</code>,
+  <code>damageWhenDriverPresent</code>).
+* <strong><code>throwable</code> — 2 decls</strong> (<code>throwable/grenade46</code>, <code>throwable/grenade60</code>): thin, just a
+  <code>projectileDecl</code> reference each — the actual physics sit in the referenced <code>projectile</code>
+  decl, not here.
+* <strong><code>dragJoints</code> — 2 decls</strong> (<code>dragjoints/kampfhund</code>, <code>dragjoints/panzerhund2</code>): rope-like
+  joint chains for grab/drag animations (<code>ghostJointDistance</code>, <code>maxBend</code>, <code>baseJoint</code>,
+  <code>joints</code>), not rigid-body physics.</p>
+<h2 id="7-open-questions">7. Open questions</h2>
+<ul>
+<li><strong>Does <code>resourceExec</code>-set <code>g_gravity</code>/<code>af_forceScale</code>/<code>timescale</code> etc. actually change
+  TNC gameplay, or only the cvar's stored value (per r5's <code>Notarget</code> caveat, §5)?</strong>
+  Smallest test below.</li>
+<li><strong>TNC's <code>physicsAttributes = "default"</code> preset (<code>prop/moveable</code>, §4.3):</strong> matching RTTI
+  class exists (<code>idDeclProp_PhysicsAttribs</code>), no matching decl type name found. Where the
+  concrete density/friction values live is unresolved.</li>
+<li><strong><code>func/separable/*</code>'s real per-object values</strong> sit only inside the 29 <code>.entities</code> maps
+  (397 MiB), not opened in this track — <code>docs/moddingflaeche-tnc.md</code> §5.1 already surveys
+  that layer structurally; a follow-up could <code>--grep</code> those maps specifically for
+  <code>"func/separable"</code> instances and their <code>edit</code> overrides.</li>
+<li><strong>Is there a TNO analogue of TNC's <code>resourceExec</code> bypass?</strong> Genuinely unknown — no
+  runtime image for TNO exists under this project yet (task brief confirms this is a known
+  gap, not an oversight here).</li>
+<li><strong>TNC <code>hkcloth</code>/<code>.hkt</code> binary Havok Cloth setups</strong> — confirmed opaque, not explored
+  further (would need a Havok Cloth Toolset / <code>.hkt</code> format reverse-engineering track of
+  its own, out of scope here).</li>
+</ul>
+<h2 id="8-recipe-sketch-for-a-fun-mod-design-not-built">8. Recipe sketch for a fun mod (design, not built)</h2>
+<p><strong>TNC — "Low-G Rampage":</strong> a <code>resourceExec</code>-style loader carrier cfile (same recipe as
+<code>re_probes/agent_reports/execcarrier.md</code>, already structurally proven — not rebuilt here)
+containing <code>seta g_gravity 1</code>, <code>seta timescale 0.4</code>, <code>seta af_forceScale 6</code>,
+<code>seta pm_lineardamping_free 0</code>, <code>seta pm_lineardamping_grounded 0</code>,
+<code>seta g_knockback 1500</code>, run once at a devmap start — combined with decl edits (already
+proven editable) raising <code>ragdollImpulseMag</code>/<code>physicsExplosionParms.radius</code> on
+<code>damage/player/ground_pound</code> and <code>damage/player/rammbock</code>, and lowering <code>breakingStrength</code>
+across a handful of <code>breakable</code> decls for one-hit destruction. Every piece here individually
+reuses an already-proven mechanism (decl edit, <code>resourceExec</code> carrier); the combination is
+untested.</p>
+<p><strong>TNO — "Everything Breaks" (safer, no lock risk):</strong> pure decl edit, zero cvar/retail-lock
+exposure — bulk-set <code>impulse</code>→<code>×10</code>, <code>gravity</code>→<code>÷4</code>, <code>bouncyness</code>→<code>0.9</code> across the 1205
+<code>breakable</code> decls (text, <code>key value</code> dialect, <code>decl.py</code> already handles this id-Tech-5
+format natively — no "vector weakness" caveat here, that only affects TNC's dialect per
+<code>docs/moddingflaeche-tnc.md</code> §2.3), set <code>destructiblePiece.health = 1</code> everywhere, and for
+one chapter crank <code>vehicle:car/c04/escapecar_base_def.maxSpeed</code>/<code>motorTorque</code> for an absurd
+chase. Player-global low-gravity is <strong>not available</strong> in TNO (§6.1) — the honest answer for
+that specific ask is "no", not "untested".</p>
+<h2 id="smallest-in-game-test-for-the-maintainer">Smallest in-game test (for the maintainer)</h2>
+<p><em>(Translated from German.)</em></p>
+<p><strong>TNC, a single console swap, no new mechanism:</strong> Build exactly the same
+<code>resourceExec</code> carrier cfile as in the already-proven <code>God</code>/<code>g_infiniteAmmo</code> test
+(<code>re_probes/agent_reports/execcarrier.md</code> recipe), but with the content
+<code>seta timescale 0.2</code> instead of <code>God 1</code>. <code>timescale</code> is the only one of the seven physics cvars
+with a real code clamp (<code>0.1</code>–<code>10.0</code>) — so the one with the highest chance that it is
+not only <em>set</em> but also <em>effective</em>, and the effect on screen is
+unmistakable (everything runs in slow motion, including particles and ragdolls). Start the
+game, load a devmap, run the carrier with <code>resourceExec &lt;file&gt; -s</code>, throw a grenade
+or kill an enemy and watch whether the ragdoll animation plays in slow
+motion. If so, step 5 above (the generalisation over all seven cvars)
+is raised from "inferred" to "proven" — and <code>g_gravity 1</code> next, the same
+recipe with a thrown object (e.g. a bottle from <code>prop/moveable</code>) instead of
+slow motion.</p>
+<p>Related: <a href="Research-Report-R4-Console-Commands.html">Research Report: R4 Console Commands</a>, <a href="Research-Report-R5-Kiscule-Command.html">Research Report: R5 Kiscule Command</a>, <a href="Research-Report-Cvartable.html">Research Report: Cvartable</a>, <a href="Research-Report-Execcarrier.html">Research Report: Execcarrier</a>, <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>, <a href="Modding-Limits.html">Modding Limits</a>, <a href="Developer-Mode.html">Developer Mode</a>, <a href="TNC-Console-Unlock.html">TNC Console Unlock</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Photo-Camera.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Photocam: A Free Camera / Photo-Mode Cfg and Keybind Set for The New Colossus</a><a class="next" href="Research-Report-R6-Player-Systems.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Player Systems: Movement, Perks, Contraptions, Dual Wield, Weapon Upgrade Kits</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

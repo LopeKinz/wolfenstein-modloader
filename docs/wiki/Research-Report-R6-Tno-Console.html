@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Console and Cvars: Does the TNC Restriction Model Carry Over? – Wolfenstein Modloader</title>
+<meta name="description" content="Does The New Order lock its console like Wolfenstein II, and is there a way around it?">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Console and Cvars: Does the TNC Restriction Model Carry Over?</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R6-Tno-Console"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#pass-1-errors-fixed-this-pass">Pass 1 errors (fixed this pass)</a></li><li><a href="#question">Question</a></li><li><a href="#answer-short">Answer (short)</a></li><li><a href="#1-no-resourceexec-in-tno--static-exhaustive">1. No resourceExec in TNO — static, exhaustive</a></li><li><a href="#2-the-retail-lock-cross-checked-against-the-real-log">2. The retail lock, cross-checked against the real log</a></li><li><a href="#3-the-flag-enums-recap-docsdevmodusmd-not-re-derived">3. The flag enums (recap, docs/devmodus.md, not re-derived)</a></li><li><a href="#4-new-a-mined-tno-commandcvar-table-from-rdata-string-adjacency">4. New: a mined TNO command/cvar table from .rdata string adjacency</a></li><li><a href="#4b-the-devgui-label--action-row-table--missed-in-pass-1-mined-now">4b. The DevGUI (Label → Action) row table — missed in pass 1, mined now</a></li><li><a href="#5-the-script-vm-route--the-actual-tno-analogue-of-tncs-kiscule-bypass">5. The script-VM route — the actual TNO analogue of TNC&#x27;s kiscule bypass</a></li><li><a href="#proven-this-track-static-evidence-only--no-game-was-launched">PROVEN (this track, static evidence only — no game was launched)</a></li><li><a href="#inferred-plausible-not-measured">INFERRED (plausible, not measured)</a></li><li><a href="#failed-hypotheses--dead-ends-this-track">Failed hypotheses / dead ends (this track)</a></li><li><a href="#concrete-recipe-for-the-maintainer">Concrete recipe for the maintainer</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#smallest-in-game-test">Smallest in-game test</a></li><li><a href="#reproducibility">Reproducibility</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report asked whether The New Order (TNO) restricts its console the same way Wolfenstein II: The New Colossus (TNC) does, and whether TNC&#x27;s resourceExec trick works there. It does not: TNO has no resourceExec command at all and no flags that mark commands as allowed or hidden; its lock only covers cheat-flagged <span class="t" data-t="cvar">settings</span>, which are refused from config files and otherwise reset once after start. Two tables were mined from text inside the game program: 2,031 commands and settings, and 55 button-to-command pairs from the hidden <span class="t" data-t="devgui">DevGUI</span> menu. Everything is static because TNO&#x27;s code could not be read at the time; the only in-game evidence is an earlier game log, and a later round (R7) re-checked and corrected some of these readings.</p><ul><li>The text resourceExec appears 0 times in TNO&#x27;s program; one exec command runs every config file, and default.cfg is blocked for cheat settings like any other config.</li><li>A real game log shows the cheat reset wiping com_skipIntroVideo, so the loader&#x27;s &#x27;always skip intro videos&#x27; option does not work on retail TNO.</li><li>The DevGUI table holds 55 clean pairs, including notarget, give, spawn, killMonsters and NoPlayerDeath; the &#x27;God Mode&#x27; button only holds a placeholder (&#x27;TEMP 5&#x27;).</li><li>The mined command list was cleaned of noise and shrank from 5,026 to 2,031 entries; in a fresh sample 18 of 20 entries were genuine.</li><li>Untested: whether commands bound to keys at start run without any lock, and whether map scripts can set cheats through setcvar or executeCommandText.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat gefragt, ob The New Order (TNO) seine Konsole genauso einschränkt wie Wolfenstein II: The New Colossus (TNC) und ob TNCs resourceExec-Trick dort funktioniert. Das tut er nicht: TNO hat gar keinen resourceExec-Befehl und keine Markierungen, die Befehle als erlaubt oder versteckt kennzeichnen; seine Sperre betrifft nur Cheat-markierte <span class="t" data-t="cvar">Einstellungen</span>, die aus Konfigurationsdateien abgelehnt und sonst einmal nach dem Start zurückgesetzt werden. Aus Text im Spielprogramm wurden zwei Tabellen gewonnen: 2.031 Befehle und Einstellungen sowie 55 Schaltfläche-zu-Befehl-Paare aus dem versteckten <span class="t" data-t="devgui">DevGUI</span>-Menü. Alles ist statisch, weil sich TNOs Code damals nicht lesen ließ; der einzige Beleg aus dem Spiel ist ein früheres Spielprotokoll, und eine spätere Runde (R7) hat einige dieser Deutungen erneut geprüft und korrigiert.</p><ul><li>Der Text resourceExec kommt im TNO-Programm 0-mal vor; ein einziger exec-Befehl führt jede Konfigurationsdatei aus, und default.cfg ist für Cheat-Einstellungen genauso gesperrt wie jede andere.</li><li>Ein echtes Spielprotokoll zeigt, wie das Cheat-Zurücksetzen com_skipIntroVideo löscht; die Loader-Option „Intro-Videos immer überspringen“ wirkt im Verkaufs-TNO also nicht.</li><li>Die DevGUI-Tabelle enthält 55 saubere Paare, darunter notarget, give, spawn, killMonsters und NoPlayerDeath; die Schaltfläche „God Mode“ enthält nur einen Platzhalter („TEMP 5“).</li><li>Die gewonnene Befehlsliste wurde von Störeinträgen bereinigt und schrumpfte von 5.026 auf 2.031 Einträge; in einer neuen Stichprobe waren 18 von 20 Einträgen echt.</li><li>Ungetestet: ob beim Start auf Tasten gelegte Befehle ganz ohne Sperre laufen und ob Kartenskripte über setcvar oder executeCommandText Cheats setzen können.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-6 research pass asking whether TNC's console-restriction model, and its <code>resourceExec</code>/kiscule bypass, carries over to The New Order. Answer: no — TNO's lock is architecturally different. TNO has no command-flag enum and no <code>resourceExec</code> command at all; its lock applies only to <code>CVAR_CHEAT</code> cvars, through a source-channel check and a one-time reset sweep. The report also mines a TNO command/cvar table and the DevGUI label→action table from <code>.rdata</code> string adjacency, and names the script VM as TNO's analogue route. <strong>Static evidence only (no TNO runtime image existed yet).</strong> Round 7 revisits several of these readings with decompiled code and corrects some of them: <a href="Research-Report-R7-Tno-Cheat-Gate.html">TNO cheat gate (R7)</a>, <a href="Research-Report-R7-Tno-Commands.html">TNO console commands (R7)</a>.</p>
+<p>Read-only. Track <code>tnoconsole</code>. Builds on <code>docs/devmodus.md</code> (dev-mode/retail-lock
+strings in both exes), <code>docs/limits.md</code> (the only <strong>in-game-measured</strong> TNO cheat
+data in the repo — five bypass channels tested, <code>RETAIL_BLOCKED</code> list), and
+<code>docs/ladepfade.md</code> (TNO vs TNC load/exec-chain comparison). TNO has <strong>no runtime
+image</strong> — everything below comes from the shipped <code>WolfNewOrder_x64.exe</code>
+<code>.rdata</code>/<code>.data</code> (SteamStub-encrypted <code>.text</code>, same as TNC) and from three loose,
+plain-text game assets read with the existing <code>wolfsdk</code> reader
+(<code>python -m wolfsdk --title tno cat &lt;asset&gt;</code>). No game was launched, nothing was
+written under <code>&lt;Steam library&gt;/...</code>. New files live under <code>re_probes/tnoconsole/</code>
+(three scripts — <code>mine_tno_cmdtable.py</code>, <code>mine_tno_devgui_table.py</code>,
+<code>audit_noise.py</code> — and two generated JSON tables) and this report. One
+existing file was read for corroboration only: the real <code>qconsole.log</code> under
+<code>Saved Games</code> from the maintainer's own prior, already-completed test run (cited, not
+reproduced).</p>
+<h2 id="pass-1-errors-fixed-this-pass">Pass 1 errors (fixed this pass)</h2>
+<p>The verifier refuted 5 of pass 1's claims; all 5 are fixed below, not just noted:</p>
+<ul>
+<li><strong>Mined table (§4) reliability was overstated.</strong> Independently measured:
+  45–50% of "high confidence" entries were C++ RTTI/template noise
+  (<code>idList &lt; int , TAG_SWF &gt;</code>, bare <code>unsigned int</code>), not real descriptions —
+  a 15-sample spot check found 13/15 (87%) were noise. Fixed:
+  <code>mine_tno_cmdtable.py</code> now rejects <code>&lt;</code>/<code>::</code>/bare-type-name/<code>.cpp(</code> strings
+  (new <code>audit_noise.py</code> measures this mechanically); table shrank
+  5026 → 2031 entries, and a fresh 20-entry sample of the new high-confidence
+  bucket found noise down to 2/20 (10%). See §4.</li>
+<li><strong><code>testWeapon</code> was cited from the table but isn't in it.</strong> Confirmed: its
+  description and name are genuinely not adjacent (3 unrelated entries sit
+  between them in <code>.rdata</code>) — a real counterexample to the adjacency premise,
+  now stated as such instead of silently miscited. <code>com_production</code> has the
+  same problem (plausible description sits one slot past its name, not
+  before it) — both are flagged in §4 as named, reproducible failure
+  instances of the method, not hidden.</li>
+<li><strong><code>notarget</code>/<code>give</code>/<code>spawn</code>/<code>com_production</code> wrongly left as "not found" or
+  "ambiguous".</strong> All four exist. Resolved this pass by reading the DevGUI
+  (Label→Action) row table directly (new §4b, new script
+  <code>mine_tno_devgui_table.py</code>, 117 entries, self-check re-reads every one
+  against the live exe): <code>notarget</code>, <code>give throwable/player/grenade</code>,
+  <code>spawn zion/ai/imp/demon_imp</code> (+3 more spawn variants), <code>killMonsters</code>,
+  <code>changeTeam 1/2</code>, <code>NoPlayerDeath</code> and 40+ more are clean, wired
+  Label→Action pairs. <code>com_production</code> is confirmed present as a standalone
+  string by direct grep (§4).</li>
+<li><strong><code>god</code>/<code>noclip</code> were treated as uniformly ambiguous; <code>notarget</code> deserved
+  more credit.</strong> Fixed with exact byte-bounded evidence in §4b: <code>notarget</code>
+  is a clean pair (strong positive). <code>god</code> and <code>noclip</code> each exist as a
+  <em>single</em> unpaired ("stray") string in the DevGUI region, neither adjacent
+  to a matching label — and the DevGUI row literally labelled "God Mode" has
+  its action slot filled with a placeholder (<code>TEMP 5</code>), not a real command.
+  This is still not proof of absence (<code>.text</code> encrypted, DevGUI-row wiring
+  and the console dispatcher are not necessarily the same list), but it is
+  concrete, differentiated evidence, not a shrug.</li>
+</ul>
+<p>What the verifier flagged as <strong>missed</strong> and is now covered: the DevGUI table
+is mined (§4b); every curated citation in this report was checked against
+the file it claims to come from before publishing; DevGUI UI reachability
+was searched for further static evidence this pass (no new signal found —
+see §2) and remains an open, game-launch-only question.</p>
+<h2 id="question">Question</h2>
+<p>Does TNO have the same exposed/non-exposed command-table restriction as TNC?
+Where are TNO's command/cvar tables and flags in <code>.rdata</code>/<code>.data</code>, and what are
+its console/exec code paths? Which loader-passed TNO tweaks actually apply? Does
+TNO have a <code>resourceExec -s</code>-like unrestricted route, or a startup cfg that runs
+unrestricted? How can dev commands be unlocked in TNO without a code patch?</p>
+<h2 id="answer-short">Answer (short)</h2>
+<p><strong>No — TNO's lock is architecturally different from TNC's, not a weaker copy of
+it.</strong> TNC gates <em>both</em> commands and cvars through one shared dispatcher with an
+explicit exposed/restricted two-tier flag system (<code>CMD_EXPOSE</code>/<code>CMD_NOCHEAT</code>/
+<code>CMD_SHIPPINGDISABLED</code>, proven in r4/r5). <strong>TNO has no such command-flag enum at
+all</strong> — a targeted string search for <code>CMD_*</code> in <code>WolfNewOrder_x64.exe</code> finds only
+unrelated <code>AWCMD_*</code> (animation-command) and <code>idUCmdInhibit::UCMD_*</code> (usercmd)
+names, zero hits for anything resembling <code>CMD_EXPOSE</code>/<code>CMD_CHEAT</code>/
+<code>CMD_SHIPPINGDISABLED</code>. TNO's lock lives <strong>only on cvars</strong>, via the <code>CVAR_CHEAT</code>
+bit (<code>0x8</code>, confirmed absent <code>CVAR_SHIPPINGDISABLED</code>/<code>CVAR_DEVELOPER</code> per
+<code>docs/devmodus.md</code>) plus a <strong>source-channel check</strong>, not a dispatch-level check:
+a <code>CVAR_CHEAT</code> cvar is rejected (<code>"%s CANNOT be set in retail!"</code>) whenever it
+comes from a config file — <strong>measured</strong>, this already includes <code>default.cfg</code>/
+<code>binary.cfg</code>, i.e. the very-first, earliest-possible config exec — and is
+otherwise silently wiped back to default by a one-time post-command-line sweep
+(<code>"Resetting cheat cvar: %s"</code>). There is <strong>no window</strong> analogous to TNC's
+<code>resourceExec</code>/kiscule exploit (r4/r5), because <strong>TNO has no <code>resourceExec</code>
+command at all</strong> (0 occurrences of the string anywhere in the exe) — its single
+<code>exec &lt;file&gt; [-s]</code> command is used uniformly for every cfg, loose-file and
+archived alike, and the measured channel table in <code>docs/limits.md</code> already shows
+that earliest-possible exec (<code>default.cfg</code>) is just as blocked as every other
+config source. <strong>Commands, by contrast, appear structurally ungated</strong> — no
+<code>CMD_CHEAT</code>-equivalent flag exists to check — so once a command reaches the
+dispatcher at all (via <code>+bind</code> on the command line, which is proven to be
+accepted without a console) it most likely just runs, with no concept of
+"exposed" at all; <strong>this is the single biggest difference from TNC and the most
+promising lead</strong>, but it rests on the absence of a flag, not on a positive
+dispatch trace, since <code>.text</code> is encrypted — see §6 for the cheap test that
+would turn this from inferred into proven or refuted.</p>
+<p>The actual new unrestricted-execution candidate for TNO is not a console
+mechanism at all: the shipped script bytecode-source file
+<code>script/script_events.script</code> declares native engine calls
+<code>scriptEvent void setcvar( string name, string value )</code>,
+<code>scriptEvent string getcvar( string name )</code>, and
+<code>scriptEvent void executeCommandText( string command )</code> — callable from any
+level/map <code>.script</code> file — plus an entity class <code>idTarget_Cvar</code> in the engine's
+own class hierarchy, placeable straight from a <code>.entities</code> file with no script
+at all. This is TNO's structural counterpart to TNC's kiscule Command node
+(r5): game-logic-sourced command/cvar text, a source channel docs/limits.md's
+five tested channels never covered. <strong>Unproven</strong> — nobody has built or run the
+map — but concrete and cheap to try (§7).</p>
+<h2 id="1-no-resourceexec-in-tno--static-exhaustive">1. No <code>resourceExec</code> in TNO — static, exhaustive</h2>
+<pre><code>python3 - &lt;&lt;'EOF'
+data = open(r&quot;&lt;Steam library&gt;\steamapps\common\Wolfenstein.The.New.Order\WolfNewOrder_x64.exe&quot;,&quot;rb&quot;).read()
+for s in (b'resourceExec', b'ExecuteCommandText', b'AppendCommandText', b'cfile:'):
+    print(s, data.count(s))
+EOF
+resourceExec 0   ExecuteCommandText 0   AppendCommandText 0   cfile: 0
+</code></pre>
+<p>TNO's exec family, found by the same method (<code>grep</code> over the raw bytes, context
+read as C strings):</p>
+<pre><code>0x0102E160  'exec default.cfg\n'                (device-profile loop, 4x &quot;exec 360_%i.cfg&quot;)
+0x00E5EB28  'exec default.cfg -s\n'              &lt;- idCommonLocal::Init, real startup exec
+0x00E5EB40  'Executing default.cfg for device #%d...\n'
+0x00F15018  'exec %s/binary.cfg -s\n'            (game-root cfg, same name/role as TNC's binary.cfg)
+0x00F15098  'exec package.cfg -s\n'
+0x01052477  'USAGE: exec &lt;filename&gt; -s &lt;define&gt;: execute a script file\n'
+0x01052569  &quot;couldn't exec %s\n&quot;
+</code></pre>
+<p><code>idCommonLocal::Init</code> (surrounding strings <code>'idCommonLocal::Init'</code>,
+<code>'Wolfenstein The New Order initialization'</code>, <code>'Command line is: %s\n'</code>,
+<code>"Could not find default.cfg. Check paths.\nfs_basepath = '%s'\nfs_savepath = '%s'"</code>,
+all pooled within 300 bytes of <code>0xE5EB28</code>) is a single <code>exec</code> command, run
+through the <strong>normal filesystem path search</strong> (<code>fs_basepath</code>/<code>fs_savepath</code>), not
+a separate archive-reading command — because TNO never packs <code>default.cfg</code> in a
+<code>.resources</code> archive in the first place; <code>D:\...\Wolfenstein.The.New.Order\base\default.cfg</code>
+is a 4 966-byte loose file on disk (confirmed present). TNC needed a second verb
+(<code>resourceExec</code>) specifically because its <code>default.cfg</code> moved <em>into</em> the archive;
+TNO's never did, so one <code>exec</code> already covers both the engine-shipped config and
+anything a mod drops as a loose file at the same path. <strong>This symmetry is also
+why there is no TNO equivalent of r4/r5's finding</strong>: TNC's bypass worked because
+<code>resourceExec</code>-drained text runs at the <em>dispatcher's</em> unrestricted level
+(<code>idCmdSystemLocal+0x200b8 == 0</code>), a state that has nothing to do with whether
+the underlying cvar is cheat-flagged. TNO's <code>exec</code> (same function for every cfg)
+instead feeds text into a system whose gate checks <strong>the cvar's own
+<code>CVAR_CHEAT</code> flag against the text's source</strong>, which is why the measured channel
+table in §2 shows <code>default.cfg</code> blocked exactly like every other config file —
+there's no second, lower-privilege dispatch level to land in.</p>
+<h2 id="2-the-retail-lock-cross-checked-against-the-real-log">2. The retail lock, cross-checked against the real log</h2>
+<p><code>docs/limits.md</code> (already in the repo, <strong>measured in an actual game run</strong>, not
+redone here) gives the authoritative channel table:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Config-gate (<code>CANNOT be set in retail</code>)</th>
+<th>Cheat-reset (<code>Resetting cheat cvar</code>)</th>
+<th>Net result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>binary.cfg</code> / <code>default.cfg</code></td>
+<td>blocks</td>
+<td>—</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>+cvar 1</code> (command line)</td>
+<td>passes</td>
+<td>wipes</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>+set cvar 1</code></td>
+<td>passes</td>
+<td>wipes</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>+exec file.cfg</code> (after reset)</td>
+<td>blocks</td>
+<td>survives (ran after reset)</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>+toggle cvar</code> (command line)</td>
+<td><strong>bypasses</strong></td>
+<td><strong>survives</strong></td>
+<td>cvar = 1, but <strong>unwired</strong> for <code>devgui</code> (F8/F10 do nothing)</td>
+</tr>
+</tbody>
+</table></div>
+<p>This session additionally read the real <code>qconsole.log</code>
+(<code>&lt;user folder&gt;\Saved Games\MachineGames\Wolfenstein The New Order\base\qconsole.log</code>,
+10 182 lines, session of 2026‑09‑22 18:16, the maintainer's own prior run — read-only,
+not reproduced here) and it corroborates the table exactly:</p>
+<pre><code>Command line is: ...WolfNewOrder_x64.exe +com_skipIntroVideo 1 +pm_autoSprint 1
+  +com_allowConsole 1 +g_showHud 1 +g_EnableGore 1 +g_bloodEffects 1
+  +g_goreBloodyMess 1 +bind F1 &quot;toggle g_permaGodMode 0 1&quot; ...
+Resetting cheat cvar: com_allowConsole
+Resetting cheat cvar: com_skipIntroVideo
+Resetting cheat cvar: g_goreBloodyMess
+Resetting cheat cvar: pm_autoSprint
+</code></pre>
+<p><strong>Practical consequence for the loader itself:</strong> <code>wolfsdk/cvars.py</code> sets
+<code>ALWAYS = {"com_skipIntroVideo": "1"}</code> on <em>every</em> TNO launch — but
+<code>com_skipIntroVideo</code> is in <code>RETAIL_BLOCKED</code>, and the log line above is the
+measured proof that it gets wiped the same way <code>pm_autoSprint</code>/<code>g_goreBloodyMess</code>
+did in the same run. <strong>The loader's "always skip intro videos" feature does not
+work on the retail build</strong>; the intro plays regardless. This was previously
+only inferred from the static <code>RETAIL_BLOCKED</code> set — this track ties it to the
+actual log line. (<code>wolfsdk/mod.py:610-614</code> already documents, correctly, that it
+does not attempt the TNC-style cfile-routing workaround for TNO, because
+<code>docs/limits.md</code> already measured that channel as blocked too — there genuinely
+is no better delivery route today.)</p>
+<p><code>wolfsdk/cvars.py::COMMANDS</code> lists <code>noclip</code> bound to F3 on every launch
+(<code>+bind F3 noclip</code>, present verbatim in the Command-line log line above). Table
+§4 below could not find a clean registration/description pairing for <code>noclip</code>
+in <code>.rdata</code> (unlike <code>kill</code>/<code>teleport</code>/<code>screenshot</code>, which did). This pass
+counted every bounded (non-substring) occurrence of <code>noclip\0</code> in the whole
+exe: there are exactly 4 — one inside an unrelated animation locomotion-state
+name list (<code>...combat, run, Excellent, noclip, run, Perfect...</code> at file
+offset <code>0xff83b4</code>, clearly an animation-blend tag, not a command), two inside
+longer sentences where <code>noclip</code> is just the last word of a cvar description
+(<code>pm_noclipspeed</code>'s own description, and <code>g_debugPlayer</code>'s — matched only
+because the byte search doesn't respect string boundaries, not real
+"noclip"-command hits), and one standalone occurrence in the DevGUI region
+(<code>0x1038b0c</code>, see §4b) that is not adjacent to the later "No Clip" label
+either. <code>god\0</code> similarly exists standalone in exactly one place in the
+whole binary (<code>0x1038aa4</code>), and it sits between two unrelated strings, not
+next to the "God Mode" label — whose own action slot instead holds a literal
+placeholder <code>TEMP 5</code> (§4b). This is not proof either command is absent from
+the dispatcher (<code>.text</code> is encrypted; DevGUI row wiring and the console
+command table are not necessarily the same list) but it is now the strongest
+static signal in either direction for TNO specifically: <code>notarget</code> has a
+clean wired pair (§4b), <code>god</code>/<code>noclip</code> do not, in a dataset where "has a
+clean wired pair" was independently confirmed to track roughly 40+ other
+genuinely-real commands. <code>docs/limits.md</code>'s own session never pressed F3
+(<code>tail</code> of the log shows the player quit at the main menu), so this is
+still untested in-game — see the recipe and §7.</p>
+<p>This pass also searched for any further <em>static</em> evidence of whether the
+DevGUI UI itself (not just the <code>devgui</code> cvar) is reachable in retail: no
+string resembling "DevGUI is disabled in retail", <code>sv_cheats</code>,
+<code>com_enableDeveloperMode</code>, or a distinct retail-gate message for DevGUI
+specifically exists anywhere in the exe (checked by direct <code>bytes.count()</code>
+grep, same method as §1's <code>resourceExec</code> check). This closes off the cheap
+static angle without answering the question — it genuinely needs the
+in-game <code>+toggle devgui</code> / <code>+toggle com_allowConsole</code> test from the recipe.</p>
+<h2 id="3-the-flag-enums-recap-docsdevmodusmd-not-re-derived">3. The flag enums (recap, <code>docs/devmodus.md</code>, not re-derived)</h2>
+<pre><code>CVAR_BOOL 0x1  CVAR_INTEGER 0x2  CVAR_FLOAT 0x4  CVAR_CHEAT 0x8  CVAR_NOCHEAT 0x10
+CVAR_INIT 0x4000  CVAR_ROM 0x8000  CVAR_ARCHIVE 0x10000  CVAR_MODIFIED 0x20000
+CVAR_MODIFIED2 0x40000
+</code></pre>
+<p>No <code>CVAR_STRING</code>/<code>CVAR_TIME_MS</code>/<code>CVAR_NETWORKSYNC</code>/<code>CVAR_LOCAL_SETTING</code>/
+<code>CVAR_SHADERSYNC</code>/<code>CVAR_EXPOSE</code>/<code>CVAR_SHIPPINGDISABLED</code> — all six are TNC-only
+additions. <code>CVAR_SHIPPINGDISABLED</code> is the best candidate for the flag behind
+<code>"Attempting to set a developer cvar"</code> <strong>in TNC</strong>; TNO never grew that flag at
+all, so by elimination TNO's lock is the plain <code>CVAR_CHEAT</code> bit it shares with
+TNC's own (separately-still-working) <code>"Resetting cheat cvar"</code> path. This
+session's own search adds the command-side half:
+<strong>no <code>CMD_*</code> command-flag enum exists in TNO at all</strong> — TNC's
+<code>CMD_NOCHEAT 0x2</code> / <code>CMD_EXPOSE 0x4</code> / <code>CMD_SHIPPINGDISABLED 0x8</code> have zero
+counterpart. The engine's own reflection-table naming convention is consistent
+enough (every real enum in this binary prints as <code>EnumName_VALUE</code> in <code>.rdata</code>)
+that this is a meaningful negative result, not just "didn't look hard enough" —
+the same convention is exactly how <code>idDeclGameModeSP::FLAG_*</code>,
+<code>gameDificulty_t</code>, <code>devMode_t</code>, <code>fsPathSearch_t</code> etc. were all found elsewhere
+in this project's docs.</p>
+<h2 id="4-new-a-mined-tno-commandcvar-table-from-rdata-string-adjacency">4. New: a mined TNO command/cvar table from <code>.rdata</code> string adjacency</h2>
+<p><code>re_probes/tnoconsole/mine_tno_cmdtable.py</code> (read-only, <code>--self-check</code> verifies
+4 known-good pairs against live-mined addresses every run). Method: TNC's own
+<code>tools/mine_cvars_tnc.py</code> explicitly rejected naive string-adjacency as <em>wrong</em>
+for that binary (the linker pools literals across many unrelated
+registrations). For TNO, adjacency turns out to <strong>genuinely hold</strong> in long,
+call-order-preserved runs — most likely because MSVC pools a translation
+unit's literals in first-use order, and TNO's many <code>idCmdSystem::AddCommand</code>/
+<code>idCVar</code> constructor calls for one subsystem (AI debug, cvar registration,
+etc.) sit sequentially in one source file, unlike TNC's more scattered
+call sites. Verified by three independent, unambiguous spot checks the script's
+<code>--self-check</code> re-asserts every run:</p>
+<pre><code>g_gravity    -&gt; description &quot;control the force of gravity on physics objects&quot;, literal '1066'
+               (1066 is the real id Tech default gravity magnitude -- not a guess)
+g_knockback  -&gt; &quot;control how much the player gets knocked back when damaged&quot;, literal '50'
+killMonsters -&gt; &quot;removes all monsters&quot;           (a command, no literal -- idCmdSystem::AddCommand)
+teleport     -&gt; &quot;teleports the player to an entity location&quot;
+</code></pre>
+<p>Classification: a <strong>cvar</strong> entry has 1–3 short non-prose literal tokens
+(a numeric default, sometimes min/max) directly before the name; a <strong>command</strong>
+entry has the description immediately before the name with nothing in between.
+A second filter (<code>is_registrar_desc</code>) rejects DevGUI page-label strings, which
+are Title Case (<code>"No Target"</code>, <code>"Spawn AI"</code>) — real <code>idCmdSystem</code>/<code>idCVar</code>
+descriptions in this binary are uniformly lowercase sentences or start with a
+digit (<code>"kills the player"</code>, <code>"0 = disable DevGUI, ..."</code>). This single filter
+is what separates the real <code>kill</code>/<code>teleport</code>/<code>screenshot</code>/<code>devmap</code> entries from
+false DevGUI-button hits for <code>god</code>/<code>noclip</code>/<code>notarget</code> (§2).</p>
+<p>Result, run against the live retail exe (pass-2 numbers — see below for what
+changed):</p>
+<pre><code>WolfNewOrder_x64.exe
+  .rdata strings       : 207265
+  candidate entries    : 2117 (2031 unique names)
+  classified as cmd    : 1154
+  classified as cvar   : 877
+  high confidence (run): 1200   &lt;- part of a chain of &gt;=2 consecutive hits
+  rejected (reflection noise, pass-2 filter): 6229
+</code></pre>
+<p><strong>Pass 1's version of this table overstated its own reliability</strong> — the
+verifier independently sampled 15 "high confidence" entries and found only 2
+(13%) were genuine; the rest were C++ RTTI/template-reflection strings
+(<code>idList &lt; int , TAG_SWF &gt;</code>, bare <code>unsigned int</code>/<code>bool</code>) that the original
+<code>is_registrar_desc</code> filter did not reject, because it only checked
+Title-Case-vs-lowercase, not string <em>shape</em>. Independently reproducing the
+verifier's finding this pass: of the original 5026 entries, <strong>≥56.7%
+(2852/5026) globally and ≥45.1% (1062/2354) within "high confidence"</strong> matched
+one of three mechanical noise shapes (contains <code>&lt;</code> or <code>::</code>; is a bare
+primitive-type word like <code>unsigned int</code>/<code>bool</code>; is a compiler debug-tag/path
+string like <code>w:\tech5\...cpp(1355) : TAG_TEMP</code>). <strong>Fixed</strong>: <code>is_reflection_noise()</code>
+rejects all three in <code>mine_tno_cmdtable.py</code> now. Effect: the table shrank from
+5026 to 2031 unique names (2117 candidate hits, 6229 rejected as noise); a
+fresh, differently-seeded 20-entry random sample of the new "high confidence"
+bucket (1200 entries) found 18/20 (90%) genuine registrations, with the 2
+residual false positives being script-literal text (<code>idCQuat</code> paired with an
+embedded <code>.script</code> snippet) and a node-graph test-harness name
+(<code>idTypeInfoGraphNodeTest</code>) — a different, smaller, named residual noise
+category, not hidden. This is a real, large improvement, not a claim of
+perfection: treat any single value from this table as a lead to verify in
+<code>qconsole.log</code>, not a certainty, same caveat <code>docs/ladepfade.md</code> already
+states for its own smaller, hand-picked pool-neighbour reads.</p>
+<p>Saved to <code>re_probes/tnoconsole/tno_cmdtable.json</code> (2031 entries: <code>name</code>,
+<code>description</code>, <code>kind</code>, <code>literals</code> [default/min/max tokens, where present],
+<code>confidence</code>, <code>offset</code>, <code>va</code>). This is <strong>not</strong> flags-with-certainty the way the
+TNC runtime dump is (no live process, no disassembly of the registration call
+itself — <code>.text</code> is encrypted here too) — it is the TNO equivalent of
+<code>docs/cvars-tnc.md</code>'s token-matched catalogue, one level more reliable because
+the pairing is true adjacency here rather than a nearest-word-overlap guess,
+confirmed on real numeric defaults rather than inferred from prose alone.</p>
+<p>Two concrete, reproducible counterexamples to the adjacency premise itself
+(not noise — real strings, just not adjacent to their real partner), found
+while investigating the verifier's <code>testWeapon</code> finding:</p>
+<ul>
+<li><strong><code>testWeapon</code></strong> (file offset <code>0xff4a50</code>) and its real description
+  <code>"test a weapon model"</code> (<code>0xff49c8</code>) are genuinely <strong>not</strong> adjacent — three
+  unrelated entries (<code>lists players inventory...</code>, <code>listInventory</code>,
+  <code>listJobs</code>) sit between them. <code>testWeapon</code> is absent from the mined table
+  for exactly this reason, not a tooling bug; the verifier's citation of this
+  was correct, confirmed by independently re-reading the raw bytes.</li>
+<li><strong><code>com_production</code></strong> (<code>0x104d308</code>) exists as a standalone string (confirmed
+  by direct grep, resolving the pass-1 "not found" entry), but its plausible
+  description (<code>"Used to enable and/or inhibit specific behaviour during
+  production building mode. All demo and retail builds are built with this
+  on."</code>) sits one slot <em>after</em> its name instead of before it — the slot
+  immediately after <code>com_production</code> actually holds <code>"Exits the process on a
+  com_error."</code>, which reads far more like neighbour <code>com_exitProcessOnError</code>'s
+  description. Two adjacent cvars' description slots are swapped relative to
+  what pure positional adjacency predicts — a second, independent, concrete
+  illustration that the linker's literal-pooling order is not reliably
+  call-order-preserving at the single-pair level, even though it holds well
+  in aggregate (confirmed by the ≥1172-entry clean high-confidence set above).</li>
+</ul>
+<p>Other caveats, found while building it: common short names (<code>map</code>, <code>toggle</code>)
+collide with unrelated reflection-table entries (type names, member fields)
+and the dedup can pick the wrong one of several hits — <code>map</code> resolved to
+"shows collision model info" instead of its real "loads a map",
+<code>g_permaGodMode</code>'s mined default <code>-20</code> is implausible for a boolean and is
+very likely a wrong neighbour grab.</p>
+<p>Confirmed real entries directly relevant to unlocking TNO (<code>kind</code>,
+<code>confidence</code>, mined default, description, cross-checked against
+<code>RETAIL_BLOCKED</code>/<code>docs/devmodus.md</code> where already known):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>name</th>
+<th>kind</th>
+<th>default</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>com_allowConsole</code></td>
+<td>cvar</td>
+<td><code>0</code></td>
+<td>"allow toggling console with the tilde key" — confirms it gates the <code>~</code> key itself, nothing else</td>
+</tr>
+<tr>
+<td><code>devgui</code></td>
+<td>cvar</td>
+<td><code>0</code></td>
+<td>"0 = disable DevGUI, 1 = enable DevGUI, 2 = enable DevGUI with key legend" (3 modes, matches <code>docs/devmodus.md</code> §5.4)</td>
+</tr>
+<tr>
+<td><code>g_gravity</code></td>
+<td>cvar</td>
+<td><code>1066</code></td>
+<td>"control the force of gravity on physics objects"</td>
+</tr>
+<tr>
+<td><code>g_gameDifficulty</code></td>
+<td>cvar</td>
+<td><code>-1</code>,<code>0</code></td>
+<td>"the difficulty setting for the game, if -1 will not use the cvar but the var in gameLocal currentGameDifficulty ( 0 is very easy and 4 is nightmare )" — the difficulty enum TNO actually uses, spelled out in full (not previously documented)</td>
+</tr>
+<tr>
+<td><code>g_showThinks</code></td>
+<td>cvar</td>
+<td><code>0</code></td>
+<td>"show entity thinks. 0 = off, 1 = show and update, 2 = show but don't update"</td>
+</tr>
+<tr>
+<td><code>pm_noclipspeed</code></td>
+<td>cvar</td>
+<td><code>0</code></td>
+<td>"speed the player can move while in noclip" — confirms a noclip player-physics mode exists engine-side even though the <code>noclip</code> <em>command</em> itself could not be confirmed (§2)</td>
+</tr>
+<tr>
+<td><code>kill</code></td>
+<td>cmd</td>
+<td>—</td>
+<td>"kills the player"</td>
+</tr>
+<tr>
+<td><code>teleport</code></td>
+<td>cmd</td>
+<td>—</td>
+<td>"teleports the player to an entity location"</td>
+</tr>
+<tr>
+<td><code>killMonsters</code> / <code>killAI</code> / <code>killUnhiddenAI</code> / <code>killDeadAI</code></td>
+<td>cmd</td>
+<td>—</td>
+<td>"removes all monsters" / "kills all AI in the level" / "...that are not currently hidden..." / "...that are dead"</td>
+</tr>
+<tr>
+<td><code>healAI</code></td>
+<td>cmd</td>
+<td>—</td>
+<td>"heals all AI in the level"</td>
+</tr>
+<tr>
+<td><code>devmap</code> / <code>cmap</code> / <code>devcmap</code> / <code>checkmap</code></td>
+<td>cmd</td>
+<td>—</td>
+<td>"loads a combo map in developer mode" / "loads a combo map" / same as devmap / "...from checkpoint load"</td>
+</tr>
+<tr>
+<td><code>screenshot</code> / <code>rawscreenshot</code> / <code>envshot</code></td>
+<td>cmd</td>
+<td>—</td>
+<td>"takes a screenshot" / "...raw frame buffer dump..." / "...environment shot"</td>
+</tr>
+<tr>
+<td><code>tw_save</code></td>
+<td>cmd</td>
+<td>—</td>
+<td>"writes current testweapon parameters to a config file" (<code>testWeapon</code> itself is a real string pair too — confirmed by direct grep — but <strong>not</strong> in this mined table; see the adjacency counterexample above)</td>
+</tr>
+<tr>
+<td><code>DebugUnlockPerkByAbility</code> / <code>DebugUnlockPerkByRequirement</code> / <code>DebugLockAllPerks</code></td>
+<td>cmd</td>
+<td>—</td>
+<td>"adds perk with given ability/requirement ID, -1 unlocks all" / "remove all perks"</td>
+</tr>
+<tr>
+<td><code>cvar_restart</code></td>
+<td>cmd</td>
+<td>—</td>
+<td>"restarts the cvar system, defaulting all cvars" (low confidence, but matches <code>docs/limits.md</code>'s own cheat-reset finding structurally)</td>
+</tr>
+</tbody>
+</table></div>
+<p>None of these carry any flag info in the table (can't — <code>.text</code> encrypted), so
+whether each one needs an unlocked console is still an open question per §1's
+core finding: <strong>commands have no cheat/expose flag at all in this binary</strong>, so
+the real gate is not "is this command exposed" but "can the dispatcher be
+reached" — i.e. §7's <code>+bind</code> test.</p>
+<h2 id="4b-the-devgui-label--action-row-table--missed-in-pass-1-mined-now">4b. The DevGUI (Label → Action) row table — missed in pass 1, mined now</h2>
+<p>The general miner in §4 structurally cannot see this table: its
+<code>is_registrar_desc</code> filter rejects Title-Case strings to keep DevGUI
+page/button <em>labels</em> out of the cvar/command catalogue (§4's own stated
+purpose), but that same filter throws away the <em>actions</em> those labels pair
+with — a second, separate, smaller linker-pooled string region (one DevGUI
+row-array literal, file offset roughly <code>0x1038700</code>–<code>0x103a040</code>) that the
+original miner never looked at as its own table. <code>re_probes/tnoconsole/
+mine_tno_devgui_table.py</code> reads it directly: 117 hand-curated, VA-cited
+string offsets, each re-read from the live exe and checked verbatim on every
+run (<code>--self-check</code>, currently <strong>OK</strong>, 0 mismatches). It does not attempt a
+general parser (row field count varies — some rows carry an extra <code>TEMP n</code>
+placeholder slot, child-page rows link to a separately-pooled run of page
+names, slider rows carry extra bound literals) — that would be speculative
+struct reverse engineering from strings alone, which is exactly the kind of
+overclaiming this pass is fixing elsewhere. Instead it folds the 117 entries
+into 55 clean, unambiguous (label, action) pairs plus 2 flagged "stray"
+singletons. Full output: <code>re_probes/tnoconsole/tno_devgui_table.json</code>.</p>
+<p>Selected pairs most relevant to unlocking TNO (all independently
+self-check-verified against the live exe, VA = <code>tno_devgui_table.json</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>DevGUI label</th>
+<th>Action string</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>No Target</code></td>
+<td><code>notarget</code></td>
+<td>clean pair — resolves §2's open question, positive</td>
+</tr>
+<tr>
+<td><code>Give Grenades</code></td>
+<td><code>give throwable/player/grenade</code></td>
+<td>resolves pass-1 "give not found" (R11)</td>
+</tr>
+<tr>
+<td><code>Spawn Imp</code> / <code>Spawn Hellified Soldier</code> / <code>Spawn Mini Gunner</code> / <code>Spawn Zombie</code></td>
+<td><code>spawn zion/ai/imp/demon_imp</code> / <code>spawn zion/ai/hellified_soldier/hellified_marine_rifle</code> / <code>spawn zion/ai/minigunner/gunner1</code> / <code>spawn zion/ai/zombie/fast</code></td>
+<td><code>spawn &lt;entityDef path&gt;</code> is real and takes a full asset path, not a bare name — pass 1's "spawn not found" was a tooling miss the same way <code>give</code> was</td>
+</tr>
+<tr>
+<td><code>Remove AI</code></td>
+<td><code>killMonsters</code></td>
+<td>corroborates §4's mined entry via an independent source</td>
+</tr>
+<tr>
+<td><code>Suicide</code></td>
+<td><code>killPlayer %d</code></td>
+<td>distinct from <code>kill</code> (§4) — kills the player by index, not the console-caller</td>
+</tr>
+<tr>
+<td><code>Set Team Red</code> / <code>Set Team Blue</code></td>
+<td><code>changeTeam 1</code> / <code>changeTeam 2</code></td>
+<td>previously undocumented command</td>
+</tr>
+<tr>
+<td><code>No Player Death</code></td>
+<td><code>NoPlayerDeath</code></td>
+<td>previously undocumented command</td>
+</tr>
+<tr>
+<td><code>Infinite Ammo</code></td>
+<td><code>toggle g_infiniteAmmo</code></td>
+<td>corroborates the cvar name already in <code>RETAIL_BLOCKED</code>-adjacent discussion</td>
+</tr>
+<tr>
+<td><code>Pause AI</code> / <code>Show AI Bounds</code> / <code>Show AI Path</code></td>
+<td><code>toggle ai_enable</code> / <code>toggle ai_drawBounds</code> / <code>toggle ai_debugMove</code></td>
+<td>previously undocumented <code>ai_*</code> toggle cvars</td>
+</tr>
+<tr>
+<td><code>ScreenShot</code></td>
+<td><code>screenshot</code></td>
+<td>corroborates §4's mined entry (and directly contradicts the verifier's observation that the <strong>general miner's own</strong> backward-adjacency pairs <code>ScreenShot</code> with the unrelated <code>toggle r_showSkel 0 1 2</code> — that mispairing is in <code>tno_cmdtable.json</code>'s classification, not in this forward-read table)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Two strays, exact-offset-verified, <strong>not</strong> part of any clean pair:</p>
+<ul>
+<li><code>god</code> — standalone string at VA <code>0x14103a0a4</code>, the only occurrence of the
+  bare word anywhere in the exe. Sits between <code>toggle g_showEntityInfo 0 1</code>
+  and <code>Show Entity Warnings</code> — adjacent to neither. The DevGUI row that <em>is</em>
+  explicitly labelled <code>God Mode</code> (VA <code>0x14103a2e8</code>) has its action slot
+  filled with the literal placeholder <code>TEMP 5</code>, not a command string — one of
+  7 <code>TEMP 1</code>..<code>TEMP 7</code> stub slots in this table, a concrete, verifiable sign
+  this row shipped non-functional in retail. This does not prove the <code>god</code>
+  <em>console command</em> is absent (DevGUI row wiring and the dispatcher's command
+  table are not provably the same list from statics alone), but it is
+  stronger, more specific negative evidence than pass 1's "ambiguous" hedge.</li>
+<li><code>noclip</code> — standalone string at VA <code>0x14103a10c</code> (inside the Time-Scale
+  row group, between <code>Slow Time</code> and <code>timescale .1</code>), not adjacent to the
+  later <code>No Clip</code> label (VA <code>0x14103a320</code>), whose own neighbours are
+  unrelated strings too. Same hedge as <code>god</code>.</li>
+</ul>
+<h2 id="5-the-script-vm-route--the-actual-tno-analogue-of-tncs-kiscule-bypass">5. The script-VM route — the actual TNO analogue of TNC's kiscule bypass</h2>
+<p><code>docs/moddingflaeche-tno.md</code> §4.2 already flagged TNO's SuperScript VM
+(<code>.script</code> files, 913 native <code>scriptEvent</code> signatures in
+<code>script/script_events.script</code>) as "the by far most powerful unused lever" for
+gameplay cheats, but only in terms of entity-level natives
+(<code>giveInventoryItem</code>, <code>setHealth</code>, ...). Read in full this session
+(<code>python -m wolfsdk --title tno cat "file:script/script_events.script"</code>,
+6 744 lines, read-only, cross-checked by grep for <code>console</code>/<code>cvar</code>):</p>
+<pre><code>// Sets a cvar.
+scriptEvent void setcvar( string name, string value );
+
+// Returns the string for a cvar.
+scriptEvent string getcvar( string name );
+
+// executes a console command
+scriptEvent void executeCommandText( string command );
+</code></pre>
+<p><code>executeCommandText</code> is a script-callable wrapper around exactly the kind of
+function TNC's <code>idCmdSystemLocal::AppendCommandText</code>/
+<code>ExecuteCommandText</code> belongs to (same naming family across the id Tech
+4/5/6 lineage, independently confirmed present under that exact name in TNC by
+r4/r5) — a native that queues or runs a command string from inside the game's
+own logic layer, not from the player's console. The same file's auto-generated
+entity-class-hierarchy comment block additionally lists <code>idTarget_Cvar</code>
+alongside ~800 other <code>idTarget_*</code> classes (<code>idTarget_ChangeMapFlag</code>,
+<code>idTarget_Damage</code>, etc. — the standard trigger-target entity family) — an
+entity class that most plausibly sets a cvar when triggered, placeable from a
+<code>.entities</code> file with <strong>no script required at all</strong>. No shipped <code>entityDef</code>
+decl named <code>target_Cvar</code> was found (<code>wolfsdk --title tno list --type
+entityDef | grep -i cvar</code> → empty), so it would have to be spawned by raw
+classname inside a hand-edited <code>.entities</code> file rather than referenced by decl
+name — consistent with it being an editor-only/internal class MachineGames
+never shipped a decl wrapper for.</p>
+<p><strong>This is the structural counterpart of r5's TNC finding</strong> — a game-logic
+execution path for command/cvar text that <code>docs/limits.md</code>'s five tested
+channels (command line, two config-file variants, post-reset <code>+exec</code>, <code>+toggle</code>)
+never covered, because none of them is "a trigger fires inside a loaded map".
+Whether it is actually privileged (reaches the dispatcher the same way
+command-line text does, bypassing the config-file-source check from §2) or
+just as blocked as every other channel is <strong>unproven</strong> — <code>.text</code> is encrypted,
+there is no way to trace what <code>executeCommandText</code>/<code>setcvar</code> call into
+statically, and this agent cannot launch the game to find out. It is, however,
+the single cheapest, most concrete new lead this track produced: one line in
+an existing map's <code>.script</code> (<code>c02p0.script</code>-style, 415 bytes, already
+quoted whole in <code>docs/moddingflaeche-tno.md</code>) is enough to test it.</p>
+<h2 id="proven-this-track-static-evidence-only--no-game-was-launched">PROVEN (this track, static evidence only — no game was launched)</h2>
+<ul>
+<li><code>resourceExec</code> does not exist in TNO as a string, anywhere in the exe (0 of
+  26 345 040 bytes match). TNO's single <code>exec &lt;file&gt; [-s]</code> command is used for
+  every cfg, loose and (nominally) archived alike — unlike TNC, which needed a
+  second verb because its <code>default.cfg</code> moved into an archive and TNO's never
+  did.</li>
+<li>No <code>CMD_*</code> command-flag enum exists in TNO (<code>CMD_NOCHEAT</code>/<code>CMD_EXPOSE</code>/
+  <code>CMD_SHIPPINGDISABLED</code> are TNC-only, confirmed by targeted string search;
+  only unrelated <code>AWCMD_*</code>/<code>UCMD_*</code> names present).</li>
+<li><code>com_allowConsole</code>'s real in-binary description ("allow toggling console with
+  the tilde key") and default (<code>0</code>) are now directly mined, not just inferred
+  from its address — corroborates <code>docs/devmodus.md</code>'s identification.</li>
+<li><code>devgui</code>'s 3-mode description is now directly mined, matching
+  <code>docs/devmodus.md</code> §5.4 exactly.</li>
+<li>The real <code>qconsole.log</code> from the maintainer's own prior run shows
+  <code>com_skipIntroVideo</code> — which <code>wolfsdk/cvars.py::ALWAYS</code> adds on <em>every</em> TNO
+  launch — being wiped by the cheat-reset in that exact run; the loader's
+  "always skip intro" feature does not take effect on retail.</li>
+<li>A static registration-table scan for <code>com_allowConsole</code> (the same method
+  <code>tools/probe_cvars.py</code> was written for) finds <strong>zero</strong> 8-byte pointer
+  references to its name string anywhere in the file — confirming (same dead
+  end TNC's <code>mine_cvars_tnc.py</code> already documents for its own binary) that
+  TNO's cvars are registered by code, not a static data table, so per-cvar
+  flags cannot be recovered from <code>.rdata</code>/<code>.data</code> alone for either game.</li>
+<li><code>script/script_events.script</code> declares <code>setcvar</code>/<code>getcvar</code>/
+  <code>executeCommandText</code> as callable natives, and <code>idTarget_Cvar</code> exists in the
+  engine's entity class hierarchy.</li>
+<li><strong>(pass 2)</strong> The mined command/cvar table's original noise rate was
+  independently re-measured at ≥56.7% globally / ≥45.1% within "high
+  confidence" (reflection/RTTI strings misclassified as descriptions); a
+  mechanical fix (reject <code>&lt;</code>/<code>::</code>/bare-type-word/<code>.cpp(</code> strings) cut a fresh
+  20-sample high-confidence noise rate to 2/20 (10%). Table now 2031 entries
+  (was 5026).</li>
+<li><strong>(pass 2)</strong> <code>testWeapon</code>'s name and real description are confirmed
+  genuinely non-adjacent in <code>.rdata</code> (3 unrelated strings between them) —
+  a real counterexample to the adjacency method, not a tooling bug.
+  <code>com_production</code> exists as a standalone string (resolves pass-1's
+  "not found") but its plausible description sits one slot <em>after</em> it
+  instead of before — a second, independent non-adjacency case.</li>
+<li><strong>(pass 2)</strong> The DevGUI (Label→Action) row table (file offset
+  <code>0x1038700</code>–<code>0x103a040</code>) is a separate, cleanly-structured region the
+  general miner cannot see; 55 clean pairs read and self-check-verified,
+  including previously-undocumented real commands <code>notarget</code>,
+  <code>give throwable/player/grenade</code>, <code>spawn &lt;entityDef path&gt;</code> (4 variants),
+  <code>killPlayer %d</code>, <code>changeTeam 1/2</code>, <code>NoPlayerDeath</code>, and 25+ <code>toggle &lt;cvar&gt;</code>
+  pairs (<code>ai_enable</code>, <code>ai_drawBounds</code>, <code>ai_debugMove</code>, <code>g_infiniteAmmo</code>,
+  <code>g_debugWeapon</code>, <code>g_showSpread</code>, <code>g_weaponkick</code>, <code>g_tracePlayerDamage</code>,
+  <code>g_showCollisionWorld/Models/Surfaces</code>, <code>r_showDynamicLighting/
+  AmbientLighting/SurfaceInfo/Tris/Trace/WorldAreas/DuplicateTriangles/
+  Cracks/Skel</code>, <code>com_showMemoryUsage</code>, <code>com_speeds</code>, <code>hands_show</code>,
+  <code>con_noPrint</code>). <code>god</code> and <code>noclip</code> each exist as a single unpaired string
+  in this region, neither next to a matching label; the <code>God Mode</code> row's
+  action slot holds the literal placeholder <code>TEMP 5</code> instead of a command.</li>
+</ul>
+<h2 id="inferred-plausible-not-measured">INFERRED (plausible, not measured)</h2>
+<ul>
+<li>TNO's command dispatcher is architecturally ungated (no flag to check) —
+  inferred from the <em>absence</em> of a <code>CMD_*</code> enum, not from a positive trace of
+  the dispatcher itself.</li>
+<li><code>setcvar</code>/<code>executeCommandText</code>, called from a map's <code>.script</code>, would reach
+  the dispatcher through a channel the config-file-source check does not see,
+  the same structural shape as TNC's proven kiscule bypass (r5) — plausible by
+  analogy, not demonstrated for this engine.</li>
+<li><code>+toggle com_allowConsole</code> on the command line would, like <code>+toggle devgui</code>,
+  bypass both the config gate and the cheat-reset and leave <code>com_allowConsole</code>
+  at <code>1</code> — extrapolated from the one measured <code>+toggle</code> case in
+  <code>docs/limits.md</code>; untested for this specific cvar.</li>
+<li><code>+bind &lt;key&gt; &lt;command&gt;</code> (already proven accepted on the command line,
+  <code>+bind F3 noclip</code> from the real log) would call <code>kill</code>/<code>teleport</code>/<code>devmap</code>/
+  etc. ungated, since no flag exists to gate it — follows from the §3/PROVEN
+  absence-of-flag finding, not from having actually pressed such a key in game.</li>
+</ul>
+<h2 id="failed-hypotheses--dead-ends-this-track">Failed hypotheses / dead ends (this track)</h2>
+<ul>
+<li><strong>Naive <code>probe_cvars.py</code> pointer scan for a static cvar-flags table</strong>: zero
+  references found for <code>com_allowConsole</code>'s name string anywhere in the
+  binary. Dead end, same shape as <code>mine_cvars_tnc.py</code>'s own documented dead
+  end #2 for TNC — confirms (does not newly discover) that registration is
+  code-driven, not data-table-driven, in both games.</li>
+<li><strong>String adjacency for <code>god</code>/<code>noclip</code> specifically</strong> (revised pass 2 —
+  <code>notarget</code> is now resolved <strong>positive</strong>, see §4b, removed from this list):
+  <code>god</code> and <code>noclip</code> each exist as exactly one standalone string in the whole
+  exe, in the DevGUI region, neither adjacent to a matching label — genuinely
+  "not found as a clean wired pair", not a tooling gap, though still not
+  proof of absence from the console dispatcher specifically (DevGUI row
+  wiring and the dispatcher's command table are not provably the same list
+  from statics alone).</li>
+<li><strong><code>com_enableDeveloperMode</code>, <code>devMode_*</code>, <code>sv_cheats</code>, <code>fs_overlaypath</code> in
+  the mined adjacency table</strong>: still not found by this method this pass
+  either (either genuinely absent, like the <code>devMode_*</code> family already
+  proven absent in <code>docs/devmodus.md</code>, or present but paired differently
+  than this heuristic expects — <code>fs_overlaypath</code> is known present from
+  <code>docs/ladepfade.md</code>'s own, differently-targeted probe, so its absence here
+  is a tooling miss, not a new negative finding). <code>com_production</code> moved to
+  PROVEN (confirmed present by direct grep, §4). <code>give</code>/<code>spawn</code> moved to
+  PROVEN (confirmed present and DevGUI-wired, §4b) — both were a tooling
+  miss (combined verb+argument literals, not bare verb tokens), not genuine
+  absences; this was pass 1's R11/part-of-R12 error, now fixed.</li>
+</ul>
+<h2 id="concrete-recipe-for-the-maintainer">Concrete recipe for the maintainer</h2>
+<ol>
+<li><strong>Cheapest, zero-build test — confirm or kill the "commands are ungated"
+   hypothesis (§3):</strong> launch with several <code>+bind &lt;unused key&gt; &lt;command&gt;</code>
+   pairs, mixing §4b's DevGUI-confirmed-wired commands (higher prior) with
+   the two still-ambiguous ones, no mod needed, pure command line:</li>
+</ol>
+<p><code>WolfNewOrder_x64.exe +bind F5 god +bind F6 kill +bind F7 notarget +bind F8 "give throwable/player/grenade" +bind F9 killMonsters</code>
+   <code>notarget</code>/<code>give .../killMonsters</code> are DevGUI-wired real strings (§4b) —
+   if they fire, that's a strong, near-certain confirmation TNO's command
+   system has no exposed-list restriction at all (the single biggest
+   practical difference from TNC this track found); <code>god</code>/<code>kill</code> are the
+   still-open ones this same test resolves for free.
+2. <strong><code>+toggle com_allowConsole</code></strong> (command line, no mod): if it survives the
+   way <code>+toggle devgui</code> did, the <code>~</code> console itself opens, and every command
+   in §4/§4b's tables becomes directly typeable — turning "is <code>noclip</code>/<code>god</code>
+   real" from a guess into a one-line console check.
+3. <strong>Script-VM route (the real unlock candidate, §5):</strong> take the existing
+   415-byte <code>c02p0.script</code> quoted whole in <code>docs/moddingflaeche-tno.md</code> §4.2,
+   add one line to <code>main()</code>:</p>
+<p><code>c
+   void main() { executeCommandText( "god" ); }</code>
+   or, to test the cvar side directly: <code>setcvar( "g_infiniteAmmo", "1" );</code>.
+   Needs a full chunk rebuild (<code>c02p0.script</code>'s <code>csize</code> budget is 0 bytes per
+   <code>docs/moddingflaeche-tno.md</code> §4.1 — <code>wolfsdk</code>'s existing rebuild path
+   handles this, same as any other full-chunk patch already proven for TNC map
+   assets). This is the one experiment in this report that would actually
+   answer the open question, and it is well within what the loader's existing
+   <code>.script</code>/archive-rebuild tooling already supports.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Does <code>+bind &lt;key&gt; &lt;command&gt;</code> actually reach the dispatcher ungated, or is
+  there a gate this static read cannot see (encrypted <code>.text</code>)? → recipe #1.</li>
+<li>Does <code>+toggle com_allowConsole</code> actually open the console the way
+  <code>+toggle devgui</code> set the cvar? And if it does, is the console UI itself
+  compiled into the retail build, or stripped the way DevGUI's F8/F10
+  functionality was (cvar set, no effect)?</li>
+<li>Do <code>setcvar</code>/<code>executeCommandText</code>, called from a map script, run through the
+  same config-file-source check that blocks <code>default.cfg</code>, or through the
+  unrestricted command-line-equivalent path? This is the TNO question that
+  actually matters most and is the least answerable without a build+launch.</li>
+<li>Is <code>noclip</code>/<code>god</code> registered at all in the retail command table, or
+  stripped the way TNC's own <code>give</code>/<code>spawn</code>/<code>noclip</code>/<code>SpawnAI</code> are?
+  (<code>notarget</code> is now resolved positive, §4b — this question narrows to just
+  these two.) <code>pm_noclipspeed</code> existing as a real cvar is weak evidence <em>for</em>
+  a noclip mode existing engine-side, but says nothing about whether the
+  <em>command</em> survived into retail, and the <code>God Mode</code> DevGUI row's <code>TEMP 5</code>
+  stub (§4b) is new, mildly negative evidence for <code>god</code> specifically.</li>
+<li>Is DevGUI UI reachability (not just the <code>devgui</code> cvar value) possible in
+  retail by any means? Searched again this pass for static evidence (no
+  distinct retail-gate string found, §2) — still open, still needs the
+  in-game <code>+toggle devgui</code> test; if reachable, §4b's full 55-pair table
+  becomes a ready-made cheat menu with zero further guessing.</li>
+</ul>
+<h2 id="smallest-in-game-test">Smallest in-game test</h2>
+<p><em>(Translated from German.)</em></p>
+<p><strong>Without any mod, only start arguments, two minutes:</strong></p>
+<pre><code>WolfNewOrder_x64.exe +bind F5 god +bind F6 notarget +bind F7 &quot;toggle com_allowConsole 0 1&quot; +bind F8 &quot;give throwable/player/grenade&quot; +bind F9 killMonsters
+</code></pre>
+<p>Start the game, load a save (or stay in the main menu), then press
+F7, then F5, F6, F8, F9 in order. Meanwhile keep an eye on <code>qconsole.log</code>
+(<code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein The New Order\base\qconsole.log</code>)
+or search it afterwards:</p>
+<ul>
+<li><code>notarget</code> (F6), <code>give throwable/player/grenade</code> (F8) and <code>killMonsters</code>
+  (F9) are confirmed since this second pass as real command strings hard-wired
+  in the DevGUI (section 4b) — if <strong>no</strong> <code>Unknown command</code> line appears after these keys,
+  that is the strongest confirmation so far
+  that TNO commands are generally ungated.</li>
+<li>If <strong>no</strong> <code>Unknown command</code> line appears after F7 and the console can then be opened with
+  the tilde key (<code>^</code>/<code>~</code>) → <code>com_allowConsole</code> can be set
+  via <code>toggle</code>, exactly like <code>devgui</code> in <code>docs/limits.md</code>. Then type
+  <code>god</code>, <code>notarget</code>, <code>noclip</code> one at a time in the console and watch whether
+  <code>Unknown command</code> comes or not — that answers in one go which
+  of the commands found in this report really exist.</li>
+<li>If an "invulnerable" state appears after F5 (e.g. no damage from a
+  hit) or a log line without <code>Unknown command 'god'</code> → the <code>god</code> command
+  exists and is reachable ungated via <code>+bind</code>, <strong>without an open console</strong> —
+  that would be the simplest unlock route this report has found, and
+  would confirm the central assumption from section 3/PROVEN ("commands carry
+  no cheat flag at all in TNO"). Note: <code>god</code> is less well supported than
+  <code>notarget</code>/<code>give</code>/<code>killMonsters</code> (section 4b — the corresponding DevGUI row
+  "God Mode" only has the placeholder "TEMP 5" instead of a real command),
+  so do not be surprised if this one in particular does not fire while
+  the other four do.</li>
+<li>If instead <code>Unknown command 'god'</code> or similar comes → the command does not exist in this form
+  in retail (like <code>give</code>/<code>spawn</code>/<code>noclip</code>/<code>SpawnAI</code> in part 2), and the
+  next lead is section 5 (script VM, <code>executeCommandText</code>/<code>setcvar</code>) —
+  but that would need a map build of its own, no longer a pure start test.</li>
+</ul>
+<p><strong>Back up saves first</strong> (<code>checkpoint.dat</code>, <code>profile.bin</code>,
+<code>progression.bin</code>) — unclear whether TNO, like part 2, permanently marks saves when entering a
+cheat state; not yet checked for part 1.</p>
+<h2 id="reproducibility">Reproducibility</h2>
+<pre><code>python re_probes/tnoconsole/mine_tno_cmdtable.py --self-check
+# WolfNewOrder_x64.exe
+#   .rdata strings       : 207265
+#   candidate entries    : 2117 (2031 unique names)
+#   classified as cmd    : 1154
+#   classified as cvar   : 877
+#   high confidence (run): 1200
+#   rejected (reflection noise, pass-2 filter): 6229
+#   self-check: OK
+#   wrote re_probes/tnoconsole/tno_cmdtable.json (2031 entries)
+
+python re_probes/tnoconsole/mine_tno_devgui_table.py --self-check
+# DevGUI (label, action) table -- 117 curated entries, 55 clean pairs
+#   ... (55 pairs printed, see §4b)
+#   self-check: OK
+#   wrote re_probes/tnoconsole/tno_devgui_table.json (117 entries)
+</code></pre>
+<p>Related: <a href="Research-Report-R7-Tno-Cheat-Gate.html">Research Report: R7 Tno Cheat Gate</a>, <a href="Research-Report-R7-Tno-Commands.html">Research Report: R7 Tno Commands</a>, <a href="Developer-Mode.html">Developer Mode</a>, <a href="Modding-Limits.html">Modding Limits</a>, <a href="Asset-Loading-Paths.html">Asset Loading Paths</a>, <a href="TNC-CVar-Catalog.html">TNC CVar Catalog</a>, <a href="TNO-Modding-Surface.html">TNO Modding Surface</a>, <a href="TNO-CVar-Catalog.html">TNO CVar Catalog</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R6-Tno-Audio.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Sound Replacement: The Write Path, Round-Tripped</a><a class="next" href="Research-Report-R6-Tno-Decls.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>TNO Decl System: Catalogue, Loader Capability, New Entries, Load-Order Traps</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

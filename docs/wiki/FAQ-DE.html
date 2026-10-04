@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ DE – Wolfenstein Modloader</title>
+<meta name="description" content="Short answers to the most common questions about WolfSDK 0.2.0, for players and modders of both games.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#start"><span class="en">Start here</span><span class="de">Einstieg</span></a></p>
+<h1>FAQ DE</h1>
+<p class="meta"><span class="stamp s-reference"><span class="en">Reference</span><span class="de">Nachschlagewerk</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/FAQ-DE"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#was-ist-wolfsdk">Was ist WolfSDK?</a></li><li><a href="#was-ist-der-unterschied-zwischen-wolfsdk-loader-und-wolfsdk-studio">Was ist der Unterschied zwischen WolfSDK Loader und WolfSDK Studio?</a></li><li><a href="#wo-lade-ich-wolfsdk-herunter-und-wie-installiere-ich-es">Wo lade ich WolfSDK herunter und wie installiere ich es?</a></li><li><a href="#wolfsdk-startet-nicht-oder-findet-mein-spiel-nicht--was-tun">WolfSDK startet nicht oder findet mein Spiel nicht – was tun?</a></li><li><a href="#windows-smartscreen-warnt-vor-wolfsdkcmd--ist-das-normal">Windows SmartScreen warnt vor WolfSDK.cmd – ist das normal?</a></li><li><a href="#wie-wende-ich-mods-an">Wie wende ich Mods an?</a></li><li><a href="#wie-mache-ich-mods-rückgängig-und-bekomme-das-originalspiel-zurück">Wie mache ich Mods rückgängig und bekomme das Originalspiel zurück?</a></li><li><a href="#was-mache-ich-nach-einem-spiel-update">Was mache ich nach einem Spiel-Update?</a></li><li><a href="#funktioniert-wolfsdk-mit-game-pass-gog-oder-epic">Funktioniert WolfSDK mit Game Pass, GOG oder Epic?</a></li><li><a href="#funktioniert-wolfsdk-mit-der-deutschen-geschnittenen-version">Funktioniert WolfSDK mit der deutschen (geschnittenen) Version?</a></li><li><a href="#brauche-ich-ein-dlc-welches-dlc-brauchen-eigene-karten">Brauche ich ein DLC? Welches DLC brauchen eigene Karten?</a></li><li><a href="#wie-installiere-ich-eine-eigene-karte-in-the-new-colossus">Wie installiere ich eine eigene Karte in The New Colossus?</a></li><li><a href="#wie-benutze-ich-das-entwicklermenü-in-the-new-colossus">Wie benutze ich das Entwicklermenü in The New Colossus?</a></li><li><a href="#wie-öffne-ich-die-konsole-in-the-new-order">Wie öffne ich die Konsole in The New Order?</a></li><li><a href="#wie-funktioniert-die-konsole-in-the-new-colossus">Wie funktioniert die Konsole in The New Colossus?</a></li><li><a href="#warum-funktionieren-meine-f-tasten-binds-in-the-new-colossus-nicht">Warum funktionieren meine F-Tasten-Binds in The New Colossus nicht?</a></li><li><a href="#wie-bekomme-ich-gottmodus-unendlich-munition-und-andere-cheats">Wie bekomme ich Gottmodus, unendlich Munition und andere Cheats?</a></li><li><a href="#wie-mache-ich-meine-eigene-mod">Wie mache ich meine eigene Mod?</a></li><li><a href="#wie-ersetze-ich-texturen-oder-sounds">Wie ersetze ich Texturen oder Sounds?</a></li><li><a href="#ist-wolfsdk-sicher-ist-mein-spiel-mit-mods-sicher">Ist WolfSDK sicher? Ist mein Spiel mit Mods sicher?</a></li><li><a href="#muss-ich-meine-spielstände-sichern">Muss ich meine Spielstände sichern?</a></li><li><a href="#welche-wolfsdk-funktionen-sind-im-spiel-bestätigt">Welche WolfSDK-Funktionen sind im Spiel bestätigt?</a></li><li><a href="#welche-wolfsdk-funktionen-sind-im-spiel-noch-nicht-bestätigt">Welche WolfSDK-Funktionen sind im Spiel noch nicht bestätigt?</a></li><li><a href="#wo-melde-ich-fehler-oder-bekomme-hilfe">Wo melde ich Fehler oder bekomme Hilfe?</a></li><li><a href="#wie-kann-ich-wolfsdk-unterstützen">Wie kann ich WolfSDK unterstützen?</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This FAQ answers what players and modders ask most about WolfSDK 0.2.0, the free mod loader and modding studio for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows). It covers downloading and installing, applying and reverting mods, game updates, other stores, the German version, custom maps and their DLC, both consoles, cheats, making your own mod and replacing textures. Each answer says whether a feature is confirmed in game, not yet confirmed in game, or held back.</p><ul><li>Confirmed in game: applying and reverting mods with backups, installing a custom map, god mode and infinite ammo from Sandbox Tools, and maps loading from the developer menu.</li><li>Only the Steam versions work: Game Pass locks the game files, GOG and Epic are untested, and WolfSDK has been tested on one PC so far.</li><li>Custom maps for The New Colossus need the DLC The Freedom Chronicles, episode 2; mods, cheats and presets work with the base game.</li><li>In The New Colossus a bound key runs restricted, so mods bind a key to resourceExec instead; 0.2.0 sets no default F-key binds there.</li><li>Replacing sounds and videos is held back in 0.2.0; normal maps, the script editor, the presets and most shipped mods are not yet confirmed in game.</li></ul></div><div class="de"><p class="lede">Diese FAQ beantwortet, was Spieler und Modder am häufigsten zu WolfSDK 0.2.0 fragen, dem kostenlosen Mod-Loader und Modding-Studio für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (Steam-Versionen unter Windows). Es geht um Download und Installation, das Anwenden und Zurücksetzen von Mods, Spiel-Updates, andere Stores, die deutsche Version, eigene Karten und ihr DLC, beide Konsolen, Cheats, eigene Mods und das Ersetzen von Texturen. Jede Antwort sagt, ob eine Funktion im Spiel bestätigt, im Spiel noch nicht bestätigt oder zurückgehalten ist.</p><ul><li>Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen, eine eigene Karte installieren, God-Mode und unendliche Munition aus Sandbox Tools und das Laden von Karten aus dem Entwicklermenü.</li><li>Nur die Steam-Versionen funktionieren: Game Pass sperrt die Spieldateien, GOG und Epic sind ungetestet, und WolfSDK wurde bisher auf einem PC getestet.</li><li>Eigene Karten für The New Colossus brauchen das DLC The Freedom Chronicles, Episode 2; Mods, Cheats und Presets laufen mit dem Hauptspiel.</li><li>In The New Colossus läuft eine belegte Taste gesperrt, darum binden die Mods eine Taste an resourceExec; 0.2.0 belegt dort keine F-Tasten mehr.</li><li>Sounds und Videos zu ersetzen ist in 0.2.0 zurückgehalten; Normal Maps, der Skript-Editor, die Presets und die meisten mitgelieferten Mods sind im Spiel noch nicht bestätigt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p><a href="FAQ.html">🇬🇧 English</a> · 🇩🇪 Deutsch</p>
+<h1 id="wolfsdk-faq-deutsch">WolfSDK FAQ (Deutsch)</h1>
+<p>Kurze Antworten auf die häufigsten Fragen von Spielern und Moddern zu WolfSDK 0.2.0, dem Modloader und Modding-Studio für <em>Wolfenstein: The New Order</em> und <em>Wolfenstein II: The New Colossus</em>. Schritt für Schritt: <a href="WolfSDK-Loader-DE.html">WolfSDK Loader</a>, <a href="WolfSDK-Studio-DE.html">WolfSDK Studio</a>, <a href="Mod-Format-DE.html">Mod-Format</a>, <a href="Modding-Limits.html">Modding Limits</a> (Englisch).</p>
+<p>Keywords: FAQ, häufige Fragen, Fragen und Antworten, Hilfe, WolfSDK Hilfe, frequently asked questions, help</p>
+<h2 id="was-ist-wolfsdk">Was ist WolfSDK?</h2>
+<p>WolfSDK ist ein kostenloser Modloader und ein Modding-Studio für <em>Wolfenstein: The New Order</em> (id Tech 5) und <em>Wolfenstein II: The New Colossus</em> (id Tech 6), für die Steam-Versionen unter Windows. Version 0.2.0 (04.10.2026) ist das erste öffentliche Release.</p>
+<p>Es schreibt Mods in die Archive der Spiele, legt bitgenaue Backups an und setzt alles mit einem Klick zurück. Es hat einen Katalog der Engine-eigenen Cvars für Cheats und Komfort-Einstellungen und installiert eigene Karten für <em>The New Colossus</em>. Der Studio-Teil durchsucht und ersetzt die Assets der Spiele und speichert Änderungen als Mods.</p>
+<p>Ein unabhängiges Community-Projekt unter MIT-Lizenz, nicht verbunden mit MachineGames oder Bethesda. Kein EXE-Patch, keine DLL-Injection.</p>
+<p>Keywords: was ist WolfSDK, Überblick, Modloader, Mod-Manager, Modding-Werkzeug, kostenlos, MIT, Wolfenstein 2, what is WolfSDK, mod loader</p>
+<h2 id="was-ist-der-unterschied-zwischen-wolfsdk-loader-und-wolfsdk-studio">Was ist der Unterschied zwischen WolfSDK Loader und WolfSDK Studio?</h2>
+<p><strong>WolfSDK Loader</strong> ist für Spieler: Mods anhaken, <em>Apply mods</em>, <em>Start game</em>, <em>Revert</em>, die Seite <em>Cheats &amp; QoL</em> mit Presets und <em>Install map…</em>.</p>
+<p><strong>WolfSDK Studio</strong> ist für Modder: der Loader plus das Studio. Das Studio zeigt Karten, Videos, Audio, Texturen und Texte beider Spiele, zeigt und exportiert die 17.315 Modelle von <em>The New Colossus</em> in 3D und ersetzt BC1-Texturen, Texte und Decls. Jede Ersetzung wird als Mod gespeichert, die der Loader anwendet.</p>
+<p>Nur spielen? Nimm den Loader. Mods machen? Nimm das Studio; es enthält den Loader. Das Studio braucht <em>The New Colossus</em> und öffnet sich auf der Loader-Seite <em>Studio</em> mit <em>Open Studio</em>. Mehr: <a href="WolfSDK-Loader-DE.html">Loader</a>, <a href="WolfSDK-Studio-DE.html">Studio</a>.</p>
+<p>Keywords: Loader oder Studio, Unterschied, welcher Download, welches ZIP, Spieler, Modder, Loader vs Studio, difference</p>
+<h2 id="wo-lade-ich-wolfsdk-herunter-und-wie-installiere-ich-es">Wo lade ich WolfSDK herunter und wie installiere ich es?</h2>
+<p>Download auf der Release-Seite: https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0. Spieler nehmen <code>WolfSDK-Loader-0.2.0.zip</code>, Modder <code>WolfSDK-Studio-0.2.0.zip</code> (enthält den Loader).</p>
+<ol>
+<li>Rechtsklick auf das ZIP → <em>Alle extrahieren…</em> in einen normalen Ordner, z. B. <code>Dokumente\WolfSDK</code>. Nicht in der ZIP-Ansicht starten, nicht nach <code>C:\Program Files</code>: Der Loader speichert seine Einstellungen im eigenen Ordner.</li>
+<li>Doppelklick auf <code>WolfSDK.cmd</code>. Der Loader findet die Spiele über Steam; sonst oben rechts <em>Choose folder…</em>.</li>
+</ol>
+<p>Python musst du nicht installieren: Python 3.11 ist dabei. Nur Windows, Steam-Versionen beider Spiele. Der Quellcode liegt im Repository-Ordner <code>modloader/</code>.</p>
+<p>Keywords: herunterladen, Download, installieren, Installation, einrichten, ZIP, entpacken, WolfSDK.cmd, Python, download, install</p>
+<h2 id="wolfsdk-startet-nicht-oder-findet-mein-spiel-nicht--was-tun">WolfSDK startet nicht oder findet mein Spiel nicht – was tun?</h2>
+<ul>
+<li><strong>Es sagt, ich soll das ZIP erst entpacken:</strong> Du hast <code>WolfSDK.cmd</code> aus dem ZIP heraus gestartet. Entpacke das ZIP in einen normalen Ordner.</li>
+<li><strong>Der Loader startet nicht:</strong> Das schwarze Fenster bleibt meist mit der Fehlermeldung offen. Derselbe Text steht in <code>%LOCALAPPDATA%\wolfsdk\start.log</code>. Schick diesen Text mit, wenn du um Hilfe fragst.</li>
+<li><strong>Das Spiel wird nicht gefunden:</strong> Der Loader sucht die Spiele über Steam. Klick oben rechts <em>Choose folder…</em> und wähle den Spielordner. Nur die Steam-Versionen werden unterstützt.</li>
+<li><strong>Spiel auswählen:</strong> Beide Spiele können gleichzeitig installiert sein. Die Auswahlliste oben rechts wählt das Spiel; die Seite <em>Mods</em> zeigt nur die Mods des gewählten Spiels.</li>
+</ul>
+<p>Keywords: startet nicht, Spiel nicht gefunden, nicht erkannt, start.log, Choose folder, Fehler, does not start, game not found</p>
+<h2 id="windows-smartscreen-warnt-vor-wolfsdkcmd--ist-das-normal">Windows SmartScreen warnt vor WolfSDK.cmd – ist das normal?</h2>
+<p>Beim ersten Start zeigt Windows eventuell „Der Computer wurde durch Windows geschützt“ („Windows protected your PC“). Klick auf <em>Weitere Informationen</em> → <em>Trotzdem ausführen</em>. Die README des Releases beschreibt genau diesen Schritt.</p>
+<p><code>WolfSDK.cmd</code> ist eine reine Text-Batchdatei: Du kannst sie im Editor öffnen und nachlesen, was sie tut. Sie startet das mitgelieferte Python aus dem Ordner <code>python</code> und öffnet das Loader-Fenster.</p>
+<p>Warnungen anderer Virenscanner deckt die README nicht ab, und dafür gibt es noch keinen getesteten Rat. Wenn eine erscheint, melde die genaue Meldung des Programms (siehe „Wo melde ich Fehler oder bekomme Hilfe?“).</p>
+<p>Keywords: SmartScreen, Windows hat den PC geschützt, Warnung, Virenscanner, Virus, blockiert, Trotzdem ausführen, Windows protected your PC, antivirus, warning, Run anyway</p>
+<h2 id="wie-wende-ich-mods-an">Wie wende ich Mods an?</h2>
+<p>Schließ das Spiel. Wähl oben rechts das Spiel, öffne die Seite <em>Mods</em>, hak die Mods an, klick <em>Apply mods</em>, dann <em>Start game</em>. <em>Check mod set</em> (Seite <em>Overview</em>) prüft sie, ohne etwas zu schreiben. Später wendet ein Doppelklick auf <code>Spielen.cmd</code> die angehakten Mods bei Bedarf an und startet das Spiel.</p>
+<p>Anwenden setzt immer erst auf das Original zurück und schreibt dann den ganzen angehakten Satz; du kannst also jederzeit erneut anwenden. Setzen zwei Mods denselben Wert, gewinnt die höhere <code>priority</code> und ein Konflikt wird gemeldet. Zwei Mods, die dieselben Texturen ändern, werden abgelehnt: ein Skin pro Waffe.</p>
+<p>Status: Anwenden und Zurücksetzen mit Backups ist <strong>Im Spiel bestätigt</strong>. Die meisten mitgelieferten Mods sind nur strukturell geprüft (siehe Beschreibung der Mod).</p>
+<p>Keywords: Mods anwenden, Mods installieren, Mods aktivieren, anhaken, Apply mods, Start game, Spielen.cmd, apply mods, install mods</p>
+<h2 id="wie-mache-ich-mods-rückgängig-und-bekomme-das-originalspiel-zurück">Wie mache ich Mods rückgängig und bekomme das Originalspiel zurück?</h2>
+<p>Schließ das Spiel und klick <em>Revert</em>. Das stellt die Spieldateien bitgenau aus den Backups des Loaders wieder her. Jedes Spiel hat eigene Backups und ein eigenes <em>Revert</em>; wähl vorher oben rechts das Spiel. In <em>The New Colossus</em> entfernt <em>Revert</em> auch die Cheats-&amp;-QoL-Zeilen, die der Loader in <code>default.cfg</code> geschrieben hat. Eine eigene Karte ist keine Mod: Sie geht mit <em>Remove map</em> (Seite <em>Overview</em>) wieder raus.</p>
+<p>Lösch die Backup-Ordner im <code>base</code>-Ordner des Spiels (<code>_wolfsdk_backup</code> für <em>The New Order</em>, <code>_wolfsdk_tnc</code> für <em>The New Colossus</em>) nicht, solange Mods angewendet sind. Letzter Ausweg in Steam: Eigenschaften → Installierte Dateien → <em>Dateien auf Fehler überprüfen</em>.</p>
+<p>Status: <em>Revert</em> ist <strong>Im Spiel bestätigt</strong>.</p>
+<p>Keywords: Mods entfernen, rückgängig, zurücksetzen, deinstallieren, Original wiederherstellen, Revert, undo mods, uninstall mods</p>
+<h2 id="was-mache-ich-nach-einem-spiel-update">Was mache ich nach einem Spiel-Update?</h2>
+<p>Am besten: <em>Revert</em> klicken, bevor Steam das Spiel aktualisiert. Wurde das Spiel schon aktualisiert, während Mods angewendet waren, klick zuerst <em>Revert</em> und dann wieder <em>Apply mods</em>.</p>
+<p>Der Loader vergleicht die Archive mit seinem Backup. Hat ein Update sie verändert, verweigert er das Schreiben und meldet, dass eine Datei „no longer matches the backup. Game update?“. Über Dateien, die er nicht wiedererkennt, schreibt er nicht.</p>
+<p>Kann <em>Revert</em> nach einem Update nicht abschließen, lass Steam das Spiel reparieren (Eigenschaften → Installierte Dateien → <em>Dateien auf Fehler überprüfen</em>) und melde die Meldung im Discord. Bevor du wieder anwendest, prüf deine Mods mit <em>Check mod set</em>: Es zeigt, ob ihre Assets und Pfade noch existieren.</p>
+<p>Keywords: Spiel-Update, Update, aktualisiert, nach dem Update, was jetzt, Steam-Update, Patch, game update, game updated, what now</p>
+<h2 id="funktioniert-wolfsdk-mit-game-pass-gog-oder-epic">Funktioniert WolfSDK mit Game Pass, GOG oder Epic?</h2>
+<p>Mit Game Pass nein, mit GOG und Epic ungetestet. WolfSDK unterstützt nur die <strong>Steam-Versionen</strong> beider Spiele.</p>
+<ul>
+<li><strong>Microsoft Store / Xbox Game Pass:</strong> funktioniert nicht. Diese Version sperrt die Spieldateien, der Loader kann keine Mods schreiben.</li>
+<li><strong>GOG und Epic:</strong> ungetestet. Der Loader findet die Spiele über Steam und startet sie über Steam (<code>steam://rungameid/...</code>); <em>Start game</em> ist also für die Steam-Version gebaut.</li>
+</ul>
+<p>Bisher ist WolfSDK nur auf einem PC mit den Steam-Versionen getestet.</p>
+<p>Keywords: Game Pass, Xbox, Microsoft Store, GOG, Epic, Epic Games, nur Steam, welche Version, Plattform, funktioniert das mit GOG, Steam only, does it work with Game Pass</p>
+<h2 id="funktioniert-wolfsdk-mit-der-deutschen-geschnittenen-version">Funktioniert WolfSDK mit der deutschen (geschnittenen) Version?</h2>
+<p>Vermutlich nur teilweise. Die deutsche geschnittene Version der Spiele hat andere Texturen. Skins und Textur-Mods aus der internationalen Version greifen dort vermutlich nicht. Das ist unbestätigt: Niemand hat WolfSDK bisher mit der deutschen Version getestet.</p>
+<p>Mods, die Werte ändern (Waffen, Gegner, Cvars), hängen nicht an den Texturen, sind auf der deutschen Version aber ebenfalls ungetestet. Wenn du es ausprobierst, hilft ein Bericht im Discord.</p>
+<p>Keywords: deutsche Version, geschnitten, zensiert, deutsche Fassung, Schnittfassung, uncut, Texturen, Skins, German version, censored, cut version</p>
+<h2 id="brauche-ich-ein-dlc-welches-dlc-brauchen-eigene-karten">Brauche ich ein DLC? Welches DLC brauchen eigene Karten?</h2>
+<p>Nur für eigene Karten. Mods, Cheats &amp; QoL und die Presets funktionieren mit dem Hauptspiel.</p>
+<p>Eine <strong>eigene Karte</strong> für <em>The New Colossus</em> braucht das DLC <em>The Freedom Chronicles</em>, Episode 2: Die eigene Karte tritt an die Stelle der DLC-Karte c2v1 und wird im Spiel über diese Episode geladen. Ohne diese DLC-Episode lässt sich eine installierte eigene Karte auf diesem Weg nicht starten. Wege, Karten ohne DLC zu laden, gibt es bisher nur als Forschung (<a href="Research-Report-R3-Mapselfcontained.html">Research-Report-R3-Mapselfcontained</a>).</p>
+<p><em>The New Order</em> braucht für nichts in WolfSDK ein DLC.</p>
+<p>Keywords: DLC, brauche ich ein DLC, DLC nötig, Freedom Chronicles, Episode 2, c2v1, Season Pass, Erweiterung, eigene Karte DLC, need DLC, required DLC</p>
+<h2 id="wie-installiere-ich-eine-eigene-karte-in-the-new-colossus">Wie installiere ich eine eigene Karte in The New Colossus?</h2>
+<p>Auf der Seite <em>Overview</em> unter <em>Quick actions</em> auf <em>Install map…</em> klicken und eine fertige Kartendatei (<code>chunk_22.resources</code>) wählen. Der Loader richtet sie als eigenen DLC-Ordner <code>dlc\dlc_0</code> ein. <em>Remove map</em> nimmt sie wieder heraus. Sind Mods angewendet, verlangt der Loader meist zuerst ein <em>Revert</em>.</p>
+<p>Der Loader kann keine Karte bauen: Die Datei muss von jemandem kommen, der sie gebaut hat. Die Karte ersetzt c2v1 und braucht das DLC <em>The Freedom Chronicles</em>, Episode 2.</p>
+<p>Status: Eine eigene Karte installieren ist <strong>Im Spiel bestätigt</strong>. Hintergrund: <a href="TNC-Custom-Map-Status.html">TNC Custom Map Status</a> (Englisch).</p>
+<p>Keywords: eigene Karte, Karte installieren, Map installieren, Install map…, Remove map, dlc_0, chunk_22.resources, neue Karte, custom map, install map</p>
+<h2 id="wie-benutze-ich-das-entwicklermenü-in-the-new-colossus">Wie benutze ich das Entwicklermenü in The New Colossus?</h2>
+<p>Hak die Mod <strong>Dev Menu Map Loading</strong> an, klick <em>Apply mods</em> und <em>Start game</em> und öffne dann das Entwicklermenü. Seine Karteneinträge laden wieder Karten; jeder Eintrag führt <code>devmap</code> aus. <strong>Im Spiel bestätigt.</strong> Die 126 zurückgeholten Entwickler-Startpunkte sind <strong>Im Spiel noch nicht bestätigt</strong>.</p>
+<p>Der Eintrag <em>WolfSDK: Mod test map</em> (c2v1 mit 11 Waffen und 8 Gegnern zum Ausprobieren von Mods) lädt (<strong>Im Spiel bestätigt</strong>), aber die Kartendatei ist nicht im Paket 0.2.0: Der Eintrag funktioniert erst, wenn die Testkarte in <code>dlc\dlc_0</code> installiert ist.</p>
+<p>Die Mod <strong>Hidden Menu Options</strong> fügt im Hauptmenü einen Eintrag zum Entwicklermenü hinzu (<strong>Im Spiel noch nicht bestätigt</strong>). Mehr: <a href="TNC-Dev-Menu.html">TNC Dev Menu</a> (Englisch).</p>
+<p>Keywords: Entwicklermenü, Dev-Menü, devmap, Karte laden, Levelauswahl, Mod-Testkarte, Dev Menu Map Loading, developer menu, dev menu</p>
+<h2 id="wie-öffne-ich-die-konsole-in-the-new-order">Wie öffne ich die Konsole in The New Order?</h2>
+<p>Drück <strong>Strg+^</strong>: Strg plus die Taste links neben der 1. Ein einfaches <code>^</code> oder <code>~</code> tut nichts, und <code>com_allowConsole</code> öffnet sie nicht. <strong>Im Spiel noch nicht bestätigt</strong> (aus dem Code gelesen).</p>
+<p>Ein bloßes <code>name wert</code> auf einer Cheat-Cvar wird abgelehnt („CANNOT be set in retail!“). <code>toggle</code> setzt sie erzwungen, z. B. <code>toggle g_permaGodMode 0 1</code>. Der Loader schickt Cheat-Cvars aus <em>Cheats &amp; QoL</em> beim Start als <code>+toggle</code>, damit der Cheat-Reset sie nicht löscht (<strong>Im Spiel noch nicht bestätigt</strong>).</p>
+<p><code>god</code>, <code>noclip</code>, <code>notarget</code>, <code>give</code> und <code>spawn</code> gibt es in <em>The New Order</em> nicht. Nimm <code>toggle g_permaGodMode 0 1</code> und <code>toggle g_freeCam 0 1</code>. Die Befehlsliste steht auf der Seite <em>System &amp; Info</em> (Seitenleiste: <em>System &amp; Info</em>).</p>
+<p>Keywords: Konsole öffnen, Konsole TNO, Strg+^, Ctrl+^, toggle, Cheat-Cvars, god, noclip, open console, TNO console</p>
+<h2 id="wie-funktioniert-die-konsole-in-the-new-colossus">Wie funktioniert die Konsole in The New Colossus?</h2>
+<p><em>The New Colossus</em> hat im Retail-Spiel eine echte Konsole, die aber nur 34 von 234 Befehlen und 304 von 3.256 Cvars annimmt; sonst kommt „Unknown command“. Die Forschung hat sie mit dem Startargument <code>+com_enableDeveloperMode 1</code> geöffnet (<a href="Developer-Mode.html">Developer Mode</a>, Englisch).</p>
+<p>Nicht freigegebene Befehle (<code>God</code>, <code>Notarget</code>, <code>g_infiniteAmmo 1</code>) laufen aus einer Datei, die mit <code>resourceExec &lt;datei&gt; -s</code> ausgeführt wird. Sandbox Tools und Photo Mode ersetzen dafür unbenutzte Config-Dateien; du bindest eine Taste an <code>resourceExec</code>. <strong>Im Spiel bestätigt</strong> für God und unendlich Munition.</p>
+<p><code>give</code>, <code>spawn</code>, <code>noclip</code> und kleingeschriebenes <code>god</code> gibt es in diesem Spiel nicht. Details: <a href="TNC-Console-Unlock.html">TNC Console Unlock</a> (Englisch).</p>
+<p>Keywords: Konsole TNC, Entwicklerkonsole, eingeschränkte Konsole, Befehl unbekannt, Unknown command, resourceExec, TNC console, developer console</p>
+<h2 id="warum-funktionieren-meine-f-tasten-binds-in-the-new-colossus-nicht">Warum funktionieren meine F-Tasten-Binds in The New Colossus nicht?</h2>
+<p>Eine belegte Taste läuft in <em>The New Colossus</em> auf der eingeschränkten Konsolenstufe (34 Befehle), auf der es <code>toggle</code>, <code>noclip</code> und die Cheat-Befehle nicht gibt. Ein Bind wie <code>bind F1 "toggle g_permaGodMode 0 1"</code> tut nichts. Deshalb setzt WolfSDK 0.2.0 dort keine Standard-F-Tasten (0.1.0 tat es, ohne Wirkung).</p>
+<p>Die Mods binden stattdessen <code>resourceExec &lt;cfg&gt; -s</code>; das führt eine vom Loader ersetzte Config-Datei uneingeschränkt aus. Mod anwenden, dann einmal in der Konsole binden (Binds bleiben gespeichert):</p>
+<ul>
+<li>Sandbox Tools: <code>bind F6 "resourceExec snapdemo.cfg -s"</code>, <code>bind F7 "resourceExec snapedit.cfg -s"</code></li>
+<li>Photo Mode: <code>bind F8 "resourceExec default_snap.cfg -s"</code></li>
+</ul>
+<p><em>The New Order</em> bekommt Standard-Binds für F1–F4 (<strong>Im Spiel noch nicht bestätigt</strong>).</p>
+<p>Keywords: F-Tasten funktionieren nicht, Tastenbelegung, Hotkey, Bind, Taste tut nichts, F6, F7, F8, resourceExec, F keys not working</p>
+<h2 id="wie-bekomme-ich-gottmodus-unendlich-munition-und-andere-cheats">Wie bekomme ich Gottmodus, unendlich Munition und andere Cheats?</h2>
+<p><strong>The New Colossus:</strong> Hak <strong>Sandbox Tools</strong> an, <em>Apply mods</em>, dann die Tasten einmal binden (siehe die F-Tasten-Frage). F6 schaltet Gottmodus, Notarget und unendlich Munition; F7 tötet alle Gegner. Gottmodus und unendlich Munition: <strong>Im Spiel bestätigt</strong>. Notarget und F7: <strong>Im Spiel noch nicht bestätigt</strong>.</p>
+<p><strong>The New Order:</strong> Die Seite <em>Cheats &amp; QoL</em> setzt Cvars beim Start (z. B. <code>g_permaGodMode</code>), F1–F4 bekommen Standard-Binds, und die Mod <em>Cheats - Health and Ammo</em> gibt der Kampagne die Werte des 999-Modus. Alles <strong>Im Spiel noch nicht bestätigt</strong>.</p>
+<p><em>Cheats &amp; QoL</em> listet 3.116 Cvars für <em>The New Colossus</em> und 3.194 für <em>The New Order</em>. Beide Spiele sind Einzelspieler.</p>
+<p>Keywords: Cheats, Gottmodus, unverwundbar, unendlich Munition, noclip, notarget, alle Gegner töten, Sandbox Tools, god mode, infinite ammo</p>
+<h2 id="wie-mache-ich-meine-eigene-mod">Wie mache ich meine eigene Mod?</h2>
+<p>Zwei Wege:</p>
+<ul>
+<li><strong>Mit dem Studio (ohne Code):</strong> <code>WolfSDK-Studio-0.2.0.zip</code> herunterladen, Seite <em>Studio</em> öffnen, <em>Open Studio</em> klicken, eine Textur, einen Text oder eine Decl wählen und ersetzen. Das Studio speichert die Änderung als Mod im Ordner <code>mods</code>. Dann auf der Seite <em>Mods</em> anhaken, <em>Apply mods</em>, <em>Start game</em>. Anleitung: <a href="WolfSDK-Studio-DE.html">WolfSDK Studio</a>.</li>
+<li><strong>Von Hand:</strong> einen Ordner in <code>mods</code> mit einer <code>mod.json</code> anlegen, die die Änderungen auflistet, zum Beispiel einen Wert einer Waffen-Decl. Jedes Feld mit echten Beispielen: <a href="Mod-Format-DE.html">Mod-Format</a>. Welche Decls und Pfade es gibt: <a href="Modding-Guide.html">Modding Guide</a> (Englisch).</li>
+</ul>
+<p>Prüf eine neue Mod mit <em>Check mod set</em>, bevor du sie anwendest.</p>
+<p>Keywords: eigene Mod, Mod erstellen, Mod schreiben, Mod machen, erste Mod, mod.json, Studio, make a mod, create a mod</p>
+<h2 id="wie-ersetze-ich-texturen-oder-sounds">Wie ersetze ich Texturen oder Sounds?</h2>
+<p><strong>Texturen:</strong> im Studio (Paket WolfSDK Studio) eine Textur wählen und durch ein PNG ersetzen; das Studio speichert es als Mod. BC1-Texturen von <em>The New Colossus</em> nehmen ein PNG beliebiger Größe. Normal-Maps (BC5) brauchen ein PNG in genau der Texturgröße, Grünkanal in DirectX-Konvention (<strong>Im Spiel noch nicht bestätigt</strong>). In der Forschung wurde ein eigener BC1-Pistolen-Skin im laufenden Spiel gesehen.</p>
+<p><strong>Sounds und Videos: Zurückgehalten</strong> in 0.2.0. Das Studio lehnt diese Ersetzungen vorerst ab, weil <em>Revert</em> ersetzte Sound-Packs und Videodateien noch nicht wiederherstellt. Das kommt mit einem Update.</p>
+<p>Texte und Decls lassen sich im Studio ebenfalls ersetzen. Hak nicht zwei Skins für dieselbe Waffe gleichzeitig an.</p>
+<p>Keywords: Texturen ersetzen, Textur-Mod, Skin, Waffen-Skin, PNG, Normal-Map, Sounds ersetzen, Ton, Video, replace textures, replace sounds</p>
+<h2 id="ist-wolfsdk-sicher-ist-mein-spiel-mit-mods-sicher">Ist WolfSDK sicher? Ist mein Spiel mit Mods sicher?</h2>
+<p>Ja. WolfSDK ist so gebaut, dass sich jede Änderung mit <em>Revert</em> sicher rückgängig machen lässt:</p>
+<ul>
+<li>Vor dem ersten Schreiben sichert es die Originaldaten von allem, was es ändert, inklusive einer vollständigen Kopie jedes Archivs, das es neu schreibt.</li>
+<li>Ein Write-Ahead-Journal hält jeden Vorgang fest. Nach Absturz oder Stromausfall erkennt der Loader den unfertigen Vorgang, und <em>Revert</em> kann ihn abschließen. Eine Dateisperre verhindert zwei Vorgänge gleichzeitig.</li>
+<li>Es schreibt nicht, solange das Spiel läuft, und hört vorher auf, wenn die Platte zu voll ist.</li>
+<li>Beide Spiele sind Einzelspieler: Mods und Cheats betreffen niemand anderen.</li>
+</ul>
+<p>Letzter Ausweg: Steams <em>Dateien auf Fehler überprüfen</em>. Bisher auf einem PC getestet, also sichere zur Sicherheit deine Spielstände (nächste Frage).</p>
+<p>Keywords: sicher, ist das sicher, Sicherheit, Risiko, Spiel kaputt, Schaden, Bann, Backup, Absturz, is it safe, safe, safety</p>
+<h2 id="muss-ich-meine-spielstände-sichern">Muss ich meine Spielstände sichern?</h2>
+<p>Ja, einmal vor dem Start. Kopier den Ordner <code>%USERPROFILE%\Saved Games\MachineGames</code> an einen sicheren Ort. Der Loader sichert die Spieldateien, nicht deine Spielstände, und es ist nicht für jede Mod geprüft, ob alte Spielstände mit und ohne sie sauber laden.</p>
+<p>Die Backups der Spieldateien brauchen etwa 1 GB frei auf dem Laufwerk des Spiels; bei <em>The New Order</em> je nach Mods bis etwa 3 GB. Reicht der Platz nicht, hört der Loader auf, bevor er etwas schreibt.</p>
+<p>Keywords: Spielstände sichern, Spielstand, Speicherstand, Saved Games, MachineGames, Backup, Speicherplatz, freier Platz, save games, savegame, backup saves, disk space</p>
+<h2 id="welche-wolfsdk-funktionen-sind-im-spiel-bestätigt">Welche WolfSDK-Funktionen sind im Spiel bestätigt?</h2>
+<p><strong>Im Spiel bestätigt</strong> (WolfSDK 0.2.0):</p>
+<ul>
+<li>Mods anwenden und zurücksetzen mit Backups.</li>
+<li>Eine eigene Karte installieren (<em>Install map…</em>).</li>
+<li>Sandbox Tools: Gottmodus und unendlich Munition.</li>
+<li>Dev Menu Map Loading: Das Entwicklermenü führt <code>devmap</code> aus und lädt die Karte.</li>
+<li><em>WolfSDK: Mod test map</em> lädt.</li>
+</ul>
+<p><strong>Zurückgehalten:</strong> Sounds und Videos ersetzen, weil <em>Revert</em> sie noch nicht wiederherstellt.</p>
+<p>Keywords: im Spiel bestätigt, getestet, was funktioniert, funktionierende Funktionen, Status, bewiesen, confirmed in game, tested, what works</p>
+<h2 id="welche-wolfsdk-funktionen-sind-im-spiel-noch-nicht-bestätigt">Welche WolfSDK-Funktionen sind im Spiel noch nicht bestätigt?</h2>
+<p><strong>Im Spiel noch nicht bestätigt</strong> (WolfSDK 0.2.0):</p>
+<ul>
+<li>Die 126 zurückgeholten Entwickler-Startpunkte.</li>
+<li>Sandbox Tools: Notarget und F7 (alle Gegner töten).</li>
+<li>Hidden Menu Options.</li>
+<li>Die Presets Ultra+, Clean Image und Photo Mode.</li>
+<li>Die Mod Photo Mode (F8).</li>
+<li><em>The New Colossus</em>: Cvars, die in <code>default.cfg</code> geschrieben werden.</li>
+<li><em>The New Order</em>: die Konsole mit Strg+^, Cheat-Cvars über <code>+toggle</code>, die Binds F1–F4.</li>
+<li>Studio: Normal-Maps (BC5) und der Kiscule-Skript- und Missionseditor.</li>
+<li>Die meisten anderen mitgelieferten Mods: nur strukturell geprüft. Sofern die Beschreibung einer Mod nichts anderes sagt, gilt sie als im Spiel ungetestet.</li>
+</ul>
+<p>Keywords: im Spiel noch nicht bestätigt, ungetestet, unbestätigt, nicht getestet, experimentell, Status, not confirmed, untested</p>
+<h2 id="wo-melde-ich-fehler-oder-bekomme-hilfe">Wo melde ich Fehler oder bekomme Hilfe?</h2>
+<ul>
+<li><strong>Discord:</strong> Der Community-Server ist auf der Website verlinkt: https://lopekinz.github.io/wolfenstein-modloader/#community</li>
+<li><strong>GitHub Issues:</strong> https://github.com/LopeKinz/wolfenstein-modloader/issues</li>
+</ul>
+<p>Hilfreich in einem Bericht: welches Spiel, welche Mods angehakt waren, was du geklickt hast, und der Text aus dem Loader-Fenster (<em>Checks &amp; messages</em> auf der Seite <em>Mods</em>) oder aus <code>%LOCALAPPDATA%\wolfsdk\start.log</code>. WolfSDK ist bisher auf einem PC getestet, jeder Bericht hilft.</p>
+<p>Keywords: Fehler melden, Bug melden, Fehlerbericht, Issue, GitHub Issue, Discord, Hilfe, Problem, report bug, bug report, where do I report bugs</p>
+<h2 id="wie-kann-ich-wolfsdk-unterstützen">Wie kann ich WolfSDK unterstützen?</h2>
+<p>WolfSDK ist kostenlos und bleibt kostenlos. Wenn es dir hilft, kannst du dem Entwickler einen Kaffee ausgeben: https://buymeacoffee.com/swscc5yr7rs. Dahinter ist nichts gesperrt.</p>
+<p>Der Loader hat den Knopf <em>Support the project</em> auf der Seite <em>System &amp; Info</em> (Seitenleiste: <em>System &amp; Info</em>). Fehlerberichte und Tests auf anderen PCs helfen genauso.</p>
+<p>Keywords: unterstützen, spenden, Spende, Kaffee, Buy me a coffee, Trinkgeld, kostenlos, support, donate</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="FAQ.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>FAQ</a><a class="next" href="Mod-Format.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Mod Format</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

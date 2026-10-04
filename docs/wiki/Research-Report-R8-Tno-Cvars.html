@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNO Cvar Registry, Loader Audit, and Delivery Fix – Wolfenstein Modloader</title>
+<meta name="description" content="The full list of The New Order&#x27;s 3,194 settings with cheat flags, and a loader fix so cheat settings survive startup.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>TNO Cvar Registry, Loader Audit, and Delivery Fix</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R8-Tno-Cvars"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#1-registry-method-and-counts">1. Registry: method and counts</a></li><li><a href="#2-startup-order-new-decompiled-idcommonlocalinit-0x133380-and-fun-0x130b70">2. Startup order (new, decompiled idCommonLocal::Init 0x133380 and FUN 0x130b70)</a></li><li><a href="#3-audit-every-tno-cvar-the-loader-can-emit">3. Audit: every TNO cvar the loader can emit</a></li><li><a href="#4-what-changed">4. What changed</a></li><li><a href="#5-checks">5. Checks</a></li><li><a href="#6-open-points-only-the-game-can-settle-these">6. Open points (only the game can settle these)</a></li><li><a href="#7-in-game-test-for-the-maintainer-one-launch">7. In-game test for the maintainer (one launch)</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report walked the full list of console settings (<span class="t" data-t="cvar">cvars</span>) in the decrypted program code of Wolfenstein: The New Order (TNO): 3,194 of them, 2,865 marked as cheat. It also traced the startup order and found that the game wipes cheat settings after reading the start arguments, so many of the project loader&#x27;s tweaks, like run speed or gravity, never took effect. The loader now also sends cheat settings as +toggle name value value, which runs after that reset. The list and the loader checks are proven by code and offline tests, and +g_showHud 0 and +toggle devgui were measured in the game earlier, but the new +toggle route has not been run in game yet.</p><ul><li>3,194 cvars: 2,865 CHEAT and 329 NOCHEAT, 8 ROM, 38 INIT, 169 ARCHIVE; none of the 192 console commands is also a cvar.</li><li>Start arguments are applied before and again after the config files, so a +name value beats the user&#x27;s wolfConfig.cfg; after that the cheat reset wipes cheat values.</li><li>Cheat cvars set by the loader (such as g_infiniteAmmo, g_gravity, pm_runspeed) were wiped and are now also sent as +toggle; g_permaGodMode is not a cheat cvar and always worked, which corrects round 7.</li><li>god, noclip, notarget, give and spawn are neither commands nor cvars; F3 now toggles the free camera g_freeCam, and the god-mode equivalent is toggle g_permaGodMode 0 1.</li><li>Open: nobody has run +toggle name value value in game yet, and it is unproven that the intro video is really skipped; a one-launch test is described.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat die vollständige Liste der Konsoleneinstellungen (<span class="t" data-t="cvar">Cvars</span>) im entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) durchlaufen: 3.194 Stück, davon 2.865 als Cheat markiert. Er hat außerdem die Startreihenfolge verfolgt und festgestellt, dass das Spiel Cheat-Einstellungen nach dem Einlesen der Startargumente zurücksetzt, sodass viele Tweaks des Projekt-Loaders, etwa Laufgeschwindigkeit oder Schwerkraft, nie wirkten. Der Loader schickt Cheat-Einstellungen jetzt zusätzlich als +toggle name value value, was nach diesem Zurücksetzen läuft. Die Liste und die Loader-Prüfungen sind durch Code und Offline-Tests belegt, und +g_showHud 0 sowie +toggle devgui wurden früher im Spiel gemessen, aber der neue +toggle-Weg wurde im Spiel noch nicht ausprobiert.</p><ul><li>3.194 Cvars: 2.865 CHEAT und 329 NOCHEAT, 8 ROM, 38 INIT, 169 ARCHIVE; keiner der 192 Konsolenbefehle ist zugleich eine Cvar.</li><li>Startargumente werden vor und noch einmal nach den Konfigurationsdateien angewendet, daher schlägt ein +name value die wolfConfig.cfg des Nutzers; danach löscht der Cheat-Reset die Cheat-Werte.</li><li>Vom Loader gesetzte Cheat-Cvars (etwa g_infiniteAmmo, g_gravity, pm_runspeed) wurden gelöscht und werden jetzt zusätzlich als +toggle geschickt; g_permaGodMode ist keine Cheat-Cvar und hat immer funktioniert, was Runde 7 korrigiert.</li><li>god, noclip, notarget, give und spawn sind weder Befehle noch Cvars; F3 schaltet jetzt die freie Kamera g_freeCam um, und das Gegenstück zum Gottmodus ist toggle g_permaGodMode 0 1.</li><li>Offen: +toggle name value value hat noch niemand im Spiel ausgeführt, und dass das Intro-Video wirklich übersprungen wird, ist unbewiesen; ein Test mit einem einzigen Spielstart ist beschrieben.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-8 pass on The New Order's cvar registry, read from the decrypted runtime image: the full registered cvar list with flags and ranges, the startup order of command-line cvars, the cheat reset and the startup commands, and the force path behind <code>toggle</code>. It audits every TNO cvar the loader can emit and documents the resulting loader change: cheat cvars are now also sent as <code>+toggle name value value</code>, which survives the reset. <strong>Static only; the one-launch in-game test at the end has not been run.</strong></p>
+<p>Static only. Nothing launched or attached to, and nothing written under the game folder or Saved
+Games. Source: the decrypted runtime capture <code>re_probes/runtime_tno_186352</code> (base <code>0x7ff74a390000</code>)
+plus Ghidra (<code>tools/decomp.py --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf --snapshot re_probes/runtime_tno_186352</code>).</p>
+<h2 id="1-registry-method-and-counts">1. Registry: method and counts</h2>
+<p>The registry walk worked, so nothing had to fall back to string mining.
+<code>idCVar::Init</code> (RVA <code>0x9dea10</code>) links every cvar into one list:
+<code>mov rax,[0x1ef6cf0]; mov [rbx+0x70],rax; mov [0x1ef6cf0],rbx</code>. The cheat reset in
+<code>idCommonLocal::Init</code> walks this same list (r7). Every node is a static object in <code>.data</code>.
+The layout comes from the constructor's own stores: <code>+0x00</code> value idStr, <code>+0x28</code> int, <code>+0x2c</code>
+float, <code>+0x30</code> name, <code>+0x38</code> reset string, <code>+0x40</code> description, <code>+0x48</code> flags, <code>+0x4c</code> min,
+<code>+0x50</code> max, <code>+0x58</code> value-string list, <code>+0x60</code> completion, <code>+0x70</code> next. "No range" is
+min &gt; max (1, -1).</p>
+<p><code>tools/extract_cvars_tno.py</code> pins those constructor bytes. It walks the list and writes
+<code>docs/cvars_tno.json</code> (<code>{source, count, cvars:[{name, description, value(=reset/default), type,
+flags, min, max, values}]}</code>, sorted). <code>--self-check</code> re-walks the list and compares the result
+with the file.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cvars</td>
+<td><strong>3194</strong>, 0 duplicates, the walk ends at NULL, every node lies inside the image</td>
+</tr>
+<tr>
+<td>CHEAT / NOCHEAT</td>
+<td>2865 / 329. Every entry has exactly one of the two, as the constructor's <code>test edi,0x1c010</code> predicts</td>
+</tr>
+<tr>
+<td>ROM / INIT / ARCHIVE</td>
+<td>8 / 38 / 169. Flag bits 0x20-0x2000 are never used</td>
+</tr>
+<tr>
+<td>ranges / value lists</td>
+<td>130 / 4</td>
+</tr>
+<tr>
+<td>plausibility</td>
+<td>TNC's registrar dump has 3256 cvars (same engine family). 3132 of the 4543 <code>prefix_name</code>-shaped <code>.rdata</code> strings are registered (the rest are entity keys, decls and so on). 807 of the 877 <code>kind=cvar</code> entries of the old adjacency miner (<code>tno_cmdtable.json</code>) are registered. 692 of its 1154 <code>kind=cmd</code> entries are actually cvars, so that table's cmd/cvar split is unreliable</td>
+</tr>
+<tr>
+<td>negative check</td>
+<td>0 of the 192 real commands (<code>re_probes/tnocommands/commands.json</code>) are cvars. <code>map devmap toggle kill teleport exec bind god noclip notarget give</code> are all absent</td>
+</tr>
+<tr>
+<td>known cvars</td>
+<td><code>com_allowConsole</code> BOOL CHEAT, <code>devgui</code> INTEGER CHEAT 0..2 (both as r7 P2.2 predicts). <code>g_permaGodMode</code> BOOL <strong>NOCHEAT ARCHIVE</strong>, <code>g_fov</code> INTEGER NOCHEAT 10..100, <code>pm_runspeed</code> FLOAT CHEAT</td>
+</tr>
+</tbody>
+</table></div>
+<p>Correction to r7 P2.4: <code>g_permaGodMode</code> and <code>g_permaInfiniteAmmo</code> are not cheat cvars. Both are
+ARCHIVE, and therefore NOCHEAT.</p>
+<h2 id="2-startup-order-new-decompiled-idcommonlocalinit-0x133380-and-fun-0x130b70">2. Startup order (new, decompiled <code>idCommonLocal::Init</code> 0x133380 and <code>FUN 0x130b70</code>)</h2>
+<p>This also answers r7's open question about where the command-line <code>+cvar</code> parser lives.</p>
+<ol>
+<li><code>0x13365c</code>: <code>FUN_130b70(args, 1)</code> runs over every <code>+name value</code> pair. For each name that is
+   a cvar, it calls <code>Set(cvar, value, force=1)</code> (<code>0x9dd3f0</code> -&gt; <code>0x9dd2d0</code>), INIT cvars included.</li>
+<li><code>0x1337ad</code>: <strong><code>com_skipIntroVideo</code> is read here</strong> (<code>cmp [0x161e248],0</code>, the flag goes to the
+   intro start).</li>
+<li><code>build.cfg</code>, then <code>FUN_130b70</code> again (<code>0x13397b</code>). Then <code>exec default.cfg</code> (4 devices),
+   <code>wolfConfig.cfg</code> (gated lines), and an inline third pass of <code>+cvar</code> pairs that skips INIT
+   cvars and force-sets the rest (<code>0x133d99</code>). So <strong>a <code>+name value</code> beats the user's
+   wolfConfig.cfg</strong>.</li>
+<li><code>0x133e22</code>: <code>ResetFlaggedVariables(CHEAT)</code>, the cheat reset.</li>
+<li>After <code>Init</code>: the startup commands (<code>+toggle</code>, <code>+bind</code>). Measured: <code>+toggle devgui</code> survives
+   the reset (<code>docs/limits.md</code>).</li>
+</ol>
+<p><code>toggle</code> (<code>0x9ddc00</code>, decompiled):</p>
+<ul>
+<li>With 2 or 3 arguments it is a float toggle (non-zero -&gt; 0, else the value).</li>
+<li>With 4 or more arguments it cycles through the values, comparing them with the current
+  string.</li>
+<li>It sets through cvar-system slot <code>+0x38</code>, the force path (r7 P2.1).</li>
+<li>So <strong><code>toggle name v v</code> always ends at <code>v</code></strong>: on a match it takes <code>argv[3]</code>, otherwise it
+  wraps to <code>argv[2]</code>. It logs <code>name = v</code>.</li>
+</ul>
+<h2 id="3-audit-every-tno-cvar-the-loader-can-emit">3. Audit: every TNO cvar the loader can emit</h2>
+<p>Emitters: the catalogue (31), <code>ALWAYS</code> (<code>com_skipIntroVideo</code>), <code>cli launch --god/--ammo/--console/--skip-intro/--fov</code>
+(all catalogue names), the saved <code>config.json</code> tweaks (catalogue names), and the free-text box.
+No TNO mod carries <code>cvars</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>cvar</th>
+<th>loader (old): kind / default / range</th>
+<th>registry: type / default / range</th>
+<th>flags</th>
+<th>old <code>+name v</code> result</th>
+<th>new delivery</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>g_permaGodMode</td>
+<td>bool / 0 /</td>
+<td>bool / 0 /</td>
+<td>NOCHEAT ARCHIVE</td>
+<td>works (force-set after wolfConfig.cfg)</td>
+<td><code>+name v</code></td>
+</tr>
+<tr>
+<td>g_permaInfiniteAmmo</td>
+<td>bool / 0 /</td>
+<td>bool / 0 /</td>
+<td>NOCHEAT ARCHIVE</td>
+<td>works</td>
+<td><code>+name v</code></td>
+</tr>
+<tr>
+<td>g_infiniteAmmo</td>
+<td>bool / 0 /</td>
+<td>bool / 0 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong>: set, then wiped by the reset</td>
+<td><code>+name v</code> + <code>+toggle name v v</code></td>
+</tr>
+<tr>
+<td>g_damageScale</td>
+<td>float / 1 / 0..10</td>
+<td>float / 1 /</td>
+<td>NOCHEAT ARCHIVE</td>
+<td>works (damage <em>taken</em>, the note was wrong)</td>
+<td><code>+name v</code></td>
+</tr>
+<tr>
+<td>ai_damageScale</td>
+<td>float / 1 / 0..10</td>
+<td>float / 1.0 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>ai_invulnerable</td>
+<td>bool / 0 /</td>
+<td>bool / 0 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>g_AimAssist_Disable_All</td>
+<td>bool / 0 /</td>
+<td>bool / 0 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>g_playerHealthRegenSpeed</td>
+<td>float / ? / 0..1000</td>
+<td>float / 5.75 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>g_playerHealthRegenDelay</td>
+<td>float / ? / 0..10000</td>
+<td>float / 3 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>g_gravity</td>
+<td>float / ? / -2000..2000</td>
+<td>float / 1066 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>g_gameDifficulty</td>
+<td>choice 0-3 "easy..very hard"</td>
+<td>int / -1 / -1..4</td>
+<td>CHEAT</td>
+<td><strong>broken</strong>, choices wrong (-1 = game's own, 0 very easy .. 4 nightmare)</td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>g_fov</td>
+<td>int / 80 / 60..130</td>
+<td>int / 80 / 10..100</td>
+<td>NOCHEAT</td>
+<td>works; values &gt;100 are clamped (UpdateValue <code>0x9dcf10</code> reads min/max)</td>
+<td><code>+name v</code></td>
+</tr>
+<tr>
+<td>pm_noBob</td>
+<td>bool / 0 /</td>
+<td>bool / 0 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>pm_togglesprint</td>
+<td>bool / <strong>0</strong> /</td>
+<td>bool / <strong>1</strong> /</td>
+<td>NOCHEAT ARCHIVE</td>
+<td>works; default was wrong</td>
+<td><code>+name v</code></td>
+</tr>
+<tr>
+<td>pm_autoSprint</td>
+<td>bool / 0 /</td>
+<td>bool / 0 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>com_skipIntroVideo (ALWAYS)</td>
+<td>bool / 0 /</td>
+<td>bool / 0 /</td>
+<td>CHEAT</td>
+<td><strong>probably works</strong>: read at <code>0x1337ad</code>, before the reset (r6's "does not work" came from the reset log line only)</td>
+<td><code>+name v</code> kept, toggle harmless</td>
+</tr>
+<tr>
+<td>com_allowConsole</td>
+<td>bool / 0 /</td>
+<td>bool / 0 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong>, and the label was false: it does not gate the console (r7 P2.4); its only reader is game init -&gt; achievement check</td>
+<td>+ toggle; note says leave it off</td>
+</tr>
+<tr>
+<td>com_showFPS</td>
+<td>bool / 0 /</td>
+<td>int / 0 / 0..2</td>
+<td>NOCHEAT ARCHIVE</td>
+<td>works</td>
+<td><code>+name v</code></td>
+</tr>
+<tr>
+<td>r_swapInterval</td>
+<td>choice / -1 /</td>
+<td>int / -1 /</td>
+<td>NOCHEAT</td>
+<td>works</td>
+<td><code>+name v</code></td>
+</tr>
+<tr>
+<td>g_showHud</td>
+<td>bool / 1 /</td>
+<td>bool / 1 /</td>
+<td>NOCHEAT ARCHIVE</td>
+<td>works (<code>+g_showHud 0</code> verified in game)</td>
+<td><code>+name v</code></td>
+</tr>
+<tr>
+<td>g_EnableGore</td>
+<td>bool / 1 /</td>
+<td><strong>int</strong> / 1 /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong>; actually 0 blood only / 1 gore / 2 none</td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>g_bloodEffects</td>
+<td>bool / 1 /</td>
+<td>bool / 1 /</td>
+<td>NOCHEAT ARCHIVE</td>
+<td>works</td>
+<td><code>+name v</code></td>
+</tr>
+<tr>
+<td>g_goreBloodyMess</td>
+<td>bool "Maximum gore" / 0</td>
+<td><strong>float / 2.0</strong> /</td>
+<td>CHEAT</td>
+<td><strong>broken</strong>, and wrong meaning: a perk gore-probability factor, so "1" <em>lowers</em> it</td>
+<td>+ toggle; now a float entry</td>
+</tr>
+<tr>
+<td>pm_runspeed / walk / sprint / crouch</td>
+<td>float / ?</td>
+<td>float / 260 / 140 / 450 / 115</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>pm_jumpheight</td>
+<td>float / ?</td>
+<td>float / 62</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>pm_noclipspeed</td>
+<td>float / ?</td>
+<td>float / 400</td>
+<td>CHEAT</td>
+<td><strong>broken</strong>, and pointless: there is no noclip command</td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>pm_sprintMaxTime</td>
+<td>float / ? / 0..100000</td>
+<td>int / 1500 / 1..100000</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+<tr>
+<td>g_freeCamSpeed</td>
+<td>float / ?</td>
+<td>float / 1.0</td>
+<td>CHEAT</td>
+<td><strong>broken</strong></td>
+<td>+ toggle</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Cross-check against the measured lists: 0 mismatches.</strong> All 26 <code>RETAIL_BLOCKED</code> names are CHEAT,
+including <code>devgui</code>, <code>g_debugGore</code>, <code>g_showThinks</code> and <code>g_useSavegameDifficulty</code>, which are not in
+the catalogue. All 9 measured-accepted names in <code>docs/limits.md</code> are NOCHEAT. All 31 catalogue
+names exist, and none is ROM or INIT.</p>
+<p>Commands and binds, checked against <code>commands.json</code>:</p>
+<ul>
+<li><code>god</code>, <code>noclip</code>, <code>notarget</code>, <code>give</code> and <code>spawn</code> exist neither as commands nor as cvars.</li>
+<li><code>devgui</code> is a cvar.</li>
+<li><code>kill</code>, <code>teleport</code> (an entity name, not coordinates), <code>devmap</code>, <code>map</code>, <code>toggle</code>, <code>screenshot</code>,
+  <code>killMonsters</code> and <code>restartmap</code> exist.</li>
+<li>The bind <code>F3 noclip</code> printed "Unknown command".</li>
+<li>The closest working substitute is <code>g_freeCam</code> (CHEAT, "enable debug camera (free move)").</li>
+<li>The god-mode equivalent is <code>toggle g_permaGodMode 0 1</code>.</li>
+</ul>
+<p>Do the force-set values act? For all 22 catalogue CHEAT cvars plus <code>g_freeCam</code> and <code>devgui</code>, no
+function that reads the cvar also reads the cheat global <code>0x1df21c8</code>. This is a same-function
+heuristic: callers were not checked. One exception: the read site of <code>g_gameDifficulty</code>
+(<code>0x853b12</code>) lies outside any <code>.pdata</code> function and was not checked.</p>
+<h2 id="4-what-changed">4. What changed</h2>
+<ul>
+<li><code>wolfsdk/cvars.py</code>:<ul>
+<li><code>tno_route(key)</code> takes the routing from <code>docs/cvars_tno.json</code> (lazy, cached):<ul>
+<li><code>plain</code> sends <code>+name value</code>.</li>
+<li><code>cheat</code> sends <code>+name value</code> and then <code>+toggle name value value</code>. The early <code>+arg</code> is kept
+  for readers that run during startup, such as <code>com_skipIntroVideo</code>.</li>
+<li><code>drop</code> covers names that are not cvars, plus ROM cvars.</li>
+<li>The registered spelling is used. Without the file, <code>RETAIL_BLOCKED</code> decides.</li>
+</ul>
+</li>
+<li><code>build_args(settings, binds, title_key=None)</code> routes only when <code>title_key == "tno"</code>.</li>
+<li><code>blocked_for("tno")</code> now means "needs the +toggle route".</li>
+<li><code>TNO_BINDS</code> and <code>binds_for(title)</code>: F3 becomes <code>toggle g_freeCam 0 1</code>. TNC keeps
+<code>DEFAULT_BINDS</code> unchanged.</li>
+<li><code>COMMANDS</code> rewritten to commands that exist.</li>
+<li>Catalogue corrections: g_fov range, pm_togglesprint default, g_gameDifficulty choices,
+g_EnableGore as a choice, g_goreBloodyMess as a float, pm_sprintMaxTime as an int, the
+missing defaults, and the com_allowConsole/g_permaGodMode/g_damageScale notes.</li>
+<li>Docstring updated. Dead <code>is_blocked()</code> removed.</li>
+</ul>
+</li>
+<li><code>wolfsdk/gui.py</code>: Start passes <code>binds_for(title)</code> and <code>title_key</code>, and names the dropped
+  names in the status line. The TNO row tag "✕ blocked in retail" is now "↻ cheat cvar - also
+  sent as +toggle at start". The Info tab text is corrected (Ctrl+^, real commands, TNO binds).</li>
+<li><code>wolfsdk/cli.py</code>: <code>launch</code>/<code>play</code> pass <code>binds_for(title)</code> and the title. The <code>tweaks</code> text and
+  the <code>--console</code> help are corrected.</li>
+<li><code>wolfsdk/mod.py</code>: docstring sentence only.</li>
+<li><code>tools/build_release.py</code>: ships <code>docs/cvars_tno.json</code>. Without it, the release would fall
+  back to <code>RETAIL_BLOCKED</code>.</li>
+<li>New: <code>docs/cvars_tno.json</code>, <code>tools/extract_cvars_tno.py</code>, <code>tools/verify_tno_tweaks.py</code>.</li>
+</ul>
+<h2 id="5-checks">5. Checks</h2>
+<pre><code>python tools/extract_cvars_tno.py --self-check
+  3194 cvars (2865 CHEAT, 329 NOCHEAT, 8 ROM, 38 INIT, 169 ARCHIVE); 0 of 192 console commands collide
+  self-check: OK
+python tools/verify_tno_tweaks.py      -&gt; 25 PASS, &quot;all checks passed&quot; (exit 0)
+  incl. &quot;PASS  TNC +args identical to the pre-change capture&quot; (args captured before any edit)
+  mutation run (cheat-&gt;plain, old binds): 5 FAIL, so the checks can fail
+python tools/verify_gui.py             -&gt; &quot;Alles in Ordnung.&quot; (exit 0)
+python tools/verify_loader_english.py  -&gt; &quot;Alles in Ordnung.&quot; (exit 0)
+python -m py_compile  (cvars, gui, cli, mod, build_release, extract_cvars_tno, verify_tno_tweaks) -&gt; OK
+</code></pre>
+<h2 id="6-open-points-only-the-game-can-settle-these">6. Open points (only the game can settle these)</h2>
+<ul>
+<li>Nobody has run <code>+toggle name v v</code> with values in game. The code path is decompiled, and
+  <code>+toggle devgui</code> without values is measured. Where the startup commands run (after <code>Init</code>) is
+  known only from that measurement, not from code.</li>
+<li><code>com_skipIntroVideo</code>: the read before the reset is code-proven. That the 0x200 flag really
+  skips the intro is not.</li>
+<li><strong>The maintainer's saved TNO tweaks change behaviour now.</strong><ul>
+<li><code>g_goreBloodyMess 1</code> now takes effect and halves the factor (default 2.0). Clear it, or use
+e.g. 4.</li>
+<li><code>com_allowConsole 1</code> now takes effect, and per r7 it feeds the achievement check. Clear it.</li>
+</ul>
+</li>
+<li>ARCHIVE cvars (<code>g_permaGodMode</code>, <code>g_fov</code>, <code>g_showHud</code>, ...) are written to wolfConfig.cfg by
+  the game. Unticking one in the loader sends nothing, so the last value sticks. Set it back to
+  its default once instead.</li>
+<li><code>devgui</code> via <code>+toggle</code> at startup is zeroed at the main menu by the DevGUI gate (r7 P2.5). It
+  only works inside a level, through the console or a bind.</li>
+<li><code>devmenu.py</code> still lists <code>noclip</code> and <code>notarget</code>. It writes <code>debugmenu.txt</code>, which has no
+  consumer in TNO (r7 P2.5), so it was left alone.</li>
+</ul>
+<h2 id="7-in-game-test-for-the-maintainer-one-launch">7. In-game test for the maintainer (one launch)</h2>
+<ol>
+<li>In the loader (The New Order): clear <code>g_goreBloodyMess</code> and <code>com_allowConsole</code>. Set <strong>Run
+   speed = 600</strong> and <strong>FOV = 95</strong>, leave the key bindings on, then press Start.</li>
+<li>Did the intro logos play? Expected: no.</li>
+<li>Load a save and run. Expected: clearly faster than normal (600 vs 260). Press <strong>F3</strong>.
+   Expected: a free camera. Press F3 again to return.</li>
+<li>Optional: <strong>Ctrl+^</strong> should open the console. Type <code>toggle g_permaGodMode 0 1</code>.</li>
+<li>Quit and search <code>%USERPROFILE%\Saved Games\MachineGames\Wolfenstein The New Order\base\qconsole.log</code>
+   for <code>pm_runspeed</code>. Expected: <code>Resetting cheat cvar: pm_runspeed</code>, later followed by
+   <code>pm_runspeed = 600</code>. There should be no <code>CANNOT be set in retail</code> and no <code>Unknown command</code>
+   for F3.</li>
+</ol>
+<p>If <code>pm_runspeed = 600</code> appears but running is not faster, the reader is gated somewhere upstream
+(see the heuristic in §3).</p>
+<p>Related: <a href="Research-Report-R7-Tno-Cheat-Gate.html">Research Report: R7 Tno Cheat Gate</a>, <a href="Research-Report-R7-Tno-Commands.html">Research Report: R7 Tno Commands</a>, <a href="Modding-Limits.html">Modding Limits</a>, <a href="TNO-CVar-Catalog.html">TNO CVar Catalog</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R8-Devmenu-Fix-Verify.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>Verification of <code>mods/tnc_devmenu_fix</code> (Static Only, runtime_87400 Snapshot)</a><a class="next" href="Research-Report-R9-Box-Map.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>A Box Map Under a New Map Name (<code>game/wolfsdk/box</code>)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tnoscriptvm: The DoomScript VM, Read from the Decrypted TNO Runtime Image – Wolfenstein Modloader</title>
+<meta name="description" content="How The New Order compiles and runs its map scripts, and a small custom trigger-to-script event built on a copy.">
+<meta name="theme-color" content="#2d3134">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@600;800;900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-lang="en">
+<a class="skip" href="#main"><span class="en">Skip to content</span><span class="de">Zum Inhalt springen</span></a>
+<header class="mast">
+  <div class="wrap">
+    <a class="mark" href="../index.html">Wolfenstein Modloader</a>
+    <nav aria-label="Sections">
+      <a href="../index.html#roadmap">Roadmap</a>
+      <a href="index.html">Wiki</a>
+      <a href="glossary.html"><span class="en">Words explained</span><span class="de">Begriffe</span></a>
+      <a href="https://github.com/LopeKinz/wolfenstein-modloader">GitHub</a>
+    </nav>
+    <a class="support" href="https://buymeacoffee.com/swscc5yr7rs"><span class="long"><span class="en">Buy me a coffee</span><span class="de">Kaffee spendieren</span></span><span class="short" aria-hidden="true">&#9749;</span></a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">EN</button>
+      <button type="button" data-set="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+<main id="main">
+
+<div class="pagehead"><div class="wrap">
+<p class="crumbs"><a href="index.html">Wiki</a> / <a href="index.html#rounds"><span class="en">Latest research rounds</span><span class="de">Neueste Forschungsrunden</span></a></p>
+<h1>Tnoscriptvm: The DoomScript VM, Read from the Decrypted TNO Runtime Image</h1>
+<p class="meta"><span class="stamp s-partial"><span class="en">Partly solved</span><span class="de">Teilweise gelöst</span></span>
+<a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki/Research-Report-R7-Tno-Script-Vm"><span class="en">Original page in the GitHub wiki</span><span class="de">Originalseite im GitHub-Wiki</span></a></p>
+</div></div>
+<div class="wrap docgrid">
+<aside class="toc"><h2><span class="en">On this page</span><span class="de">Auf dieser Seite</span></h2><ol><li><a href="#question">Question</a></li><li><a href="#answer-in-one-paragraph">Answer in one paragraph</a></li><li><a href="#1-what-this-track-measured-reproducibly">1. What this track measured, reproducibly</a></li><li><a href="#2-resource-type-file-names-compile-at-load-vs-precompiled-proven">2. Resource type, file names, compile-at-load vs. precompiled (PROVEN)</a></li><li><a href="#3-the-compiler-is-shared-with-a-live-already-shipped-console-command-new-this-pass">3. The compiler is shared with a live, already-shipped console command (new this pass)</a></li><li><a href="#4-event-dispatch-a-global-name-table-plus-per-entity-virtual-dispatch-not-a-flat-map-proven">4. Event dispatch: a global name table plus per-entity virtual dispatch, not a flat map (PROVEN)</a></li><li><a href="#5-identityactivate-the-entityscript-bridge-confirmed-at-code-level-proven-new-vs-r6">5. idEntity::Activate: the entity→script bridge, confirmed at code level (PROVEN, new vs r6)</a></li><li><a href="#6-two-console-commands-that-are-direct-code-level-levers-for-this-question-new-this-pass">6. Two console commands that are direct, code-level levers for this question (new this pass)</a></li><li><a href="#7-design-a-minimal-custom-event-grounded-in-real-retail-names-not-invented">7. Design: a minimal custom event, grounded in real retail names (not invented)</a></li><li><a href="#8-structural-proof-on-a-copy--re_probestnoscriptvmprove_custom_eventpy">8. Structural proof, on a copy — re_probes/tnoscriptvm/prove_custom_event.py</a></li><li><a href="#proven-this-pass-code-level-reproducible-with-toolsdecomppythe-script-above">PROVEN (this pass, code-level, reproducible with tools/decomp.py/the script above)</a></li><li><a href="#inferred-plausible-from-the-code-shown-not-directly-observed">INFERRED (plausible from the code shown, not directly observed)</a></li><li><a href="#failed-hypotheses--dead-ends-named-not-hidden">FAILED HYPOTHESES / dead ends (named, not hidden)</a></li><li><a href="#open-questions">Open questions</a></li><li><a href="#smallest-test-for-the-maintainer">Smallest test for the maintainer</a></li></ol></aside>
+<div>
+<section class="plainbox"><h2><span class="en">In plain words</span><span class="de">In einfachen Worten</span></h2><div class="en"><p class="lede">This report read the decrypted program code of Wolfenstein: The New Order (TNO) to understand its script system (DoomScript). Map scripts are plain text files compiled fresh every time they load, by the same routine the script console command uses, and every trigger or relay goes through one shared activate function that can call a script. A newly found console command, trigger, can fire any named <span class="t" data-t="entity">entity</span> without walking into a trigger zone. A small custom event (a trigger, then a script that fires a spawn, a sound and a door) was built on a copy of the chapter 1 map and passed all structural checks, but nothing was tested in the running game.</p><ul><li>Map scripts (.script) and maps (.entities) are ordinary &#x27;file&#x27; entries; there is no precompiled bytecode, the script is compiled from text at every load.</li><li>Every trigger and relay funnels into one shared activate function (121 call sites), which can run the onTrigger method of a bound script.</li><li>TNO has a script command (runs one typed line of script) and a trigger command (fires any named entity), both newly found testing tools.</li><li>The custom event on map c01p1 passed every check on a copy: 37/37 call links resolve, and the <span class="t" data-t="chunk">chunk</span> rebuild left 25/25 unrelated entries unchanged.</li><li>Open: whether script and trigger can be reached in the retail console, and whether the edited event really fires in game; nothing was run in game.</li></ul></div><div class="de"><p class="lede">Dieser Bericht hat den entschlüsselten Programmcode von Wolfenstein: The New Order (TNO) gelesen, um sein Skriptsystem (DoomScript) zu verstehen. Kartenskripte sind einfache Textdateien, die bei jedem Laden neu kompiliert werden, und zwar von derselben Routine, die auch der Konsolenbefehl script nutzt; jeder Auslöser und jedes Relais läuft über eine gemeinsame Aktivierungsfunktion, die ein Skript aufrufen kann. Ein neu gefundener Konsolenbefehl, trigger, kann jede benannte <span class="t" data-t="entity">Entity</span> auslösen, ohne dass man in eine Auslösezone laufen muss. Ein kleines eigenes Ereignis (ein Auslöser, dann ein Skript, das einen Spawn, einen Sound und eine Tür auslöst) wurde auf einer Kopie der Karte aus Kapitel 1 gebaut und bestand alle strukturellen Prüfungen, aber im laufenden Spiel wurde nichts getestet.</p><ul><li>Kartenskripte (.script) und Karten (.entities) sind gewöhnliche „file“-Einträge; es gibt keinen vorkompilierten Bytecode, das Skript wird bei jedem Laden aus Text kompiliert.</li><li>Jeder Auslöser und jedes Relais läuft über eine gemeinsame Aktivierungsfunktion (121 Aufrufstellen), die die onTrigger-Methode eines gebundenen Skripts ausführen kann.</li><li>TNO hat einen Befehl script (führt eine eingetippte Skriptzeile aus) und einen Befehl trigger (löst jede benannte Entity aus), beides neu gefundene Testwerkzeuge.</li><li>Das eigene Ereignis auf Karte c01p1 bestand jede Prüfung auf einer Kopie: 37/37 call-Verweise lösen auf, und beim Neuaufbau des <span class="t" data-t="chunk">Chunks</span> blieben 25/25 unbeteiligte Einträge unverändert.</li><li>Offen: ob script und trigger in der Konsole der Verkaufsversion erreichbar sind und ob das bearbeitete Ereignis im Spiel wirklich auslöst; im Spiel wurde nichts ausgeführt.</li></ul></div></section>
+<section class="technical"><h2 class="techhead"><span class="en">Technical details</span><span class="de">Technische Details</span></h2>
+<p class="de langnote">Der technische Teil ist auf Englisch – so, wie er im Wiki steht. Unterstrichene Begriffe haben eine Erklärung auf Deutsch.</p>
+<article class="doc" data-autohint><p>Round-7 research pass on The New Order's DoomScript VM, read from the decrypted runtime image: scripts are plain-text <code>file</code> resources compiled at load by the same routine the <code>script</code> console command uses; entity-to-script dispatch is a global name table plus per-entity virtual dispatch; and <code>idEntity::Activate</code> is the bridge. A minimal custom trigger → script → spawn/sound/door event is designed from real retail names and proven structurally on a copy. <strong>Nothing was tested in game.</strong></p>
+<p>This track had something r6_tnoscript.md explicitly did not: a decrypted, disassemblable
+TNO runtime image (<code>re_probes/runtime_tno_186352/module.bin</code>, captured read-only from a
+running <code>WolfNewOrder_x64.exe</code>, PID 186352, base <code>0x7FF74A390000</code>) and a Ghidra snapshot
+built from it (<code>D:/wolf-decomp/ghidra/tno_runtime.gzf</code>, 50 884 functions carved exactly
+from <code>.pdata</code>, 2 369 RTTI vtables labelled, no function names yet). Everything below that
+cites an <code>FUN_&lt;addr&gt;</code>/RVA and a decompiled excerpt is new evidence this pass produced by
+querying that snapshot with <code>tools/decomp.py &lt;name&gt; [--xrefs] --gzf
+D:/wolf-decomp/ghidra/tno_runtime.gzf</code>; nothing from r6 was re-derived, only extended with
+code-level proof where r6 had only strings and decl text. No game was launched, no process
+attached — the image was captured earlier and is read here exactly like a file.</p>
+<p>Builds on, does not redo: <code>re_probes/agent_reports/r6_tnoscript.md</code> (the two-layer model —
+entity/target/trigger decl graph + a real idTech4/Doom3-lineage script VM; 913
+<code>scriptEvent</code> native signatures; 211 <code>OP_*</code> bytecode mnemonics; the <code>call="X"</code> /
+<code>scriptObject.type</code> entity↔script bridges; the "no new trigger volumes, new relays/
+functions yes" authoring ceiling). r6's own measurements (211 opcodes, 913 events, 116
+Target/Trigger classes, the 513/516 <code>call=</code> cross-check) are cited, not re-measured.</p>
+<h2 id="question">Question</h2>
+<p>TNO's DoomScript VM: how and from where are script programs loaded (resource type, file
+names, compiled at load or precompiled bytecode); how does an entity trigger a script
+function; what is the event dispatch table (name → native function); can a modder add a
+<em>new</em> script function, reachable from a trigger; design a minimal custom event
+(trigger → script → spawn/sound/door) and prove the data side structurally on a copy.</p>
+<h2 id="answer-in-one-paragraph">Answer in one paragraph</h2>
+<p><strong>Everything r6 inferred from strings and decl text is now confirmed at the code level, plus
+three new mechanisms r6 could not see without a runtime image.</strong> Script resource type:
+confirmed directly from a live archive read this pass — <code>c01p1.entities</code>/<code>c01p1.script</code> are
+both <code>type="file"</code> entries (<code>maps/game/wolf/c01/c01p1.entities</code>, usize 2 356 914/csize
+159 750; <code>.script</code>, usize 23 692/csize 4 634), the same generic "file" asset type as
+everything else — <strong>there is no dedicated script-bytecode resource type and no precompiled
+bytecode cache asset anywhere in the archives</strong>; DoomScript is plain text, compiled fresh
+every time it loads. Compilation happens in one shared function, <code>FUN_7ff74acfda60</code> (rva
+<code>0x96da60</code>), confirmed to read the <code>script_scriptEventsPath</code> cvar, then auto-include
+<code>/script/script_events.script</code> and <code>/script/script_defs.script</code>, compile the given file,
+and log <code>"Compiled '%s': %.1f ms"</code> — this <strong>is the same routine TNO's own <code>script</code> console
+command uses</strong> to compile a single typed-in statement on the fly (wrapped as
+<code>void ConsoleFunctionN() { &lt;text&gt;; }</code>), proven by both call sites sharing the identical
+wrapper <code>FUN_7ff74ad0a0d0</code> (rva <code>0x97a0d0</code>), which after compiling walks every referenced
+function and logs <code>"function '%s' was not defined"</code> for anything called but never given a
+body — the exact runtime counterpart of r6's static "513/516 <code>call=</code> fields resolve"
+measurement. Entity→script dispatch is <strong>two-level, not a flat name→pointer table</strong>: a
+global, linearly-searched name table (<code>FUN_7ff74abce600</code>, rva <code>0x83e600</code>) maps an event
+name to a shared <code>idEventDef</code>-style descriptor used by <strong>9 different call sites</strong> project-
+wide (not just scripts); the actual native call goes through <code>idEntity</code>'s own vtable —
+<code>CallScriptEvent</code> (<code>FUN_7ff74acff9f0</code>, rva <code>0x96f9f0</code>) asks the target object "do you
+respond to this event" via vtable slot <code>+0x20</code>, then dispatches through vtable slot <code>+0x10</code>
+(<code>FUN_7ff74abcf130</code>, rva <code>0x83f130</code>), whose own debug log literally reads
+<code>"%d: '%s' activated by '%s'"</code> — the classic idTech4 <code>idClass::ProcessEvent</code> signature.
+<strong><code>idEntity::Activate</code></strong> itself (<code>FUN_7ff74aa6bfc0</code>, rva <code>0x6dbfc0</code>, confirmed by its own
+debug string <code>" %d: %s: idEntity::Activate"</code>, called from <strong>121 distinct sites</strong> across the
+whole entity codebase — i.e. the one shared base every <code>idTarget_*</code>/<code>idTrigger_*</code> class
+funnels into) is where r6's <code>scriptObject.type</code> bridge is proven at code level: if the
+entity carries a bound script object, Activate looks up a method named <strong><code>"onTrigger"</code></strong>
+on it by name and calls it with one argument named <strong><code>"activator"</code></strong> — exactly the
+<code>object X { void onTrigger( entity activator ); }</code> shape r6 read out of <code>script_util.script</code>
+source text, now seen as literal runtime strings in the dispatcher itself, not inferred
+from the <code>.script</code> grammar. <strong>New, not in r6 at all:</strong> the same <code>idEntity::Activate</code> is what
+TNO's <strong><code>trigger &lt;entityname&gt;</code></strong> console command calls (<code>FUN_7ff74abd8be0</code>, rva
+<code>0x848be0</code>, registered in the same <code>AddCommand</code> table as <code>"triggers an entity"</code>) — meaning
+a modder can fire <em>any</em> relay or scriptObject-bound entity by name from the console,
+<strong>without a physical trigger volume at all</strong>, sidestepping r6 §7's "no new trigger
+volumes" ceiling for testing purposes. <strong>Yes, a modder can add a new script function
+reachable from a trigger</strong>: this track built the exact edit on a byte-for-byte copy of
+<code>c01p1.entities</code>/<code>c01p1.script</code> (a new <code>idTarget_Count</code> relay wired into the existing
+<code>sound_trigger_condor9_enter</code> volume's <code>targets</code> list, calling a new
+<code>call_wolfsdk_r7_demo</code> function that fires an existing spawn relay, an existing sound
+relay, and drives an existing door mover — spawn/sound/door, as asked) and <strong>round-tripped
+it through the project's own, unmodified archive writer</strong> (<code>wolfsdk.resources</code>/
+<code>wolfsdk.patch</code>) on a private scratch copy of the real chunk, never touching the actual
+game install: all structural checks passed, including the exact full-chunk-rebuild path
+the project's code already has for exactly this case (§6). <strong>None of this was run inside
+the actual running game</strong> — the rules forbid launching it; §9 gives the maintainer the smallest
+console-only test to close that last gap himself.</p>
+<h2 id="1-what-this-track-measured-reproducibly">1. What this track measured, reproducibly</h2>
+<pre><code>python tools/decomp.py &lt;rva|name&gt; [--xrefs] --gzf D:/wolf-decomp/ghidra/tno_runtime.gzf
+python re_probes/tnoscriptvm/prove_custom_event.py
+</code></pre>
+<p>The first command (~15 s/call, used ~10 times this pass, each citation below gives the
+exact arguments) reads <code>re_probes/runtime_tno_186352/module.bin</code> through the pre-built
+Ghidra snapshot — no re-analysis, no game launch. The second is this track's own script
+(below, §6); it reads the real archives once, read-only, via <code>build_gore_deep.pristine()</code>
+(the same helper r6's own <code>tnoscript/extract.py</code> uses), then does every write in
+<code>D:/wolf-decomp/tmp/tnoscriptvm/</code>, never under the real install. Its two inputs/outputs are
+kept in this track's own folder: <code>re_probes/tnoscriptvm/orig/</code> (the two files exactly as
+read from the pristine backup) and <code>re_probes/tnoscriptvm/edited/</code> (after this track's
+edit).</p>
+<h2 id="2-resource-type-file-names-compile-at-load-vs-precompiled-proven">2. Resource type, file names, compile-at-load vs. precompiled (PROVEN)</h2>
+<p>Read directly off a live archive entry this pass (not re-derived from r6's file-offset EXE
+scan):</p>
+<pre><code>found in chunk1.index chunk1.resources
+  maps/game/wolf/c01/c01p1.entities: usize=2356914 csize=159750 stored_raw=False, type=file
+  maps/game/wolf/c01/c01p1.script:   usize=23692   csize=4634   stored_raw=False, type=file
+</code></pre>
+<p>Both are ordinary <code>type="file"</code> entries, deflate-compressed like most text assets — the
+same resource type r6 already established for <code>.entities</code>; this pass confirms <code>.script</code>
+sits in the identical bucket, with no third, bytecode-shaped resource type anywhere
+alongside it. Compilation itself, decompiled:</p>
+<pre><code>=== FUN_7ff74acfda60 @ rva 0x96da60 ===
+  cVar1 = func_0x7ff74ad54f90(&amp;DAT_7ff74c14d890);          // script_scriptEventsPath cvar set?
+  pcVar5 = cVar1 == 0 ? func_0x7ff74abcdac0(&amp;DAT_7ff74c14d890)
+                      : s__script_script_events_script_7ff74b3c5700;  // &quot;/script/script_events.script&quot;
+  FUN_7ff74ad58040(lVar3, pcVar5); ...; func_0x7ff74ad83e20(param_1, lVar3);   // #include it
+  FUN_7ff74ad58040(lVar3, s_include_7ff74b3c5720); ...                        // &quot;#include&quot;
+  FUN_7ff74ad58040(lVar3, s__script_script_defs_script_7ff74b3c5730); ...     // &quot;/script/script_defs.script&quot;
+  *(undefined4 *)(param_1 + 0x510) = 1;
+  FUN_7ff74acf7770(param_1);                                 // parse/compile the file
+  while (*(char *)(param_1 + 0x558) == '\0') { FUN_7ff74acfd970(param_1, &amp;DAT_7ff74b949028); }
+  ...
+  FUN_7ff74ad5a710(s_Compiled___s_____1f_ms_7ff74b3c5788, param_3, (double)(ms));
+</code></pre>
+<p>This is the exact routine behind r6's <code>"Compiled '%s': %.1f ms"</code> / <code>"Compile failed in file
+%s."</code> strings, now seen as code, not just <code>.rdata</code> literals: it force-includes
+<code>script_events.script</code> then <code>script_defs.script</code> (both confirmed, matching r6 §3.2/§4.1
+exactly), compiles the caller-supplied file, times it, and is fatal if <code>FUN_7ff74acf7770</code>
+(the statement/function parser — same function the "scriptEvents can only defined in the
+global namespace" and "Unexpected end of file inside function" diagnostics from r6 §3.2
+come from) never clears the completion flag at <code>param_1+0x558</code>.</p>
+<p><strong>Nothing here reads a precompiled bytecode blob.</strong> <code>param_3</code> (the actual text) is handed
+in by the caller already in memory — this function's own job is parse+compile, never file
+I/O — and the two call sites found this pass (§3) pass it either the per-map script's
+<em>source text already read from the "file"-type resource</em>, or (for the console) a <em>freshly
+built string</em> from a typed-in command. Both confirm "compiled at load/at use, every time",
+not "compiled once, cached as bytecode" — there is no cache, no <code>.scriptc</code>/<code>.bscript</code>
+resource type in the archive index at all (consistent with r6's own full archive-type
+census, not re-run here).</p>
+<h2 id="3-the-compiler-is-shared-with-a-live-already-shipped-console-command-new-this-pass">3. The compiler is shared with a <em>live, already-shipped</em> console command (new this pass)</h2>
+<pre><code>=== FUN_7ff74ad0a0d0 @ rva 0x97a0d0 (the function that actually calls FUN_7ff74acfda60) ===
+  FUN_7ff74ad58040(param_1 + 0xd0, param_2);         // param_2 = filename/context label
+  uVar2 = FUN_7ff74ad09db0(param_1, param_2, 0);      // register this compile unit
+  uVar4 = func_0x7ff74abcdac0(param_1 + 0xd0);
+  FUN_7ff74acfda60(&amp;stack..., param_3, uVar4, uVar2);  // param_3 = the actual source text
+  // -- after compiling, walk every function and flag ones referenced but never defined:
+  ... s_function__s_was_not_defined_7ff74b3c6bd8 ...   // &quot;function '%s' was not defined&quot;
+</code></pre>
+<p>Two call sites, found via <code>--xrefs</code> on <code>FUN_7ff74ad0a0d0</code>:</p>
+<ul>
+<li><strong><code>FUN_7ff74abd7db0</code> (rva <code>0x847db0</code>) — TNO's <code>script</code> console command</strong>, registered in
+  the command table at <code>FUN_7ff74abddb00</code> (rva <code>0x84db00</code>) as
+  <code>AddCommand(cmdSystem, "script", FUN_7ff74abd7db0, "executes a line of script", 0)</code>.
+  Decompiled, it builds the string <code>"void ConsoleFunctionN() {&lt;typed text&gt;;}"</code> (format
+  string <code>s_void__s_____s___</code> = <code>"void %s() {%s;}"</code>, numbered <code>ConsoleFunction0</code>,
+  <code>ConsoleFunction1</code>, … to avoid name clashes) and calls
+  <code>FUN_7ff74ad0a0d0(programObj, "console", thatWrappedText, 9)</code> — <strong>the exact same compiler
+  entry point used for map scripts</strong>, just fed a filename label <code>"console"</code> instead of a
+  real path and a synthetic one-function source instead of a map's <code>.script</code> file. A guard
+  (<code>"A console script command is already..."</code>) prevents re-entrancy; no cheat/restriction
+  flag is visible in this function or in its <code>AddCommand</code> registration (see §7 for what
+  that is and is not evidence of).</li>
+<li><strong><code>FUN_7ff74abffad0</code> (rva <code>0x86fad0</code>)</strong> — a thin, 4-line wrapper
+  (<code>CompileText(program, filename, text, flags)</code>-shaped) with <strong>zero statically-found
+  callers</strong> (<code>--xrefs</code> returns none). This is the Ghidra-xrefs-incomplete case the task
+  brief warned about; it was not chased further with a manual RIP-relative scan this pass
+  (time budget) — see §8 "not pushed further".</li>
+</ul>
+<p><strong>PROVEN</strong>: the per-map <code>.script</code> compiler and the live <code>script</code> console command are the
+<em>same</em> function, parameterised only by filename label and source text. <strong>INFERRED, not
+directly observed</strong>: that the per-map auto-load path (naming-convention loading, r6 §5)
+reaches <code>FUN_7ff74acfda60</code> through <code>FUN_7ff74abffad0</code> specifically rather than some other
+caller not found by static xrefs — very likely given the shared signature and the log
+string match, but the actual <code>LoadMap</code>-side call site (where <code>"maps/.../cXXpY.script"</code> gets
+built and handed in) was not located this pass.</p>
+<h2 id="4-event-dispatch-a-global-name-table-plus-per-entity-virtual-dispatch-not-a-flat-map-proven">4. Event dispatch: a global name table <em>plus</em> per-entity virtual dispatch, not a flat map (PROVEN)</h2>
+<pre><code>=== FUN_7ff74abce600 @ rva 0x83e600 — generic {count, ptr[]} name lookup ===
+longlong * FUN_7ff74abce600(char *name) {
+  for (i = 0; i &lt; DAT_7ff74c12fd70; i++) {
+    candidate = (&amp;DAT_7ff74c127d70)[i];
+    if (streq(name, candidate)) return candidate;   // (inlined char-by-char compare)
+  }
+  return 0;
+}
+</code></pre>
+<p>This exact helper has <strong>9 distinct call sites</strong> across the binary (<code>--xrefs</code>: rvas
+<code>0x359332</code>, <code>0x64605c</code>, <code>0x710fc7</code>, <code>0x722e95</code>, <code>0x83e774</code>, <code>0x846983</code>, <code>0x84a4ea</code>,
+<code>0x84c4ad</code>, <code>0x9686ad</code>) — it is a generic name-table lookup reused for several unrelated
+tables, not written specifically for events. One of those 9 call sites is inside the
+compiler's own <code>scriptEvent</code> declaration handler:</p>
+<pre><code>=== FUN_7ff74acf8660 @ rva 0x968660 — parses &quot;scriptEvent &lt;type&gt; name(...)&quot; ===
+  lVar6 = FUN_7ff74abce600(param_1);   // look up name in the global event table
+  if (lVar6 == 0) { error(&quot;Unknown event '%s'&quot;, name); ... }
+  else { // validate return type, param count, param types against the FOUND entry
+         // ... or register a brand-new one if this exact name was never seen ...
+  }
+</code></pre>
+<p>So <code>DAT_7ff74c12fd70</code>/<code>DAT_7ff74c127d70</code> (count + pointer array) is the <strong>global
+<code>idEventDef</code>-equivalent table</strong> — every one of the 913 <code>scriptEvent</code> lines r6 counted in
+<code>script_events.script</code> parses through exactly this function at compile time, either
+matching an existing native-registered entry or adding a new script-only one. This answers
+"name → native function" directly: <strong>the name only resolves to a <em>descriptor</em> (return
+type, arg format string, argument count) here — not a function pointer.</strong> The function
+pointer lives one level down, per <em>entity class</em>, found by tracing the actual call:</p>
+<pre><code>=== FUN_7ff74acff9f0 @ rva 0x96f9f0 — CallScriptEvent (bytecode OP_SYSCALL-class glue) ===
+  if (eventDef == NULL) error(&quot;NULL function in CallScriptEvent&quot;);
+  targetObj = lookup-on-interpreter-locals-stack(...);
+  if (targetObj == NULL) { error(&quot;Attempted to call %s on a list %s&quot;); ... }
+  respondsTo = (**(code**)(*targetObj + 0x20))(targetObj, eventDef);   // vtbl slot 0x20
+  if (respondsTo) {
+      marshal bytecode args by format char ('s','f','i','e','v','x', ...) into a local buffer;
+      FUN_7ff74abcf130(targetObj, &amp;ret, eventDef, argsBuf);            // &lt;-- the real call
+  } else {
+      error(&quot;Function '%s' not supported on type ...&quot;);
+  }
+
+=== FUN_7ff74abcf130 @ rva 0x83f130 — the actual native dispatch ===
+  if (eventDebugOn &amp;&amp; eventDef == &amp;someMarkerEventDef) {
+      log(&quot;%d: '%s' activated by '%s'&quot;, entnum, eventName, activatorName);   // &quot;%d: '%s' activated by '%s'&quot;
+  }
+  (**(code **)(*targetObj + 0x10))(targetObj, ret, eventDef, args, 0xfffffffffffffffe);  // vtbl slot 0x10
+</code></pre>
+<p><strong>This is the dispatch table the question asked for, precisely characterised</strong>: a single
+global <em>name → descriptor</em> table (shared infrastructure, <code>FUN_7ff74abce600</code>), plus a
+<strong>per-entity-class virtual table</strong> with two fixed slots every <code>idClass</code>-descendant
+carries — <code>+0x20</code> = "do I respond to this event" (a compile-time-generated predicate,
+classic idTech4 <code>EventMap</code>) and <code>+0x10</code> = "run it" (<code>idClass::ProcessEvent</code>-equivalent).
+The <code>"%d: '%s' activated by '%s'"</code> debug format is the idTech4 giveaway: it is the exact
+shape of Doom3 GPL's own <code>idClass::ProcessEventArgPtr</code> debug line, strong independent
+confirmation this is the unmodified id Tech 4 event architecture, not a TNO-specific
+redesign.</p>
+<h2 id="5-identityactivate-the-entityscript-bridge-confirmed-at-code-level-proven-new-vs-r6">5. <code>idEntity::Activate</code>: the entity→script bridge, confirmed at code level (PROVEN, new vs r6)</h2>
+<pre><code>=== FUN_7ff74aa6bfc0 @ rva 0x6dbfc0 — idEntity::Activate(entity activator) ===
+  // (debug-print branches using DAT_7ff74c132cf8 verbosity level; one of their own
+  //  format strings is literally &quot; %d: %s: idEntity::Activate&quot;, confirming the name)
+  if ( (*(byte*)(this + 0xe) &amp; 0x10) != 0 ) {           // &quot;has a bound scriptObject&quot; flag
+      ...
+      (**(code**)(*this + 0x4c8))(this, activator);      // per-class Activate hook (vtbl)
+      scriptObj = (**(code**)(*this + 0x278))(this);     // GetScriptObject()
+      if (scriptObj != NULL) {
+          call = LookupMethod(this, &quot;onTrigger&quot;);         // literal string &quot;onTrigger&quot;
+          if (call != NULL) {
+              BindArg(call, 0, &quot;activator&quot;, activator);    // literal string &quot;activator&quot;
+              RunAsThread(call, 1);
+          }
+      }
+      ...
+  }
+</code></pre>
+<p><strong>121 distinct call sites</strong> reference this one function (<code>--xrefs</code>, truncated list in the
+raw tool output — every <code>idTarget_*</code>/<code>idTrigger_*</code>/mover/door/AI-proxy class that fires a
+trigger funnels into this single shared entry point). The <code>"onTrigger"</code>/<code>"activator"</code>
+strings are not inferred from <code>.script</code> source grammar this time — they are the literal
+runtime method-name and argument-name strings the dispatcher itself looks up, i.e. this is
+the code r6 could only reconstruct by reading <code>object X { void onTrigger( entity
+activator ); }</code> in <code>script_util.script</code>'s source text. Both lines of evidence now agree
+exactly.</p>
+<p><strong>Not fully traced</strong>: the separate <code>call = "X"</code> field (an <code>idTarget_Count</code>'s own spawnarg,
+distinct from <code>scriptObject</code>) is almost certainly resolved inside the <strong>per-class virtual
+hook at vtbl slot <code>+0x4c8</code></strong> seen above (<code>idTarget_Count</code>'s own override of the base
+Activate hook) rather than in the shared base function — that per-class override was not
+individually decompiled this pass (would need <code>vtbl_idTarget_Count</code>'s slot <code>0x4c8</code> read out
+of the raw vtable bytes and the function at that address decompiled; the RTTI labelling
+only names vtable <em>starts</em>, not per-slot methods, matching the stated limitation of this
+Ghidra snapshot). Flagged as the single most concrete next step, not resolved here — see
+§8.</p>
+<h2 id="6-two-console-commands-that-are-direct-code-level-levers-for-this-question-new-this-pass">6. Two console commands that are direct, code-level levers for this question (new this pass)</h2>
+<p>Found while tracing §3/§5, in the same <code>AddCommand</code> registration block
+(<code>FUN_7ff74abddb00</code>, rva <code>0x84db00</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Handler</th>
+<th>rva</th>
+<th>Description string</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>script</code></td>
+<td><code>FUN_7ff74abd7db0</code></td>
+<td><code>0x847db0</code></td>
+<td>"executes a line of script"</td>
+<td>compiles and immediately runs one typed-in DoomScript statement, through the exact same compiler as map <code>.script</code> files (§3)</td>
+</tr>
+<tr>
+<td><code>trigger</code></td>
+<td><code>FUN_7ff74abd8be0</code></td>
+<td><code>0x848be0</code></td>
+<td>"triggers an entity"</td>
+<td>looks up an entity by name and calls <code>idEntity::Activate</code> on it directly (§5) — <strong>no physical trigger volume needed</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>trigger</code>'s handler, decompiled:</p>
+<pre><code>=== FUN_7ff74abd8be0 @ rva 0x848be0 ===
+  if (argc == 2) {
+      ent = FindEntityByName(argv[1]);       // gameLocal vtbl slot 0x438
+      if (ent != NULL) { idEntity_Activate(ent, localPlayer); return; }
+      print(&quot;entity not found&quot;);
+  } else print(&quot;usage: trigger &lt;name of entity to trigger&gt;&quot;);
+</code></pre>
+<p>This is a second, independent confirmation of §5's dispatch (console → <code>idEntity::Activate</code>
+→ scriptObject <code>onTrigger</code> / per-class <code>call=</code> hook), and — more importantly for a
+modder — <strong>a way to fire any named relay entity, including a brand-new one added to
+<code>.entities</code>, without needing a physical collision-model trigger volume at all.</strong> r6 §7
+established that <em>new trigger volumes</em> cannot be authored (binary <code>cm</code> dependency); this
+command sidesteps that entirely for <em>testing</em>, because it activates by name, not by
+geometry. Whether <code>script</code>/<code>trigger</code> are actually reachable in the shipped retail build
+(vs. gated by the separate cheat-cvar/"production mode" system r6 §6a found strings for) is
+genuinely <strong>not resolved</strong> by this evidence — see §9.</p>
+<h2 id="7-design-a-minimal-custom-event-grounded-in-real-retail-names-not-invented">7. Design: a minimal custom event, grounded in real retail names (not invented)</h2>
+<p>Built on <code>maps/game/wolf/c01/c01p1.entities</code> / <code>.script</code> exactly as shipped (chapter 1,
+part 1 — the same map r6 cites throughout). All three reused names are real,
+already-present retail entities in this exact file, confirmed by direct grep before use,
+not assumed:</p>
+<pre><code>sound_trigger_condor9_enter   -- existing idTrigger volume (r6's own cited example)
+target_spawn_plane_1          -- existing idTarget_Spawn relay   (the &quot;spawn&quot; leg)
+sound_sp_condor9_door_close   -- existing sound-speaker relay    (the &quot;sound&quot; leg)
+joint_func_mover_condor9_fuselage_door -- existing door mover, already driven by
+                                           retail's own call_joint_func_mover_condor9_fuselage_door_open/_close
+</code></pre>
+<p>The new wiring (full diff context in §8/§10, files in <code>re_probes/tnoscriptvm/</code>):</p>
+<pre><code class="language-diff">  entity { entityDef sound_trigger_condor9_enter { ... edit = { ... targets = {
+-     num = 5;
++     num = 6;
+      item[0] = &quot;sound_tr_enter_cockpit&quot;;
+      ...
+      item[4] = &quot;sound_tr_engine_strain&quot;;
++     item[5] = &quot;wolfsdk_r7_relay&quot;;
+  } ... } } }
+
++ entity {
++     entityDef wolfsdk_r7_relay {
++     inherit = &quot;target/relay&quot;; class = &quot;idTarget_Count&quot;; expandInheritance = false;
++     edit = { &quot;int&quot; count = 1; delay = 0.0; call = &quot;call_wolfsdk_r7_demo&quot;; repeat = false; }
++ } }
+</code></pre>
+<pre><code class="language-c">// appended to c01p1.script:
+void call_wolfsdk_r7_demo( entity activatedEntity, entity activator )
+{
+    // spawn: re-fire an existing idTarget_Spawn relay already in this map
+    $target_spawn_plane_1.activate( activator );
+
+    // sound: re-fire an existing sound-speaker relay, same idiom retail's own
+    // call_joint_func_mover_condor9_fuselage_door_close uses
+    $sound_sp_condor9_door_close.activate( activator );
+
+    // door: drive an existing door mover directly, same idiom retail's own
+    // call_joint_func_mover_condor9_fuselage_door_open uses
+    $joint_func_mover_condor9_fuselage_door.time( 2 );
+    $joint_func_mover_condor9_fuselage_door.accelTime( 0 );
+    $joint_func_mover_condor9_fuselage_door.decelTime( 0 );
+    $joint_func_mover_condor9_fuselage_door.rotateOnce( '-60 0 0' );
+}
+</code></pre>
+<p>This is deliberately the <em>smallest</em> new event that touches all three outcomes asked for
+(spawn/sound/door) while inventing nothing: every <code>$name</code> the new function calls is a real
+entity already in this file, every scriptEvent (<code>activate</code>, <code>time</code>, <code>accelTime</code>,
+<code>decelTime</code>, <code>rotateOnce</code>) is one of r6's 913 measured <code>script_events.script</code> signatures,
+and the relay class/grammar is retail's own <code>idTarget_Count</code>/<code>target/relay</code> pattern (r6
+§4.3, 8 029 retail instances of this exact class).</p>
+<h2 id="8-structural-proof-on-a-copy--re_probestnoscriptvmprove_custom_eventpy">8. Structural proof, on a copy — <code>re_probes/tnoscriptvm/prove_custom_event.py</code></h2>
+<p>Six steps, all reproducible with one command (<code>python
+re_probes/tnoscriptvm/prove_custom_event.py</code>), nothing written outside
+<code>re_probes/tnoscriptvm/</code> (small text copies, source) and <code>D:/wolf-decomp/tmp/tnoscriptvm/</code>
+(the scratch archive copy, ~141 MB):</p>
+<ol>
+<li><strong>Read-only dump</strong> of the real <code>c01p1.entities</code>/<code>.script</code> from the pristine backup
+   (<code>build_gore_deep.pristine()</code>, same helper r6 used) — confirms <code>type="file"</code>,
+   usize/csize exactly as in §2.</li>
+<li><strong>Compose the edit</strong> as plain text (§7) — <code>c01p1.entities</code> 2 356 914→2 357 171 B (+257),
+   <code>c01p1.script</code> 22 953→23 711 B (+758; <code>.read_text()</code> strips the file's trailing-no-
+   newline quirk, immaterial here).</li>
+<li><strong>Structural checks on the text alone</strong>:<ul>
+<li>both files stay brace-balanced after the edit (+3 pairs in <code>.entities</code>, +1 in
+ <code>.script</code> — counted, not assumed);</li>
+<li>re-running r6 §5's exact cross-check (<code>call="X"</code> → case-insensitive top-level
+ function match) over the edited pair: <strong>37/37 resolve</strong>, including the new
+ <code>call="call_wolfsdk_r7_demo"</code> → the new function — the same rule that gave 513/516
+ over all 25 retail maps now gives 100 % over this one edited map;</li>
+<li>all three <code>$name</code>s the new function calls, and the new relay itself, are confirmed
+ present/wired by direct text search (not just written and trusted).</li>
+</ul>
+</li>
+<li><strong>In-place vs. rebuild, measured, not predicted</strong>: <code>wolfsdk.resources.plan_in_place()</code>
+   says the edited <code>.entities</code> (+257 B into a 159 750 B compressed slot with slack) still
+   fits in place, but the edited <code>.script</code> (+758 B into a tight 4 634 B slot) does <strong>not</strong>
+   — concretely measuring r6 §7/§8's "0–428 byte budget, else full rebuild" finding for
+   this exact edit instead of citing the general number.</li>
+<li><strong>Round-trip through the project's own, unmodified writer, on a private copy</strong>: the
+   whole real <code>chunk1.index</code>/<code>chunk1.resources</code> pair (73 MB) is copied from the pristine
+   backup into <code>D:/wolf-decomp/tmp/tnoscriptvm/base/</code> with a hand-built one-pair
+   <code>master.index</code>; a bare <code>types.SimpleNamespace(base=..., backup=...)</code> stands in for
+   <code>wolfsdk.game.Game</code> (confirmed <code>Installation.__init__</code> only ever reads <code>.base</code>/
+   <code>.backup</code>); <code>Installation(fake_game).apply({...})</code> is called for real — on this private
+   copy only. Result: <code>rebuilt=['chunk1.resources']</code>, <code>missing=[]</code> — the apply() call
+   itself independently confirms step 4's prediction by choosing the full-rebuild branch
+   (and pulls the easily-in-place <code>.entities</code> edit into the same rebuild too, because both
+   live in one archive and <code>_apply()</code> groups by archive — confirmed by reading
+   <code>wolfsdk/patch.py</code>'s own <code>_apply</code>, not assumed).</li>
+<li><strong>Fresh re-open and byte-exact verification</strong>: a brand-new <code>Archive</code> object (not the one
+   <code>apply()</code> used) opens the rebuilt scratch copy; both edited entries read back <strong>byte-
+   identical</strong> to the in-memory edited text; the rebuilt index is still strictly
+   offset-ascending (4 241 entries — the exact invariant <code>patch.py</code>'s own docstring says
+   the engine's background loader enforces, <code>"FileTable is out of order"</code> otherwise); and
+   25 unrelated control entries from the same chunk, snapshotted before the rebuild, are
+   byte-identical after it — nothing else in the chunk was disturbed.</li>
+</ol>
+<pre><code>OK  c01p1.entities               braces balanced before and after, +3 pairs added
+OK  c01p1.script                 braces balanced before and after, +1 pairs added
+call=&quot;X&quot; fields in edited .entities: 37, resolved: 37, missing: 0
+OK  new call=&quot;call_wolfsdk_r7_demo&quot; resolves to the new function (case-insensitive), same rule as the 513/516 retail measurement
+OK  all 3 $-names ... are real entityDefs already present in c01p1.entities
+OK  new relay wolfsdk_r7_relay is both defined and wired as targets.item[5] of the existing sound_trigger_condor9_enter trigger volume
+c01p1.entities: csize=159750, edited deflates to fit in place? yes
+c01p1.script:   csize=4634, edited deflates to fit in place? no -- needs full chunk rebuild
+apply() journal: assets=['file:maps/game/wolf/c01/c01p1.entities', 'file:maps/game/wolf/c01/c01p1.script'] rebuilt=['chunk1.resources'] missing=[]
+OK  apply() took the REBUILD branch, exactly as predicted from plan_in_place()
+OK  both edited files read back byte-identical after the rebuild
+OK  rebuilt index is still strictly offset-ascending (4241 entries)
+control check: 25/25 untouched entries unchanged by the rebuild
+=== ALL STRUCTURAL CHECKS PASSED ===
+</code></pre>
+<p>This is the data side proven, structurally, on a copy — exactly what the task asked for.
+It is <strong>not</strong> a claim that the game accepts and runs this edit; that needs a launch, which
+the rules forbid here (§9 gives the maintainer the test).</p>
+<h2 id="proven-this-pass-code-level-reproducible-with-toolsdecomppythe-script-above">PROVEN (this pass, code-level, reproducible with <code>tools/decomp.py</code>/the script above)</h2>
+<ul>
+<li><code>.script</code>/<code>.entities</code> are both plain <code>type="file"</code> archive entries; no bytecode-cache
+  resource type exists; DoomScript compiles from source text every time it is loaded —
+  confirmed from a live entry read (§2) and from the compiler entry point itself (§2–3).</li>
+<li>The per-map script compiler and TNO's live <code>script</code> console command are the <em>same</em>
+  function (<code>FUN_7ff74acfda60</code>/<code>FUN_7ff74ad0a0d0</code>), parameterised by filename label and
+  source text (§3).</li>
+<li>Post-compile, the engine itself validates every called-but-undefined function
+  (<code>"function '%s' was not defined"</code>) — the runtime counterpart of r6's static 513/516
+  measurement (§3).</li>
+<li>Event dispatch is two-level: a global name→descriptor table shared by 9 unrelated
+  lookups (<code>FUN_7ff74abce600</code>), plus per-entity-class virtual dispatch (<code>RespondsTo</code> at
+  vtbl <code>+0x20</code>, <code>ProcessEvent</code> at vtbl <code>+0x10</code>), confirmed by the idTech4-shaped debug
+  string <code>"%d: '%s' activated by '%s'"</code> (§4).</li>
+<li><code>idEntity::Activate</code> (121 callers) is the single shared entry every trigger/relay class
+  funnels into; when a scriptObject is bound, it calls that object's <code>onTrigger(activator)</code>
+  method by the literal runtime strings <code>"onTrigger"</code>/<code>"activator"</code> — the code-level
+  confirmation of r6's <code>scriptObject.type</code> bridge (§5).</li>
+<li>TNO retail registers a <code>script</code> console command (compile+run one statement) and a
+  <code>trigger &lt;name&gt;</code> console command (call <code>idEntity::Activate</code> on a named entity directly,
+  no physical volume needed) — both new findings, both direct testing levers (§6).</li>
+<li>A minimal trigger→script→spawn/sound/door event, built from real retail names in
+  <code>c01p1.entities</code>/<code>.script</code>, round-trips byte-exact through the project's own unmodified
+  archive writer on a private copy of the real chunk, taking the predicted full-rebuild
+  path, with 25 unrelated entries confirmed untouched (§7–8).</li>
+</ul>
+<h2 id="inferred-plausible-from-the-code-shown-not-directly-observed">INFERRED (plausible from the code shown, not directly observed)</h2>
+<ul>
+<li>That <code>FUN_7ff74abffad0</code> (zero static callers found) is the actual per-map <code>LoadMap</code>→
+  script-compile call site, reached with the map's own filename and the resource-read
+  text — very likely given it shares <code>FUN_7ff74ad0a0d0</code>'s exact signature shape, but the
+  real caller was not located (§3).</li>
+<li>That the per-map relay <code>call = "X"</code> spawnarg (distinct from <code>scriptObject</code>) is resolved
+  inside <code>idTarget_Count</code>'s own override at vtbl slot <code>+0x4c8</code> seen in <code>idEntity::Activate</code>
+  — architecturally the obvious place, but that per-class override was not individually
+  decompiled (§5, §10).</li>
+<li>That the edited event (§7) would actually fire correctly in a running game — the data-
+  side round trip is proven (§8), the runtime behaviour is not (no launch performed, per
+  the rules).</li>
+</ul>
+<h2 id="failed-hypotheses--dead-ends-named-not-hidden">FAILED HYPOTHESES / dead ends (named, not hidden)</h2>
+<ul>
+<li>Expected <code>FUN_7ff74abe2d90</code> (the 5th argument shared by the <code>trigger</code>/<code>teleport</code>/
+  <code>damage</code> console commands) to be a cheat/restriction-level gate predicate. Decompiled:
+  it is an <strong>argument tab-completion callback</strong> (walks the live entity list and calls the
+  console's autocomplete-add function) — unrelated to permissions. No restriction-level
+  gate was found anywhere in the <code>AddCommand</code> call signature itself; if one exists it is in
+  a different, shared dispatch chokepoint not located this pass (consistent with r6 §6a
+  leaving the same question open for cvars).</li>
+<li>Tried to read <code>vtbl_idTarget_Count</code>'s slot <code>+0x4c8</code> directly to find the <code>call="X"</code>
+  resolver function. Not completed this pass (would need a raw vtable-bytes read, not just
+  <code>tools/decomp.py</code>'s function-centric queries) — capped at the time budget, named as the
+  concrete next step in §10, not silently dropped.</li>
+</ul>
+<h2 id="open-questions">Open questions</h2>
+<ul>
+<li>Does the live retail build actually let a player reach the <code>script</code>/<code>trigger</code>/
+  <code>disasmScript</code> console commands at all (vs. TNO's own cheat-cvar/"production mode" gate
+  r6 §6a found strings for)? Still genuinely open — needs either an in-game test (§9) or
+  locating the shared command-dispatch chokepoint, neither done here.</li>
+<li>The exact function at <code>vtbl_idTarget_Count+0x4c8</code> (the per-class <code>call="X"</code> resolver) —
+  the single most concrete unfinished lead from this pass.</li>
+<li><code>FUN_7ff74abffad0</code>'s real caller (the <code>LoadMap</code>-side script compile call) — not located;
+  Ghidra's static xrefs returned none, and the task brief's fallback (manual RIP-relative
+  scan of <code>module.bin</code>) was not run for this specific function this pass.</li>
+</ul>
+<h2 id="smallest-test-for-the-maintainer">Smallest test for the maintainer</h2>
+<p><em>(Translated from German.)</em></p>
+<p>Two independent tests, from the simplest to the most meaningful — both <strong>only via the
+console</strong>, without any file edit, provided the console is reachable at all in the retail
+version (that is the one open point only a real start can settle):</p>
+<ol>
+<li><strong>Without any mod installation</strong>: in a running map, open the console and
+   enter <code>trigger sound_trigger_condor9_enter</code> (c01p1, the zeppelin interior). If
+   exactly the same 5 sounds then play as when really walking through the trigger,
+   it is proven: the dispatch path <code>idEntity::Activate</code> from §5/§6 really runs in the game,
+   not only in the code. <code>script sys.println("r7 alive")</code> additionally tests the compiler from
+   §3 in isolation.</li>
+<li><strong>With the mod edit built in this track</strong> (<code>re_probes/tnoscriptvm/edited/</code>, applied via the
+   normal WolfSDK patch route, <em>not</em> via the test script, which only works on a
+   copy): in c01p1 open the console and enter <code>trigger wolfsdk_r7_relay</code> —
+   <strong>no walking through the real trigger volume needed</strong>. If thereupon
+   <code>target_spawn_plane_1</code> fires again, <code>sound_sp_condor9_door_close</code> plays again and
+   <code>joint_func_mover_condor9_fuselage_door</code> turns again, the complete
+   trigger→script→spawn/sound/door path newly designed in this
+   report is confirmed live — with the
+   smallest possible attack surface, because <code>trigger &lt;name&gt;</code> calls any relay entity directly by
+   name, without any new collision volume.</li>
+</ol>
+<p>Related: <a href="Research-Report-R6-Tno-Script.html">Research Report: R6 Tno Script</a>, <a href="TNO-Modding-Surface.html">TNO Modding Surface</a>, <a href="TNO-Maps.html">TNO Maps</a>.</p></article></section>
+<nav class="pager" aria-label="Pages"><a class="prev" href="Research-Report-R7-Tno-Map-Loading.html"><small><span class="en">Previous</span><span class="de">Zurück</span></small>TNO Map Loading in Code: Command Handlers, <code>Map_f</code>, Chunk Mounting, and a Working DLC-Extension Pipeline</a><a class="next" href="Research-Report-R8-Devmenu-Fix-Verify.html"><small><span class="en">Next</span><span class="de">Weiter</span></small>Verification of <code>mods/tnc_devmenu_fix</code> (Static Only, runtime_87400 Snapshot)</a></nav>
+</div></div>
+</main>
+<footer>
+  <div class="wrap">
+    <p class="en">An independent community project, not affiliated with or endorsed by MachineGames, Bethesda Softworks, ZeniMax Media or Microsoft.</p>
+    <p class="de">Ein unabhängiges Community-Projekt ohne Verbindung zu MachineGames, Bethesda Softworks, ZeniMax Media oder Microsoft.</p>
+    <p><a href="https://github.com/LopeKinz/wolfenstein-modloader/wiki">github.com/LopeKinz/wolfenstein-modloader/wiki</a></p>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<script src="../assets/site.js"></script>
+
+</body>
+</html>
