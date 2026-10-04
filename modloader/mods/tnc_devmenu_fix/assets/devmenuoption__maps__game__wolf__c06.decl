@@ -1,0 +1,19 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "P1 - Mesquite";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c06/c06p1";
+			}
+			item[1] = {
+				devMenuDisplayName = "P2 - Captured";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c06/c06p2";
+			}
+			item[2] = {
+				devMenuDisplayName = "P3 - Courthouse";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c06/c06p3";
+			}
+		}
+	}
+}

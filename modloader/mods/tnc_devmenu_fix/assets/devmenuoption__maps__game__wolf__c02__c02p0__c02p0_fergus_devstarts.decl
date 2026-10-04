@@ -1,0 +1,72 @@
+{
+	edit = {
+		devMenuList = {
+			num = 5;
+			item[0] = {
+				devMenuDisplayName = "start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p0_gameplay_player_start\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p0,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p0";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Meet Set";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p0_gameplay_player_devstart_splat\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p0,layer/code,layer/wolfsdk/devstart_splatcorridor\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_splatcorridor\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p0";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "After Set";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p0_gameplay_player_devstart_afterset\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p0,layer/code,layer/wolfsdk/devstart_afterset\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_afterset\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p0";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Piston Room";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p0_gameplay_player_devstart_pistonroom\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p0,layer/code,layer/wolfsdk/devstart_pistonroom\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_pistonroom\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p0";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "End Event";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p0_gameplay_player_devstart_end\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p0,layer/code,layer/wolfsdk/devstart_end\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_end\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p0";
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,62 @@
+{
+	edit = {
+		crosshairType = "CROSSHAIRTYPE_DOT";
+		maxRange = 100; // just for focustracker
+		impactEffectTable = "melee/default";
+		hitscan = false;
+		envFireSounds = {
+			num = 1;
+			item[0] = {
+				sound0 = "weapons/combat_knife/knife_throw";
+			}
+		}
+		aiDodgeType = "AI_DODGE_TYPE_HEAVY_MEDIUM_RANGE";
+		notHitscanInfo = {
+			entityDef = "projectile_ent/knife_throw";
+			physicsProperties = {
+				gravityMultiplier = 0.6499999762;
+			}
+			useLocking = false;
+			speed = 1350;
+		}
+		damageDecl = "damage/tungsten/throwingknife";
+		aimAssistRange = 2048;
+		weaponFeedBack = {
+			weaponKickInfo = {
+				weaponKickInfo[0] = {
+					kick = 0;
+					maxKick = 0;
+					recoilSpeed = 0;
+					recoverySpeed = 0;
+				}
+				weaponKickInfo[1] = {
+					kick = 0;
+					maxKick = 0;
+					recoilSpeed = 0;
+					recoverySpeed = 0;
+				}
+				weaponKickInfo[2] = {
+					kick = 0;
+					maxKick = 0;
+					recoilSpeed = 0;
+					recoverySpeed = 0;
+				}
+				weaponKickInfo[3] = {
+					kick = 0;
+					maxKick = 0;
+					recoilSpeed = 0;
+					recoverySpeed = 0;
+				}
+				weaponKickInfo[4] = {
+					kick = 0;
+					maxKick = 0;
+					recoilSpeed = 0;
+					recoverySpeed = 0;
+				}
+			}
+			spreadAdditionPerShot = 0;
+			spreadAdditionMax = 0;
+			spreadRecoveryDelay = 0;
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	edit = {
+		probability = {
+			num = 1;
+			item[0] = {
+				woundType = "GORETYPE_RAMMBOCK";
+				probability = 0.95;
+			}
+		}
+	}
+}

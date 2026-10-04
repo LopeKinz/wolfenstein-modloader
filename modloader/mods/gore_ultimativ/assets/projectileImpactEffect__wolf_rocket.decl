@@ -1,0 +1,276 @@
+{
+	edit = {
+		debugDefaultEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/surf_invalid";
+			}
+			decalSize = 26;
+			particleImpact = "bulletimpacts/default_surface";
+		}
+		debugStreamArea = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/surf_streamarea";
+			}
+			decalSize = 26;
+			particleImpact = "bulletimpacts/streamarea_surface";
+		}
+		defaultEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		metalEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;
+		}
+		metalHollow = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		metalSheet = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		metalVent = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		stoneEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		fleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}	
+		}
+		woodEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		cardboardEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		liquidEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		glassEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		plasticEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		asphaltEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		dirtEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		concreteEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		plasterEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		foilageEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		linoleumEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		fabricEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		rubberEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		rockEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		steamPipeEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		waterPipeEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		armorEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		sludgeEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		bloodPoolEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		mutantFleshEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		thickPaddingEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;
+		}
+		oilPipeEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		electronicsEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;		
+		}
+		panzerMetalEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;
+		}
+		breakableArmorEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/explosionsoot";
+			}
+			decalSize = 352;
+			decalDepth = 16;
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+		}
+	}
+}

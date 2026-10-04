@@ -1,0 +1,62 @@
+{
+	inherit = "projectile/base/bullet_heavy_default";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			num = 9;
+			item[0] = {
+				sound0 = "weapons/ar60/split/ar60_fire_hq";
+				sound1 = "weapons/ar60/split/ar60_fire_outdoor_hq";
+				sound2 = "weapons/ar60/split/ar60_fire_outdoor_rear_hq";
+			}
+			item[1] = {
+				envType = "SET_INDOOR_SMALL_ROOM";
+				sound0 = "weapons/ar60/split/ar60_fire_hq";
+				sound1 = "weapons/ar60/split/ar60_fire_small_room_hq";
+				sound2 = "weapons/ar60/split/ar60_fire_small_room_rear_hq";
+			}
+			item[2] = {
+				envType = "SET_INDOOR_MID_ROOM";
+				sound0 = "weapons/ar60/split/ar60_fire_hq";
+				sound1 = "weapons/ar60/split/ar60_fire_medium_room_hq";
+				sound2 = "weapons/ar60/split/ar60_fire_medium_room_rear_hq";
+			}
+			item[3] = {
+				envType = "SET_INDOOR_LARGE_ROOM";
+				sound0 = "weapons/ar60/split/ar60_fire_hq";
+				sound1 = "weapons/ar60/split/ar60_fire_big_room_hq";
+				sound2 = "weapons/ar60/split/ar60_fire_big_room_rear_hq";
+			}
+			item[4] = {
+				envType = "SET_INDOOR_LARGE_HALL";
+				sound0 = "weapons/ar60/split/ar60_fire_hq";
+				sound1 = "weapons/ar60/split/ar60_fire_xl_room_hq";
+				sound2 = "weapons/ar60/split/ar60_fire_xl_room_rear_hq";
+			}
+			item[5] = {
+				envType = "SET_INDOOR_CORIDOR";
+				sound0 = "weapons/ar60/split/ar60_fire_hq";
+				sound1 = "weapons/ar60/split/ar60_fire_medium_room_hq";
+				sound2 = "weapons/ar60/split/ar60_fire_medium_room_rear_hq";
+			}
+			item[6] = {
+				envType = "SET_OUTDOOR_OPEN_SPACE";
+				sound0 = "weapons/ar60/split/ar60_fire_hq";
+				sound1 = "weapons/ar60/split/ar60_fire_outdoor_hq";
+				sound2 = "weapons/ar60/split/ar60_fire_outdoor_rear_hq";
+			}
+			item[7] = {
+				envType = "SET_OUTDOOR_COURT_YARD";
+				sound0 = "weapons/ar60/split/ar60_fire_hq";
+				sound1 = "weapons/ar60/split/ar60_fire_outdoor_hq";
+				sound2 = "weapons/ar60/split/ar60_fire_outdoor_rear_hq";
+			}
+			item[8] = {
+				envType = "SET_OUTDOOR_SINGLE_WALL";
+				sound0 = "weapons/ar60/split/ar60_fire_hq";
+				sound1 = "weapons/ar60/split/ar60_fire_outdoor_hq";
+				sound2 = "weapons/ar60/split/ar60_fire_outdoor_rear_hq";
+			}
+		}
+	}
+}

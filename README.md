@@ -8,9 +8,27 @@ Community documentation and reverse-engineering research for modding:
 🇬🇧 English · [🇩🇪 Deutsch](README.de.md)
 
 > [!NOTE]
-> This repository publishes the documentation and the **Wolfenstein SDK** in
-> four languages. Mods, game files, and large research artifacts are not part
-> of the public release.
+> This repository publishes the documentation, the **Wolfenstein SDK** in four
+> languages, and the source of the WolfSDK apps with their mods. Game files and
+> large research artifacts are not part of the public release.
+
+## Download
+
+**WolfSDK 0.2.0** is the first app release: a **Loader** for players and a
+**Studio** for modders.
+
+| Download | For |
+|---|---|
+| [WolfSDK-Loader-0.2.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Loader-0.2.0.zip) | Players: apply and undo mods, cheats and tweaks |
+| [WolfSDK-Studio-0.2.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Studio-0.2.0.zip) | Modders: browse and replace game files; contains the Loader too |
+
+Install: unzip and run `WolfSDK.cmd`. Python is bundled, nothing else to install.
+
+Requirements: Windows and the Steam version of *Wolfenstein: The New Order* or
+*Wolfenstein II: The New Colossus*. Custom maps need the Freedom Chronicles DLC.
+
+Release notes: [wolfsdk-0.2.0](https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0).
+Source of both apps: [`modloader/`](modloader/) (MIT License).
 
 ## SDK
 

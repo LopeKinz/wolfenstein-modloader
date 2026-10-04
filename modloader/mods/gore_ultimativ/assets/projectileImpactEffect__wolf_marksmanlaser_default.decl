@@ -1,0 +1,141 @@
+{
+	inherit = "wolf/lasercutter_decals";
+	edit = {
+		defaultEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		metalEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		metalHollow = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		metalSheet = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		metalVent = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		stoneEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		fleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_flesh";
+		}
+		woodEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		cardboardEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		liquidEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/lkw_water";
+		}
+		glassEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		plasticEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		asphaltEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		dirtEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		concreteEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		foilageEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		linoleumEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		fabricEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		rubberEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		rockEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		steamPipeEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_steampipe";
+		}
+		waterPipeEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_waterpipe";
+		}
+		armorEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_armor_2";
+			sndImpact = "projectile/bullet_impacts/bulletproof_impact";
+		}
+		sludgeEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		bloodPoolEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		mutantFleshEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		thickPaddingEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		plasterEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_default";
+		}
+		electronicsEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_electronics_2";
+		}
+		oilPipeEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/lm_hiteffect";
+		}
+		panzerMetalEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_panzer";
+		}
+		breakableArmorEffect = {
+			decalSize = 51;
+			particleImpact = "wolf/bulletimpacts/marksmanlaser_armor_breakable_2";
+			sndImpact = "projectile/bullet_impacts/bulletdamage_impact";
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+			sndImpact = "projectile/bullet_impacts/imp_metal";
+		}
+	}
+}

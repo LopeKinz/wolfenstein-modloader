@@ -1,0 +1,48 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "Xmas-2015";
+				devMenuCommandStrings = {
+					num = 9;
+					item[0] = "con_noprint 0";
+					item[1] = "pm_enablewanderer 1";
+					item[2] = "si_spawnspot \"player_start_1\"";
+					item[3] = "si_nextlayeractive \"layer/c08p1/horton,layer/c08p1/maintenance,layer/c08p1/marshland,layer/c08p1/roundhouse,layer/c08p1/shantycamp,layer/c08p1/streets,layer/c08p1/wall_interior,layer/demo\"";
+					item[4] = "si_filllayeractive \"\"";
+					item[5] = "si_devprogression \"\"";
+					item[6] = "si_checkpointName \"\"";
+					item[7] = "si_gamemode 0";
+					item[8] = "devmap maps/game/wolf/c08/c08p1.map";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "campaign";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/base,layer/code,layer/c08p1/horton,layer/c08p1/maintenance,layer/c08p1/marshland,layer/c08p1/roundhouse,layer/c08p1/shantycamp,layer/c08p1/streets,layer/c08p1/wall_interior\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap maps/game/wolf/c08/c08p1.map";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "District 1";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/base,layer/c02p2/district1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap maps/game/wolf/c08/c08p1.map";
+				}
+			}
+		}
+	}
+}

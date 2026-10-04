@@ -1,0 +1,13 @@
+{
+  "id": "example.big_magazine",
+  "name": "Big Pistol Magazine (Example)",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Raises the pistol magazine from 20 to 66. The number can be read straight off the HUD and serves as live proof that mods arrive in the game.",
+  "priority": 100,
+  "assets": {
+    "weapon:weapon/handgun_base": {
+      "set": { "edit.validAmmoClips.item[0].clipSize": 66 }
+    }
+  }
+}

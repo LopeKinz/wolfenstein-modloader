@@ -1,0 +1,19 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "Escape from Research Station Omega!";
+				devMenuSubList = "devmenuoption/dlc/c01/c1v1";
+			}
+			item[1] = {
+				devMenuDisplayName = "Gunslinger Joe Must Die!";
+				devMenuSubList = "devmenuoption/dlc/c01/c1v2";
+			}
+			item[2] = {
+				devMenuDisplayName = "Gunslinger Joe Sacks Venus!";
+				devMenuSubList = "devmenuoption/dlc/c01/c1v3";
+			}
+		}
+	}
+}

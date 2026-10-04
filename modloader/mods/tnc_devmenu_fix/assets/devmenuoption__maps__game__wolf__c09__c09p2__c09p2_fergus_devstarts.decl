@@ -1,0 +1,111 @@
+{
+	edit = {
+		devMenuList = {
+			num = 8;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p2";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Garage";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p2,layer/wolfsdk/devtel_garage__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_garage__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p2";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Mining Elevator";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p2,layer/wolfsdk/devtel_mining_elevator__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_mining_elevator__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p2";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Coolant Exterior Top";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p2,layer/wolfsdk/devtel_coolant_exterior_top__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_coolant_exterior_top__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p2";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Coolant Ventstack exterior";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p2,layer/wolfsdk/devtel_coolant_ventstack_exterior__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_coolant_ventstack_exterior__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p2";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "Underbelly";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p2,layer/wolfsdk/devtel_ober_underbelly__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_ober_underbelly__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p2";
+				}
+			}
+			item[6] = {
+				devMenuDisplayName = "Livingquarters";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p2,layer/wolfsdk/devtel_ober_livingquarters__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_ober_livingquarters__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p2";
+				}
+			}
+			item[7] = {
+				devMenuDisplayName = "Globe Command";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p2,layer/wolfsdk/devtel_globe_command__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_globe_command__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p2";
+				}
+			}
+		}
+	}
+}

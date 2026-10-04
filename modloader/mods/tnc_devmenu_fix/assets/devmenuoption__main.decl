@@ -1,0 +1,50 @@
+{
+	edit = {
+		devMenuList = {
+			num = 5;
+			item[0] = {
+				devMenuDisplayName = "Levels";
+				devMenuSubList = "devmenuoption/maps/maplist";
+			}
+			item[1] = {
+				devMenuDisplayName = "Freedom Chronicles";
+				devMenuSubList = "devmenuoption/dlc";
+			}
+			item[2] = {
+				devMenuDisplayName = "WolfSDK: Box";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c2v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolfsdk/box";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "WolfSDK: Mod test map";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"modtest_start\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c2v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolfsdk/modtest";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "WolfSDK: console test";
+				devMenuCommandStrings = {
+					num = 3;
+					item[0] = "echo WolfSDK dev menu: the next line must print g_debugLayerChanges with value 1";
+					item[1] = "g_debugLayerChanges 1";
+					item[2] = "g_debugLayerChanges";
+				}
+			}
+		}
+	}
+}

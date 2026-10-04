@@ -1,0 +1,46 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_c03p1_start\"";
+					item[1] = "si_nextlayeractive \"layer/fergus,layer/c03p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Hotel";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_c03p1_hotel\"";
+					item[1] = "si_nextlayeractive \"layer/fergus,layer/c03p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p1";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Subway";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_c03p1_subway\"";
+					item[1] = "si_nextlayeractive \"layer/fergus,layer/c03p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p1";
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,332 @@
+{
+  "id": "wolfsdk.tnc_devmenu_fix",
+  "name": "Dev Menu Map Loading",
+  "version": "0.2.0",
+  "author": "wolfsdk",
+  "spiel": "tnc",
+  "priority": 150,
+  "description": "Makes the developer menu's map entries load again (307 starts). Each entry now runs devmap with the spawn spot and layers the missing loadDevMenuOption command would have used. 126 of them also run their dev teleport after loading again: a marker layer in the entry and a small addition to 12 map scripts send the stock events. Not included: chapter progression, the two 'give' lines, and the DLC maps' dev teleports. Loading maps from the menu is confirmed in game; the dev teleports are not yet. The entries 'WolfSDK: Mod test map' and 'WolfSDK: Box' need maps this package does not build yet.",
+  "assets": {
+    "devMenuOption:devmenuoption/code_referenced/new_campaign": {
+      "file": "assets/devmenuoption__code_referenced__new_campaign.decl"
+    },
+    "devMenuOption:devmenuoption/demo": {
+      "file": "assets/devmenuoption__demo.decl"
+    },
+    "devMenuOption:devmenuoption/dlc": {
+      "file": "assets/devmenuoption__dlc.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c00": {
+      "file": "assets/devmenuoption__dlc__c00.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c01": {
+      "file": "assets/devmenuoption__dlc__c01.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c01/c1v1": {
+      "file": "assets/devmenuoption__dlc__c01__c1v1.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c01/c1v2": {
+      "file": "assets/devmenuoption__dlc__c01__c1v2.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c01/c1v3": {
+      "file": "assets/devmenuoption__dlc__c01__c1v3.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c02": {
+      "file": "assets/devmenuoption__dlc__c02.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c02/c2v1": {
+      "file": "assets/devmenuoption__dlc__c02__c2v1.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c02/c2v2": {
+      "file": "assets/devmenuoption__dlc__c02__c2v2.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c02/c2v3": {
+      "file": "assets/devmenuoption__dlc__c02__c2v3.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c03": {
+      "file": "assets/devmenuoption__dlc__c03.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c03/c3v1": {
+      "file": "assets/devmenuoption__dlc__c03__c3v1.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c03/c3v2": {
+      "file": "assets/devmenuoption__dlc__c03__c3v2.decl"
+    },
+    "devMenuOption:devmenuoption/dlc/c03/c3v3": {
+      "file": "assets/devmenuoption__dlc__c03__c3v3.decl"
+    },
+    "devMenuOption:devmenuoption/main": {
+      "file": "assets/devmenuoption__main.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c01": {
+      "file": "assets/devmenuoption__maps__game__wolf__c01.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c01/c01p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c01__c01p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c01/c01p1/c01p1_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c01__c01p1__c01p1_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c01/c01p1/c01p1_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c01__c01p1__c01p1_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p0": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p0.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p0/c02p0_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p0__c02p0_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p0/c02p0_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p0__c02p0_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p1/c02p1_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p1__c02p1_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p1/c02p1_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p1__c02p1_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p2": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p2.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p2/c02p2_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p2__c02p2_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p2/c02p2_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p2__c02p2_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c02/c02p3": {
+      "file": "assets/devmenuoption__maps__game__wolf__c02__c02p3.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c03": {
+      "file": "assets/devmenuoption__maps__game__wolf__c03.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c03/c03p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c03__c03p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c03/c03p1/c03p1_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c03__c03p1__c03p1_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c03/c03p1/c03p1_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c03__c03p1__c03p1_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c03/c03p2": {
+      "file": "assets/devmenuoption__maps__game__wolf__c03__c03p2.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c03/c03p2/c03p2_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c03__c03p2__c03p2_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c03/c03p2/c03p2_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c03__c03p2__c03p2_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c03/c03p3": {
+      "file": "assets/devmenuoption__maps__game__wolf__c03__c03p3.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c04": {
+      "file": "assets/devmenuoption__maps__game__wolf__c04.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c04/c04p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c04__c04p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c04/c04p2": {
+      "file": "assets/devmenuoption__maps__game__wolf__c04__c04p2.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c04/c04p2/c04p2_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c04__c04p2__c04p2_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c04/c04p2/c04p2_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c04__c04p2__c04p2_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c04/c04p3": {
+      "file": "assets/devmenuoption__maps__game__wolf__c04__c04p3.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c05": {
+      "file": "assets/devmenuoption__maps__game__wolf__c05.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c05/c05p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c05__c05p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c05/c05p2": {
+      "file": "assets/devmenuoption__maps__game__wolf__c05__c05p2.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c05/c05p2/c05p2_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c05__c05p2__c05p2_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c05/c05p2/c05p2_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c05__c05p2__c05p2_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c06": {
+      "file": "assets/devmenuoption__maps__game__wolf__c06.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c06/c06p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c06__c06p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c06/c06p2": {
+      "file": "assets/devmenuoption__maps__game__wolf__c06__c06p2.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c06/c06p3": {
+      "file": "assets/devmenuoption__maps__game__wolf__c06__c06p3.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c06/c06p3/c06p3_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c06__c06p3__c06p3_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c06/c06p3/c06p3_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c06__c06p3__c06p3_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c07": {
+      "file": "assets/devmenuoption__maps__game__wolf__c07.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c07/c07p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c07__c07p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c07/c07p1/c07p1_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c07__c07p1__c07p1_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c07/c07p1/c07p1_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c07__c07p1__c07p1_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c07/c07p2": {
+      "file": "assets/devmenuoption__maps__game__wolf__c07__c07p2.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c07/c07p2/c07p2_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c07__c07p2__c07p2_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c07/c07p2/c07p2_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c07__c07p2__c07p2_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c07/c07p3": {
+      "file": "assets/devmenuoption__maps__game__wolf__c07__c07p3.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08/c08p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08__c08p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08/c08p1/c08p1_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08__c08p1__c08p1_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08/c08p1/c08p1_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08__c08p1__c08p1_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08/c08p2": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08__c08p2.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08/c08p2/c08p2_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08__c08p2__c08p2_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08/c08p2/c08p2_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08__c08p2__c08p2_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08/c08p3": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08__c08p3.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08/c08p3/c08p3_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08__c08p3__c08p3_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c08/c08p3/c08p3_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c08__c08p3__c08p3_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c09": {
+      "file": "assets/devmenuoption__maps__game__wolf__c09.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c09/c09p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c09__c09p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c09/c09p1/c09p1_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c09__c09p1__c09p1_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c09/c09p1/c09p1_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c09__c09p1__c09p1_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c09/c09p2": {
+      "file": "assets/devmenuoption__maps__game__wolf__c09__c09p2.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c09/c09p2/c09p2_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c09__c09p2__c09p2_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c09/c09p2/c09p2_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c09__c09p2__c09p2_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c10": {
+      "file": "assets/devmenuoption__maps__game__wolf__c10.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c10/c10p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c10__c10p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c11": {
+      "file": "assets/devmenuoption__maps__game__wolf__c11.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c11/c11p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c11__c11p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c11/c11p1/c11p1_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c11__c11p1__c11p1_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c11/c11p1/c11p1_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c11__c11p1__c11p1_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c12": {
+      "file": "assets/devmenuoption__maps__game__wolf__c12.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c12/c12p1": {
+      "file": "assets/devmenuoption__maps__game__wolf__c12__c12p1.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c12/c12p1/c12p1_fergus_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c12__c12p1__c12p1_fergus_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/c12/c12p1/c12p1_wyatt_devstarts": {
+      "file": "assets/devmenuoption__maps__game__wolf__c12__c12p1__c12p1_wyatt_devstarts.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/endgame": {
+      "file": "assets/devmenuoption__maps__game__wolf__endgame.decl"
+    },
+    "devMenuOption:devmenuoption/maps/game/wolf/endgame/submarine": {
+      "file": "assets/devmenuoption__maps__game__wolf__endgame__submarine.decl"
+    },
+    "devMenuOption:devmenuoption/maps/maplist": {
+      "file": "assets/devmenuoption__maps__maplist.decl"
+    },
+    "extkisclule:maps/game/wolf/c01/c01p1_gameplay/kiscules/c01p1_gameplay_kiscule_devstarts.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c01__c01p1_gameplay__kiscules__c01p1_gameplay_kiscule_devstarts.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c02/c02p0_gameplay/kiscules/c02p0_gameplay_kiscule_devstarts.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c02__c02p0_gameplay__kiscules__c02p0_gameplay_kiscule_devstarts.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c02/c02p1_gameplay/kiscules/c02p1_gameplay_kiscule_devstarts.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c02__c02p1_gameplay__kiscules__c02p1_gameplay_kiscule_devstarts.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c02/c02p2_gameplay/kiscules/gp_kiscule_devstarts.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c02__c02p2_gameplay__kiscules__gp_kiscule_devstarts.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c04/c04p2_gameplay/kiscules/gp_kiscule_dev_starts.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c04__c04p2_gameplay__kiscules__gp_kiscule_dev_starts.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c05/c05p2_gameplay/kiscules/c05p2_gameplay_kiscule_progression.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c05__c05p2_gameplay__kiscules__c05p2_gameplay_kiscule_progression.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c08/c08p1_gameplay/kiscules/gp_kiscule_devstarts.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c08__c08p1_gameplay__kiscules__gp_kiscule_devstarts.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c08/c08p2_gameplay/kiscules/gp_kiscule_devstarts.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c08__c08p2_gameplay__kiscules__gp_kiscule_devstarts.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c09/c09p1_gameplay/kiscules/c09p1_gameplay_kiscule_devstarts.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c09__c09p1_gameplay__kiscules__c09p1_gameplay_kiscule_devstarts.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c09/c09p2_gameplay/kiscules/c09p2_gp_kiscule_devstart.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c09__c09p2_gameplay__kiscules__c09p2_gp_kiscule_devstart.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/c11/c11p1_gameplay/kiscules/c11p1_gameplay_kiscule_devstarts.decl": {
+      "file": "assets/kiscule/maps__game__wolf__c11__c11p1_gameplay__kiscules__c11p1_gameplay_kiscule_devstarts.decl.bin"
+    },
+    "extkisclule:maps/game/wolf/submarine/sub_gp_c07p1/kiscules/gp071_kiscule_c7p1_dev.decl": {
+      "file": "assets/kiscule/maps__game__wolf__submarine__sub_gp_c07p1__kiscules__gp071_kiscule_c7p1_dev.decl.bin"
+    }
+  }
+}

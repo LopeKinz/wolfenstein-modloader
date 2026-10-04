@@ -1,0 +1,736 @@
+{
+  "id": "wolfsdk.gore_tief",
+  "name": "Gore Deep Layer",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "The layers below the behavior tables. Removes the melee block every enemy carries on its head zone (which is why knife kills never bleed in the original), and sets forceInjured on all 13 body zones instead of only the two lower legs. Blood particles stay untouched: they are streamed with a precomputed size, and any change makes the engine throw the particle away entirely.",
+  "priority": 140,
+  "assets": {
+    "entityDef:ai/enemies/default": {
+      "file": "assets/entityDef__ai_enemies_default.decl"
+    },
+    "entityDef:ai/enemies/default_assaultrifle": {
+      "file": "assets/entityDef__ai_enemies_default_assaultrifle.decl"
+    },
+    "entityDef:ai/enemies/default_pistol": {
+      "file": "assets/entityDef__ai_enemies_default_pistol.decl"
+    },
+    "entityDef:ai/tungsten/standard/pistol_base": {
+      "file": "assets/entityDef__ai_tungsten_standard_pistol_base.decl"
+    },
+    "entityDef:ai/tungsten/standard/commander/handgun/commander_46": {
+      "file": "assets/entityDef__ai_tungsten_standard_commander_handgun_commander_46.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/commander": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_commander.decl"
+    },
+    "entityDef:ai/tungsten/standard/rifle_base": {
+      "file": "assets/entityDef__ai_tungsten_standard_rifle_base.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/infantry_1946_grey": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_infantry_1946_grey.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/infantry_1946_gore": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_infantry_1946_gore.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_bunker": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_bunker.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_bunker_var2": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_bunker_var2.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_bunker_var3": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_bunker_var3.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_bunker_var4": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_bunker_var4.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_bunker_var5": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_bunker_var5.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_trenches": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_trenches.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_trenches_var2": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_trenches_var2.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_trenches_var3": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_trenches_var3.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_trenches_var4": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_trenches_var4.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_02/soldier_trenches_var5": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_02_soldier_trenches_var5.decl"
+    },
+    "entityDef:prop/weapon/turret/turret_bunker_rail": {
+      "file": "assets/entityDef__prop_weapon_turret_turret_bunker_rail.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/friendlies": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_friendlies.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/blondie_courtyard": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_blondie_courtyard.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/commander": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_commander.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/fergus_courtyard": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_fergus_courtyard.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/prendergast_courtyard": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_prendergast_courtyard.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/soldier": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_soldier.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/soldier/infantry1946/grey": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_soldier_infantry1946_grey.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/soldier/infantry1946/grey_imposter": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_soldier_infantry1946_grey_imposter.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/soldier_commander": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_soldier_commander.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/soldier_var2": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_soldier_var2.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/soldier_var3": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_soldier_var3.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/soldier_var4": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_soldier_var4.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/soldier_var5": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_soldier_var5.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/wyatt_courtyard": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_wyatt_courtyard.decl"
+    },
+    "entityDef:ai/enemies/default_supersoldat1946": {
+      "file": "assets/entityDef__ai_enemies_default_supersoldat1946.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/wyatt_supersoldaten": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_wyatt_supersoldaten.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/blondie_supersoldaten": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_blondie_supersoldaten.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/fergus_supersoldaten": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_fergus_supersoldaten.decl"
+    },
+    "entityDef:ai/tungsten/supersoldat/1946": {
+      "file": "assets/entityDef__ai_tungsten_supersoldat_1946.decl"
+    },
+    "entityDef:ai/tungsten/c01/part_03/supersoldaten_bossfight": {
+      "file": "assets/entityDef__ai_tungsten_c01_part_03_supersoldaten_bossfight.decl"
+    },
+    "entityDef:ai/enemies/default_drone": {
+      "file": "assets/entityDef__ai_enemies_default_drone.decl"
+    },
+    "entityDef:ai/enemies/ranged_drone": {
+      "file": "assets/entityDef__ai_enemies_ranged_drone.decl"
+    },
+    "entityDef:ai/tungsten/c02/part_01/drone/ranged_drone": {
+      "file": "assets/entityDef__ai_tungsten_c02_part_01_drone_ranged_drone.decl"
+    },
+    "entityDef:ai/tungsten/standard/commander/handgun/commander_60": {
+      "file": "assets/entityDef__ai_tungsten_standard_commander_handgun_commander_60.decl"
+    },
+    "entityDef:ai/tungsten/c02/part_01/pistol/commander60": {
+      "file": "assets/entityDef__ai_tungsten_c02_part_01_pistol_commander60.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/deathshead_commando": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_deathshead_commando.decl"
+    },
+    "entityDef:ai/tungsten/c02/part_01/rifle/commando": {
+      "file": "assets/entityDef__ai_tungsten_c02_part_01_rifle_commando.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/infantry_1960": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_infantry_1960.decl"
+    },
+    "entityDef:ai/tungsten/c02/part_01/rifle/infantry60_01": {
+      "file": "assets/entityDef__ai_tungsten_c02_part_01_rifle_infantry60_01.decl"
+    },
+    "entityDef:ai/enemies/default_guardrobot": {
+      "file": "assets/entityDef__ai_enemies_default_guardrobot.decl"
+    },
+    "entityDef:ai/enemies/guardrobot": {
+      "file": "assets/entityDef__ai_enemies_guardrobot.decl"
+    },
+    "entityDef:ai/tungsten/standard/elite/rifle/black_guard": {
+      "file": "assets/entityDef__ai_tungsten_standard_elite_rifle_black_guard.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/blackguard": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_blackguard.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/soldier": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_soldier.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/fritz": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_fritz.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/officer": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_officer.decl"
+    },
+    "entityDef:ai/tungsten/guardrobot": {
+      "file": "assets/entityDef__ai_tungsten_guardrobot.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/robot": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_robot.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/soldier_02": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_soldier_02.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/soldier_03": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_soldier_03.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/soldier_04": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_soldier_04.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/soldier_05": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_soldier_05.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/soldier_06": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_soldier_06.decl"
+    },
+    "entityDef:ai/tungsten/c03/part_02/soldier_07": {
+      "file": "assets/entityDef__ai_tungsten_c03_part_02_soldier_07.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/drone/drone_moon": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_drone_drone_moon.decl"
+    },
+    "entityDef:ai/enemies/default_baton": {
+      "file": "assets/entityDef__ai_enemies_default_baton.decl"
+    },
+    "entityDef:ai/tungsten/standard/baton_base": {
+      "file": "assets/entityDef__ai_tungsten_standard_baton_base.decl"
+    },
+    "entityDef:ai/tungsten/standard/commander/baton/prison_commander": {
+      "file": "assets/entityDef__ai_tungsten_standard_commander_baton_prison_commander.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_01/baton/prisoncommander01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_01_baton_prisoncommander01.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/baton/prisonguard02": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_baton_prisonguard02.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_01/baton/prisonguard02": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_01_baton_prisonguard02.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_01/baton/prisonguard03": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_01_baton_prisonguard03.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_01/baton/prisonguard04": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_01_baton_prisonguard04.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_01/baton/prisonguard05": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_01_baton_prisonguard05.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/prisonguard01": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_prisonguard01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_01/rifle/prisonguard01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_01_rifle_prisonguard01.decl"
+    },
+    "entityDef:ai/enemies/default_heavy": {
+      "file": "assets/entityDef__ai_enemies_default_heavy.decl"
+    },
+    "entityDef:ai/enemies/default_shotgun_heavy": {
+      "file": "assets/entityDef__ai_enemies_default_shotgun_heavy.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/baton/commander01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_baton_commander01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/baton/prisonguard01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_baton_prisonguard01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/baton/prisonguard02": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_baton_prisonguard02.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/baton/prisonguard05": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_baton_prisonguard05.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/baton/prisonguard07": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_baton_prisonguard07.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/baton/prisonguard08": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_baton_prisonguard08.decl"
+    },
+    "entityDef:ai/tungsten/panzerhund2": {
+      "file": "assets/entityDef__ai_tungsten_panzerhund2.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/corridor/ai_part2_corridor_panzerhund": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_corridor_ai_part2_corridor_panzerhund.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/rifle/prisonguard01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_rifle_prisonguard01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/entrance_guards/ai_part2_entrance_guard_04": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_entrance_guards_ai_part2_entrance_guard_04.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_02/zellenblock_b/ai_part2_zellenblock_b_officer_gernot": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_02_zellenblock_b_ai_part2_zellenblock_b_officer_gernot.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/ai_part3_panzerhund_onthehunt": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_ai_part3_panzerhund_onthehunt.decl"
+    },
+    "entityDef:ai/tungsten/standard/heavysoldier/shotgun/shotgunheavy": {
+      "file": "assets/entityDef__ai_tungsten_standard_heavysoldier_shotgun_shotgunheavy.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/heavy_shotgun": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_heavy_shotgun.decl"
+    },
+    "entityDef:ai/tungsten/standard/commander/handgun/prison_commander_01": {
+      "file": "assets/entityDef__ai_tungsten_standard_commander_handgun_prison_commander_01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/pistol/prisoncommander01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_pistol_prisoncommander01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/fergus": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_fergus.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/prisonguard01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_prisonguard01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/prisonguard02": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_prisonguard02.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/prisonguard03": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_prisonguard03.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/prisonguard04": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_prisonguard04.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/prisonguard05": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_prisonguard05.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/prisonguard06": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_prisonguard06.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/prisonguard08": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_prisonguard08.decl"
+    },
+    "entityDef:ai/tungsten/standard/elite/rifle/prisonriotguard01": {
+      "file": "assets/entityDef__ai_tungsten_standard_elite_rifle_prisonriotguard01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/prisonriotguard01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_prisonriotguard01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/rifle/wyatt": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_rifle_wyatt.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/robot/guardrobot": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_robot_guardrobot.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock/event_01/ai_part3_zellenblock_event_01_riotguard_01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_event_01_ai_part3_zellenblock_event_01_riotguard_01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock/event_03/ai_part3_zellenblock_event_03_riotguard_01": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_event_03_ai_part3_zellenblock_event_03_riotguard_01.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock/event_03/ai_part3_zellenblock_event_03_riotguard_02": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_event_03_ai_part3_zellenblock_event_03_riotguard_02.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_fergus": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_fergus.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_fergus2": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_fergus2.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_riotguard_02": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_riotguard_02.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_riotguard_03": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_riotguard_03.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_riotguard_05": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_riotguard_05.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_riotguard_06": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_riotguard_06.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_riotguard_07": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_riotguard_07.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_riotguard_08": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_riotguard_08.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_riotguard_10": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_riotguard_10.decl"
+    },
+    "entityDef:ai/tungsten/c04/part_03/zellenblock_b/ai_part3_zellenblock_b_riotguard_11": {
+      "file": "assets/entityDef__ai_tungsten_c04_part_03_zellenblock_b_ai_part3_zellenblock_b_riotguard_11.decl"
+    },
+    "entityDef:prop/weapon/turret/turret_c04": {
+      "file": "assets/entityDef__prop_weapon_turret_turret_c04.decl"
+    },
+    "entityDef:ai/enemies/default_firetrooper": {
+      "file": "assets/entityDef__ai_enemies_default_firetrooper.decl"
+    },
+    "entityDef:ai/enemies/default_supersoldat1946_mg46": {
+      "file": "assets/entityDef__ai_enemies_default_supersoldat1946_mg46.decl"
+    },
+    "entityDef:ai/enemies/default_supersoldat1960": {
+      "file": "assets/entityDef__ai_enemies_default_supersoldat1960.decl"
+    },
+    "entityDef:ai/enemies/org_wolf_pistol": {
+      "file": "assets/entityDef__ai_enemies_org_wolf_pistol.decl"
+    },
+    "entityDef:ai/tungsten/c05/part_01/soldier_outside": {
+      "file": "assets/entityDef__ai_tungsten_c05_part_01_soldier_outside.decl"
+    },
+    "entityDef:ai/tungsten/supersoldat/1946_mg46": {
+      "file": "assets/entityDef__ai_tungsten_supersoldat_1946_mg46.decl"
+    },
+    "entityDef:ai/tungsten/c09/part_01/supersoldat46_mg46": {
+      "file": "assets/entityDef__ai_tungsten_c09_part_01_supersoldat46_mg46.decl"
+    },
+    "entityDef:ai/tungsten/c15/part_01/blackguard": {
+      "file": "assets/entityDef__ai_tungsten_c15_part_01_blackguard.decl"
+    },
+    "entityDef:ai/tungsten/standard/heavysoldier/shotgun/fire_trooper": {
+      "file": "assets/entityDef__ai_tungsten_standard_heavysoldier_shotgun_fire_trooper.decl"
+    },
+    "entityDef:ai/tungsten/c15/part_01/firetrooper": {
+      "file": "assets/entityDef__ai_tungsten_c15_part_01_firetrooper.decl"
+    },
+    "entityDef:ai/tungsten/c15/part_01/infantry_commander_1960": {
+      "file": "assets/entityDef__ai_tungsten_c15_part_01_infantry_commander_1960.decl"
+    },
+    "entityDef:ai/tungsten/panzerhund2/default": {
+      "file": "assets/entityDef__ai_tungsten_panzerhund2_default.decl"
+    },
+    "entityDef:ai/tungsten/c15/part_01/panzerhund": {
+      "file": "assets/entityDef__ai_tungsten_c15_part_01_panzerhund.decl"
+    },
+    "entityDef:ai/tungsten/c15/part_01/robot": {
+      "file": "assets/entityDef__ai_tungsten_c15_part_01_robot.decl"
+    },
+    "entityDef:ai/tungsten/supersoldat/1960": {
+      "file": "assets/entityDef__ai_tungsten_supersoldat_1960.decl"
+    },
+    "entityDef:ai/tungsten/c15/part_01/supersoldat": {
+      "file": "assets/entityDef__ai_tungsten_c15_part_01_supersoldat.decl"
+    },
+    "entityDef:ai/tungsten/wol000d/guard": {
+      "file": "assets/entityDef__ai_tungsten_wol000d_guard.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/drone/drone_shootdown": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_drone_drone_shootdown.decl"
+    },
+    "entityDef:ai/tungsten/standard/commander/handgun/airforce_commander": {
+      "file": "assets/entityDef__ai_tungsten_standard_commander_handgun_airforce_commander.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/limpingnazi/pistol_lobby": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_limpingnazi_pistol_lobby.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/panzerhund": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_panzerhund.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/airforce": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_airforce.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/rifle/airforce": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_rifle_airforce.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/rifle/airforce_02": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_rifle_airforce_02.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/rifle/airforce_03": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_rifle_airforce_03.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/rifle/airforce_04": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_rifle_airforce_04.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/rifle/airforce_05": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_rifle_airforce_05.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/rifle/airforce_dirt": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_rifle_airforce_dirt.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/rifle/blackguard_elite": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_rifle_blackguard_elite.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/robot/brokenrobot02": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_robot_brokenrobot02.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_01/robot/guardrobot": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_01_robot_guardrobot.decl"
+    },
+    "entityDef:ai/enemies/default_heavyrobot": {
+      "file": "assets/entityDef__ai_enemies_default_heavyrobot.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/pistol/airforce_commander": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_pistol_airforce_commander.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/rifle/airforce": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_rifle_airforce.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/rifle/airforce_02": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_rifle_airforce_02.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/rifle/airforce_03": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_rifle_airforce_03.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/rifle/airforce_04": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_rifle_airforce_04.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/rifle/airforce_05": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_rifle_airforce_05.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/rifle/blackguard_elite": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_rifle_blackguard_elite.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/robot/guardrobot_aastest": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_robot_guardrobot_aastest.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/robot/guardrobot_aastest128": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_robot_guardrobot_aastest128.decl"
+    },
+    "entityDef:ai/tungsten/heavyrobot": {
+      "file": "assets/entityDef__ai_tungsten_heavyrobot.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/robot/heavyrobot": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_robot_heavyrobot.decl"
+    },
+    "entityDef:ai/tungsten/c06/part_02/robot/heavyrobot_strong": {
+      "file": "assets/entityDef__ai_tungsten_c06_part_02_robot_heavyrobot_strong.decl"
+    },
+    "entityDef:ai/enemies/default_rockettrooper": {
+      "file": "assets/entityDef__ai_enemies_default_rockettrooper.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/baton/camp_guard": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_baton_camp_guard.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/baton/camp_guard_reception": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_baton_camp_guard_reception.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/baton/camp_guard_reception_02": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_baton_camp_guard_reception_02.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/baton/camp_guard_reception_03": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_baton_camp_guard_reception_03.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/baton/camp_guard_reception_04": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_baton_camp_guard_reception_04.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/baton/camp_guard_reception_06": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_baton_camp_guard_reception_06.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/baton/camp_guard_reception_07": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_baton_camp_guard_reception_07.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/baton/camp_guard_reception_helmet": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_baton_camp_guard_reception_helmet.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/baton/commander": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_baton_commander.decl"
+    },
+    "entityDef:ai/tungsten/standard/elite/rifle/camp_riot_guard": {
+      "file": "assets/entityDef__ai_tungsten_standard_elite_rifle_camp_riot_guard.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/rifle/camp_riotguard": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_rifle_camp_riotguard.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/robot/guardrobot": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_robot_guardrobot.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/camp_guard_imposter": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_camp_guard_imposter.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/roofguard": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_roofguard.decl"
+    },
+    "entityDef:ai/tungsten/standard/heavysoldier/rifle/rocket_trooper": {
+      "file": "assets/entityDef__ai_tungsten_standard_heavysoldier_rifle_rocket_trooper.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/roofguard_tower": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_roofguard_tower.decl"
+    },
+    "entityDef:ai/tungsten/c08/part_01/towerguard": {
+      "file": "assets/entityDef__ai_tungsten_c08_part_01_towerguard.decl"
+    },
+    "entityDef:prop/weapon/turret/turret_c08": {
+      "file": "assets/entityDef__prop_weapon_turret_turret_c08.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/heavy_shotgun": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_heavy_shotgun.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/pistol/airforce_commander": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_pistol_airforce_commander.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/rifle/blackguard": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_rifle_blackguard.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/rifle/infantry60_01": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_rifle_infantry60_01.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/rifle/infantry60_02": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_rifle_infantry60_02.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/rifle/infantry60_03": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_rifle_infantry60_03.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/rifle/infantry60_04": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_rifle_infantry60_04.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/rifle/infantry60_05": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_rifle_infantry60_05.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/rifle/infantry60_06": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_rifle_infantry60_06.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/rifle/infantry60_07": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_rifle_infantry60_07.decl"
+    },
+    "entityDef:ai/tungsten/c10/part_01/rifle/supersoldat": {
+      "file": "assets/entityDef__ai_tungsten_c10_part_01_rifle_supersoldat.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/navy": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_navy.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area_02": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area_02.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area_03": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area_03.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/navy_helmet": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_navy_helmet.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area_04": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area_04.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area_05": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area_05.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area_06": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area_06.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area_07": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area_07.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area_firetrooper": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area_firetrooper.decl"
+    },
+    "entityDef:ai/tungsten/standard/commander/handgun/navy_captain": {
+      "file": "assets/entityDef__ai_tungsten_standard_commander_handgun_navy_captain.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area_officer": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area_officer.decl"
+    },
+    "entityDef:ai/tungsten/c11/part_01/open_area_officer_notcaptain": {
+      "file": "assets/entityDef__ai_tungsten_c11_part_01_open_area_officer_notcaptain.decl"
+    },
+    "entityDef:ai/tungsten/c12/part_02/drone/ranged_drone": {
+      "file": "assets/entityDef__ai_tungsten_c12_part_02_drone_ranged_drone.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/rifle/gibraltar_guard": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_rifle_gibraltar_guard.decl"
+    },
+    "entityDef:ai/tungsten/c12/part_02/gibraltar_guard": {
+      "file": "assets/entityDef__ai_tungsten_c12_part_02_gibraltar_guard.decl"
+    },
+    "entityDef:ai/tungsten/c12/part_02/infantry_1960": {
+      "file": "assets/entityDef__ai_tungsten_c12_part_02_infantry_1960.decl"
+    },
+    "entityDef:ai/tungsten/c12/part_02/infantry_1960_snipertrains": {
+      "file": "assets/entityDef__ai_tungsten_c12_part_02_infantry_1960_snipertrains.decl"
+    },
+    "entityDef:ai/tungsten/c12/part_02/rocket_trooper": {
+      "file": "assets/entityDef__ai_tungsten_c12_part_02_rocket_trooper.decl"
+    },
+    "entityDef:ai/tungsten/c12/part_02/supersoldat": {
+      "file": "assets/entityDef__ai_tungsten_c12_part_02_supersoldat.decl"
+    },
+    "entityDef:prop/weapon/turret/turret_c12": {
+      "file": "assets/entityDef__prop_weapon_turret_turret_c12.decl"
+    },
+    "entityDef:ai/enemies/default_spacetrooper": {
+      "file": "assets/entityDef__ai_enemies_default_spacetrooper.decl"
+    },
+    "entityDef:ai/enemies/lunar_drone": {
+      "file": "assets/entityDef__ai_enemies_lunar_drone.decl"
+    },
+    "entityDef:ai/tungsten/standard/laserpistol_base": {
+      "file": "assets/entityDef__ai_tungsten_standard_laserpistol_base.decl"
+    },
+    "entityDef:ai/tungsten/standard/commander/laserpistol/space_commander": {
+      "file": "assets/entityDef__ai_tungsten_standard_commander_laserpistol_space_commander.decl"
+    },
+    "entityDef:ai/tungsten/c13/part_01/pistol/spacecommander": {
+      "file": "assets/entityDef__ai_tungsten_c13_part_01_pistol_spacecommander.decl"
+    },
+    "entityDef:ai/tungsten/standard/soldier/laserrifle/space_marine": {
+      "file": "assets/entityDef__ai_tungsten_standard_soldier_laserrifle_space_marine.decl"
+    },
+    "entityDef:ai/tungsten/c13/part_01/rifle/spacemarine": {
+      "file": "assets/entityDef__ai_tungsten_c13_part_01_rifle_spacemarine.decl"
+    },
+    "entityDef:ai/tungsten/standard/heavysoldier/laserrifle/space_trooper": {
+      "file": "assets/entityDef__ai_tungsten_standard_heavysoldier_laserrifle_space_trooper.decl"
+    },
+    "entityDef:ai/tungsten/c13/part_01/rifle/spacetrooper": {
+      "file": "assets/entityDef__ai_tungsten_c13_part_01_rifle_spacetrooper.decl"
+    },
+    "entityDef:ai/tungsten/c13/part_01/rifle/supersoldat60": {
+      "file": "assets/entityDef__ai_tungsten_c13_part_01_rifle_supersoldat60.decl"
+    },
+    "entityDef:ai/tungsten/c14/part_01/pistol/airforce_commander": {
+      "file": "assets/entityDef__ai_tungsten_c14_part_01_pistol_airforce_commander.decl"
+    },
+    "entityDef:ai/tungsten/c14/part_01/rifle/airforce": {
+      "file": "assets/entityDef__ai_tungsten_c14_part_01_rifle_airforce.decl"
+    },
+    "entityDef:ai/tungsten/c14/part_01/rifle/airforce_02": {
+      "file": "assets/entityDef__ai_tungsten_c14_part_01_rifle_airforce_02.decl"
+    },
+    "entityDef:ai/tungsten/c14/part_01/rifle/airforce_03": {
+      "file": "assets/entityDef__ai_tungsten_c14_part_01_rifle_airforce_03.decl"
+    },
+    "entityDef:ai/tungsten/c14/part_01/rifle/airforce_04": {
+      "file": "assets/entityDef__ai_tungsten_c14_part_01_rifle_airforce_04.decl"
+    },
+    "entityDef:ai/tungsten/c14/part_01/rifle/airforce_05": {
+      "file": "assets/entityDef__ai_tungsten_c14_part_01_rifle_airforce_05.decl"
+    },
+    "entityDef:ai/tungsten/c14/part_01/rifle/blackguard_elite": {
+      "file": "assets/entityDef__ai_tungsten_c14_part_01_rifle_blackguard_elite.decl"
+    },
+    "entityDef:ai/tungsten/c14/part_01/shrapneltrooper": {
+      "file": "assets/entityDef__ai_tungsten_c14_part_01_shrapneltrooper.decl"
+    },
+    "entityDef:ai/tungsten/c16/part_01/fire/firetrooper": {
+      "file": "assets/entityDef__ai_tungsten_c16_part_01_fire_firetrooper.decl"
+    },
+    "entityDef:ai/tungsten/c16/part_01/pistol/commander_60": {
+      "file": "assets/entityDef__ai_tungsten_c16_part_01_pistol_commander_60.decl"
+    },
+    "entityDef:ai/tungsten/c16/part_01/rifle/blackguard_elite": {
+      "file": "assets/entityDef__ai_tungsten_c16_part_01_rifle_blackguard_elite.decl"
+    },
+    "entityDef:ai/tungsten/c16/part_01/robot/guardrobot": {
+      "file": "assets/entityDef__ai_tungsten_c16_part_01_robot_guardrobot.decl"
+    },
+    "entityDef:ai/tungsten/c16/part_01/rocket/rockettrooper": {
+      "file": "assets/entityDef__ai_tungsten_c16_part_01_rocket_rockettrooper.decl"
+    },
+    "entityDef:ai/tungsten/c16/part_01/supersoldat": {
+      "file": "assets/entityDef__ai_tungsten_c16_part_01_supersoldat.decl"
+    },
+    "entityDef:ai/tungsten/c16/part_02/mecha_deathshead_stage2": {
+      "file": "assets/entityDef__ai_tungsten_c16_part_02_mecha_deathshead_stage2.decl"
+    },
+    "entityDef:ai/tungsten/c16/part_02/mecha_deathshead_stage3": {
+      "file": "assets/entityDef__ai_tungsten_c16_part_02_mecha_deathshead_stage3.decl"
+    },
+    "entityDef:ai/tungsten/c16/part_02/prototyperobot": {
+      "file": "assets/entityDef__ai_tungsten_c16_part_02_prototyperobot.decl"
+    }
+  }
+}

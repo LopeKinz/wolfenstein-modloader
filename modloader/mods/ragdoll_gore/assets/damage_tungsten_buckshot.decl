@@ -1,0 +1,158 @@
+{
+	edit = {
+		damageParms = {
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "buckshot";
+			damageTypes = "DAMAGETYPE_SHOTGUN";
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			declGoreBehavior = "standard/shotgun";
+			minDamage = 15;
+			maxDamage = 25;
+			ragdollImpulseMag = 1540;
+			feedbackScreenEffects = {
+				feedbackSmall = {
+					parms = {
+						screenDamageTime = 1.4000000954;
+						//screenDamageMtr = "textures/particles/gore/screen/screensplat01_guitest";
+						screenDamageSize = {
+							x = 400;
+							y = 600;
+						}
+						offsetPctX = {
+							x = -0.25;
+							y = 0.25;
+						}
+						offsetPctY = {
+							x = -0.25;
+							y = 0.25;
+						}
+						distribPctX = {
+							x = -0.25;
+							y = 0.25;
+						}
+						distribPctY = {
+							x = -0.25;
+							y = 0.25;
+						}
+						driftYAmount = {
+							x = 0.1000000015;
+							y = 0.5;
+						}
+						delay = {
+							y = 0.3000000119;
+						}
+						fadeOutTime = 1;
+						screenDamageFrames = 4;
+					}
+					radius = 100;
+				}
+				feedbackMedium = {
+					parms = {
+						screenDamageTime = 1.4000000954;
+						//screenDamageMtr = "textures/particles/gore/screen/screensplat01_guitest";
+						screenDamageSize = {
+							x = 400;
+							y = 600;
+						}
+						offsetPctX = {
+							x = -0.25;
+							y = 0.5;
+						}
+						offsetPctY = {
+							x = -0.25;
+						}
+						distribPctX = {
+							x = 0.400000006;
+							y = 0.8000000119;
+						}
+						distribPctY = {
+							x = -0.6000000238;
+							y = 0.400000006;
+						}
+						driftYAmount = {
+							x = 0.1000000015;
+							y = 0.5;
+						}
+						delay = {
+							y = 0.3000000119;
+						}
+						fadeOutTime = 1;
+						screenDamageFrames = 4;
+					}
+					radius = 100;
+				}
+				feedbackLarge = {
+					parms = {
+						screenDamageTime = 1.4000000954;
+						//screenDamageMtr = "textures/particles/gore/screen/screensplat01_guitest";
+						screenDamageSize = {
+							x = 400;
+							y = 600;
+						}
+						offsetPctX = {
+							x = -0.25;
+							y = 0.5;
+						}
+						offsetPctY = {
+							x = -0.25;
+						}
+						distribPctX = {
+							x = 0.400000006;
+							y = 0.8000000119;
+						}
+						distribPctY = {
+							x = -0.6000000238;
+							y = 0.400000006;
+						}
+						driftYAmount = {
+							x = 0.5;
+							y = 0.0299999993;
+						}
+						delay = {
+							y = 0.3000000119;
+						}
+						fadeOutTime = 1;
+						screenDamageFrames = 4;
+					}
+					radius = 100;
+				}
+				feedbackGib = {
+					parms = {
+						screenDamageTime = 1.4000000954;
+						//screenDamageMtr = "textures/particles/gore/screen/screensplat01_guitest";
+						screenDamageSize = {
+							x = 600;
+							y = 920;
+						}
+						offsetPctX = {
+							x = -0.25;
+							y = 0.5;
+						}
+						offsetPctY = {
+							x = -0.25;
+						}
+						distribPctX = {
+							x = 0.400000006;
+							y = 0.8000000119;
+						}
+						distribPctY = {
+							x = -0.6000000238;
+							y = 0.400000006;
+						}
+						driftYAmount = {
+							x = 0.1000000015;
+							y = 0.5;
+						}
+						delay = {
+							y = 0.3000000119;
+						}
+						fadeOutTime = 1;
+						screenDamageFrames = 4;
+					}
+					radius = 100;
+				}
+			}
+		}
+	}
+}

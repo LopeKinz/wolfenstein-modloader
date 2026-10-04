@@ -1,0 +1,16 @@
+{
+bumpmap	"models/weapons/pistole61/textures/silencer_pistole_61_local.tga"
+diffusemap	"models/weapons/pistole61/textures/silencer_pistole_61.tga"
+loosealbedo	textures/system/constant_color/black.tga$mtlkind=albedo$streamed
+loosebloommask	textures/system/constant_color/black_noalpha$mtlkind=bloommask$streamed
+loosecolormask	textures/system/constant_color/black_noalpha$mtlkind=colormask$streamed
+loosecover	textures/system/constant_color/white$mtlkind=cover$streamed
+loosenormal	models/weapons/pistole61/textures/silencer_pistole_61_local.tga$mtlkind=normal$streamed
+loosesmoothness	textures/common/flatcolour/glosshgh_pm.tga$mtlkind=smoothness$smoothnessnormal=textures/system/flat_normal_noalpha$streamed
+loosespec	textures/system/specular/gold.tga$mtlkind=specular$streamed
+loosesssmask	textures/system/constant_color/white$mtlkind=sssmask$streamed
+powermap	"models/weapons/pistole61/textures/silencer_pistole_61_pm.tga"
+specularmap	"models/weapons/pistole61/textures/silencer_pistole_61_s.tga"
+surfacetype	1.000000
+tangentbumpinput	"models/weapons/pistole61/textures/silencer_pistole_61_obj.tga"
+}

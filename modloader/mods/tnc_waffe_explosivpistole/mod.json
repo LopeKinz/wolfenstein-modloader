@@ -1,0 +1,31 @@
+{
+  "id": "wolfsdk.tnc_waffe_explosivpistole",
+  "name": "Explosive Pistol",
+  "version": "1.1.0",
+  "author": "wolfsdk",
+  "spiel": "tnc",
+  "priority": 100,
+  "description": "The standard pistol fires the rocket of the Kampfpistole (launcher attachment), which explodes on impact; the magazine holds 30 instead of 10 rounds, also with the magazine upgrade. The ammo and the three projectile upgrades (silencer, elephant rounds, both together) point straight to projectile/player/kampf_pistol_rocket. The pistol therefore takes over the launcher's firing sound, recoil and direct-hit damage, and the silencer no longer makes it quiet. The rocket only arms after about 5 m of flight; if it hits closer, it bounces off and goes off after 3 s. Version 1.0.0 let the pistol projectile inherit from the rocket; that did not arrive in the game because the engine loads the pistol before the rocket (re_probes/agent_reports/explosivpistole_diag.md). The 30-round magazine is confirmed in game. The explosion is only checked structurally (tools/verify_weapon_mod.py) and not yet confirmed in game. Retail decls only, every entry fits its slot, no archive rebuild. The upgrade files are retail versions: magazine_size from patch_3 without indentation, elephantrounds from patch_2 unchanged, because the loader writes one file into every copy.",
+  "assets": {
+    "ammo:ammo/player/sp/handgun": {
+      "set": {
+        "edit.projectileDecl": "projectile/player/kampf_pistol_rocket",
+        "edit.clipSize": 30
+      }
+    },
+    "upgrade:weapons/handgun/magazine_size": {
+      "file": "decls/upgrade__weapons_handgun_magazine_size.decl",
+      "set": { "edit.modifiersAmmo.item[0].data.valueInt": 30 }
+    },
+    "upgrade:weapons/handgun/silencer": {
+      "set": { "edit.modifiersData.item[0].data.valueDecl": "projectile/player/kampf_pistol_rocket" }
+    },
+    "upgrade:weapons/handgun/elephantrounds": {
+      "file": "decls/upgrade__weapons_handgun_elephantrounds.decl",
+      "set": { "edit.modifiersData.item[0].data.valueDecl": "projectile/player/kampf_pistol_rocket" }
+    },
+    "upgrade:weapons/handgun/elephantrounds_silencer": {
+      "set": { "edit.modifiersData.item[0].data.valueDecl": "projectile/player/kampf_pistol_rocket" }
+    }
+  }
+}

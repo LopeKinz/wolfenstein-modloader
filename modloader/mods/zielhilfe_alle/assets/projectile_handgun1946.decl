@@ -1,0 +1,35 @@
+{
+	inherit = "projectile/base/bullet_light_default";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			item[0] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+			}
+			item[1] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+			}
+			item[2] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+			}
+			item[3] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+			}
+			item[4] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+			}
+			item[5] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+			}
+			item[6] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+			}
+			item[7] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+			}
+			item[8] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+			}
+		}
+	}
+}

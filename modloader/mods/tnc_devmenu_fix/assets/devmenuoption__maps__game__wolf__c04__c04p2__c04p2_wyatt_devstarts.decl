@@ -1,0 +1,46 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_c04p2\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c02p2/ballast,layer/c02p2/generator,layer/c02p2/hull,layer/c02p2/maintenance,layer/c02p2/ventilation,layer/c02p2/c04p2_storage,layer/wyatt,layer/c02p2/c04p2_gameplay,layer/c04p2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c04/c04p2";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Super Soldat Fight";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_super_soldat_fight\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c02p2/ballast,layer/c02p2/generator,layer/c02p2/hull,layer/c02p2/maintenance,layer/c02p2/ventilation,layer/c02p2/c04p2_storage,layer/wyatt,layer/c02p2/c04p2_gameplay,layer/c04p2,layer/wolfsdk/devstart_super_soldat\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_super_soldat\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c04/c04p2";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "End Fight";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_end_fight\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c02p2/ballast,layer/c02p2/generator,layer/c02p2/hull,layer/c02p2/maintenance,layer/c02p2/ventilation,layer/c02p2/c04p2_storage,layer/wyatt,layer/c02p2/c04p2_gameplay,layer/c04p2,layer/wolfsdk/devstart_end_fight\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_end_fight\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c04/c04p2";
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,148 @@
+{
+  "id": "wolfsdk.ragdoll_gore",
+  "name": "Ragdolls Stay Dismemberable",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Sets ragdollOnDeath and cuttableRadius on every damage type of the player weapons and raises ragdollImpulseMag by 120%. Out of the box only area damage has ragdollOnDeath (38 decls) and only the MG60 plus the robot lasers have a cuttableRadius (18 decls) - which is why corpses otherwise freeze in their death animation instead of reacting to further hits.",
+  "priority": 150,
+  "assets": {
+    "damage:damage/tungsten/heavy": {
+      "file": "assets/damage_tungsten_heavy.decl"
+    },
+    "damage:damage/tungsten/mg46": {
+      "file": "assets/damage_tungsten_mg46.decl"
+    },
+    "damage:damage/tungsten/mg60": {
+      "file": "assets/damage_tungsten_mg60.decl"
+    },
+    "damage:damage/tungsten/ar60marksman": {
+      "file": "assets/damage_tungsten_ar60marksman.decl"
+    },
+    "damage:damage/tungsten/ar60marksmanbattery": {
+      "file": "assets/damage_tungsten_ar60marksmanbattery.decl"
+    },
+    "damage:damage/tungsten/light": {
+      "file": "assets/damage_tungsten_light.decl"
+    },
+    "damage:damage/tungsten/lightsilenced": {
+      "file": "assets/damage_tungsten_lightsilenced.decl"
+    },
+    "damage:damage/tungsten/knife": {
+      "file": "assets/damage_tungsten_knife.decl"
+    },
+    "damage:damage/tungsten/throwingknife": {
+      "file": "assets/damage_tungsten_throwingknife.decl"
+    },
+    "damage:damage/tungsten/lasercutter/standard": {
+      "file": "assets/damage_tungsten_lasercutter_standard.decl"
+    },
+    "damage:damage/tungsten/lasercutter/shooting": {
+      "file": "assets/damage_tungsten_lasercutter_shooting.decl"
+    },
+    "damage:damage/tungsten/lkw/shooting": {
+      "file": "assets/damage_tungsten_lkw_shooting.decl"
+    },
+    "damage:damage/tungsten/lkw/shooting_auto": {
+      "file": "assets/damage_tungsten_lkw_shooting_auto.decl"
+    },
+    "damage:damage/tungsten/lkw/standard": {
+      "file": "assets/damage_tungsten_lkw_standard.decl"
+    },
+    "damage:damage/tungsten/rocketlauncher": {
+      "file": "assets/damage_tungsten_rocketlauncher.decl"
+    },
+    "damage:damage/tungsten/rocketlauncher_splash": {
+      "file": "assets/damage_tungsten_rocketlauncher_splash.decl"
+    },
+    "damage:damage/tungsten/buckshot": {
+      "file": "assets/damage_tungsten_buckshot.decl"
+    },
+    "damage:damage/tungsten/shrapnel": {
+      "file": "assets/damage_tungsten_shrapnel.decl"
+    },
+    "damage:damage/tungsten/player/turret": {
+      "file": "assets/damage_tungsten_player_turret.decl"
+    },
+    "damage:damage/tungsten/smg": {
+      "file": "assets/damage_tungsten_smg.decl"
+    },
+    "damage:damage/tungsten/artillery": {
+      "file": "assets/damage_tungsten_artillery.decl"
+    },
+    "damage:damage/tungsten/artillery_splash": {
+      "file": "assets/damage_tungsten_artillery_splash.decl"
+    },
+    "damage:damage/tungsten/ar46single": {
+      "file": "assets/damage_tungsten_ar46single.decl"
+    },
+    "damage:damage/tungsten/handgrenade": {
+      "file": "assets/damage_tungsten_handgrenade.decl"
+    },
+    "damage:damage/tungsten/handgrenade_splash": {
+      "file": "assets/damage_tungsten_handgrenade_splash.decl"
+    },
+    "damage:damage/tungsten/handgrenade_selfdet": {
+      "file": "assets/damage_tungsten_handgrenade_selfdet.decl"
+    },
+    "damage:damage/tungsten/handgrenade_selfdetsplash": {
+      "file": "assets/damage_tungsten_handgrenade_selfdetsplash.decl"
+    },
+    "damage:damage/tungsten/handgrenadeemp": {
+      "file": "assets/damage_tungsten_handgrenadeemp.decl"
+    },
+    "damage:damage/tungsten/handgrenadeemp_splash": {
+      "file": "assets/damage_tungsten_handgrenadeemp_splash.decl"
+    },
+    "damage:damage/tungsten/handgrenade_selfdetemp": {
+      "file": "assets/damage_tungsten_handgrenade_selfdetemp.decl"
+    },
+    "damage:damage/tungsten/handgrenade_selfdetsplashemp": {
+      "file": "assets/damage_tungsten_handgrenade_selfdetsplashemp.decl"
+    },
+    "damage:damage/tungsten/laserturret/shooting": {
+      "file": "assets/damage_tungsten_laserturret_shooting.decl"
+    },
+    "damage:damage/tungsten/playersuicide_novieweffect": {
+      "file": "assets/damage_tungsten_playersuicide_novieweffect.decl"
+    },
+    "damage:damage/tungsten/lkw/shooting_lockon": {
+      "file": "assets/damage_tungsten_lkw_shooting_lockon.decl"
+    },
+    "damage:damage/tungsten/lkw/shooting_reflect": {
+      "file": "assets/damage_tungsten_lkw_shooting_reflect.decl"
+    },
+    "damage:damage/tungsten/mg60_stealthhelicopter_c06": {
+      "file": "assets/damage_tungsten_mg60_stealthhelicopter_c06.decl"
+    },
+    "damage:damage/tungsten/faust_chaingun": {
+      "file": "assets/damage_tungsten_faust_chaingun.decl"
+    },
+    "damage:damage/tungsten/faust_rocketlauncher": {
+      "file": "assets/damage_tungsten_faust_rocketlauncher.decl"
+    },
+    "damage:damage/tungsten/faust_rocketlauncher_splash": {
+      "file": "assets/damage_tungsten_faust_rocketlauncher_splash.decl"
+    },
+    "damage:damage/tungsten/powerloader": {
+      "file": "assets/damage_tungsten_powerloader.decl"
+    },
+    "damage:damage/tungsten/powerloader/runover": {
+      "file": "assets/damage_tungsten_powerloader_runover.decl"
+    },
+    "damage:damage/tungsten/aav_rocketlauncher_splash": {
+      "file": "assets/damage_tungsten_aav_rocketlauncher_splash.decl"
+    },
+    "damage:damage/tungsten/londonmonitor_rocketlauncher": {
+      "file": "assets/damage_tungsten_londonmonitor_rocketlauncher.decl"
+    },
+    "damage:damage/tungsten/londonmonitor_rocketlauncher_splash": {
+      "file": "assets/damage_tungsten_londonmonitor_rocketlauncher_splash.decl"
+    },
+    "damage:damage/tungsten/heli_rocketlauncher_fejk": {
+      "file": "assets/damage_tungsten_heli_rocketlauncher_fejk.decl"
+    },
+    "damage:damage/tungsten/aav_rocketlauncher": {
+      "file": "assets/damage_tungsten_aav_rocketlauncher.decl"
+    }
+  }
+}

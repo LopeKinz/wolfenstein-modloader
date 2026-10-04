@@ -1,0 +1,72 @@
+{
+	edit = {
+		devMenuList = {
+			num = 5;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_start\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c06p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c06/c06p3";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Interrogation Room";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_interrogation\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c06p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c06/c06p3";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Courthouse";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_courthouse\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c06p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c06/c06p3";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Courthouse - After takedown";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_aftertakedown\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c06p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c06/c06p3";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Der Volksplatz";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_volksplatz\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c06p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c06/c06p3";
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,31 @@
+{
+  "id": "wolfsdk.gore_realistisch",
+  "name": "More Realistic Gore",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Gives every weapon class its own gore table instead of the very restrained stock values (out of the box the pistol and SMG only know SMALL_WOUND). Also uses GORETYPE_DECAPITATION, GORETYPE_TORSO_SPLIT and GORETYPE_DISINTIGRATE, which the engine knows but the game does not use in a single table. Every effect is tied through damageModifiers to the damage actually dealt: a grazing shot wounds, a point-blank shotgun blast tears apart.",
+  "priority": 160,
+  "assets": {
+    "goreBehavior:standard/pistol": {
+      "file": "assets/standard_pistol.decl"
+    },
+    "goreBehavior:standard/smg": {
+      "file": "assets/standard_smg.decl"
+    },
+    "goreBehavior:standard/rifle": {
+      "file": "assets/standard_rifle.decl"
+    },
+    "goreBehavior:standard/shotgun": {
+      "file": "assets/standard_shotgun.decl"
+    },
+    "goreBehavior:standard/heavy": {
+      "file": "assets/standard_heavy.decl"
+    },
+    "goreBehavior:standard/lkw": {
+      "file": "assets/standard_lkw.decl"
+    },
+    "goreBehavior:standard/explosion": {
+      "file": "assets/standard_explosion.decl"
+    }
+  }
+}

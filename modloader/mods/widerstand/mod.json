@@ -1,0 +1,81 @@
+{
+  "id": "wolfsdk.widerstand",
+  "name": "Resistance - Combat Overhaul",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "One coherent overhaul instead of tweaking single numbers: enemies in chapter 6 are tougher and better armed, the player can take more, the pistol becomes a serious weapon, and the standard pistol visibly wears a different material. Touches 6 decl types and 12 assets.",
+  "priority": 200,
+  "assets": {
+    "entityDef:ai/tungsten/c06/part_01/rifle/airforce": {
+      "set": {
+        "edit.aiHealth.components.components[0].cur": 150,
+        "edit.aiHealth.components.components[0].max": 150,
+        "edit.startingInventory.item[0].inventoryDecl": "weapon/ai/shotgun"
+      }
+    },
+    "entityDef:ai/tungsten/c06/part_01/rifle/airforce_02": {
+      "set": {
+        "edit.aiHealth.components.components[0].cur": 150,
+        "edit.aiHealth.components.components[0].max": 150
+      }
+    },
+    "entityDef:ai/tungsten/c06/part_01/panzerhund": {
+      "set": {
+        "edit.aiHealth.components.components[0].cur": 1000,
+        "edit.aiHealth.components.components[0].max": 1000
+      }
+    },
+    "entityDef:player/game/wolf/c06/c06p1": {
+      "set": {
+        "edit.playerHealth.components.components[1].cur": 150
+      }
+    },
+    "weapon:weapon/handgun_base": {
+      "set": {
+        "edit.validAmmoClips.item[0].clipSize": 30,
+        "edit.firingIntervals.firingIntervals[0]": 90,
+        "edit.firingIntervals.firingIntervals[1]": 55,
+        "edit.spreadIncreasedByMovement": 0.2
+      }
+    },
+    "damage:damage/tungsten/light": {
+      "set": {
+        "edit.damageParms.minDamage": 26,
+        "edit.damageParms.maxDamage": 34,
+        "edit.damageParms.ragdollImpulseMag": 900
+      }
+    },
+    "weapon:weapon/shotgun_base": {
+      "set": {
+        "edit.firingIntervals.firingIntervals[0]": 110,
+        "edit.firingIntervals.firingIntervals[2]": 110,
+        "edit.validAmmoClips.item[0].clipSize": 32
+      }
+    },
+    "damage:damage/tungsten/buckshot": {
+      "set": {
+        "edit.damageParms.minDamage": 30,
+        "edit.damageParms.maxDamage": 48,
+        "edit.damageParms.ragdollImpulseMag": 1400
+      }
+    },
+    "damage:damage/tungsten/mg60": {
+      "set": {
+        "edit.damageParms.minDamage": 24.0,
+        "edit.damageParms.maxDamage": 32.0
+      }
+    },
+    "damage:damage/tungsten/mg46": {
+      "set": {
+        "edit.damageParms.minDamage": 22.0,
+        "edit.damageParms.maxDamage": 30.0
+      }
+    },
+    "material:models/weapons/handgun/handgun_hg": {
+      "set": {
+        "diffusemap": "models/weapons/Handgun/Handgun_white_hg",
+        "virtualmapping": "{ 0.015625, 0.015625, 0.000000, 0.062500 }"
+      }
+    }
+  }
+}

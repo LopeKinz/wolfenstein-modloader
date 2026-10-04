@@ -1,0 +1,23 @@
+{
+	edit = {
+		devMenuList = {
+			num = 4;
+			item[0] = {
+				devMenuDisplayName = "P0 - Awakening";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c02/c02p0";
+			}
+			item[1] = {
+				devMenuDisplayName = "P1 - Under Seige";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c02/c02p1";
+			}
+			item[2] = {
+				devMenuDisplayName = "P2 - The Signal";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c02/c02p2";
+			}
+			item[3] = {
+				devMenuDisplayName = "P3 - Burial";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c02/c02p3";
+			}
+		}
+	}
+}

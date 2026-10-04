@@ -1,0 +1,15 @@
+{
+	edit = {
+		factionNameId = "#str_10023";
+		parentFaction = "faction/auth";
+		relationships = {
+			relationships = {
+				num = 1;
+				item[0] = {
+					otherFaction = "faction/auth";
+					attitude = "ATTITUDE_HATE";
+				}
+			}
+		}
+	}
+}

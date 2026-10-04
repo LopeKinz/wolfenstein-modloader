@@ -1,0 +1,109 @@
+{
+	inherit = "default";
+	edit = {
+		defaultEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		metalEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_metal";
+		}
+		metalHollow = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_metal";
+		}
+		metalSheet = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_metal";
+		}
+		metalVent = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_metal";
+		}
+		stoneEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_helicopter_concrete";
+		}
+		fleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			decalMaterial = {
+				num = 0;
+			}
+			isBloody = false;
+		}
+		woodEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		cardboardEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		liquidEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		glassEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_helicopter_concrete";
+		}
+		plasticEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_helicopter_concrete";
+		}
+		asphaltEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		dirtEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		concreteEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_helicopter_concrete";
+		}
+		plasterEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_helicopter_concrete";
+		}
+		foilageEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		linoleumEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		fabricEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		rubberEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		rockEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		steamPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		waterPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		armorEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		sludgeEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		bloodPoolEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		mutantFleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		thickPaddingEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_Dirt";
+		}
+		oilPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_metal";
+		}
+		electronicsEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_metal";
+		}
+		panzerMetalEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_metal";
+		}
+		breakableArmorEffect = {
+			particleImpact = "wolf/bulletimpacts/c02_Helicopter_metal";
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+			sndImpact = "projectile/bullet_impacts/imp_metal";
+		}
+	}
+}

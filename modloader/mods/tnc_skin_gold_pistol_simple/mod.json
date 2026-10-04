@@ -1,0 +1,20 @@
+{
+  "id": "wolfsdk.tnc_skin_gold_pistol_simple",
+  "name": "Golden Pistol (Simple)",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Makes the standard pistol (campaign and DLC 'Agent Silent Death') golden, using material decls only: loosealbedo to black, loosespec to specular/gold, loosesmoothness to high gloss. Exactly the recipe retail uses to make textures/pickups/gold gold. All images used are in gameresources.resources (always loaded). Covers the body, silencer, both magazines, bullets, pickup and the blood variants. Do not enable together with 'Golden Pistol': this mod swaps the materials and hides its textures. Structurally valid, not yet confirmed in game.",
+  "priority": 100,
+  "spiel": "tnc",
+  "assets": {
+    "material:models/weapons/pistole61/textures/pistole_61": { "file": "assets/pistole_61.decl" },
+    "material:models/weapons/pistole61/textures/pistole_61_blood": { "file": "assets/pistole_61_blood.decl" },
+    "material:models/weapons/pistole61/textures/silencer_pistole_61": { "file": "assets/silencer_pistole_61.decl" },
+    "material:models/weapons/pistole61/textures/regular_magazine_pistole_61": { "file": "assets/regular_magazine_pistole_61.decl" },
+    "material:models/weapons/pistole61/textures/pistole_extendedmag_01": { "file": "assets/pistole_extendedmag_01.decl" },
+    "material:models/weapons/pistole61/textures/bullet_pistole_61": { "file": "assets/bullet_pistole_61.decl" },
+    "material:models/weapons/pistole61/textures/pistol_elephantround_01": { "file": "assets/pistol_elephantround_01.decl" },
+    "material:models/weapons/pistole61/textures/pistol_elephantround_01blood": { "file": "assets/pistol_elephantround_01blood.decl" },
+    "material:models/weapons/pistole61/textures/pistole_61_pickup_01": { "file": "assets/pistole_61_pickup_01.decl" }
+  }
+}

@@ -50,6 +50,7 @@
 <li><strong>Wolfenstein II: The New Colossus</strong> (id Tech 6, <code>NewColossus_x64vk.exe</code>) — the SDK locates and launches it, passing Cvars, and <strong>now writes its archives too</strong>: <code>wolfsdk/tncpatch.py</code> patches its IDCL containers directly (<code>wolfsdk/game.py</code>, <code>TITLES["tnc"].mods = True</code> for both titles). Decl value edits, a BC1 weapon skin, and a full <code>dlc_0</code>-precedence custom map have all been confirmed working in a real, running game — see the table below and <a href="TNC-Modding-Surface.html">TNC Modding Surface</a>.</li>
 </ul>
 <p>The tool itself is described in <code>../README.md</code>. This section contains what has been discovered about the games.</p>
+<p><strong>Download:</strong> the first app release, WolfSDK 0.2.0, is on the <a href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0">release page</a>: a Loader for players and a Studio for modders (the Studio download contains the Loader too). Windows only, Steam versions of both games. Unzip and run <code>WolfSDK.cmd</code>; Python is bundled.</p>
 <hr />
 <h2 id="the-most-important-rule-measured--speculated">The Most Important Rule: Measured ≠ Speculated</h2>
 <p>This project is only as valuable as you can trust your claims. Therefore, the documents define three levels of proof, most sharply formulated in <code>Asset-Loading-Paths.md</code>:</p>

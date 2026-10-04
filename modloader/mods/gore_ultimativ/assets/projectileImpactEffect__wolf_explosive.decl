@@ -1,0 +1,104 @@
+{
+	inherit = "default";
+	edit = {
+		defaultEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_concrete";
+		}
+		metalEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_metal";
+		}
+		metalHollow = {
+			particleImpact = "wolf/bulletimpacts/explosive_metal";
+		}
+		metalSheet = {
+			particleImpact = "wolf/bulletimpacts/explosive_metal";
+		}
+		metalVent = {
+			particleImpact = "wolf/bulletimpacts/explosive_metal";
+		}
+		stoneEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_stone";
+		}
+		fleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		woodEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_wood";
+		}
+		cardboardEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_wood";
+		}
+		// liquidEffect = {
+			// particleImpact = "wolf/bulletimpacts/water01";
+		// }
+		glassEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_glass";
+		}
+		plasticEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_stone";
+		}
+		asphaltEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_stone";
+		}
+		dirtEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_dirt";
+		}
+		concreteEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_concrete";
+		}
+		plasterEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_concrete";
+		}
+		foilageEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_wood";
+		}
+		linoleumEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_stone";
+		}
+		fabricEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_wood";
+		}
+		rubberEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_stone";
+		}
+		rockEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_stone";
+		}
+		// steamPipeEffect = {
+			// particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		// }
+		// waterPipeEffect = {
+			// particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		// }
+		armorEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_armor";
+		}
+		// sludgeEffect = {
+			// particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		// }
+		// bloodPoolEffect = {
+			// particleImpact = "wolf/bulletimpacts/blood_medium";
+		// }
+		// mutantFleshEffect = {
+			// particleImpact = "wolf/bulletimpacts/blood_medium";
+		// }
+		// thickPaddingEffect = {
+			// particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		// }
+		// oilPipeEffect = {
+			// particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		// }
+		electronicsEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_electronics";
+		}
+		panzerMetalEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_panzer";
+		}
+		breakableArmorEffect = {
+			particleImpact = "wolf/bulletimpacts/explosive_armor_breakable";
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+		}
+	}
+}

@@ -1,0 +1,285 @@
+{
+	inherit = "default";
+	edit = {
+		defaultEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_concrete";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		metalEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_metal";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		metalHollow = {
+			particleImpact = "wolf/bulletimpacts/shotgun_metal";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		metalSheet = {
+			particleImpact = "wolf/bulletimpacts/shotgun_metal";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		metalVent = {
+			particleImpact = "wolf/bulletimpacts/shotgun_metal";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		stoneEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_metal";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		fleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			isBloody = false;
+		}
+		woodEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_concrete";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		cardboardEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_concrete";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		liquidEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		glassEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		plasticEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_metal";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		asphaltEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_metal";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		dirtEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		concreteEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_concrete";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		plasterEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_concrete";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		foilageEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		linoleumEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_concrete";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		fabricEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_concrete";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		rubberEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_concrete";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		rockEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_concrete";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		steamPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/steampipe";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		waterPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/waterpipe";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		armorEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_armor";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		sludgeEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		bloodPoolEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		mutantFleshEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		thickPaddingEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		oilPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/oilpipe";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		electronicsEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_electronics";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		panzerMetalEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_panzer";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		breakableArmorEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_armor_breakable";
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/shotgunHoles_metal01";
+			}
+			decalSize = 96;
+			decalAngle = 0;
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+			sndImpact = "projectile/bullet_impacts/imp_metal";
+		}
+	}
+}

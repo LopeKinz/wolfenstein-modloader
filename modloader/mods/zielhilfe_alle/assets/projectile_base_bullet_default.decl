@@ -1,0 +1,21 @@
+{
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			num = 1;
+			item[0] = {
+				sound0 = "weapons/shotgun/shotgun_fire";
+			}
+		}
+		aiEventDecl = "base/gunfire/gunfire";
+		impactEffectTable = "default";
+		tracerInfo = {
+			tracers = 3;
+			tracerSpeed = 1500;
+			tracerLength = 64;
+		}
+		waterInteraction = {
+			allowWaterInteraction = true;
+		}
+	}
+}

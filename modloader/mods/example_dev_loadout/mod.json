@@ -1,0 +1,17 @@
+{
+  "id": "example.dev_loadout",
+  "name": "Dev Loadout (Example)",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Drastically raises player health and air. Shows that values locked as cvars can still be reached through decls - the retail lock only applies to cvars.",
+  "priority": 120,
+  "assets": {
+    "entityDef:player/game/wolf/chapter_start_default": {
+      "set": {
+        "edit.playerHealth.components.components[1].cur": 1000,
+        "edit.maxTimeUnderwater.value": 500000,
+        "edit.maxFreeTimeUnderwater.value": 500000
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+	edit = {
+		devMenuList = {
+			num = 4;
+			item[0] = {
+				devMenuDisplayName = "start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_c02p2\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/wyatt,layer/c02p2/ventilation,layer/c02p2/c02p2_gameplay,layer/c02p2/ballast,layer/c02p2/generator,layer/c02p2/hull,layer/c02p2/maintenance,layer/c02p2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p2";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "piston room";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_piston_room\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/wyatt,layer/c02p2/ventilation,layer/c02p2/c02p2_gameplay,layer/c02p2/ballast,layer/c02p2/generator,layer/c02p2/hull,layer/c02p2/maintenance,layer/c02p2,layer/wolfsdk/devstart_pistonroom\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_pistonroom\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p2";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "pump room";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_pump_room\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/wyatt,layer/c02p2/ventilation,layer/c02p2/c02p2_gameplay,layer/c02p2/ballast,layer/c02p2/generator,layer/c02p2/hull,layer/c02p2/maintenance,layer/c02p2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p2";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "control room";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_control_room\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/wyatt,layer/c02p2/ventilation,layer/c02p2/c02p2_gameplay,layer/c02p2/ballast,layer/c02p2/generator,layer/c02p2/hull,layer/c02p2/maintenance,layer/c02p2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p2";
+				}
+			}
+		}
+	}
+}

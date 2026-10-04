@@ -1,0 +1,15 @@
+{
+	edit = {
+		damageParms = {
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "faust chaingun";
+			damageTypes = "DAMAGETYPE_RIFLE DAMAGETYPE_TURRET DAMAGETYPE_VEHICLE_WEAPON";
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			declGoreBehavior = "standard/heavy";
+			minDamage = 40;
+			maxDamage = 50;
+			ragdollImpulseMag = 1100;
+		}
+	}
+}

@@ -1,0 +1,10 @@
+{
+	inherit = "projectile/knife_throw";
+	edit = {
+		aimAssistRange = 2048;
+		notHitscanInfo = {
+			entityDef = "projectile_ent/kitchenknife_throw";
+		}
+		crosshairType = "CROSSHAIRTYPE_DOT";
+	}
+}

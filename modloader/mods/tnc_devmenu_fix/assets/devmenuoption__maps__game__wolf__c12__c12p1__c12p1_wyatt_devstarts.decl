@@ -1,0 +1,46 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_start\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c12p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c12/c12p1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Production Room";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_productionroom\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c12p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c12/c12p1";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Backstage";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_backstage\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c12p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c12/c12p1";
+				}
+			}
+		}
+	}
+}

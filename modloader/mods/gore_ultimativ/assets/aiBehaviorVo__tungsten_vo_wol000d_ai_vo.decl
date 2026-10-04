@@ -1,0 +1,23 @@
+{
+	inherit = "vo/default";
+	edit = {
+		combat = {
+			firstSpot = {
+				voiceOver = "vo/ai/wol000d/officer_ai_firstspot";
+				priority = "AIVOICEPRIORITY_PAIN";
+				interval = 2500;
+				intervalMax = 5000;
+				dontPlayIfGroupDead = false;
+			}
+			hurt = {
+				voiceOver = "vo/ai/wol000d/eff_soldier_hurt";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 250;
+				intervalMax = 500;
+				controller = "VC_SELF";
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+		}
+	}
+}

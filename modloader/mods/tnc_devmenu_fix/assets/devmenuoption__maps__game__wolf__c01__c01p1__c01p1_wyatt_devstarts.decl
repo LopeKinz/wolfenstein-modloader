@@ -1,0 +1,189 @@
+{
+	edit = {
+		devMenuList = {
+			num = 14;
+			item[0] = {
+				devMenuDisplayName = "start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "soup";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_soup__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_soup__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "choice";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_choice__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_choice__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "found pt1";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_found_pt1__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_found_pt1__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "found pt2";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_found_pt2__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_found_pt2__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "bomb";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_bomb__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_bomb__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[6] = {
+				devMenuDisplayName = "hierloom";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_heirloom__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_heirloom__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[7] = {
+				devMenuDisplayName = "hallway";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_heirloom_hallway__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_heirloom_hallway__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[8] = {
+				devMenuDisplayName = "operation";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_operation__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_operation__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[9] = {
+				devMenuDisplayName = "cornered";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_cornered__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_cornered__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[10] = {
+				devMenuDisplayName = "cornered gameplay";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_cornered_gameplay__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_cornered_gameplay__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[11] = {
+				devMenuDisplayName = "coma plan";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_coma_plan__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_coma_plan__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[12] = {
+				devMenuDisplayName = "coma pregnant";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_coma_operation__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_coma_operation__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+			item[13] = {
+				devMenuDisplayName = "workshop";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/c01p1,layer/wolfsdk/devtel_workshop__devstarted\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_workshop__devstarted\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c01/c01p1";
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,98 @@
+{
+	edit = {
+		devMenuList = {
+			num = 7;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp071_player_start\"";
+					item[1] = "si_nextlayeractive \"layer/c07p1,layer/c07p1_fergus,layer/fergus,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/submarine/submarine";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "After Selection - Ramchackles";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp071_player_start_after_selection\"";
+					item[1] = "si_nextlayeractive \"layer/c07p1,layer/c07p1_fergus,layer/fergus,layer/code,layer/wolfsdk/c7p1_devstart_afterselection_ramchackles\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/c7p1_devstart_afterselection_ramchackles\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/submarine/submarine";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "After Selection - Constrictor";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp071_player_start_after_selection\"";
+					item[1] = "si_nextlayeractive \"layer/c07p1,layer/c07p1_fergus,layer/fergus,layer/code,layer/wolfsdk/c7p1_devstart_afterselection_constrictor\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/c7p1_devstart_afterselection_constrictor\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/submarine/submarine";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "After Selection - Battle Walker";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp071_player_start_after_selection\"";
+					item[1] = "si_nextlayeractive \"layer/c07p1,layer/c07p1_fergus,layer/fergus,layer/code,layer/wolfsdk/c7p1_devstart_afterselection_battle_walker\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/c7p1_devstart_afterselection_battle_walker\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/submarine/submarine";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Grace  - Ramchackles";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp071_player_start_grace\"";
+					item[1] = "si_nextlayeractive \"layer/c07p1,layer/c07p1_fergus,layer/fergus,layer/code,layer/wolfsdk/c7p1_devstart_grace_ramchackles\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/c7p1_devstart_grace_ramchackles\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/submarine/submarine";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "Grace - Constrictor";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp071_player_start_grace\"";
+					item[1] = "si_nextlayeractive \"layer/c07p1,layer/c07p1_fergus,layer/fergus,layer/code,layer/wolfsdk/c7p1_devstart_grace_constrictor\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/c7p1_devstart_grace_constrictor\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/submarine/submarine";
+				}
+			}
+			item[6] = {
+				devMenuDisplayName = "Grace - Battle Walker";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp071_player_start_grace\"";
+					item[1] = "si_nextlayeractive \"layer/c07p1,layer/c07p1_fergus,layer/fergus,layer/code,layer/wolfsdk/c7p1_devstart_grace_battle_walker\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/c7p1_devstart_grace_battle_walker\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/submarine/submarine";
+				}
+			}
+		}
+	}
+}

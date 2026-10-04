@@ -1,0 +1,16 @@
+{
+  "id": "example.white_handgun",
+  "name": "White Pistol (Skin Example)",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Makes the standard pistol use the white material that already exists in the game. Shows the skin workflow: redirecting diffusemap and virtualmapping in the material decl.",
+  "priority": 100,
+  "assets": {
+    "material:models/weapons/handgun/handgun_hg": {
+      "set": {
+        "diffusemap": "models/weapons/Handgun/Handgun_white_hg",
+        "virtualmapping": "{ 0.015625, 0.015625, 0.000000, 0.062500 }"
+      }
+    }
+  }
+}

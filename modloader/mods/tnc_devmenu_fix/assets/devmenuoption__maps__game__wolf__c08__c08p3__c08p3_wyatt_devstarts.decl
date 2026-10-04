@@ -1,0 +1,59 @@
+{
+	edit = {
+		devMenuList = {
+			num = 4;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_start\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p3";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Tenement";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_tenement\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p3";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Street";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_street\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p3";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Apartments";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_apartments\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p3";
+				}
+			}
+		}
+	}
+}

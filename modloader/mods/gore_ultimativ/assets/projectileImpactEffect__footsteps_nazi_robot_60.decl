@@ -1,0 +1,69 @@
+{
+	edit = {
+		debugDefaultEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/surf_invalid";
+			}
+			decalSize = 26;
+			particleImpact = "bulletimpacts/default_surface";
+		}
+		debugStreamArea = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/surf_streamarea";
+			}
+			decalSize = 26;
+			particleImpact = "bulletimpacts/streamarea_surface";
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		defaultEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		metalEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		metalHollow = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		metalSheet = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		metalVent = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		stoneEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		fleshEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		fleshPlayerEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		woodEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		cardboardEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		liquidEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		plasticEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		asphaltEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		dirtEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_default";
+		}
+		panzerMetalEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_metal";
+		}
+		breakableArmorEffect = {
+			sndImpact = "enemies/nazi_robot_46/footsteps_metal";
+		}
+	}
+}

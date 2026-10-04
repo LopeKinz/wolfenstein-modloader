@@ -1,0 +1,150 @@
+{
+	inherit = "wolf/rocket";
+	edit = {
+		defaultEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		metalEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		metalHollow = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		metalSheet = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		metalVent = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		stoneEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		fleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/lasercutter_flesh02";
+		}
+		woodEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		cardboardEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		liquidEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		glassEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		plasticEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		asphaltEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_dirt";
+		}
+		dirtEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_dirt";
+		}
+		concreteEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		foilageEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		linoleumEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		fabricEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		rubberEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		rockEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		steamPipeEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		waterPipeEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		armorEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		sludgeEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		bloodPoolEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		mutantFleshEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		thickPaddingEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		ricketyMetal = {
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		ricketyWood = {
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		porcelainEffect = {
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		plasterEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		electronicsEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		oilPipeEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		panzerMetalEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		breakableArmorEffect = {
+			decalSize = 410;
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/artillery_default";
+		}
+		bloodReplacementEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_explosive";
+		}
+	}
+}

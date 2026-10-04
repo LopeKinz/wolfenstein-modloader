@@ -1,0 +1,313 @@
+{
+	inherit = "wolf/lasercutter_decals";
+	edit = {
+		defaultEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		metalEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		metalHollow = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		metalSheet = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		metalVent = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		stoneEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+		}
+		fleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		woodEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+		}
+		cardboardEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+		}
+		liquidEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/lkw_water";
+		}
+		glassEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		plasticEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		asphaltEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		dirtEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		concreteEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		foilageEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		linoleumEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		fabricEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+		}
+		rubberEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+		}
+		rockEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		steamPipeEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_steampipe";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		waterPipeEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_waterpipe";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		armorEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_armor_2";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		sludgeEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+		}
+		bloodPoolEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+		}
+		mutantFleshEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+		}
+		thickPaddingEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+		}
+		plasterEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		electronicsEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_electronics_2";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		oilPipeEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_default";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		panzerMetalEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_panzer";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		breakableArmorEffect = {
+			decalMaterial = {
+				num = 2;
+				item[0] = "textures/w_particles/decals/mg60_default";
+				item[1] = "textures/w_particles/decals/mg60_soot";
+			}
+			decalSize = 64;
+			particleImpact = "wolf/bulletimpacts/mg60_armor_breakable_2";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+			sndImpact = "projectile/bullet_impacts/gen_laser_impacts_pl";
+		}
+	}
+}

@@ -1,0 +1,16 @@
+{
+	inherit = "standard/rifle";
+	edit = {
+		probability = {
+			item[0] = {
+				probability = 0.95;
+			}
+			item[1] = {
+				probability = 0.95;
+			}
+			item[2] = {
+				probability = 0.95;
+			}
+		}
+	}
+}

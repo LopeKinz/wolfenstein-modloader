@@ -1,0 +1,11 @@
+{
+	edit = {
+		devMenuList = {
+			num = 1;
+			item[0] = {
+				devMenuDisplayName = "P1 - Finale";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c11/c11p1";
+			}
+		}
+	}
+}

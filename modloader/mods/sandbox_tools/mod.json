@@ -1,0 +1,20 @@
+{
+  "id": "studio.sandbox_tools",
+  "name": "Sandbox Tools",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Sandbox hotkeys without the 34-command console limit. Bind them once in the console (binds are saved): bind F6 \"resourceExec snapdemo.cfg -s\"  and  bind F7 \"resourceExec snapedit.cfg -s\". F6 toggles God mode, Notarget and infinite ammo; F7 kills all enemies (killMonsters). Uses two unused SnapMap configs (snapdemo.cfg, snapedit.cfg). God and infinite ammo are confirmed in game; Notarget did not stop enemies that were already fighting you in our test; killMonsters is not yet confirmed in game.",
+  "priority": 100,
+  "spiel": "tnc",
+  "studio": {
+    "version": 1
+  },
+  "assets": {
+    "cfile:snapdemo.cfg": {
+      "file": "assets/snapdemo_cfg_72cbcec5.bin"
+    },
+    "cfile:snapedit.cfg": {
+      "file": "assets/snapedit_cfg_7203ae7b.bin"
+    }
+  }
+}

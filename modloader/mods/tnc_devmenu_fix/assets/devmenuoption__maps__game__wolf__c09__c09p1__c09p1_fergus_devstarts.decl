@@ -1,0 +1,137 @@
+{
+	edit = {
+		devMenuList = {
+			num = 10;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Rehearsal";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1,layer/wolfsdk/devtel_rehearsal__dev_devloaded\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_rehearsal__dev_devloaded\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Rehearsal Gameplay";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1,layer/wolfsdk/devtel_rehearsal_gameplay__dev_devloaded\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_rehearsal_gameplay__dev_devloaded\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Masterpiece";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1,layer/wolfsdk/devtel_masterpiece__dev_devloaded\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_masterpiece__dev_devloaded\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Audittion Gameplay";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1,layer/wolfsdk/devtel_audition_gameplay__dev_devloaded\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_audition_gameplay__dev_devloaded\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "Fight";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1,layer/wolfsdk/devtel_fight__dev_devloaded\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_fight__dev_devloaded\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[6] = {
+				devMenuDisplayName = "Box";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1,layer/wolfsdk/devtel_box__dev_devloaded\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_box__dev_devloaded\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[7] = {
+				devMenuDisplayName = "Hired";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1,layer/wolfsdk/devtel_hired__dev_devloaded\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_hired__dev_devloaded\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[8] = {
+				devMenuDisplayName = "Living quarter";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1,layer/wolfsdk/devtel_living_quarter__dev_devloaded\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_living_quarter__dev_devloaded\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[9] = {
+				devMenuDisplayName = "Transport Dock";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/code,layer/fergus,layer/c09p1,layer/wolfsdk/devtel_transport_dock__dev_devloaded\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devtel_transport_dock__dev_devloaded\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+		}
+	}
+}

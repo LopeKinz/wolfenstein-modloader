@@ -1,0 +1,19 @@
+{
+	edit = {
+		damageParms = {
+			cuttableRadius = 14.0;
+			damageName = "EMP splash damage";
+			damageTypes = "DAMAGETYPE_EXPLOSION DAMAGETYPE_HANDGRENADE DAMAGETYPE_ELECTRIC";
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			declGoreBehavior = "standard/explosion_splash";
+			minDamage = 80;
+			maxDamage = 80;
+			playerDamageScale = 0.60;
+			ragdollOnDeath = true;
+			knockBack = 1000;
+			selfKnockbackScale = 0;
+			radius = 300;
+			ragdollImpulseMag = 2200;
+		}
+	}
+}

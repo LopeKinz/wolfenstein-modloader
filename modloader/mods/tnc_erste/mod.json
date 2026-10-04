@@ -1,0 +1,53 @@
+{
+  "id": "wolfsdk.tnc_erste",
+  "name": "Invulnerable (TNC)",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "The first mod for The New Colossus. Sets the multiplier on incoming player damage to 0 in all seven difficulty tables. Seven uncompressed entries in gameresources.resources, 414 bytes together, every replacement value the same length in characters as the original.",
+  "priority": 100,
+  "spiel": "tnc",
+  "assets": {
+    "table:playerdamage/veryeasy": {
+      "set": {
+        "min": "0.0",
+        "max": "0.0"
+      }
+    },
+    "table:playerdamage/easy": {
+      "set": {
+        "min": "0.0",
+        "max": "0.0"
+      }
+    },
+    "table:playerdamage/normal": {
+      "set": {
+        "min": "0.0",
+        "max": "0.0"
+      }
+    },
+    "table:playerdamage/hard": {
+      "set": {
+        "min": "0.00",
+        "max": "0.00"
+      }
+    },
+    "table:playerdamage/veryhard": {
+      "set": {
+        "min": "0.00",
+        "max": "0.00"
+      }
+    },
+    "table:playerdamage/nightmare": {
+      "set": {
+        "min": "0.00",
+        "max": "0.00"
+      }
+    },
+    "table:playerdamage/meinleben": {
+      "set": {
+        "min": "0.00",
+        "max": "0.00"
+      }
+    }
+  }
+}

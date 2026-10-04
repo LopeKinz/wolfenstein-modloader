@@ -1,0 +1,67 @@
+{
+	edit = {
+		devMenuList = {
+			num = 6;
+			item[0] = {
+				devMenuDisplayName = "campaign - fergus";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c03/c03p1/c03p1_fergus_devstarts";
+			}
+			item[1] = {
+				devMenuDisplayName = "campaign - wyatt";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c03/c03p1/c03p1_wyatt_devstarts";
+			}
+			item[2] = {
+				devMenuDisplayName = "D1 - harbor - fergus";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_district1\"";
+					item[1] = "si_nextlayeractive \"layer/district1,layer/fergus\"";
+					item[2] = "si_filllayeractive \"layer/fergus\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p1";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "D1 - harbor - wyatt";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_district1\"";
+					item[1] = "si_nextlayeractive \"layer/district1,layer/wyatt\"";
+					item[2] = "si_filllayeractive \"layer/wyatt\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p1";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "D2 - subway - fergus";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_district2\"";
+					item[1] = "si_nextlayeractive \"layer/district2,layer/fergus\"";
+					item[2] = "si_filllayeractive \"layer/fergus\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p1";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "D2 - subway - wyatt";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_district2\"";
+					item[1] = "si_nextlayeractive \"layer/district2,layer/wyatt\"";
+					item[2] = "si_filllayeractive \"layer/wyatt\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p1";
+				}
+			}
+		}
+	}
+}

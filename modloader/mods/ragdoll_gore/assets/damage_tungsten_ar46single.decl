@@ -1,0 +1,15 @@
+{
+	edit = {
+		damageParms = {
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "Assaultrifle round";
+			damageTypes = "DAMAGETYPE_RIFLE";
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			declGoreBehavior = "standard/rifle";
+			minDamage = 16;
+			maxDamage = 20;
+			ragdollImpulseMag = 1100;
+		}
+	}
+}

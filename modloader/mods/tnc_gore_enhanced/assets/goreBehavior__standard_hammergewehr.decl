@@ -1,0 +1,24 @@
+{
+	inherit = "standard/heavy";
+	edit = {
+		probability = {
+			num = 4;
+			item[0] = {
+				probability = 1;
+			}
+			item[1] = {
+				probability = 0.95;
+				falloff = "gore/falloff/shotgun";
+			}
+			item[2] = {
+				probability = 0.95;
+				falloff = "gore/falloff/shotgun";
+			}
+			item[3] = {
+				woundType = "GORETYPE_FULL_BODY_GIBS";
+				probability = 0.35;
+				falloff = "gore/falloff/shotgun";
+			}
+		}
+	}
+}

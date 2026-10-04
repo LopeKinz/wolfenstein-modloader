@@ -1,0 +1,356 @@
+{
+
+settings {
+	model "characters/drone/drone.md6"
+	skin ""
+	defaultBouncyness 0.3000000119
+	defaultLinearFriction 0.0099999998
+	defaultAngularFriction 0.0099999998
+	defaultContactFriction 0.8000000119
+	defaultConstraintFriction 0.5
+	defaultGravityScale 0.2
+	suspendSpeed 20, 30, 40, 60
+	noMoveTime 1
+	noMoveTranslation 10
+	noMoveRotation 10
+	minMoveTime -1
+	maxMoveTime -1
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	solverConstants {
+		errorReduction 0.5
+		errorReductionMax 256
+		lcpEpsilon 0.00001
+		limitErrorReduction 0.3000000119
+		limitErrorReductionMax 256
+		limitLcpEpsilon 0.0001
+		contactErrorReduction 0.200000003
+		contactErrorReductionMax 256
+		contactLcpEpsilon 0.000001
+		universalErrorReduction 0.5
+		universalErrorReductionMax 256
+		universalTorsionLcpEpsilon 0.1000000015
+	}
+	syncSolverConstants {
+		errorReduction 0.5
+		errorReductionMax 512
+		lcpEpsilon 0.001
+		limitErrorReduction 0.1000000015
+		limitErrorReductionMax 128
+		limitLcpEpsilon 0.000001
+		contactErrorReduction 0.200000003
+		contactErrorReductionMax 256
+		contactLcpEpsilon 0.000001
+		universalErrorReduction 0.5
+		universalErrorReductionMax 512
+		universalTorsionLcpEpsilon 0.1000000015
+	}
+}
+
+body "body" {
+	joint "base"
+	mod both
+	model box( ( -20, -7.5, -9 ), ( 20, 7.5, 9 ) )
+	origin joint( "base" )
+	density 0.0500000007
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.400000006
+	containedJoints "*base -*left_wing -*right_wing -*gun_x_axis -*left_side_feeler -*right_side_feeler"
+}
+
+body "Left_Thruster" {
+	joint "left_thruster_x"
+	mod orientation
+	model box( ( -7.5, -4.5, -13 ), ( 7.5, 4.5, 13 ) )
+	origin ( -3, 19, 92 )
+	density 0.0060000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints ""
+}
+
+body "Left_Wing" {
+	joint "left_wing"
+	mod orientation
+	model box( ( -3.5, -6, -2 ), ( 3.5, 6, 2 ) )
+	origin ( 1, 8, 92 )
+	angles ( 0, 45, 25 )
+	density 0.1000000015
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.1000000015
+	containedJoints ""
+}
+
+body "Right_Thruster" {
+	joint "right_thruster_x"
+	mod orientation
+	model box( ( -7.5, -4.5, -13 ), ( 7.5, 4.5, 13 ) )
+	origin ( -3, -19, 92 )
+	density 0.0060000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints ""
+}
+
+body "Right_Wing" {
+	joint "right_wing"
+	mod orientation
+	model box( ( -3.5, -6, -2 ), ( 3.5, 6, 2 ) )
+	origin ( 1, -8, 92 )
+	angles ( 0, -45, -25 )
+	density 0.1000000015
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.1000000015
+	containedJoints ""
+}
+
+body "Gun" {
+	joint "gun_x_axis"
+	mod orientation
+	model box( ( -20, -3.5, -6 ), ( 20, 3.5, 6 ) )
+	origin ( 6, 0, 60 )
+	density 0.0099999998
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.9499999881
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.1000000015
+	containedJoints "-*left_wing -*right_wing gun_x_axis barrel_start barrel_end"
+}
+
+body "Gun_Heading" {
+	joint "gun_y_axis"
+	mod orientation
+	model box( ( -5.5, -5.5, -1 ), ( 5.5, 5.5, 1 ) )
+	origin ( -9.1724996567, 0, 70.0416030884 )
+	angles ( 0, 45, 0 )
+	density 0.400000006
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.0500000007
+	containedJoints ""
+}
+
+body "Antenna_Left_Top" {
+	joint "left_side_feeler"
+	mod orientation
+	model box( ( -20, -0.5, -0.5 ), ( 20, 0.5, 0.5 ) )
+	origin ( 23, 24, 75 )
+	angles ( 17, 61, 0 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.1000000015
+	contents none
+	clipMask none
+	selfCollision 0
+	noSyncCollide 1
+	clearClipMaskInSolid 0
+	bouncyness 0
+	containedJoints "left_side_feeler"
+}
+
+body "Antenna_Right_Top" {
+	joint "right_side_feeler"
+	mod orientation
+	model box( ( -20, -0.5, -0.5 ), ( 20, 0.5, 0.5 ) )
+	origin ( 23, -24, 75 )
+	angles ( 17, -61, 0 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.1000000015
+	contents none
+	clipMask none
+	selfCollision 0
+	noSyncCollide 1
+	clearClipMaskInSolid 0
+	bouncyness 0
+	containedJoints "right_side_feeler"
+}
+
+body "Antenna_left_Bottom" {
+	joint "left_front_feeler"
+	mod orientation
+	model box( ( -18, -0.5, -0.5 ), ( 18, 0.5, 0.5 ) )
+	origin ( 32, 9, 71.5 )
+	angles ( 12, 12, 0 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.1000000015
+	contents none
+	clipMask none
+	selfCollision 0
+	noSyncCollide 1
+	clearClipMaskInSolid 0
+	bouncyness 0
+	containedJoints ""
+}
+
+body "Antenna_right_Bottom" {
+	joint "right_front_feeler"
+	mod orientation
+	model box( ( -18, -0.5, -0.5 ), ( 18, 0.5, 0.5 ) )
+	origin ( 32, -9, 71.5 )
+	angles ( 12, -12, 0 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.1000000015
+	contents none
+	clipMask none
+	selfCollision 0
+	noSyncCollide 1
+	clearClipMaskInSolid 0
+	bouncyness 0
+	containedJoints ""
+}
+
+hinge "Left_thruster_to_Left_Wing" {
+	body1 "Left_Thruster"
+	body2 "Left_Wing"
+	anchor joint( "left_thruster_y" )
+	axis ( 1, 0, 0 )
+	friction 0.294
+	limit -27.5, 105, 0
+	syncConstraint 0
+}
+
+hinge "Left_Wing_To_Body" {
+	body1 "Left_Wing"
+	body2 "body"
+	anchor joint( "left_wing" )
+	axis ( 0.0000000119, 0, 1 )
+	friction 0.378
+	limit 20, 70, 0
+	syncConstraint 0
+}
+
+hinge "Right_thruster_to_Right_Wing" {
+	body1 "Right_Thruster"
+	body2 "Right_Wing"
+	anchor joint( "right_thruster_y" )
+	axis ( 1, 0, 0 )
+	friction 0.294
+	limit 27.5, 105, 0
+	syncConstraint 0
+}
+
+hinge "Right_Wing_To_Body" {
+	body1 "Right_Wing"
+	body2 "body"
+	anchor joint( "right_wing" )
+	axis ( -0.0000000437, 0, -1 )
+	friction 0.378
+	limit 20, 70, 0
+	syncConstraint 0
+}
+
+hinge "Gun_To_Gun_Heading" {
+	body1 "Gun"
+	body2 "Gun_Heading"
+	anchor joint( "gun_x_axis" )
+	axis ( 0.0000000119, -1, 0 )
+	friction 0.126
+	limit 35, 90, 0
+	syncConstraint 0
+}
+
+hinge "Gun_Heading_To_Body" {
+	body1 "Gun_Heading"
+	body2 "body"
+	anchor joint( "gun_y_axis" )
+	axis ( -0.0000000437, 0, -1 )
+	friction 0.126
+	limit 0, 120, 0
+	syncConstraint 0
+}
+
+hinge "Left_antenna_top_To_Body" {
+	body1 "Antenna_Left_Top"
+	body2 "body"
+	anchor joint( "left_side_feeler" )
+	axis ( 0, -0.0000000437, -1 )
+	friction 0.042
+	limit -40, 110, 0
+	syncConstraint 0
+}
+
+hinge "Right_antenna_top_To_Body" {
+	body1 "Antenna_Right_Top"
+	body2 "body"
+	anchor joint( "right_side_feeler" )
+	axis ( 0, -0.0000000119, 1 )
+	friction 0.042
+	limit -40, 110, 0
+	syncConstraint 0
+}
+
+hinge "Left_antenna_bottom_To_Body" {
+	body1 "Antenna_left_Bottom"
+	body2 "body"
+	anchor joint( "left_front_feeler" )
+	axis ( 0, -0.0000000437, -1 )
+	friction 0.042
+	limit 22.5, 135, 0
+	syncConstraint 0
+}
+
+hinge "Right_antenna_bottom_To_Body" {
+	body1 "Antenna_right_Bottom"
+	body2 "body"
+	anchor joint( "right_front_feeler" )
+	axis ( 0, -0.0000000119, 1 )
+	friction 0.042
+	limit 22.5, 135, 0
+	syncConstraint 0
+}
+
+}

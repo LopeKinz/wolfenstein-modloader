@@ -1,0 +1,124 @@
+{
+	edit = {
+		devMenuList = {
+			num = 9;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/c05p2,layer/wyatt,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c05/c05p2";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Train Station";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/c05p2,layer/wyatt,layer/code,layer/wolfsdk/teltrainstation\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/teltrainstation\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c05/c05p2";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Train";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/c05p2,layer/wyatt,layer/code,layer/wolfsdk/teltrain\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/teltrain\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c05/c05p2";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Train Engine";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/c05p2,layer/wyatt,layer/code,layer/wolfsdk/teltrainengine\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/teltrainengine\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c05/c05p2";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Elevator";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/c05p2,layer/wyatt,layer/code,layer/wolfsdk/telelevator\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/telelevator\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c05/c05p2";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "Elevator Top";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/c05p2,layer/wyatt,layer/code,layer/wolfsdk/telelevatortop\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/telelevatortop\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c05/c05p2";
+				}
+			}
+			item[6] = {
+				devMenuDisplayName = "Hangar";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/c05p2,layer/wyatt,layer/code,layer/wolfsdk/telhangar\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/telhangar\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c05/c05p2";
+				}
+			}
+			item[7] = {
+				devMenuDisplayName = "Hangar fight";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/c05p2,layer/wyatt,layer/code,layer/wolfsdk/telhangarcombat\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/telhangarcombat\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c05/c05p2";
+				}
+			}
+			item[8] = {
+				devMenuDisplayName = "Ending";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/c05p2,layer/wyatt,layer/code,layer/wolfsdk/telending\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/telending\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c05/c05p2";
+				}
+			}
+		}
+	}
+}

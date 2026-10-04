@@ -45,7 +45,8 @@
         <span class="de">Wir nehmen die Wolfenstein-Spiele auseinander, um zu verstehen, wie ihre Dateien funktionieren, und schreiben alles auf, was wir finden – damit jeder sie <span class="t" data-t="modding">modden</span> kann.</span>
       </p>
       <div class="actions">
-        <a class="btn solid" href="#roadmap"><span class="en">See the research roadmap</span><span class="de">Forschungs-Roadmap ansehen</span></a>
+        <a class="btn solid" href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0"><span class="en">Download 0.2.0</span><span class="de">0.2.0 herunterladen</span></a>
+        <a class="btn" href="#roadmap"><span class="en">See the research roadmap</span><span class="de">Forschungs-Roadmap ansehen</span></a>
         <a class="btn" href="wiki/index.html"><span class="en">Read the wiki, explained</span><span class="de">Das Wiki lesen, erklärt</span></a>
       </div>
       <p class="tally" id="tally"></p>
@@ -72,7 +73,7 @@
     <div class="wrap">
       <div class="rail">
         <h2 id="h-roadmap"><span class="en">Research roadmap</span><span class="de">Forschungs-Roadmap</span></h2>
-        <p><span class="en">From the research reports and in-game tests in the wiki, as of 1 October 2026.</span><span class="de">Aus den Forschungsberichten und Tests im Spiel im Wiki, Stand 1. Oktober 2026.</span></p>
+        <p><span class="en">From the research reports and in-game tests in the wiki, as of 4 October 2026.</span><span class="de">Aus den Forschungsberichten und Tests im Spiel im Wiki, Stand 4. Oktober 2026.</span></p>
       </div>
       <div class="body">
         <div class="filter" role="group" aria-label="Game">
@@ -88,28 +89,57 @@
   <section class="file" id="studio" aria-labelledby="h-studio">
     <div class="wrap">
       <div class="rail">
-        <h2 id="h-studio">Wolfenstein Studio</h2>
-        <p><span class="en">Coming soon.</span><span class="de">Bald verfügbar.</span></p>
+        <h2 id="h-studio">WolfSDK 0.2.0</h2>
+        <p><span class="en">Out now: the Loader for players and the Studio for modders.</span><span class="de">Jetzt erhältlich: der Loader für Spieler und das Studio für Modder.</span></p>
       </div>
       <div class="body">
+        <p class="en">Two free apps for Windows that turn the research on this page into buttons. Unzip, run <code>WolfSDK.cmd</code>, done: Python is bundled. You need the Steam version of The New Order or The New Colossus. The Studio download contains the Loader too.</p>
+        <p class="de">Zwei kostenlose Apps für Windows, die aus der Forschung auf dieser Seite Knöpfe machen. Entpacken, <code>WolfSDK.cmd</code> starten, fertig: Python ist dabei. Du brauchst die Steam-Version von The New Order oder The New Colossus. Der Studio-Download enthält auch den Loader.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.9rem;margin:1.4rem 0 2rem">
+          <a class="btn solid" href="https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Loader-0.2.0.zip"><span class="en">Loader 0.2.0 for players</span><span class="de">Loader 0.2.0 für Spieler</span></a>
+          <a class="btn" href="https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Studio-0.2.0.zip"><span class="en">Studio 0.2.0 for modders</span><span class="de">Studio 0.2.0 für Modder</span></a>
+        </div>
         <article class="dossier">
-          <div class="soon"><span class="en">Coming soon</span><span class="de">Kommt bald</span></div>
-          <h3><span class="en">Modding without the command line</span><span class="de">Modden ohne Kommandozeile</span></h3>
-          <p class="en">Wolfenstein Studio is the desktop app this project is building. It turns the research on this page into buttons: open the game files, change what you want, play, and undo it again.</p>
-          <p class="de">Wolfenstein Studio ist die Desktop-App, an der dieses Projekt baut. Sie macht aus der Forschung auf dieser Seite Knöpfe: Spieldateien öffnen, ändern, was du willst, spielen – und es wieder rückgängig machen.</p>
+          <h3>Loader</h3>
+          <p class="en">Install mods and take them out again.</p>
+          <p class="de">Mods installieren und wieder entfernen.</p>
           <ul>
-            <li class="en"><b>Look inside the game.</b> Browse the <span class="t" data-t="archive">archives</span> of both games and read <span class="t" data-t="decl">Decls</span>, texts and images.</li>
-            <li class="de"><b>In das Spiel hineinsehen.</b> Die <span class="t" data-t="archive">Archive</span> beider Spiele durchsuchen und <span class="t" data-t="decl">Decls</span>, Texte und Bilder lesen.</li>
-            <li class="en"><b>Change values.</b> Damage, magazine size, enemy health – edit them and save the result as a mod.</li>
-            <li class="de"><b>Werte ändern.</b> Schaden, Magazingröße, Gegnerleben – bearbeiten und als Mod speichern.</li>
-            <li class="en"><b>Install safely.</b> Every change is backed up and can be undone with one click.</li>
-            <li class="de"><b>Sicher installieren.</b> Jede Änderung wird gesichert und lässt sich mit einem Klick zurücknehmen.</li>
-            <li class="en"><b>Spot conflicts.</b> See when two mods change the same value before you start the game.</li>
-            <li class="de"><b>Konflikte erkennen.</b> Sehen, wenn zwei Mods denselben Wert ändern, bevor das Spiel startet.</li>
+            <li class="en"><b>Apply and undo mods.</b> Every change is backed up; one click resets the game files.</li>
+            <li class="de"><b>Mods anwenden und rückgängig machen.</b> Jede Änderung wird gesichert; ein Klick setzt die Spieldateien zurück.</li>
+            <li class="en"><b>Cheats and quality-of-life tweaks,</b> with presets: Ultra+, Clean Image, Photo Mode. The presets are not yet confirmed in game.</li>
+            <li class="de"><b>Cheats und Komfort-Tweaks,</b> mit Voreinstellungen: Ultra+, Clean Image, Photo Mode. Die Voreinstellungen sind im Spiel noch nicht bestätigt.</li>
+            <li class="en"><b>Sandbox Tools mod.</b> God mode and infinite ammo, confirmed in game.</li>
+            <li class="de"><b>Mod „Sandbox Tools“.</b> God-Mode und unendliche Munition, im Spiel bestätigt.</li>
+            <li class="en"><b>Dev menu that loads maps again.</b> Confirmed in game.</li>
+            <li class="de"><b>Entwicklermenü, das wieder Karten lädt.</b> Im Spiel bestätigt.</li>
+            <li class="en"><b>Mod test map.</b> Confirmed in game: it loads.</li>
+            <li class="de"><b>Testkarte für Mods.</b> Im Spiel bestätigt: sie lädt.</li>
+            <li class="en"><b>Hidden Menu Options and Photo Mode (F8) mods.</b> Not yet confirmed in game.</li>
+            <li class="de"><b>Mods „Hidden Menu Options“ und „Photo Mode“ (F8).</b> Im Spiel noch nicht bestätigt.</li>
+            <li class="en"><b>Custom map install.</b> Custom maps need the Freedom Chronicles <span class="t" data-t="dlc">DLC</span>.</li>
+            <li class="de"><b>Eigene Karten installieren.</b> Eigene Karten brauchen das Freedom-Chronicles-<span class="t" data-t="dlc">DLC</span>.</li>
+            <li class="en"><b><span class="t" data-t="console">Console</span> tweaks for The New Order.</b> Not yet confirmed in game.</li>
+            <li class="de"><b><span class="t" data-t="console">Konsolen</span>-Tweaks für The New Order.</b> Im Spiel noch nicht bestätigt.</li>
           </ul>
-          <p class="note en">In development. The release date and final features will be announced here.</p>
-          <p class="note de">In Entwicklung. Termin und endgültiger Funktionsumfang werden hier bekanntgegeben.</p>
+          <h3 style="margin-top:2rem">Studio</h3>
+          <p class="en">Look inside both games and change them. Every replacement is saved as a mod that the Loader applies.</p>
+          <p class="de">In beide Spiele hineinsehen und sie verändern. Jeder Ersatz wird als Mod gespeichert, die der Loader anwendet.</p>
+          <ul>
+            <li class="en"><b>Browse both games.</b> Maps, videos, audio, textures and texts.</li>
+            <li class="de"><b>Beide Spiele durchsuchen.</b> Karten, Videos, Audio, Texturen und Texte.</li>
+            <li class="en"><b>3D viewer.</b> 17,315 models with textures; export to GLB, glTF or OBJ.</li>
+            <li class="de"><b>3D-Ansicht.</b> 17.315 Modelle mit Texturen; Export als GLB, glTF oder OBJ.</li>
+            <li class="en"><b>Replace textures, texts and <span class="t" data-t="decl">Decls</span>.</b> Colour and specular textures (<span class="t" data-t="bc">BC1</span>); normal maps (BC5) are new and not yet tried in game.</li>
+            <li class="de"><b>Texturen, Texte und <span class="t" data-t="decl">Decls</span> ersetzen.</b> Farb- und Specular-Texturen (<span class="t" data-t="bc">BC1</span>); Normal-Maps (BC5) sind neu und im Spiel noch nicht ausprobiert.</li>
+            <li class="en"><b>Cutscene sound in sync with the video.</b></li>
+            <li class="de"><b>Zwischensequenz-Ton synchron zum Video.</b></li>
+            <li class="en"><b><span class="t" data-t="kiscule">Kiscule</span> script and mission editor.</b> 3,010 scripts as node graphs, all 205 node types can be inserted, mission objectives can be added or removed, and edits add up over several saves. Not yet tried in game.</li>
+            <li class="de"><b><span class="t" data-t="kiscule">Kiscule</span>-Skript- und Missionseditor.</b> 3.010 Skripte als Knotengraphen, alle 205 Knotentypen lassen sich einfügen, Missionsziele lassen sich hinzufügen oder entfernen, und Änderungen summieren sich über mehrere Speichervorgänge. Im Spiel noch nicht ausprobiert.</li>
+          </ul>
+          <p class="note en">Held back: replacing sounds and videos, coming in an update. Planned: a map editor, map import from Blender/glTF, animations, The New Order models in the Studio, brand-new assets.</p>
+          <p class="note de">Zurückgehalten: Töne und Videos ersetzen, kommt mit einem Update. Geplant: ein Karteneditor, Kartenimport aus Blender/glTF, Animationen, Modelle von The New Order im Studio, ganz neue Assets.</p>
         </article>
+        <p style="margin-top:1.6rem"><span class="en">Release notes:</span><span class="de">Versionshinweise:</span> <a href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0">wolfsdk-0.2.0</a> · <span class="en">Source code (MIT license):</span><span class="de">Quellcode (MIT-Lizenz):</span> <a href="https://github.com/LopeKinz/wolfenstein-modloader/tree/main/modloader">modloader/</a></p>
       </div>
     </div>
   </section>
@@ -268,9 +298,9 @@ const ROADMAP = [
   ["wip", "TNC", "Research-Report-R3-Mapselfcontained", ["Custom maps without any DLC", "Eigene Karten ganz ohne DLC"],
     ["The goal is a custom map that works without owning the Freedom Chronicles DLC.", "Ziel ist eine eigene Karte, die ohne das Freedom-Chronicles-DLC funktioniert."],
     ["The texture cache is proven unnecessary in the game; sound files are mandatory; the Steam ownership check sits only in the chapter-menu code (found by reading the code).", "Der Textur-Cache ist im Spiel als unnötig bewiesen; Sounddateien sind Pflicht; die Steam-Besitzprüfung steckt nur im Kapitelmenü-Code (beim Lesen des Codes gefunden)."]],
-  ["wip", "TNC", "Research-Report-R4-Console-Commands", ["Loading any map by command", "Beliebige Karten per Befehl laden"],
-    ["map and devmap exist but are locked in the normal console. The console unlock should reach them too.", "map und devmap gibt es, aber in der normalen Konsole sind sie gesperrt. Die Konsolen-Freischaltung sollte sie mit erreichen."],
-    ["Per the command table, map, devmap and the other map-load variants run inside the resourceExec window. Not yet tried in the game.", "Laut Befehlstabelle laufen map, devmap und die anderen Ladebefehle im resourceExec-Fenster. Im Spiel noch nicht ausprobiert."]],
+  ["done", "TNC", "Research-Report-R4-Console-Commands", ["Loading any map by command", "Beliebige Karten per Befehl laden"],
+    ["The developer menu loads maps again: its entries now run devmap, which the normal console locks. A brand-new map loads this way too.", "Das Entwicklermenü lädt wieder Karten: seine Einträge führen jetzt devmap aus, das die normale Konsole sperrt. Auch eine ganz neue Karte lädt so."],
+    ["Dev menu entries run their devMenuCommandStrings unrestricted; devmap from the menu loaded maps in the running game, including the new map name game/wolfsdk/modtest from dlc_0.", "Einträge des Entwicklermenüs führen ihre devMenuCommandStrings ohne Sperre aus; devmap aus dem Menü hat im laufenden Spiel Karten geladen, auch den neuen Kartennamen game/wolfsdk/modtest aus dlc_0."]],
   ["wip", "TNC", "Research-Report-R3-Newassetsv", ["Adding brand-new game files", "Ganz neue Spieldateien hinzufügen"],
     ["Until now mods could only replace existing files. Adding new ones, such as a separate new weapon, works on copies of the archives.", "Bisher konnten Mods nur bestehende Dateien ersetzen. Neue hinzuzufügen, etwa eine eigene neue Waffe, klappt auf Kopien der Archive."],
     ["Appending new entries passes 52 field-level checks, and a 7-{decl|Decl} clone of the pistol's weapon chain was built and verified offline. Not tested in the game.", "Neue Einträge anzuhängen besteht 52 Prüfungen auf Feldebene, und ein Klon der Pistolen-Waffenkette aus 7 {decl|Decls} wurde offline gebaut und geprüft. Im Spiel nicht getestet."]],

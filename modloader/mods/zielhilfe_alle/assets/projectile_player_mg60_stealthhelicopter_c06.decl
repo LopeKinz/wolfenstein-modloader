@@ -1,0 +1,66 @@
+{
+	inherit = "projectile/base/mg60_default";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			num = 9;
+			item[0] = {
+				sound0 = "weapons/m60/m60_fire_close_split";
+				sound1 = "weapons/m60/env/m60_roommedium_split";
+				sound2 = "weapons/m60/env/m60rear_roommedium_split";
+			}
+			item[1] = {
+				envType = "SET_INDOOR_SMALL_ROOM";
+				sound0 = "weapons/m60/m60_fire_close_split";
+				sound1 = "weapons/m60/env/m60_roomsmall_split";
+				sound2 = "weapons/m60/env/m60rear_roomsmall_split";
+			}
+			item[2] = {
+				envType = "SET_INDOOR_MID_ROOM";
+				sound0 = "weapons/m60/m60_fire_close_split";
+				sound1 = "weapons/m60/env/m60_roommedium_split";
+				sound2 = "weapons/m60/env/m60rear_roommedium_split";
+			}
+			item[3] = {
+				envType = "SET_INDOOR_LARGE_ROOM";
+				sound0 = "weapons/m60/m60_fire_close_split";
+				sound1 = "weapons/m60/env/m60_roomlarge_split";
+				sound2 = "weapons/m60/env/m60rear_roomlarge_split";
+			}
+			item[4] = {
+				envType = "SET_INDOOR_LARGE_HALL";
+				sound0 = "weapons/m60/m60_fire_close_split";
+				sound1 = "weapons/m60/env/m60_roomxl_split";
+				sound2 = "weapons/m60/env/m60rear_roomxl_split";
+			}
+			item[5] = {
+				envType = "SET_INDOOR_CORIDOR";
+				sound0 = "weapons/m60/m60_fire_close_split";
+				sound1 = "weapons/m60/env/m60_roommedium_split";
+				sound2 = "weapons/m60/env/m60rear_roommedium_split";
+			}
+			item[6] = {
+				envType = "SET_OUTDOOR_OPEN_SPACE";
+				sound0 = "weapons/m60/m60_fire_close_split";
+				sound1 = "weapons/m60/env/m60_outdoor_split";
+				sound2 = "weapons/m60/env/m60rear_outdoor_split";
+			}
+			item[7] = {
+				envType = "SET_OUTDOOR_COURT_YARD";
+				sound0 = "weapons/m60/m60_fire_close_split";
+				sound1 = "weapons/m60/env/m60_outdoor_split";
+				sound2 = "weapons/m60/env/m60rear_outdoor_split";
+			}
+			item[8] = {
+				envType = "SET_OUTDOOR_SINGLE_WALL";
+				sound0 = "weapons/m60/m60_fire_close_split";
+				sound1 = "weapons/m60/env/m60_outdoor_split";
+				sound2 = "weapons/m60/env/m60rear_outdoor_split";
+			}
+		}
+		damageDecl = "damage/tungsten/mg60_stealthhelicopter_c06";
+		tracerInfo = {
+			sndTracer = NULL;
+		}
+	}
+}

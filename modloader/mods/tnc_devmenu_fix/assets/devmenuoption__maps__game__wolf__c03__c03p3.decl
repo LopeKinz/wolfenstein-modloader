@@ -1,0 +1,59 @@
+{
+	edit = {
+		devMenuList = {
+			num = 4;
+			item[0] = {
+				devMenuDisplayName = "campaign - fergus";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/fergus,layer/c03p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p3";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "campaign - wyatt";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c03p3,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p3";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "D2 - state building - fergus";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c03p3_district_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/district2,layer/fergus\"";
+					item[2] = "si_filllayeractive \"layer/fergus\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p3";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "D2 - state building - wyatt";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c03p3_district_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/district2,layer/wyatt\"";
+					item[2] = "si_filllayeractive \"layer/wyatt\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c03/c03p3";
+				}
+			}
+		}
+	}
+}

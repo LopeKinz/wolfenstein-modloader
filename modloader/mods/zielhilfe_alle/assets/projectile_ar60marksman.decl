@@ -1,0 +1,89 @@
+{
+	inherit = "projectile/assaultrifle1960";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			item[0] = {
+				sound0 = "weapons/marksman/marksman_fire_shot_w_mechanism";
+				sound1 = "weapons/marksman/env/ar60mm_env_outdoor";
+				sound2 = NULL;
+			}
+			item[1] = {
+				sound0 = "weapons/marksman/marksman_fire_shot_w_mechanism";
+				sound1 = "weapons/marksman/env/ar60mm_envint_s";
+				sound2 = NULL;
+			}
+			item[2] = {
+				sound0 = "weapons/marksman/marksman_fire_shot_w_mechanism";
+				sound1 = "weapons/marksman/env/ar60mm_envint_m";
+				sound2 = NULL;
+			}
+			item[3] = {
+				sound0 = "weapons/marksman/marksman_fire_shot_w_mechanism";
+				sound1 = "weapons/marksman/env/ar60mm_envint_l";
+				sound2 = NULL;
+			}
+			item[4] = {
+				sound0 = "weapons/marksman/marksman_fire_shot_w_mechanism";
+				sound1 = "weapons/marksman/env/ar60mm_envint_xl";
+				sound2 = NULL;
+			}
+			item[5] = {
+				sound0 = "weapons/marksman/marksman_fire_shot_w_mechanism";
+				sound1 = "weapons/marksman/env/ar60mm_envint_m";
+				sound2 = NULL;
+			}
+			item[6] = {
+				sound0 = "weapons/marksman/marksman_fire_shot_w_mechanism";
+				sound1 = "weapons/marksman/env/ar60mm_env_outdoor";
+				sound2 = NULL;
+			}
+			item[7] = {
+				sound0 = "weapons/marksman/marksman_fire_shot_w_mechanism";
+				sound1 = "weapons/marksman/env/ar60mm_env_outdoor";
+				sound2 = NULL;
+			}
+			item[8] = {
+				sound0 = "weapons/marksman/marksman_fire_shot_w_mechanism";
+				sound1 = "weapons/marksman/env/ar60mm_env_outdoor";
+				sound2 = NULL;
+			}
+		}
+		impactEffectTable = "wolf/explosive";
+		damageDecl = "damage/tungsten/ar60marksman";
+		weaponFeedBack = {
+			weaponKickInfo = {
+				weaponKickInfo[0] = {
+					kick = 2;
+					maxKick = 4;
+					recoilSpeed = 22;
+				}
+				weaponKickInfo[1] = {
+					kick = 1;
+				}
+				weaponKickInfo[2] = {
+					kick = 2.5;
+					recoilSpeed = 80;
+				}
+				weaponKickInfo[3] = {
+					kick = 1;
+					maxKick = 2;
+					recoilSpeed = 12;
+					recoverySpeed = 8;
+				}
+				weaponKickInfo[4] = {
+					kick = 1;
+					maxKick = 25;
+					recoverySpeed = 14;
+				}
+				weaponKickInfo[5] = {
+					kick = 1;
+					maxKick = 25;
+					recoverySpeed = 14;
+				}
+			}
+			spreadAdditionPerShot = 0.200000003;
+			spreadAdditionMax = 2.5;
+		}
+	}
+}

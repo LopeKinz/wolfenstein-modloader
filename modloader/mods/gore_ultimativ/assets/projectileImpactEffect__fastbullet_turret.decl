@@ -1,0 +1,171 @@
+{
+	inherit = "default";
+	edit = {
+		defaultEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		metalEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		metalHollow = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		metalSheet = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		metalVent = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		stoneEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		fleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		woodEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		cardboardEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		liquidEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		glassEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		plasticEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		asphaltEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		dirtEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		concreteEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		plasterEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		foilageEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		linoleumEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		fabricEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		rubberEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		rockEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		steamPipeEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		waterPipeEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		armorEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		sludgeEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		bloodPoolEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		mutantFleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		thickPaddingEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		oilPipeEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		electronicsEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		panzerMetalEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		breakableArmorEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		electricShieldEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+	}
+}

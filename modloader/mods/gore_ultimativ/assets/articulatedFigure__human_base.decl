@@ -1,0 +1,522 @@
+{
+
+settings {
+	model "characters/standard/base.md6"
+	skin ""
+	clipMaterial "surfaceonly/flesh"
+	defaultBouncyness 0.200000003
+	defaultlinearFriction 0.3
+	defaultangularFriction 0.4
+	defaultcontactFriction 0.7
+	defaultConstraintFriction 0.5
+	defaultGravityScale 1
+	suspendSpeed 20, 20, 40, 60
+	noMoveTime 5
+	noMoveTranslation 64
+	noMoveRotation 5
+	minMoveTime -1
+	maxMoveTime 5
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	solverConstants {
+		errorReduction 0.1000000015
+		errorReductionMax 64
+		lcpEpsilon 0.0001
+		maxLcpEpsilon 0.0099999998
+		limitErrorReduction 0.2000000015
+		limitErrorReductionMax 32
+		limitLcpEpsilon 0.01
+		contactErrorReduction 0.1000000015
+		contactErrorReductionMax 0.3000000119
+		contactLcpEpsilon 0.0001
+		universalErrorReduction 0.1000000015
+		universalErrorReductionMax 16
+		universalTorsionLcpEpsilon 0.1000000015
+		minTwistErrorReduction 0.001
+		maxTwistErrorReduction 0.5
+	}
+	syncSolverConstants {
+		errorReduction 0.5
+		errorReductionMax 512
+		lcpEpsilon 0.0001
+		maxLcpEpsilon 0.0099999998
+		limitErrorReduction 0.2000000015
+		limitErrorReductionMax 128
+		limitLcpEpsilon 0.01
+		contactErrorReduction 0.200000003
+		contactErrorReductionMax 256
+		contactLcpEpsilon 0.000001
+		universalErrorReduction 0.5
+		universalErrorReductionMax 512
+		universalTorsionLcpEpsilon 0.5
+		minTwistErrorReduction 0.001
+		maxTwistErrorReduction 0.5
+	}
+}
+
+body "hips" {
+	joint "hips"
+	mod both
+	model box( ( -5, -7, -4 ), ( 5, 7, 4 ) )
+	origin joint( "hips" )
+	density 0.0020000001
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.7
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "origin hips"
+}
+
+body "abdomen" {
+	joint "spine"
+	mod orientation
+	model box( ( -5, -6, -3 ), ( 5, 6, 3 ) )
+	origin joint( "spine" )
+	density 0.0020000001
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.7
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "spine"
+}
+
+body "left_thigh" {
+	joint "leftupleg"
+	mod orientation
+	model box( ( -3, -3, -11 ), ( 3, 3, 11 ) )
+	origin ( 0, 5.5, 36 )
+	angles ( 2, 45, 2 )
+	density 0.0040000002
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.5
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "leftupleg"
+}
+
+body "right_thigh" {
+	joint "rightupleg"
+	mod orientation
+	model box( ( -3, -3, -11 ), ( 3, 3, 11 ) )
+	origin ( 0, -5.5, 36 )
+	angles ( 2, 45, 2 )
+	density 0.0040000002
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.5
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "rightupleg"
+}
+
+body "left_calf" {
+	joint "leftleg"
+	mod orientation
+	model box( ( -2, -2, -12.5 ), ( 2, 2, 12.5 ) )
+	origin bonecenter( "leftleg", "leftfoot" )
+	angles ( 3, 45, 3 )
+	density 0.0040000002
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.2
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "leftleg leftfoot lefttoebase"
+}
+
+body "right_calf" {
+	joint "rightleg"
+	mod orientation
+	model box( ( -2, -2, -12.5 ), ( 2, 2, 12.5 ) )
+	origin bonecenter( "rightleg", "rightfoot" )
+	angles ( 3, 45, 3 )
+	density 0.0040000002
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.2
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "rightleg rightfoot righttoebase"
+}
+
+body "left_shoulder" {
+	joint "leftshoulder"
+	mod orientation
+	model box( ( -3.5, -3, -3.5 ), ( 3.5, 3, 3.5 ) )
+	origin ( -1, 8, 77 )
+	angles ( 0, 2, -20 )
+	density 0.0080000004
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.7
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "leftshoulder"
+}
+
+body "right_shoulder" {
+	joint "rightshoulder"
+	mod orientation
+	model box( ( -3.5, -3, -3.5 ), ( 3.5, 3, 3.5 ) )
+	origin ( -1, -8, 77 )
+	angles ( 0, -2, 20 )
+	density 0.0080000004
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.7
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "rightshoulder"
+}
+
+body "left_arm" {
+	joint "leftarm"
+	mod orientation
+	model box( ( -2, -2, -6.5 ), ( 2, 2, 6.5 ) )
+	origin bonecenter( "leftarm", "leftforearm" )
+	angles ( 5, 5, 45 )
+	density 0.0080000004
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.5
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "leftarm leftarmroll"
+}
+
+body "right_arm" {
+	joint "rightarm"
+	mod orientation
+	model box( ( -2, -2, -6.5 ), ( 2, 2, 6.5 ) )
+	origin bonecenter( "rightforearm", "rightarm" )
+	angles ( 5, 5, 315 )
+	density 0.0080000004
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.5
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "rightarm rightarmroll"
+}
+
+body "right_forearm" {
+	joint "rightforearm"
+	mod orientation
+	model box( ( -2, -2, -8 ), ( 2, 2, 8 ) )
+	origin bonecenter( "rightforearm", "righthand" )
+	angles ( 0, 30, 308 )
+	density 0.0040000002
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.2
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 1
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "rightforearm rightforearmroll *righthand"
+}
+
+body "left_forearm" {
+	joint "leftforearm"
+	mod orientation
+	model box( ( -2, -2, -7 ), ( 2, 2, 7 ) )
+	origin bonecenter( "leftforearm", "lefthand" )
+	angles ( 0, -30, 52 )
+	density 0.0040000002
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.2
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 1
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "leftforearm leftforearmroll *lefthand"
+}
+
+body "chest" {
+	joint "spine2"
+	mod orientation
+	model box( ( -5, -8, -10.5 ), ( 5, 8, 10.5 ) )
+	origin ( 0, 0, 75 )
+	angles ( -10, 0, 0 )
+	density 0.001
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.7
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints "spine2"
+}
+
+body "head" {
+	joint "neck"
+	mod orientation
+	model box( ( -3.5, -3.5, -5.5 ), ( 3.5, 3.5, 5.5 ) )
+	origin ( 0, 0, 91 )
+	angles ( 0, 45, 0 )
+	density 0.0040000002
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.7
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.3000000119
+	containedJoints "*neck"
+}
+
+body "upper_abdomen" {
+	joint "spine1"
+	mod orientation
+	model box( ( -6, -7, -3 ), ( 6, 7, 3 ) )
+	origin joint( "spine1" )
+	density 0.003
+	linearFriction 0.3
+	angularFriction 0.4
+	contactFriction 0.7
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 1
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints " spine1"
+}
+
+ballAndSocketJoint "waist" {
+	body1 "hips"
+	body2 "abdomen"
+	anchor joint( "hips" )
+	shafts bonedir( "spine", "spine1" ), bonedir( "spine", "hips" )
+	minTwist 1
+	maxTwist 10
+	friction 0.294
+	coneLimit bonedir( "spine", "spine1" ), 20, bonedir( "spine", "spine1" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+ballAndSocketJoint "left_hip" {
+	body1 "left_thigh"
+	body2 "hips"
+	anchor joint( "leftupleg" )
+	shafts bonedir( "leftupleg", "leftleg" ), ( 0.0000000119, 0, 1 )
+	minTwist 1
+	maxTwist 90
+	friction 0.210
+	coneLimit ( 0.0791813731, 0.2328201979, -0.9692910314 ), 60, bonedir( "leftupleg", "leftleg" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+ballAndSocketJoint "right_hip" {
+	body1 "right_thigh"
+	body2 "hips"
+	anchor joint( "rightupleg" )
+	shafts bonedir( "rightupleg", "rightleg" ), ( 0.0000000119, 0, 1 )
+	minTwist 1
+	maxTwist 90
+	friction 0.210
+	coneLimit ( 0.0460084192, -0.2415743321, -0.9692910314 ), 60, bonedir( "rightupleg", "rightleg" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+hinge "left_knee" {
+	body1 "left_calf"
+	body2 "left_thigh"
+	anchor joint( "leftleg" )
+	shafts bonedir( "leftupleg", "leftleg" ), bonedir( "leftleg", "leftfoot" )
+	minTwist 1
+	maxTwist 2
+	friction 0.084
+	limit 0, 110, 5, 30
+	limitFudge 0
+	syncConstraint 0
+}
+
+hinge "right_knee" {
+	body1 "right_calf"
+	body2 "right_thigh"
+	anchor joint( "rightleg" )
+	shafts bonedir( "rightupleg", "rightleg" ), bonedir( "rightleg", "rightfoot" )
+	minTwist 1
+	maxTwist 2
+	friction 0.084
+	limit 0, 110, 5, 30
+	limitFudge 0
+	syncConstraint 0
+}
+
+ballAndSocketJoint "left_scapula" {
+	body1 "left_shoulder"
+	body2 "chest"
+	anchor joint( "leftshoulder" )
+	shafts bonedir( "leftshoulder", "leftarm" ), bonedir( "spine2", "leftshoulder" )
+	minTwist 1
+	maxTwist 3
+	friction 0.294
+	pyramidLimit bonedir( "leftshoulder", "leftarm" ), 15, 25, 0, bonedir( "leftshoulder", "leftarm" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+ballAndSocketJoint "right_scapula" {
+	body1 "right_shoulder"
+	body2 "chest"
+	anchor joint( "rightshoulder" )
+	shafts bonedir( "rightshoulder", "rightarm" ), bonedir( "spine2", "rightshoulder" )
+	minTwist 1
+	maxTwist 3
+	friction 0.294
+	pyramidLimit bonedir( "rightshoulder", "rightarm" ), 15, 25, 0, bonedir( "rightshoulder", "rightarm" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+ballAndSocketJoint "left_shoulder" {
+	body1 "left_arm"
+	body2 "left_shoulder"
+	anchor joint( "leftarm" )
+	shafts bonedir( "leftshoulder", "leftarm" ), bonedir( "leftarm", "leftforearm" )
+	minTwist 1
+	maxTwist 80
+	friction 0.252
+	coneLimit ( -0.1125854328, 0.9930645823, -0.0338707119 ), 95, bonedir( "leftshoulder", "leftarm" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+ballAndSocketJoint "right_shoulder" {
+	body1 "right_arm"
+	body2 "right_shoulder"
+	anchor joint( "rightarm" )
+	shafts bonedir( "rightshoulder", "rightarm" ), bonedir( "rightarm", "rightforearm" )
+	minTwist 1
+	maxTwist 80
+	friction 0.252
+	coneLimit ( -0.1125836, -0.9930648208, -0.0338707119 ), 95, bonedir( "rightshoulder", "rightarm" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+hinge "left_elbow" {
+	body1 "left_forearm"
+	body2 "left_arm"
+	anchor joint( "leftforearm" )
+	shafts bonedir( "leftarm", "leftforearm" ), bonedir( "leftforearm", "lefthand" )
+	minTwist 0.1
+	maxTwist 0.2
+	friction 0.126
+	limit 10, 110, 10, 65
+	limitFudge 0
+	syncConstraint 0
+}
+
+hinge "right_elbow" {
+	body1 "right_forearm"
+	body2 "right_arm"
+	anchor joint( "rightforearm" )
+	shafts bonedir( "rightarm", "rightforearm" ), bonedir( "rightforearm", "righthand" )
+	minTwist 0.1
+	maxTwist 0.2
+	friction 0.126
+	limit 10, 110, 10, 65
+	limitFudge 0
+	syncConstraint 0
+}
+
+ballAndSocketJoint "spine" {
+	body1 "abdomen"
+	body2 "upper_abdomen"
+	anchor joint( "spine1" )
+	shafts bonedir( "spine1", "spine2" ), bonedir( "spine1", "spine" )
+	minTwist 0.1
+	maxTwist 10
+	friction 0.252
+	coneLimit bonedir( "spine1", "spine2" ), 40, bonedir( "spine1", "spine2" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+ballAndSocketJoint "neck" {
+	body1 "head"
+	body2 "chest"
+	anchor joint( "neck" )
+	shafts bonedir( "neck", "head" ), bonedir( "neck", "spine2" )
+	minTwist 0.1
+	maxTwist 80
+	friction 0.126
+	coneLimit bonedir( "neck", "head" ), 50, bonedir( "neck", "head" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+ballAndSocketJoint "spine1" {
+	body1 "upper_abdomen"
+	body2 "chest"
+	anchor joint( "spine2" )
+	shafts bonedir( "spine2", "neck" ), bonedir( "spine2", "spine1" )
+	minTwist 0.1
+	maxTwist 10
+	friction 0.252
+	coneLimit bonedir( "spine2", "neck" ), 45, bonedir( "spine2", "neck" )
+	limitFudge 0
+	syncConstraint 0
+}
+
+}

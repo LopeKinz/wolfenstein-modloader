@@ -1,0 +1,186 @@
+{ 
+	inherit = "wolf/lasercutter_decals";
+	edit = {
+		defaultEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		metalEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		metalHollow = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		metalSheet = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		metalVent = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		stoneEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		fleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_flesh";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		woodEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		cardboardEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		liquidEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/lkw_water";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		glassEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		plasticEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		asphaltEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		dirtEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		concreteEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		foilageEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		linoleumEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		fabricEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		rubberEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		rockEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		steamPipeEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_steampipe";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		waterPipeEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_waterpipe";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		armorEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_armor2";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		sludgeEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		bloodPoolEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		mutantFleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		thickPaddingEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		plasterEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		electronicsEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_electronics";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		oilPipeEffect = {
+			decalSize = 26;
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_reflect";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		panzerMetalEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_panzer2";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		breakableArmorEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/laserkraftwerk_armor_breakable";
+			sndImpact = "weapons/lkw/upgrades/lkw_bounce";
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+			sndImpact = "projectile/bullet_impacts/imp_metal";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+	}
+}

@@ -1,0 +1,13 @@
+{
+  "id": "wolfsdk.cheats_gamemode",
+  "name": "Cheats - Health and Ammo",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Gives the normal campaign the values of the 999 mode: 999 starting health instead of 100, plus the flags FLAG_AMMOUNLIMITED (ammo is never used up) and FLAG_NOOVERCHARGE (health above 100 does not drain). Both are set exactly like this in gamemodesp:gamemode/999, so the game ships the flags itself. This route gets around the retail lock on g_infiniteAmmo because not a single cvar is touched. Full replacement instead of set, because gamemode/campaign has no gameModeFlags field at all and the decl editor does not add new fields. Untested in game: built and checked, but never launched.",
+  "priority": 150,
+  "assets": {
+    "gamemodesp:gamemode/campaign": {
+      "file": "assets/gamemodesp__gamemode_campaign.decl"
+    }
+  }
+}

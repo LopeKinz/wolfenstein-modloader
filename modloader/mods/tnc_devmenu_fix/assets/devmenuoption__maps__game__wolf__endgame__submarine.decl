@@ -1,0 +1,33 @@
+{
+	edit = {
+		devMenuList = {
+			num = 2;
+			item[0] = {
+				devMenuDisplayName = "campaign - fergus";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/endgame,layer/endgame_fergus,layer/fergus,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/submarine/submarine";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "campaign - wyatt";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/endgame,layer/endgame_wyatt,layer/wyatt,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/submarine/submarine";
+				}
+			}
+		}
+	}
+}

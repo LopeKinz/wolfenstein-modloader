@@ -1,0 +1,15 @@
+{
+	edit = {
+		devMenuList = {
+			num = 2;
+			item[0] = {
+				devMenuDisplayName = "campaign - fergus";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c07/c07p1/c07p1_fergus_devstarts";
+			}
+			item[1] = {
+				devMenuDisplayName = "campaign - wyatt";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c07/c07p1/c07p1_wyatt_devstarts";
+			}
+		}
+	}
+}

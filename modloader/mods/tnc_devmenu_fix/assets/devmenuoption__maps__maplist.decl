@@ -1,0 +1,59 @@
+{
+	edit = {
+		devMenuList = {
+			num = 13;
+			item[0] = {
+				devMenuDisplayName = "C01 - Heaven";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c01";
+			}
+			item[1] = {
+				devMenuDisplayName = "C02 - The Reunion";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c02";
+			}
+			item[2] = {
+				devMenuDisplayName = "C03 - Manhattan";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c03";
+			}
+			item[3] = {
+				devMenuDisplayName = "C04 - Old Secrets";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c04";
+			}
+			item[4] = {
+				devMenuDisplayName = "C05 - Roswell";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c05";
+			}
+			item[5] = {
+				devMenuDisplayName = "C06 - Monster";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c06";
+			}
+			item[6] = {
+				devMenuDisplayName = "C07 - A New Suit";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c07";
+			}
+			item[7] = {
+				devMenuDisplayName = "C08 - New Orleans";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c08";
+			}
+			item[8] = {
+				devMenuDisplayName = "C09 - Venus";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c09";
+			}
+			item[9] = {
+				devMenuDisplayName = "C10 - Lost At Sea";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c10";
+			}
+			item[10] = {
+				devMenuDisplayName = "C11 - Ausmerzer";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c11";
+			}
+			item[11] = {
+				devMenuDisplayName = "C12 - Epilogue";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c12";
+			}
+			item[12] = {
+				devMenuDisplayName = "Endgame";
+				devMenuSubList = "devmenuoption/maps/game/wolf/endgame";
+			}
+		}
+	}
+}
