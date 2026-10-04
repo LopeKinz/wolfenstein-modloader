@@ -1,0 +1,237 @@
+{
+	edit = {
+		defaultEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		metalEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		metalHollow = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		metalSheet = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		metalVent = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		stoneEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		fleshEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		woodEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		cardboardEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		liquidEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		glassEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		plasticEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		asphaltEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		dirtEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		concreteEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		plasterEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		foilageEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		linoleumEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		fabricEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		rubberEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		rockEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		steamPipeEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		waterPipeEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		armorEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		sludgeEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		bloodPoolEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		mutantFleshEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		thickPaddingEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		oilPipeEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		electronicsEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		panzerMetalEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		breakableArmorEffect = {
+			useSmokeSystem = true;
+			decalMaterial = {
+				num = 0;
+			}
+			decalSize = 26;
+		}
+		electricShieldEffect = {
+			useSmokeSystem = false;
+			decalMaterial = {
+				num = 0;
+			}
+			decalMaterial = {
+				num = 0;
+			}
+		}
+	}
+}

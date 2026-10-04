@@ -1,0 +1,20 @@
+{
+	edit = {
+		devMenuList = {
+			num = 1;
+			item[0] = {
+				devMenuDisplayName = "New Game";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start_1\"";
+					item[1] = "si_nextlayeractive \"\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap maps/game/wolf/c02/c02p2.map";
+				}
+			}
+		}
+	}
+}

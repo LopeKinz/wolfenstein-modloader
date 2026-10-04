@@ -1,0 +1,49 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "Death is Coming (C2V1)";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c2v1_gameplay_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c2v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 5";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c02/c2v1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Silence is Golden (C2V2)";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c2v2_gameplay_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c2v2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 5";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c02/c2v2";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Nazis Can't Hide (C2V3)";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c2v3_gameplay_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c2v3\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 5";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c02/c2v3";
+				}
+			}
+		}
+	}
+}

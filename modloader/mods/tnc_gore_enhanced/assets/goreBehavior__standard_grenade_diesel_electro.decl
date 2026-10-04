@@ -1,0 +1,33 @@
+{
+	inherit = "standard/explosive";
+	edit = {
+		probability = {
+			num = 5;
+			item[0] = {
+				woundType = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND";
+				probability = 0.95;
+				falloff = NULL;
+			}
+			item[1] = {
+				woundType = "GORETYPE_HEAD_SHOT";
+				probability = 0.35;
+				falloff = NULL;
+			}
+			item[2] = {
+				woundType = "GORETYPE_LIMBLOSS";
+				probability = 0.5;
+				falloff = NULL;
+			}
+			item[3] = {
+				woundType = "GORETYPE_SIGNATURE_DEATH2";
+				probability = 1;
+				falloff = "gore/falloff/grenade";
+			}
+			item[4] = {
+				woundType = "GORETYPE_SIGNATURE_DEATH1";
+				probability = 1;
+				falloff = "gore/falloff/grenade";
+			}
+		}
+	}
+}

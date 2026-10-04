@@ -1,0 +1,99 @@
+{
+	inherit = "projectile/lasercutter/base";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			item[0] = {
+				sound0 = "weapons/lkw/lkw_shoot";
+				sound1 = "weapons/lkw/env/lkw_outdoor";
+				sound2 = "weapons/lkw/env/lkw_outdoor_rear";
+			}
+			item[1] = {
+				sound0 = "weapons/lkw/lkw_shoot";
+				sound1 = "weapons/lkw/env/lkw_small";
+				sound2 = "weapons/lkw/env/lkw_small_rear";
+			}
+			item[2] = {
+				sound0 = "weapons/lkw/lkw_shoot";
+				sound1 = "weapons/lkw/env/lkw_medium";
+				sound2 = "weapons/lkw/env/lkw_medium_rear";
+			}
+			item[3] = {
+				sound0 = "weapons/lkw/lkw_shoot";
+				sound1 = "weapons/lkw/env/lkw_large";
+				sound2 = "weapons/lkw/env/lkw_large_rear";
+			}
+			item[4] = {
+				sound0 = "weapons/lkw/lkw_shoot";
+				sound1 = "weapons/lkw/env/lkw_xl";
+				sound2 = "weapons/lkw/env/lkw_xl_rear";
+			}
+			item[5] = {
+				sound0 = "weapons/lkw/lkw_shoot";
+				sound1 = "weapons/lkw/env/lkw_medium";
+				sound2 = "weapons/lkw/env/lkw_medium_rear";
+			}
+			item[6] = {
+				sound0 = "weapons/lkw/lkw_shoot";
+				sound1 = "weapons/lkw/env/lkw_outdoor";
+				sound2 = "weapons/lkw/env/lkw_outdoor_rear";
+			}
+			item[7] = {
+				sound0 = "weapons/lkw/lkw_shoot";
+				sound1 = "weapons/lkw/env/lkw_outdoor";
+				sound2 = "weapons/lkw/env/lkw_outdoor_rear";
+			}
+			item[8] = {
+				sound0 = "weapons/lkw/lkw_shoot";
+				sound1 = "weapons/lkw/env/lkw_outdoor";
+				sound2 = "weapons/lkw/env/lkw_outdoor_rear";
+			}
+		}
+		impactEffectTable = "wolf/laserkraftwerk_shoot";
+		damageDecl = "damage/tungsten/lkw/shooting";
+		spread = 0.4000;
+		crosshairSpread = 1;
+		weaponFeedBack = {
+			weaponKickInfo = {
+				weaponKickInfo[0] = {
+					kick = 2;
+					maxKick = 4;
+					recoilSpeed = 22;
+					recoverySpeed = 5;
+				}
+				weaponKickInfo[1] = {
+					kick = 4;
+					maxKick = 12;
+					recoilSpeed = 80;
+					recoverySpeed = 8;
+				}
+				weaponKickInfo[2] = {
+					kick = 1;
+					maxKick = 25;
+					recoilSpeed = 12;
+					recoverySpeed = 20;
+				}
+				weaponKickInfo[3] = {
+					kick = 1;
+					maxKick = 2;
+					recoilSpeed = 12;
+					recoverySpeed = 8;
+				}
+				weaponKickInfo[4] = {
+					kick = 1;
+					maxKick = 25;
+					recoilSpeed = 14;
+					recoverySpeed = 8;
+				}
+				weaponKickInfo[5] = {
+					kick = 1;
+					maxKick = 25;
+					recoilSpeed = 25;
+					recoverySpeed = 14;
+				}
+			}
+			spreadAdditionPerShot = 0.200000003;
+			spreadAdditionMax = 2.5;
+		}
+	}
+}

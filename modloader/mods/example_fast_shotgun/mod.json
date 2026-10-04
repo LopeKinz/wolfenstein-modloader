@@ -1,0 +1,16 @@
+{
+  "id": "example.fast_shotgun",
+  "name": "Faster Shotgun (Example)",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Shorter firing intervals for the shotgun. Shows how to address indexed array values (field[0]).",
+  "priority": 110,
+  "assets": {
+    "weapon:weapon/shotgun_base": {
+      "set": {
+        "edit.firingIntervals.firingIntervals[0]": 120,
+        "edit.firingIntervals.firingIntervals[2]": 120
+      }
+    }
+  }
+}

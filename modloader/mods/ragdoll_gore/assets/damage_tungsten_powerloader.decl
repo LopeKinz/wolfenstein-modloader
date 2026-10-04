@@ -1,0 +1,19 @@
+{
+	edit = {
+		damageParms = {
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "powerloader";
+			minDamage = 9999;
+			maxDamage = 9999;
+			isMelee = true;
+			knockBack = 1800;
+			knockUp = 15;
+			radius = 24;
+			damageTypes = "DAMAGETYPE_POWERLOADER";
+			instantRagdoll = true;
+			ragdollImpulseMag = 2200;
+		}
+	}
+}

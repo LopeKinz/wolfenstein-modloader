@@ -1,0 +1,19 @@
+{
+	edit = {
+		probability = {
+			num = 3;
+			item[0] = {
+				woundType = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND";
+				probability = 0.95;
+			}
+			item[1] = {
+				woundType = "GORETYPE_HEAD_SHOT";
+				probability = 0.75;
+			}
+			item[2] = {
+				woundType = "GORETYPE_LIMBLOSS";
+				probability = 0.75;
+			}
+		}
+	}
+}

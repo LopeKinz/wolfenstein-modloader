@@ -1,0 +1,56 @@
+{
+	edit = {
+		damageParms = {
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "knifedamage";
+			damageTypes = "DAMAGETYPE_MELEE DAMAGETYPE_EDGED";
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			declGoreBehavior = "standard/pistol";
+			minDamage = 17;
+			maxDamage = 19;
+			isMelee = true;
+			ragdollImpulseMag = 1100;
+			isStealthy = true;
+			feedbackScreenEffects = {
+				feedbackLarge = {
+					parms = {
+						screenDamageTime = 1.4000000954;
+						//screenDamageMtr = "textures/particles/gore/screen/screensplat01_guitest";
+						screenDamageSize = {
+							x = 400;
+							y = 600;
+						}
+						offsetPctX = {
+							x = -0.25;
+							y = 0.5;
+						}
+						offsetPctY = {
+							x = -0.25;
+						}
+						distribPctX = {
+							x = 0.400000006;
+							y = 0.8000000119;
+						}
+						distribPctY = {
+							x = -0.3000000119;
+							y = 0.6000000238;
+						}
+						driftYAmount = {
+							x = 0.1000000015;
+							y = 0.5;
+						}
+						delay = {
+							y = 0.150000006;
+						}
+						fadeOutTime = 1;
+						screenDamageFrames = 4;
+						numQuads = 5;
+					}
+					damagePct = 0;
+					radius = 100;
+				}
+			}
+		}
+	}
+}

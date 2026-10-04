@@ -1,0 +1,34 @@
+{
+  "id": "wolfsdk.enigma_frei",
+  "name": "Enigma - Bonus Modes Without Secrets",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "tab0..tab3 link the four bonus modes (999, Walk in the Park, Hardcore, Ironman) to two Enigma codes each, with nine secret IDs per code, 72 secrets in total. This mod sets all eight requiredSecrets.num to 0 so no secret is needed any more. Eight surgical set changes, no file is replaced. It is still unclear whether the engine reads '0 required secrets' as fulfilled or as never fulfillable; if the modes stay locked, 1 instead of 0 is the next thing to try. Untested in game: built and checked, but never launched.",
+  "priority": 150,
+  "assets": {
+    "enigma:tab0": {
+      "set": {
+        "edit.codes.item[0].requiredSecrets.num": 0,
+        "edit.codes.item[1].requiredSecrets.num": 0
+      }
+    },
+    "enigma:tab1": {
+      "set": {
+        "edit.codes.item[0].requiredSecrets.num": 0,
+        "edit.codes.item[1].requiredSecrets.num": 0
+      }
+    },
+    "enigma:tab2": {
+      "set": {
+        "edit.codes.item[0].requiredSecrets.num": 0,
+        "edit.codes.item[1].requiredSecrets.num": 0
+      }
+    },
+    "enigma:tab3": {
+      "set": {
+        "edit.codes.item[0].requiredSecrets.num": 0,
+        "edit.codes.item[1].requiredSecrets.num": 0
+      }
+    }
+  }
+}

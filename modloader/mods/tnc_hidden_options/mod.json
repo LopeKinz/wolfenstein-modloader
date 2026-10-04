@@ -1,0 +1,16 @@
+{
+  "id": "wolfsdk.tnc_hidden_options",
+  "name": "Hidden Menu Options",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Turns on menu options the retail game hides: the main menu entry to the developer menu (menu_showOptionForDevMenu), the SAS menu entry (menu_showOptionForSASMenu), the hardest difficulty without finishing the game first (menu_allowMeinLeben) and the photo mode setting (g_setting_photomode). The menu code reads all four; what photo mode does in this game is unknown. They are developer cvars the console refuses, so the loader writes them into the game's default.cfg. Not yet confirmed in game.",
+  "priority": 100,
+  "spiel": "tnc",
+  "cvars": {
+    "menu_showOptionForDevMenu": "1",
+    "menu_showOptionForSASMenu": "1",
+    "menu_allowMeinLeben": "1",
+    "g_setting_photomode": "1"
+  },
+  "assets": {}
+}

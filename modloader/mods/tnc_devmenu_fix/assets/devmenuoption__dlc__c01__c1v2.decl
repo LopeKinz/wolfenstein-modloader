@@ -1,0 +1,21 @@
+{
+	edit = {
+		devMenuList = {
+			num = 1;
+			item[0] = {
+				devMenuDisplayName = "C1V2";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c1v2_gameplay_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c1v2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 4";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c01/c1v2";
+				}
+			}
+		}
+	}
+}

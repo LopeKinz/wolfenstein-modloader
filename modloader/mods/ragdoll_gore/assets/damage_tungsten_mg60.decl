@@ -1,0 +1,15 @@
+{
+	edit = {
+		damageParms = {
+			ragdollOnDeath = true;
+			damageName = "shooting mg60";
+			damageTypes = "DAMAGETYPE_LASER DAMAGETYPE_TURRET";
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			declGoreBehavior = "standard/heavy";
+			cuttableRadius = 14.0;
+			minDamage = 12.5;
+			maxDamage = 17.5;
+			ragdollImpulseMag = 1100;
+		}
+	}
+}

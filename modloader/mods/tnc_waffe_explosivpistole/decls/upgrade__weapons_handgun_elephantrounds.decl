@@ -1,0 +1,75 @@
+{
+	inherit = "default";
+	edit = {
+		modifiersData = {
+			num = 2;
+			item[0] = {
+				priority = 3;
+				data = {
+					valueDecl = "projectile/player/pistol_elephant";
+				}
+			}
+			item[1] = {
+				type = "DMT_UPGRADE_ANIM";
+				data = {
+					valueInt = 1;					
+				}
+			}
+		}
+		modifiersWeapon = {
+			num = 5;
+			item[0] = {
+				priority = 3;
+				type = "WMT_WEAPON_RECOIL";
+				data = {
+					valueFloat = 2;
+				}
+			}
+			item[1] = {
+				priority = 3;
+				type = "WMT_WEAPON_USE_ALTERNATIVE_FIRE_ANIM";
+			}
+			item[2] = {
+				priority = 3;
+				type = "WMT_WEAPON_USE_UPGRADE_WEAPON_POSE";
+			}
+			item[3] = {
+				priority = 3;
+				type = "WMT_WEAPON_HEAT_INCREASE";
+				data = {
+					valueFloat = 0.1;
+				}
+			}
+			item[4] = {
+				priority = 3;
+				type = "WMT_WEAPON_HEAT_DECREASE";
+				data = {
+					valueFloat = 0.200000003;
+				}
+			}
+		}
+		modifiersAmmo = {
+			num = 1;
+			item[0] = {
+				priority = 3;
+				type = "AMT_AMMO_ICON";
+				data = {
+					valueMaterial = "textures/guis/hud/icons/upgrades/64x64/upgrade_pistol";
+					valueStr = "weapon/player/sp/handgun";
+				}
+			}
+		}
+		displayName = "#str_upgrade_handgun_elephant_name";
+		description = "#str_upgrade_handgun_elephant_desc";
+		addedShowHideMeshInfo = {
+			meshesToShow = {
+				num = 1;
+				item[0] = "burst";
+			}
+		}
+		startActivated = true;
+		toggable = true;
+		upgradeNum = 1;
+		applyTo = "weapon/player/sp/handgun";
+	}
+}

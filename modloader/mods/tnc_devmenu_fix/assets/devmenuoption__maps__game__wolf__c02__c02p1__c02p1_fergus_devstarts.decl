@@ -1,0 +1,98 @@
+{
+	edit = {
+		devMenuList = {
+			num = 7;
+			item[0] = {
+				devMenuDisplayName = "start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p1_gameplay_player_start\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "After Execution";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p1_gameplay_player_start_afterexec\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p1,layer/code,layer/wolfsdk/devstart_afterexecution\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_afterexecution\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p1";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Odin Security Room";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p1_gameplay_player_devstart_odinroom\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p1,layer/code,layer/wolfsdk/devstart_odinroom\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_odinroom\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p1";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Armory";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p1_gameplay_player_devstart_armory\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p1,layer/code,layer/wolfsdk/devstart_armory\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_armory\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p1";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "After Magnets";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p1_gameplay_player_devstart_aftermagnets\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p1,layer/code,layer/wolfsdk/devstart_aftermagnets\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_aftermagnets\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p1";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "First Airlock";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p1_gameplay_player_devstart_firstairlock\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p1,layer/code,layer/wolfsdk/devstart_firstairlock\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_firstairlock\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p1";
+				}
+			}
+			item[6] = {
+				devMenuDisplayName = "Second Airlock";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c02p1_gameplay_player_devstart_secondairlock\"";
+					item[1] = "si_nextlayeractive \"layer/campaign,layer/fergus,layer/c02p1,layer/code,layer/wolfsdk/devstart_secondairlock\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_secondairlock\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c02/c02p1";
+				}
+			}
+		}
+	}
+}

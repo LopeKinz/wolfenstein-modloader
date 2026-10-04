@@ -1,0 +1,8 @@
+{
+	inherit = "projectile/lasercutter/base";
+	edit = {
+		aimAssistRange = 3072;
+		impactEffectTable = "wolf/lasercutter_shoot";
+		damageDecl = "damage/tungsten/lasercutter/shooting";
+	}
+}

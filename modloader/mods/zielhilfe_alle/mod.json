@@ -1,0 +1,79 @@
+{
+  "id": "wolfsdk.zielhilfe_alle",
+  "name": "Aim Assist for All Weapons",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Sets aimAssistRange to 3072 for every projectile a player weapon fires (throwing knife 2048) and lowers the spread to 40%. The field is missing in almost all projectile decls and is therefore inserted. Projectiles under projectile/ai/ stay untouched - enemies and turrets share those.",
+  "priority": 170,
+  "assets": {
+    "projectile:projectile/base/bullet_light_default": {
+      "file": "assets/projectile_base_bullet_light_default.decl"
+    },
+    "projectile:projectile/base/bullet_heavy_default": {
+      "file": "assets/projectile_base_bullet_heavy_default.decl"
+    },
+    "projectile:projectile/base/bullet_shells_default": {
+      "file": "assets/projectile_base_bullet_shells_default.decl"
+    },
+    "projectile:projectile/base/bullet_default": {
+      "file": "assets/projectile_base_bullet_default.decl"
+    },
+    "projectile:projectile/base/mg46_default": {
+      "file": "assets/projectile_base_mg46_default.decl"
+    },
+    "projectile:projectile/base/mg60_default": {
+      "file": "assets/projectile_base_mg60_default.decl"
+    },
+    "projectile:projectile/handgun": {
+      "file": "assets/projectile_handgun.decl"
+    },
+    "projectile:projectile/handgun1946": {
+      "file": "assets/projectile_handgun1946.decl"
+    },
+    "projectile:projectile/handgun1946left": {
+      "file": "assets/projectile_handgun1946left.decl"
+    },
+    "projectile:projectile/assaultrifle1946": {
+      "file": "assets/projectile_assaultrifle1946.decl"
+    },
+    "projectile:projectile/assaultrifle1960": {
+      "file": "assets/projectile_assaultrifle1960.decl"
+    },
+    "projectile:projectile/ar60marksman": {
+      "file": "assets/projectile_ar60marksman.decl"
+    },
+    "projectile:projectile/submachinegun": {
+      "file": "assets/projectile_submachinegun.decl"
+    },
+    "projectile:projectile/shotgun": {
+      "file": "assets/projectile_shotgun.decl"
+    },
+    "projectile:projectile/grandpashotgun": {
+      "file": "assets/projectile_grandpashotgun.decl"
+    },
+    "projectile:projectile/faust_chaingun": {
+      "file": "assets/projectile_faust_chaingun.decl"
+    },
+    "projectile:projectile/player/mg60": {
+      "file": "assets/projectile_player_mg60.decl"
+    },
+    "projectile:projectile/player/mg60_stealthhelicopter_c06": {
+      "file": "assets/projectile_player_mg60_stealthhelicopter_c06.decl"
+    },
+    "projectile:projectile/lasercutter/shooting": {
+      "file": "assets/projectile_lasercutter_shooting.decl"
+    },
+    "projectile:projectile/laserkraftwerk/shooting": {
+      "file": "assets/projectile_laserkraftwerk_shooting.decl"
+    },
+    "projectile:projectile/knife_throw": {
+      "file": "assets/projectile_knife_throw.decl"
+    },
+    "projectile:projectile/knife46_throw": {
+      "file": "assets/projectile_knife46_throw.decl"
+    },
+    "projectile:projectile/kitchenknife_throw": {
+      "file": "assets/projectile_kitchenknife_throw.decl"
+    }
+  }
+}

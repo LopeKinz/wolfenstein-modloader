@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wolfenstein Studio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-state="start">
+<header id="topbar">
+  <span class="brand">Wolfenstein Studio</span>
+  <nav id="tabs" role="tablist" aria-label="Sections">
+    <button type="button" role="tab" data-s="karten">Maps</button>
+    <button type="button" role="tab" data-s="video">Video</button>
+    <button type="button" role="tab" data-s="audio">Audio</button>
+    <button type="button" role="tab" data-s="texturen">Textures</button>
+    <button type="button" role="tab" data-s="texte">Texts</button>
+    <button type="button" role="tab" data-s="modelle">Models</button>
+    <button type="button" role="tab" data-s="scripts">Scripts</button>
+  </nav>
+  <div class="seg games" role="radiogroup" aria-label="Game">
+    <label title="Wolfenstein II: The New Colossus"><input type="radio" name="game" value="tnc"><span>TNC</span></label>
+    <label title="Wolfenstein: The New Order"><input type="radio" name="game" value="tno"><span>TNO</span></label>
+  </div>
+  <span id="gamename" class="dim"></span>
+  <a id="support" href="/support" target="_blank" rel="noopener" title="WolfSDK is free. If it helps you, you can buy the developer a coffee.">Support</a>
+  <button id="sfs" type="button" title="Fullscreen (F11)">Fullscreen</button>
+</header>
+
+<canvas id="view" tabindex="0" aria-label="3D view of the map"></canvas>
+
+<aside id="panel" aria-label="Controls">
+  <header>
+    <span class="brand">Maps in 3D</span>
+    <button id="hide" class="icon" title="Collapse panel (H)" aria-label="Collapse panel">&#x2039;</button>
+  </header>
+
+  <section>
+    <label for="map" class="cap">Map</label>
+    <select id="map" disabled><option>Loading maps …</option></select>
+    <p id="maptitle" class="maptitle" hidden></p>
+    <p id="mapnote" class="note" hidden>Walls without texture: MegaTexture not decrypted. The map is therefore flat shaded; <kbd>T</kbd> shows the few real textures.</p>
+    <dl id="facts" class="facts"></dl>
+  </section>
+
+  <section>
+    <h2 class="cap">Display</h2>
+    <div class="seg" role="radiogroup" aria-label="Display">
+      <label><input type="radio" name="shade" value="tex" checked><span>Textures</span></label>
+      <label><input type="radio" name="shade" value="flat"><span>Flat shaded</span></label>
+    </div>
+    <h2 class="cap">Navigation</h2>
+    <div class="seg" role="radiogroup" aria-label="Navigation">
+      <label><input type="radio" name="nav" value="orbit" checked><span>Orbit</span></label>
+      <label><input type="radio" name="nav" value="fly"><span>Fly mode <kbd>F</kbd></span></label>
+    </div>
+    <div class="row">
+      <button id="home" type="button">Overview</button>
+      <button id="top" type="button">Top view</button>
+    </div>
+  </section>
+
+  <section>
+    <label class="check"><input type="checkbox" id="cut"><span>Cut from above</span></label>
+    <div class="cutrow">
+      <input type="range" id="cutz" min="0" max="1" step="0.25" value="1" aria-label="Cut height in metres" disabled>
+      <output id="cutv" for="cutz" class="mono">–</output>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="cap">Layers</h2>
+    <label class="check"><input type="checkbox" data-layer="static" checked><span>Walls &amp; furniture</span><em id="n-static"></em></label>
+    <label class="check"><input type="checkbox" data-layer="dynamic" checked><span>Movable objects</span><em id="n-dynamic"></em></label>
+    <label class="check"><input type="checkbox" data-layer="sky"><span>Sky &amp; distant view</span><em id="n-sky"></em></label>
+    <label class="check"><input type="checkbox" data-layer="coll"><span>Collision</span><em id="n-coll"></em></label>
+  </section>
+
+  <section>
+    <h2 class="cap">Markers</h2>
+    <div id="cats"></div>
+  </section>
+
+  <section class="keys">
+    <h2 class="cap">Keyboard</h2>
+    <p><kbd>F</kbd> fly mode · <kbd>H</kbd> panel · <kbd>T</kbd> textures/flat · <kbd>F11</kbd> fullscreen</p>
+    <p>Orbit: drag rotates · right mouse button pans · mouse wheel zooms · arrow keys pan · click a marker for details</p>
+    <p>Fly: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> · <kbd>Q</kbd>/<kbd>E</kbd> down/up · <kbd>Shift</kbd> faster · mouse wheel speed · <kbd>Esc</kbd> releases the mouse</p>
+  </section>
+</aside>
+
+<button id="show" class="tab" type="button" title="Expand panel (H)">&#x2630; Menu</button>
+
+<div id="tools">
+  <button id="flybtn" type="button" title="Fly mode (F)">Fly mode</button>
+</div>
+
+<div id="hint" hidden></div>
+<div id="cross" hidden aria-hidden="true"></div>
+
+<div id="pick" hidden role="dialog" aria-labelledby="pickname">
+  <button id="pickx" class="icon" type="button" aria-label="Close">&#xd7;</button>
+  <div id="pickcat" class="cap"></div>
+  <div id="pickname" class="name"></div>
+  <dl class="facts">
+    <dt>Class</dt><dd id="pickcls"></dd>
+    <dt>Template</dt><dd id="pickdef"></dd>
+    <dt>Position</dt><dd id="pickpos"></dd>
+  </dl>
+</div>
+
+<div id="status" role="status" aria-live="polite"><div id="bar"></div><span id="msg">Starting …</span></div>
+
+<main id="studio" hidden>
+  <aside id="side" aria-label="List">
+    <div class="search">
+      <input id="q" type="search" placeholder="Search …" autocomplete="off" spellcheck="false" aria-label="Search">
+      <select id="lang" aria-label="Language" hidden></select>
+    </div>
+    <p id="zipnote" class="zipnote dim" hidden></p>
+    <div class="filters">
+      <span id="count" class="mono dim"></span>
+      <button id="fold" class="ghost" type="button" title="Collapse or expand all folders">Collapse all</button>
+      <button id="zipall" class="ghost" type="button" title="Export every hit of the search and folder as one ZIP" hidden>Export ZIP</button>
+    </div>
+    <div id="list" class="vlist" tabindex="0" role="listbox" aria-label="Entries"><div class="vspace"></div></div>
+  </aside>
+
+  <div id="stage">
+    <div id="empty" class="empty"></div>
+
+    <div id="grid" class="vlist grid" hidden tabindex="0" aria-label="Textures"><div class="vspace"></div></div>
+
+    <div id="vpane" class="pane" hidden>
+      <div id="vplayer" class="player">
+        <canvas id="vcanvas" width="960" height="540" aria-label="Video"></canvas>
+        <div id="vwait" class="wait" hidden><i></i><span></span></div>
+        <button id="vbig" class="bigplay" type="button" aria-label="Play">&#9654;</button>
+        <div class="controls">
+          <button id="vplay" class="icon" type="button" title="Play / pause (Space)" aria-label="Play">&#9654;</button>
+          <div id="vseek" class="seek" role="slider" tabindex="0" aria-label="Position" aria-valuemin="0">
+            <div class="keys"></div><div class="fill"></div><div class="knob"></div><div class="tip" hidden></div>
+          </div>
+          <span id="vtime" class="mono time">0:00 / 0:00</span>
+          <details id="vtracks" class="menu" hidden><summary>Audio tracks</summary><div class="menubox"></div></details>
+          <button id="vmute" class="icon" type="button" title="Sound off/on (M)" aria-label="Sound off">&#128266;</button>
+          <input id="vvol" type="range" min="0" max="1" step="0.05" value="0.8" aria-label="Volume">
+          <button id="vfs" class="icon" type="button" title="Fullscreen (F)" aria-label="Fullscreen">&#x26F6;</button>
+        </div>
+      </div>
+      <div class="info">
+        <h1 id="vtitle"></h1>
+        <div id="vsub" class="sub mono"></div>
+        <p id="vnote" class="note vnote" hidden></p>
+        <dl id="vfacts" class="facts wide"></dl>
+        <div class="dlrow"><a id="vfile" class="button" download>Download video file</a><a id="vwav" class="button" download hidden>Audio as WAV</a><button id="vrep" type="button" title="Replace this video with your own Bink 2 file and save that as a mod">Replace…</button></div>
+      </div>
+      <audio id="vaudio" preload="auto"></audio>
+    </div>
+
+    <div id="apane" class="pane" hidden>
+      <div class="info">
+        <h1 id="atitle"></h1>
+        <div id="asub" class="sub mono"></div>
+        <div id="achips" class="chips"></div>
+      </div>
+      <div id="awave" class="wave" tabindex="0" role="slider" aria-label="Position">
+        <canvas id="acanvas"></canvas><div class="hot"><canvas id="ahot"></canvas></div><div class="head"></div><div id="amsg" class="wmsg" hidden></div>
+      </div>
+      <div class="controls solo">
+        <button id="aplay" class="icon" type="button" title="Play / pause (Space)" aria-label="Play">&#9654;</button>
+        <span id="atime" class="mono time">0:00 / 0:00</span>
+        <span class="grow"></span>
+        <button id="amute" class="icon" type="button" title="Sound off/on (M)" aria-label="Sound off">&#128266;</button>
+        <input id="avol" type="range" min="0" max="1" step="0.05" value="0.8" aria-label="Volume">
+        <a id="adl" class="button" download>Download</a>
+        <button id="arep" type="button" title="Replace this sound with your own WAV and save that as a mod">Replace…</button>
+      </div>
+      <dl id="afacts" class="facts wide"></dl>
+      <audio id="aaudio" preload="auto"></audio>
+    </div>
+
+    <div id="tpane" class="pane" hidden>
+      <div id="tview" class="zoom" tabindex="0" aria-label="Texture, mouse wheel zooms, drag pans">
+        <img id="timg" alt="">
+        <div id="tmsg" class="wmsg" hidden></div>
+      </div>
+      <div class="tside">
+        <div class="row">
+          <button id="tback" type="button" title="Back to the grid (Esc)">&#8592; Grid</button>
+          <button id="tfit" type="button">Fit</button>
+          <button id="t11" type="button">1:1</button>
+        </div>
+        <h1 id="ttitle"></h1>
+        <div id="tsub" class="sub mono"></div>
+        <dl id="tfacts" class="facts wide"></dl>
+        <a id="tdl" class="button accent" download>Download PNG</a>
+        <button id="trep" type="button" title="Replace this texture with your own PNG and save that as a mod">Replace with PNG…</button>
+        <p class="dim small">&#8592; / &#8594; browses · mouse wheel zooms · drag pans</p>
+      </div>
+    </div>
+
+    <div id="xpane" class="pane" hidden>
+      <div class="info">
+        <h1 id="xtitle"></h1>
+        <div id="xsub" class="sub mono"></div>
+      </div>
+      <div class="xbar">
+        <input id="xq" type="search" placeholder="Search in text …" autocomplete="off" spellcheck="false" aria-label="Search in text">
+        <span id="xcount" class="mono dim"></span>
+        <span class="grow"></span>
+        <button id="xcopy" type="button">Copy all</button>
+        <a id="xdl" class="button" download>Download file</a>
+        <button id="xrep" type="button" title="Replace this text with your edited file and save that as a mod">Replace…</button>
+      </div>
+      <div id="xlines" class="vlist lines" tabindex="0" aria-label="Text lines"><div class="vspace"></div></div>
+      <div id="xline" class="xline" hidden><span class="mono dim"></span><p></p><button type="button">Copy line</button></div>
+    </div>
+
+    <div id="kpane" class="pane" hidden></div>
+
+    <div id="mpane" class="pane" hidden>
+      <div id="mview" class="mview">
+        <canvas id="mcanvas" tabindex="0" aria-label="3D view of the model: drag rotates, mouse wheel zooms, right mouse button pans"></canvas>
+        <div id="mwait" class="wait" hidden><i></i><span></span></div>
+        <div id="mmsg" class="wmsg" hidden></div>
+      </div>
+      <div class="tside mside">
+        <div class="row">
+          <button id="mfit" type="button" title="Fit the visible surfaces (double-click in the view)">Fit</button>
+          <button id="mwire" type="button" aria-pressed="false">Wireframe</button>
+        </div>
+        <h1 id="mtitle"></h1>
+        <div id="msub" class="sub mono"></div>
+        <dl id="mfacts" class="facts"></dl>
+        <div class="mhead">
+          <h2 class="cap">Surfaces</h2>
+          <button id="mall" class="ghost" type="button">All</button>
+          <button id="mnone" class="ghost" type="button">None</button>
+          <button id="mdefault" class="ghost" type="button" title="As in the md6Def of the model: variants (gore, gear, spare heads) off">Default</button>
+        </div>
+        <div id="msurfs" class="msurfs" aria-label="Show and hide surfaces"></div>
+        <h2 class="cap">Custom skin</h2>
+        <select id="mskinsurf" aria-label="Surface for the custom skin" disabled></select>
+        <div class="row wrap">
+          <button id="mskinpick" type="button" disabled>Choose PNG…</button>
+          <button id="mskinreset" type="button" disabled>Original</button>
+          <button id="mskinmod" type="button" disabled title="Save this skin as a mod the loader applies">Save as mod…</button>
+        </div>
+        <input id="mskinfile" type="file" accept="image/png" hidden>
+        <p id="mskinnote" class="dim small"></p>
+        <p class="dim small">Drag rotates · mouse wheel zooms · right mouse button pans · double-click fits · ↑/↓ browses</p>
+      </div>
+    </div>
+
+    <div id="err" class="err" hidden role="alert"><b>Error</b><p></p></div>
+  </div>
+</main>
+
+<dialog id="rep" aria-labelledby="reptitle">
+  <form method="dialog" class="rephead">
+    <h2 id="reptitle">Replace</h2>
+    <button class="icon" value="close" aria-label="Close">&#xd7;</button>
+  </form>
+  <p id="repwhat" class="sub mono"></p>
+  <p id="repreason" class="note" hidden></p>
+  <div id="repbody" hidden>
+    <div class="reprow">
+      <button id="reppick" type="button">Choose file…</button>
+      <span id="repfile" class="dim small"></span>
+    </div>
+    <input id="repinput" type="file" hidden>
+    <div id="repcmp" class="repcmp" hidden>
+      <figure><div class="repimg"><img id="repold" alt="The game's texture"></div><figcaption>In the game</figcaption></figure>
+      <figure><div class="repimg"><img id="repnew" alt="Your picture"></div><figcaption id="repnewcap">Yours</figcaption></figure>
+    </div>
+    <div id="repdiff" class="repdiff mono" hidden></div>
+    <ul id="repnotes" class="repnotes small"></ul>
+    <label id="repbloodrow" class="check" hidden><input type="checkbox" id="repblood" checked><span id="repbloodtxt"></span></label>
+    <fieldset class="repmod">
+      <legend class="cap">Save as mod</legend>
+      <label class="check"><input type="radio" name="repto" value="new" checked><span>New mod</span></label>
+      <div class="reprow"><input id="repname" type="text" maxlength="60" placeholder="Mod name" autocomplete="off"><input id="repauthor" type="text" maxlength="60" placeholder="Author (optional)" autocomplete="off"></div>
+      <label class="check"><input type="radio" name="repto" value="add" id="repadd"><span>Add to one of my Studio mods</span></label>
+      <select id="repfolder" aria-label="Studio mod"></select>
+    </fieldset>
+    <p id="repstatus" class="repstatus small" role="status" aria-live="polite"></p>
+    <div class="reprow end"><button id="repsave" class="accent" type="button" disabled>Save as mod</button></div>
+  </div>
+</dialog>
+
+<div id="toast" hidden role="status" aria-live="polite"></div>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/OrbitControls.js"></script>
+<script src="models.js"></script>
+<script src="scripts.js"></script>
+<script src="studio.js"></script>
+<script src="assetio.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

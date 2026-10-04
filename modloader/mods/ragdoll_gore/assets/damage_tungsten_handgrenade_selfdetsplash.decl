@@ -1,0 +1,12 @@
+{
+	inherit = "damage/tungsten/handgrenade_splash"; 
+	edit = {
+		damageParms = {
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "dropped handgrenade splash damage";
+			damageTypes = "DAMAGETYPE_EXPLOSION DAMAGETYPE_HANDGRENADE DAMAGETYPE_DROPPED_HANDGRENADE";
+		}
+	}
+}

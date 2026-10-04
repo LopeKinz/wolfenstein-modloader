@@ -1,0 +1,23 @@
+{
+	edit = {
+		devMenuList = {
+			num = 4;
+			item[0] = {
+				devMenuDisplayName = "Chronicle X: ZERO MISSION";
+				devMenuSubList = "devmenuoption/dlc/c00";
+			}
+			item[1] = {
+				devMenuDisplayName = "Chronicle I: Gunslinger Joe";
+				devMenuSubList = "devmenuoption/dlc/c01";
+			}
+			item[2] = {
+				devMenuDisplayName = "Chronicle II: Agent Shade";
+				devMenuSubList = "devmenuoption/dlc/c02";
+			}
+			item[3] = {
+				devMenuDisplayName = "Chronicle III: Captain Wilkins";
+				devMenuSubList = "devmenuoption/dlc/c03";
+			}
+		}
+	}
+}

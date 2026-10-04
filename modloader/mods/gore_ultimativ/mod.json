@@ -1,0 +1,151 @@
+{
+  "id": "wolfsdk.gore_ultimativ",
+  "name": "Ultimate Gore - Hits, Voice, Physics, Lethality",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "The four layers below gore type and blood amount. Hits on flesh use blood_medium instead of blood_small, and both blood pool and blood flow point to the placeholder 'particle/default' in the original - both are now wired up, bullet hole decals x1.6. Pain and death screams fire 4x as often (interval x0.25, playChance at least 90%). Ragdoll joint friction x0.42 so bodies fall limp instead of stiff. And aiIncomingDamageScale raised in all five difficulty levels - an enemy that soaks up ten rifle bullets is the most unrealistic thing in the whole game.",
+  "priority": 145,
+  "assets": {
+    "projectileImpactEffect:default": {
+      "file": "assets/projectileImpactEffect__default.decl"
+    },
+    "projectileImpactEffect:heavy": {
+      "file": "assets/projectileImpactEffect__heavy.decl"
+    },
+    "projectileImpactEffect:wolf/lasercutter_base": {
+      "file": "assets/projectileImpactEffect__wolf_lasercutter_base.decl"
+    },
+    "projectileImpactEffect:wolf/lasercutter_decals": {
+      "file": "assets/projectileImpactEffect__wolf_lasercutter_decals.decl"
+    },
+    "projectileImpactEffect:wolf/mg60": {
+      "file": "assets/projectileImpactEffect__wolf_mg60.decl"
+    },
+    "projectileImpactEffect:wolf/mg60_ai": {
+      "file": "assets/projectileImpactEffect__wolf_mg60_ai.decl"
+    },
+    "projectileImpactEffect:wolf/explosive": {
+      "file": "assets/projectileImpactEffect__wolf_explosive.decl"
+    },
+    "projectileImpactEffect:wolf/marksmanlaser_default": {
+      "file": "assets/projectileImpactEffect__wolf_marksmanlaser_default.decl"
+    },
+    "projectileImpactEffect:melee/default": {
+      "file": "assets/projectileImpactEffect__melee_default.decl"
+    },
+    "projectileImpactEffect:wolf/lasercutter01": {
+      "file": "assets/projectileImpactEffect__wolf_lasercutter01.decl"
+    },
+    "projectileImpactEffect:wolf/lasercutter_shoot": {
+      "file": "assets/projectileImpactEffect__wolf_lasercutter_shoot.decl"
+    },
+    "projectileImpactEffect:wolf/laserkraftwerk_shoot": {
+      "file": "assets/projectileImpactEffect__wolf_laserkraftwerk_shoot.decl"
+    },
+    "projectileImpactEffect:wolf/laserkraftwerk": {
+      "file": "assets/projectileImpactEffect__wolf_laserkraftwerk.decl"
+    },
+    "projectileImpactEffect:wolf/rocket": {
+      "file": "assets/projectileImpactEffect__wolf_rocket.decl"
+    },
+    "projectileImpactEffect:wolf/shotgun": {
+      "file": "assets/projectileImpactEffect__wolf_shotgun.decl"
+    },
+    "projectileImpactEffect:wolf/shrapnel": {
+      "file": "assets/projectileImpactEffect__wolf_shrapnel.decl"
+    },
+    "articulatedFigure:human/base": {
+      "file": "assets/articulatedFigure__human_base.decl"
+    },
+    "difficultysetting:easy": {
+      "file": "assets/difficultysetting__easy.decl"
+    },
+    "difficultysetting:hard": {
+      "file": "assets/difficultysetting__hard.decl"
+    },
+    "difficultysetting:medium": {
+      "file": "assets/difficultysetting__medium.decl"
+    },
+    "difficultysetting:nightmare": {
+      "file": "assets/difficultysetting__nightmare.decl"
+    },
+    "difficultysetting:veryeasy": {
+      "file": "assets/difficultysetting__veryeasy.decl"
+    },
+    "projectileImpactEffect:fastbullet_turret": {
+      "file": "assets/projectileImpactEffect__fastbullet_turret.decl"
+    },
+    "aiBehaviorVo:tungsten/vo/commander_ai_vo": {
+      "file": "assets/aiBehaviorVo__tungsten_vo_commander_ai_vo.decl"
+    },
+    "aiBehaviorVo:tungsten/vo/officer_ai_vo_wwdt": {
+      "file": "assets/aiBehaviorVo__tungsten_vo_officer_ai_vo_wwdt.decl"
+    },
+    "aiBehaviorVo:tungsten/vo/officerelite_ai_vo": {
+      "file": "assets/aiBehaviorVo__tungsten_vo_officerelite_ai_vo.decl"
+    },
+    "aiBehaviorVo:tungsten/vo/officerelite_ai_vo_wwdt": {
+      "file": "assets/aiBehaviorVo__tungsten_vo_officerelite_ai_vo_wwdt.decl"
+    },
+    "projectileImpactEffect:wolf/artillery": {
+      "file": "assets/projectileImpactEffect__wolf_artillery.decl"
+    },
+    "articulatedFigure:kamphund/base": {
+      "file": "assets/articulatedFigure__kamphund_base.decl"
+    },
+    "articulatedFigure:panzerhund2/base": {
+      "file": "assets/articulatedFigure__panzerhund2_base.decl"
+    },
+    "aiBehaviorVo:tungsten/vo/officer_ai_vo": {
+      "file": "assets/aiBehaviorVo__tungsten_vo_officer_ai_vo.decl"
+    },
+    "articulatedFigure:human/supersoldat": {
+      "file": "assets/articulatedFigure__human_supersoldat.decl"
+    },
+    "articulatedFigure:robot/drone": {
+      "file": "assets/articulatedFigure__robot_drone.decl"
+    },
+    "articulatedFigure:robot/guardrobot": {
+      "file": "assets/articulatedFigure__robot_guardrobot.decl"
+    },
+    "projectileImpactEffect:footsteps/nazi_robot_60": {
+      "file": "assets/projectileImpactEffect__footsteps_nazi_robot_60.decl"
+    },
+    "aiBehaviorVo:tungsten/vo/officer_ai_melee_vo": {
+      "file": "assets/aiBehaviorVo__tungsten_vo_officer_ai_melee_vo.decl"
+    },
+    "aiBehaviorVo:tungsten/vo/officerelite_ai_melee_vo": {
+      "file": "assets/aiBehaviorVo__tungsten_vo_officerelite_ai_melee_vo.decl"
+    },
+    "aiBehaviorVo:tungsten/vo/officerheavy_ai_vo": {
+      "file": "assets/aiBehaviorVo__tungsten_vo_officerheavy_ai_vo.decl"
+    },
+    "articulatedFigure:robot/guardrobot075": {
+      "file": "assets/articulatedFigure__robot_guardrobot075.decl"
+    },
+    "aiBehaviorVo:tungsten/vo/wol000d_ai_vo": {
+      "file": "assets/aiBehaviorVo__tungsten_vo_wol000d_ai_vo.decl"
+    },
+    "projectileImpactEffect:wolf/c02_helicopter_gun": {
+      "file": "assets/projectileImpactEffect__wolf_c02_helicopter_gun.decl"
+    },
+    "projectileImpactEffect:wolf/laserkraftwerk_reflect": {
+      "file": "assets/projectileImpactEffect__wolf_laserkraftwerk_reflect.decl"
+    },
+    "projectileImpactEffect:wolf/heavy_robot_c06p2": {
+      "file": "assets/projectileImpactEffect__wolf_heavy_robot_c06p2.decl"
+    },
+    "articulatedFigure:robot/heavyrobot": {
+      "file": "assets/articulatedFigure__robot_heavyrobot.decl"
+    },
+    "projectileImpactEffect:wolf/laserturret": {
+      "file": "assets/projectileImpactEffect__wolf_laserturret.decl"
+    },
+    "articulatedFigure:robot/lunardrone": {
+      "file": "assets/articulatedFigure__robot_lunardrone.decl"
+    },
+    "projectileImpactEffect:wolf/londonmonitor_eyegun_buildup": {
+      "file": "assets/projectileImpactEffect__wolf_londonmonitor_eyegun_buildup.decl"
+    }
+  }
+}

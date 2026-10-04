@@ -1,0 +1,18 @@
+{
+	edit = {
+		damageParms = {
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			cuttableRadius = 14.0;
+			damageName = "rocketlauncher splash damage";
+			damageTypes = "DAMAGETYPE_EXPLOSION";
+			minDamage = 5;
+			maxDamage = 15;
+			playerDamageScale = 0.25;
+			ragdollOnDeath = true;
+			knockBack = 1000;
+			selfKnockbackScale = 0;
+			radius = 300;
+			ragdollImpulseMag = 2200;
+		}
+	}
+}

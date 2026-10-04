@@ -1,0 +1,35 @@
+{
+	edit = {
+		devMenuList = {
+			num = 2;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"sacramento_gameplay_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c2v2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 5";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c02/c2v2";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Green room";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c2v2_gameplay_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c2v2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 5";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c02/c2v2";
+				}
+			}
+		}
+	}
+}

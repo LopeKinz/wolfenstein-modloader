@@ -1,0 +1,41 @@
+{
+	edit = {
+		devMenuList = {
+			num = 4;
+			item[0] = {
+				devMenuDisplayName = "campaign - fergus";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c09/c09p1/c09p1_fergus_devstarts";
+			}
+			item[1] = {
+				devMenuDisplayName = "campaign - wyatt";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c09/c09p1/c09p1_wyatt_devstarts";
+			}
+			item[2] = {
+				devMenuDisplayName = "D1 - aerostat habitat - fergus";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c09p1_gameplay_district1_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/district1,layer/base,layer/fergus\"";
+					item[2] = "si_filllayeractive \"layer/fergus\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "D1 - aerostat habitat - wyatt";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c09p1_gameplay_district1_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/district1,layer/base,layer/wyatt\"";
+					item[2] = "si_filllayeractive \"layer/wyatt\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c09/c09p1";
+				}
+			}
+		}
+	}
+}

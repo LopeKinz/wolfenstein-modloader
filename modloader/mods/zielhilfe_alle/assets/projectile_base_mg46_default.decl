@@ -1,0 +1,96 @@
+{
+	inherit = "projectile/base/bullet_heavy_default";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			num = 9;
+			item[0] = {
+				envType = "SET_OUTDOOR_OPEN_SPACE";
+				sound0 = "weapons/mg46/mg46_fire_split_hq";
+				sound1 = "weapons/mg46/env/mg46_outdoor_split_hq";
+				sound2 = "weapons/mg46/env/mg46_outdoor_split_rear_hq";
+			}
+			item[1] = {
+				envType = "SET_OUTDOOR_COURT_YARD";
+				sound0 = "weapons/mg46/mg46_fire_split_hq";
+				sound1 = "weapons/mg46/env/mg46_outdoor_split_hq";
+				sound2 = "weapons/mg46/env/mg46_outdoor_split_rear_hq";
+			}
+			item[2] = {
+				envType = "SET_OUTDOOR_SINGLE_WALL";
+				sound0 = "weapons/mg46/mg46_fire_split_hq";
+				sound1 = "weapons/mg46/env/mg46_outdoor_split_hq";
+				sound2 = "weapons/mg46/env/mg46_outdoor_split_rear_hq";
+			}
+			item[3] = {
+				envType = "SET_INDOOR_SMALL_ROOM";
+				sound0 = "weapons/mg46/mg46_fire_split_hq";
+				sound1 = "weapons/mg46/env/mg46_roomsmall_split_hq";
+				sound2 = "weapons/mg46/env/mg46_roomsmall_split_rear_hq";
+			}
+			item[4] = {
+				envType = "SET_INDOOR_MID_ROOM";
+				sound0 = "weapons/mg46/mg46_fire_split_hq";
+				sound1 = "weapons/mg46/env/mg46_roommedium_split_hq";
+				sound2 = "weapons/mg46/env/mg46_roommedium_split_rear_hq";
+			}
+			item[5] = {
+				envType = "SET_INDOOR_LARGE_ROOM";
+				sound0 = "weapons/mg46/mg46_fire_split_hq";
+				sound1 = "weapons/mg46/env/mg46_roomlarge_split_hq";
+				sound2 = "weapons/mg46/env/mg46_roomlarge_split_rear_hq";
+			}
+			item[6] = {
+				envType = "SET_INDOOR_LARGE_HALL";
+				sound0 = "weapons/mg46/mg46_fire_split_hq";
+				sound1 = "weapons/mg46/env/mg46_roomxl_split_hq";
+				sound2 = "weapons/mg46/env/mg46_roomxl_split_rear_hq";
+			}
+			item[7] = {
+				envType = "SET_INDOOR_CORIDOR";
+				sound0 = "weapons/mg46/mg46_fire_split_hq";
+				sound1 = "weapons/mg46/env/mg46_roommedium_split_hq";
+				sound2 = "weapons/mg46/env/mg46_roommedium_split_rear_hq";
+			}
+			item[8] = {
+				sound0 = "weapons/mg46/mg46_fire_split_hq";
+				sound1 = "weapons/mg46/env/mg46_outdoor_split_hq";
+				sound2 = "weapons/mg46/env/mg46_outdoor_split_rear_hq";
+			}
+		}
+		damageDecl = "damage/tungsten/mg46";
+		tracerInfo = {
+			tracerMtr = "textures/w_sfx/tracer_mg46";
+			tracers = 1;
+			tracerSpeed = 5000;
+			tracerLength = 80;
+			tracerHeight = 3;
+			sndTracer = "projectile/bullet_bys/heavy_bullet_by";
+		}
+		weaponFeedBack = {
+			weaponKickInfo = {
+				weaponKickInfo[0] = {
+					kick = 0.6999999881;
+					maxKick = 0.6999999881;
+					recoverySpeed = 3;
+				}
+				weaponKickInfo[1] = {
+					kick = 0.6999999881;
+					recoverySpeed = 2;
+				}
+				weaponKickInfo[2] = {
+					kick = 0.1000000015;
+					maxKick = 25;
+					recoilSpeed = 2;
+					recoverySpeed = 5;
+				}
+				weaponKickInfo[4] = {
+					kick = 1.2999999523;
+					maxKick = 6;
+				}
+			}
+			spreadAdditionPerShot = 0.349999994;
+			spreadAdditionMax = 1.5499999523;
+		}
+	}
+}

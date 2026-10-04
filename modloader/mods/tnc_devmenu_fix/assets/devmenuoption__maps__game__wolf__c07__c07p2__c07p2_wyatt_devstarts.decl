@@ -1,0 +1,72 @@
+{
+	edit = {
+		devMenuList = {
+			num = 5;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_start\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c07p2,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c07/c07p2";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Bunker_Entrance";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_bunkerentrance\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c07p2,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c07/c07p2";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Zitadelle_Arena";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_zitadellearena\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c07p2,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c07/c07p2";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Command_Center";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_commandcenter\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c07p2,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c07/c07p2";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Rebreather";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_rebreather\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c07p2,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c07/c07p2";
+				}
+			}
+		}
+	}
+}

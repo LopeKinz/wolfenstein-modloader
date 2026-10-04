@@ -1,0 +1,65 @@
+{
+	edit = {
+		baseChances = {
+			num = 5;
+			item[ 0 ] = {
+				goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND";
+				chance = 1.0;
+			}
+			item[ 1 ] = {
+				goreTypes = "GORETYPE_HEAD_EXPLODE";
+				chance = 1.0;
+			}
+			item[ 2 ] = {
+				goreTypes = "GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS";
+				chance = 1.0;
+			}
+			item[ 3 ] = {
+				goreTypes = "GORETYPE_VAPORIZE";
+				chance = 1.0;
+			}
+			item[ 4 ] = {
+				goreTypes = "GORETYPE_DISINTIGRATE";
+				chance = 0.8;
+			}
+		}
+		damageModifiers = {
+			num = 5;
+			item[ 0 ] = {
+				goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND";
+				minValue = 6.0;
+				maxValue = 42.5;
+				minScale = 1.0;
+				maxScale = 2.1;
+			}
+			item[ 1 ] = {
+				goreTypes = "GORETYPE_HEAD_EXPLODE";
+				minValue = 12.0;
+				maxValue = 59.5;
+				minScale = 0.9;
+				maxScale = 3.2;
+			}
+			item[ 2 ] = {
+				goreTypes = "GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS";
+				minValue = 10.8;
+				maxValue = 55.2;
+				minScale = 0.9;
+				maxScale = 3.2;
+			}
+			item[ 3 ] = {
+				goreTypes = "GORETYPE_VAPORIZE";
+				minValue = 18.0;
+				maxValue = 85.0;
+				minScale = 0.9;
+				maxScale = 3.5;
+			}
+			item[ 4 ] = {
+				goreTypes = "GORETYPE_DISINTIGRATE";
+				minValue = 27.0;
+				maxValue = 102.0;
+				minScale = 0.9;
+				maxScale = 3.2;
+			}
+		}
+	}
+}

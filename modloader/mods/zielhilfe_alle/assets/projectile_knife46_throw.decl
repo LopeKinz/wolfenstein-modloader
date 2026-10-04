@@ -1,0 +1,16 @@
+{
+	inherit = "projectile/knife_throw";
+	edit = {
+		aimAssistRange = 2048;
+		envFireSounds = {
+			num = 1;
+			item[0] = {
+				sound0 = "weapons/combat_knife/knife_throw";
+			}
+		}
+		notHitscanInfo = {
+			entityDef = "projectile_ent/knife46_throw";
+		}
+		crosshairType = "CROSSHAIRTYPE_DOT";
+	}
+}

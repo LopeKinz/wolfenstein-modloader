@@ -1,0 +1,381 @@
+{
+
+settings {
+	model "characters/robot/heavyrobot.md6"
+	skin ""
+	defaultBouncyness 0.3000000119
+	defaultLinearFriction 0.0099999998
+	defaultAngularFriction 0.0099999998
+	defaultContactFriction 0.8000000119
+	defaultConstraintFriction 0.5
+	defaultGravityScale 1
+	suspendSpeed 20, 30, 40, 60
+	noMoveTime 1
+	noMoveTranslation 10
+	noMoveRotation 10
+	minMoveTime -1
+	maxMoveTime -1
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	solverConstants {
+		errorReduction 0.5
+		errorReductionMax 256
+		lcpEpsilon 0.00001
+		limitErrorReduction 0.3000000119
+		limitErrorReductionMax 256
+		limitLcpEpsilon 0.0001
+		contactErrorReduction 0.200000003
+		contactErrorReductionMax 256
+		contactLcpEpsilon 0.000001
+		universalErrorReduction 0.5
+		universalErrorReductionMax 256
+		universalTorsionLcpEpsilon 0.1000000015
+	}
+	syncSolverConstants {
+		errorReduction 0.5
+		errorReductionMax 512
+		lcpEpsilon 0.001
+		limitErrorReduction 0.1000000015
+		limitErrorReductionMax 128
+		limitLcpEpsilon 0.000001
+		contactErrorReduction 0.200000003
+		contactErrorReductionMax 256
+		contactLcpEpsilon 0.000001
+		universalErrorReduction 0.5
+		universalErrorReductionMax 512
+		universalTorsionLcpEpsilon 0.1000000015
+	}
+}
+
+body "Right_arm_lower" {
+	joint "rightforearm"
+	mod orientation
+	model box( ( -55, -15, -22.5 ), ( 55, 15, 22.5 ) )
+	origin ( 42, -59, 139 )
+	density 0.0015
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints ""
+}
+
+body "Abdomen" {
+	joint "hips"
+	mod both
+	model box( ( -30, -29, -18.5 ), ( 30, 29, 18.5 ) )
+	origin ( 3, 0, 122 )
+	density 0.003
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.3000000119
+	containedJoints "*origin -hips -spine -spine1"
+}
+
+body "left_arm_upper" {
+	joint "leftarm"
+	mod orientation
+	model box( ( -14, -11.5, -24.5 ), ( 14, 11.5, 24.5 ) )
+	origin ( -2, 64, 180 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.3000000119
+	containedJoints ""
+}
+
+body "Left_arm_lower" {
+	joint "leftforearm"
+	mod orientation
+	model box( ( -60, -19.5, -22 ), ( 60, 19.5, 22 ) )
+	origin ( 31, 59, 132 )
+	density 0.001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints ""
+}
+
+body "Right_arm_upper" {
+	joint "rightarm"
+	mod orientation
+	model box( ( -16.5, -11.5, -22.5 ), ( 16.5, 11.5, 22.5 ) )
+	origin ( 1, -64, 182 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.3000000119
+	containedJoints ""
+}
+
+body "Torso" {
+	joint "spine1"
+	mod orientation
+	model custom( "models/mapobjects/Ljunkan/Ragdoll_Robot_Torso_export.lwo", ( -52, -75, -35.5 ), ( 52, 75, 35.5 ) )
+	origin ( 0, 0, 5 )
+	angles ( 0, 90, 0 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints ""
+}
+
+body "Right_leg_top" {
+	joint "rightupleg"
+	mod orientation
+	model box( ( -21, -12.5, -29.5 ), ( 21, 12.5, 29.5 ) )
+	origin ( 6, -35, 97 )
+	angles ( -25, 0, 0 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.3000000119
+	containedJoints ""
+}
+
+body "Right_leg_bottom" {
+	joint "rightleg"
+	mod orientation
+	model box( ( -12.5, -15.5, -21.5 ), ( 12.5, 15.5, 21.5 ) )
+	origin ( 16, -32, 54 )
+	angles ( 34, 0, 0 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.3000000119
+	containedJoints ""
+}
+
+body "Right_Foot" {
+	joint "rightfoot"
+	mod orientation
+	model box( ( -38.5, -15, -12.5 ), ( 38.5, 15, 12.5 ) )
+	origin ( 15, -33, 13 )
+	density 0.0080000004
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.9499999881
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints ""
+}
+
+body "Left_leg_top" {
+	joint "leftupleg"
+	mod orientation
+	model box( ( -21, -12.5, -29.5 ), ( 21, 12.5, 29.5 ) )
+	origin ( 6, 35, 97 )
+	angles ( -25, 0, 0 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.3000000119
+	containedJoints ""
+}
+
+body "Left_leg_bottom" {
+	joint "leftleg"
+	mod orientation
+	model box( ( -12.5, -15.5, -21.5 ), ( 12.5, 15.5, 21.5 ) )
+	origin ( 16, 32, 54 )
+	angles ( 34, 0, 0 )
+	density 0.0020000001
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.8000000119
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.3000000119
+	containedJoints ""
+}
+
+body "Left_Foot" {
+	joint "leftfoot"
+	mod orientation
+	model box( ( -38.5, -15, -12.5 ), ( 38.5, 15, 12.5 ) )
+	origin ( 15, 33, 13 )
+	density 0.0080000004
+	linearFriction 0.0099999998
+	angularFriction 0.0099999998
+	contactFriction 0.9499999881
+	contents corpse
+	clipMask solid, ikclip
+	selfCollision 0
+	noSyncCollide 0
+	clearClipMaskInSolid 0
+	bouncyness 0.200000003
+	containedJoints ""
+}
+
+universalJoint "Abdomen_to_Torso" {
+	body1 "Torso"
+	body2 "Abdomen"
+	anchor joint( "spine1" )
+	shafts bonedir( "spine", "spine1" ), bonedir( "spine1", "spine" )
+	friction 1.260
+	coneLimit ( -0.0000000119, 0, 1 ), 17
+	syncConstraint 0
+}
+
+hinge "Right_arm_upper_to_Torso" {
+	body1 "Right_arm_upper"
+	body2 "Torso"
+	anchor joint( "rightarm" )
+	axis ( 0.0000000119, -1, 0 )
+	friction 0.210
+	limit 35, 10, 0
+	syncConstraint 0
+}
+
+hinge "Left_Arm_upper_To_Torso" {
+	body1 "left_arm_upper"
+	body2 "Torso"
+	anchor joint( "leftarm" )
+	axis ( 0.0000000119, -1, 0 )
+	friction 0.420
+	syncConstraint 0
+}
+
+hinge "Left_lower_arm_to_Left_upper_arm" {
+	body1 "Left_arm_lower"
+	body2 "left_arm_upper"
+	anchor joint( "leftforearm" )
+	axis ( -0.0000000437, 1, 0 )
+	friction 0.210
+	limit -5, 110, 50
+	syncConstraint 0
+}
+
+hinge "Right_arm_lower_to_Right_arm_upper" {
+	body1 "Right_arm_lower"
+	body2 "Right_arm_upper"
+	anchor joint( "rightforearm" )
+	axis ( -0.0000000437, -1, 0 )
+	friction 0.210
+	limit 10, 60, -20
+	syncConstraint 0
+}
+
+hinge "Right_Leg_up_to_Abdomen" {
+	body1 "Right_leg_top"
+	body2 "Abdomen"
+	anchor joint( "rightupleg" )
+	axis ( 0.0000000119, -1, 0 )
+	friction 0.210
+	limit -2.5, 135, 0
+	syncConstraint 0
+}
+
+hinge "Right_leg_lower_to_Right_Leg_Up" {
+	body1 "Right_leg_bottom"
+	body2 "Right_leg_top"
+	anchor joint( "rightleg" )
+	axis ( 0.0000000119, -1, 0 )
+	friction 0.210
+	limit 0, 80, 0
+	syncConstraint 0
+}
+
+hinge "Right_Foot_to_Right_Leg_Bottom" {
+	body1 "Right_Foot"
+	body2 "Right_leg_bottom"
+	anchor joint( "rightfoot" )
+	axis ( 0.0000000119, -1, 0 )
+	friction 0.210
+	limit 20, 80, 0
+	syncConstraint 0
+}
+
+hinge "Left_Leg_up_to_Abdomen" {
+	body1 "Left_leg_top"
+	body2 "Abdomen"
+	anchor joint( "leftupleg" )
+	axis ( 0.0000000119, -1, 0 )
+	friction 0.210
+	limit -2.5, 135, 0
+	syncConstraint 0
+}
+
+hinge "Left_leg_lower_to_Right_Leg_Up" {
+	body1 "Left_leg_bottom"
+	body2 "Left_leg_top"
+	anchor joint( "leftleg" )
+	axis ( 0.0000000119, -1, 0 )
+	friction 0.210
+	limit 0, 80, 0
+	syncConstraint 0
+}
+
+hinge "Left_Foot_to_Right_Leg_Bottom" {
+	body1 "Left_Foot"
+	body2 "Left_leg_bottom"
+	anchor joint( "leftfoot" )
+	axis ( 0.0000000119, -1, 0 )
+	friction 0.210
+	limit 20, 80, 0
+	syncConstraint 0
+}
+
+}

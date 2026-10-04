@@ -1,0 +1,7 @@
+{
+	edit = {
+		startingHealth = 999;
+		startingArmor = 0;
+		gameModeFlags = "FLAG_AMMOUNLIMITED FLAG_NOOVERCHARGE";
+	}
+}

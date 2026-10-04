@@ -1,0 +1,225 @@
+{
+	inherit = "vo/default";
+	edit = {
+		idle = {
+			alone = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_idle_alone";
+				priority = "AIVOICEPRIORITY_MED";
+				interval = 2500;
+				intervalMax = 5000;
+				playChance = 50;
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			buddy = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_idle_buddy";
+				priority = "AIVOICEPRIORITY_MED";
+				interval = 5000;
+				intervalMax = 7500;
+				playChance = 50;
+				playOnce = false;
+			}
+			buddyResponse = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_idle_buddy_response";
+				priority = "AIVOICEPRIORITY_MED";
+				interval = 5000;
+				intervalMax = 7500;
+				playOnce = false;
+			}
+			preSpot = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_search_notice";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 4000;
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			firstSpotCorpse = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_idle_first_spot_corpse";
+				priority = "AIVOICEPRIORITY_PAIN";
+				interval = 625;
+				intervalMax = 1250;
+				dontPlayIfGroupDead = false;
+			}
+		}
+		search = {
+			notice = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_search_notice";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			continueSearch = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_search_continue";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				playChance = 50;
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			searchBuddy = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_search_buddy";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				playChance = 50;
+				playOnce = false;
+			}
+			searchBuddyResponse = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_search_buddy_response";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				playOnce = false;
+			}
+			spotCorpse = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_search_spot_corpse";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				playOnce = false;
+			}
+		}
+		combat = {
+			meleeTaunt = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_melee_taunt";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				playChance = 50;
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			rangedTaunt = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_ranged_taunt";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				playChance = 50;
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			friendlyBlocked = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_friendly_blocked";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				playChance = 50;
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			changePosition = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_change_position";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 5000;
+				intervalMax = 7500;
+				playChance = 70;
+				playOnce = false;
+			}
+			firstSpot = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_first_spot";
+				priority = "AIVOICEPRIORITY_PAIN";
+				interval = 2500;
+				intervalMax = 5000;
+				dontPlayIfGroupDead = false;
+			}
+			reSpot = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_respot";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				playChance = 75;
+				playOnce = false;
+			}
+			flankSpot = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_flank_spot";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 4000;
+				intervalMax = 8000;
+				playChance = 50;
+				playOnce = false;
+			}
+			downed = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_downed";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 150;
+				intervalMax = 150;
+				controller = "VC_SELF";
+				playOnce = false;
+			}
+			grenade = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_grenade";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				controller = "VC_SELF";
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			reload = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_reload";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 2500;
+				intervalMax = 5000;
+				playOnce = false;
+			}
+			deathTaunt = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_death_taunt";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 150;
+				intervalMax = 150;
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			fightResponse = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_fight_response";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 625;
+				intervalMax = 1250;
+				playChance = 90;
+				playOnce = false;
+			}
+			hurt = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_hurt";
+				priority = "AIVOICEPRIORITY_MED";
+				interval = 250;
+				intervalMax = 500;
+				controller = "VC_SELF";
+				dontPlayIfGroupDead = false;
+				playOnce = false;
+			}
+			winning = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_panic";
+				priority = "AIVOICEPRIORITY_PAIN";
+				interval = 5000;
+				intervalMax = 7500;
+				playChance = 90;
+				playOnce = false;
+			}
+			losing = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_combat_lost";
+				interval = 625;
+				intervalMax = 1250;
+				playChance = 90;
+				playOnce = false;
+			}
+			reinforce = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_reinforce";
+				priority = "AIVOICEPRIORITY_HIGH";
+				interval = 5000;
+				intervalMax = 7500;
+				playChance = 70;
+				playOnce = false;
+			}
+			meinLeben = {
+				voiceOver = "vo/ai/officerelite_ai_vo/officerelite_ai_legacy";
+				priority = "AIVOICEPRIORITY_DEATH";
+				controller = "VC_SELF";
+				dontPlayIfGroupDead = false;
+			}
+		}
+	}
+}

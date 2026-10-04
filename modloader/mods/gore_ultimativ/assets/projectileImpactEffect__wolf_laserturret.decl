@@ -1,0 +1,140 @@
+{
+	inherit = "wolf/lasercutter_decals";
+	edit = {
+		defaultEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		metalEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		metalHollow = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		metalSheet = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		metalVent = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		stoneEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		fleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			decalMaterial = {
+				num = 0;
+			}
+			isBloody = false;
+		}
+		woodEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		cardboardEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		liquidEffect = {
+			particleImpact = "wolf/bulletimpacts/lkw_water";
+			decalSize = 26;
+		}
+		glassEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		plasticEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		asphaltEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		dirtEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		concreteEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		plasterEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		foilageEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		linoleumEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		fabricEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		rubberEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		rockEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		steamPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		waterPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		armorEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		sludgeEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		bloodPoolEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			decalSize = 26;
+		}
+		mutantFleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			decalSize = 26;
+		}
+		thickPaddingEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		oilPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		electronicsEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		panzerMetalEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		breakableArmorEffect = {
+			particleImpact = "wolf/bulletimpacts/laserturret";
+			decalSize = 26;
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+			sndImpact = "projectile/bullet_impacts/imp_metal";
+		}
+	}
+}

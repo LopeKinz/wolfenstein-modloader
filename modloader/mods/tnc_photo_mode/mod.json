@@ -1,0 +1,14 @@
+{
+  "id": "wolfsdk.tnc_photo_mode",
+  "name": "Photo Mode",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "One key freezes the game for screenshots: time stops, the free camera turns on, HUD, menus and crosshair disappear; press it again to return. Bind it once in the console (binds are saved): bind F8 \"resourceExec default_snap.cfg -s\". Uses the unused SnapMap config default_snap.cfg. Not yet confirmed in game.",
+  "priority": 100,
+  "spiel": "tnc",
+  "assets": {
+    "cfile:default_snap.cfg": {
+      "file": "assets/default_snap_cfg.bin"
+    }
+  }
+}

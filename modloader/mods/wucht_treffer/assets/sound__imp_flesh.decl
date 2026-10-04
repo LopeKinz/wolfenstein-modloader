@@ -1,0 +1,28 @@
+{
+	inherit = "inheritences/impacts";
+	edit = {
+		parms = {
+			volume = {
+				offset = 4;
+			}
+		}
+		soundFiles = {
+			num = 15;
+			item[0] = "sound/player/impacts/bullet_body_hit_01.wav";
+			item[1] = "sound/player/impacts/bullet_body_hit_02.wav";
+			item[2] = "sound/player/impacts/bullet_body_hit_03.wav";
+			item[3] = "sound/player/impacts/bullet_body_hit_04.wav";
+			item[4] = "sound/player/impacts/bullet_body_hit_05.wav";
+			item[5] = "sound/player/impacts/bullet_body_hit_06.wav";
+			item[6] = "sound/player/impacts/bullet_body_hit_07.wav";
+			item[7] = "sound/player/impacts/bullet_body_hit_08.wav";
+			item[8] = "sound/player/impacts/bullet_body_hit_09.wav";
+			item[9] = "sound/player/impacts/bullet_body_hit_10.wav";
+			item[10] = "sound/player/impacts/bullet_body_hit_11.wav";
+			item[11] = "sound/player/impacts/bullet_body_hit_12.wav";
+			item[12] = "sound/player/impacts/bullet_body_hit_13.wav";
+			item[13] = "sound/player/impacts/bullet_body_hit_14.wav";
+			item[14] = "sound/player/impacts/bullet_body_hit_15.wav";
+		}
+	}
+}

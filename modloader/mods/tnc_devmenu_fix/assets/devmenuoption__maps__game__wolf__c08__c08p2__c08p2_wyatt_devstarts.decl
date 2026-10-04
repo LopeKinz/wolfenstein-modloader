@@ -1,0 +1,72 @@
+{
+	edit = {
+		devMenuList = {
+			num = 5;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_start\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p2,layer/code,layer/wolfsdk/start_panzerhund\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/start_panzerhund\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p2";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Alley";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_alley\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p2,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p2";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Tunnels";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_tunnels\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p2,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p2";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Streets";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_streets\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p2,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p2";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Lakeview District";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_lakeviewdistrict\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p2,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p2";
+				}
+			}
+		}
+	}
+}

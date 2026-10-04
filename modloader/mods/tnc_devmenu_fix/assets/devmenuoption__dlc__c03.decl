@@ -1,0 +1,49 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "Operation: Black Sun (C3V1)";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c3v1_gameplay_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c3v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 6";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c03/c3v1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "The Cannons of Kodiak Island (C3V2)";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c3v2_gameplay_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c3v2\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 6";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c03/c3v2";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Wilkins Uber Alles (C3V3)";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c3v3_gameplay_player_start_1\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c3v3\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 6";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c03/c3v3";
+				}
+			}
+		}
+	}
+}

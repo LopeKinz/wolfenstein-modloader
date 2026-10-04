@@ -1,0 +1,14 @@
+{
+	edit = {
+		damageParms = {
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "shooting laserturret";
+			damageTypes = "DAMAGETYPE_LASER DAMAGETYPE_TURRET";
+			minDamage = 35;
+			maxDamage = 45;
+			ragdollImpulseMag = 1100;
+		}
+	}
+}

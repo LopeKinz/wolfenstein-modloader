@@ -1,0 +1,16 @@
+{
+	edit = {
+		damageParms = {
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "throwingknife";
+			damageTypes = "DAMAGETYPE_EDGED";
+			minDamage = 100;
+			maxDamage = 100;
+			isMelee = false;
+			ragdollImpulseMag = 550;
+			isStealthy = true;
+		}
+	}
+}

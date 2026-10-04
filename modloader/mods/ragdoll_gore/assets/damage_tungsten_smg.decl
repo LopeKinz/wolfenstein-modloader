@@ -1,0 +1,15 @@
+{
+	edit = {
+		damageParms = {
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "Submachinegun round";
+			damageTypes = "DAMAGETYPE_PISTOL DAMAGETYPE_SMG";
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			declGoreBehavior = "standard/smg";
+			minDamage = 8;
+			maxDamage = 10;
+			ragdollImpulseMag = 1100;
+		}
+	}
+}

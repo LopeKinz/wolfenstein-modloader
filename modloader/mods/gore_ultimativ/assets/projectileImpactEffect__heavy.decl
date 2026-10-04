@@ -1,0 +1,23 @@
+{
+	inherit = "default";
+	edit = {
+		fleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		steamPipeEffect = {
+			decalSize = 26;
+		}
+		waterPipeEffect = {
+			decalSize = 26;
+		}
+		ricketyWood = {
+			sndImpact = "projectile/bullet_impacts/bullet_impact_rickety_wood";
+		}
+		electronicsEffect = {
+			decalSize = 26;
+		}
+		oilPipeEffect = {
+			decalSize = 26;
+		}
+	}
+}

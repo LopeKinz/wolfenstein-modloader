@@ -1,0 +1,27 @@
+{
+	inherit = "standard/heavy";
+	edit = {
+		probability = {
+			num = 5;
+			item[0] = {
+				woundType = "GORETYPE_SIGNATURE_DEATH2";
+				probability = 0.35;
+			}
+			item[1] = {
+				woundType = "GORETYPE_FULL_BODY_GIBS";
+				probability = 0.95;
+			}
+			item[2] = {
+				probability = 0.95;
+			}
+			item[3] = {
+				woundType = "GORETYPE_HEAD_SHOT";
+				probability = 0.95;
+			}
+			item[4] = {
+				woundType = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND";
+				probability = 0.95;
+			}
+		}
+	}
+}

@@ -1,0 +1,63 @@
+{
+	inherit = "projectile/base/bullet_shells_default";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			num = 9;
+			item[0] = {
+				sound0 = "weapons/shotgun/automatic_shotgun/fire";
+				sound1 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_outdoor";
+				sound2 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_outdoor_rear";
+			}
+			item[1] = {
+				envType = "SET_INDOOR_SMALL_ROOM";
+				sound0 = "weapons/shotgun/automatic_shotgun/fire";
+				sound1 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_small";
+				sound2 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_small_rear";
+			}
+			item[2] = {
+				envType = "SET_INDOOR_MID_ROOM";
+				sound0 = "weapons/shotgun/automatic_shotgun/fire";
+				sound1 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_medium";
+				sound2 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_medium_rear";
+			}
+			item[3] = {
+				envType = "SET_INDOOR_LARGE_ROOM";
+				sound0 = "weapons/shotgun/automatic_shotgun/fire";
+				sound1 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_large";
+				sound2 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_large_rear";
+			}
+			item[4] = {
+				envType = "SET_INDOOR_LARGE_HALL";
+				sound0 = "weapons/shotgun/automatic_shotgun/fire";
+				sound1 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_xl";
+				sound2 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_xl_rear";
+			}
+			item[5] = {
+				envType = "SET_INDOOR_CORIDOR";
+				sound0 = "weapons/shotgun/automatic_shotgun/fire";
+				sound1 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_medium";
+				sound2 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_medium_rear";
+			}
+			item[6] = {
+				envType = "SET_OUTDOOR_OPEN_SPACE";
+				sound0 = "weapons/shotgun/automatic_shotgun/fire";
+				sound1 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_outdoor";
+				sound2 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_outdoor_rear";
+			}
+			item[7] = {
+				envType = "SET_OUTDOOR_COURT_YARD";
+				sound0 = "weapons/shotgun/automatic_shotgun/fire";
+				sound1 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_outdoor";
+				sound2 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_outdoor_rear";
+			}
+			item[8] = {
+				envType = "SET_OUTDOOR_SINGLE_WALL";
+				sound0 = "weapons/shotgun/automatic_shotgun/fire";
+				sound1 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_outdoor";
+				sound2 = "weapons/shotgun/automatic_shotgun/env/shotgun_60_outdoor_rear";
+			}
+		}
+		impactEffectTable = "wolf/shotgun";
+	}
+}

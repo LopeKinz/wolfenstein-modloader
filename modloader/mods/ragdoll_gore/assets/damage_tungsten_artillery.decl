@@ -1,0 +1,13 @@
+{
+	inherit = "damage/tungsten/rocketlauncher"; 
+	edit = {
+		damageParms = {
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			declGoreBehavior = "standard/explosion";
+			minDamage = 1000;
+			maxDamage = 1000;
+		}
+	}
+}

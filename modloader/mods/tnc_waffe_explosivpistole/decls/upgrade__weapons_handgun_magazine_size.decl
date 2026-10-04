@@ -1,0 +1,41 @@
+{
+inherit = "default";
+edit = {
+modifiersAmmo = {
+num = 1;
+item[0] = {
+priority = 4;
+type = "AMT_AMMO_CLIP_SIZE";
+data = {
+valueInt = 20;
+valueStr = "weapon/player/sp/handgun";
+}
+}
+}
+modifiersData = {
+num = 1;
+item[0] = {
+type = "DMT_UPGRADE_ANIM";
+data = {
+valueInt = 1;
+}
+}
+}
+displayName = "#str_upgrade_handgun_clipsize_name";
+description = "#str_upgrade_handgun_clipsize_desc";
+listSortPrio = 2;
+addedShowHideMeshInfo = {
+meshesToHide = {
+num = 1;
+item[0] = "magazine_regular";
+}
+meshesToShow = {
+num = 1;
+item[0] = "magazine_extended";
+}
+}
+upgradeNum = 2;
+applyTo = "weapon/player/sp/handgun";
+startActivated = true;
+}
+}

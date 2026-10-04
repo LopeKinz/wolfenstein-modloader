@@ -1,0 +1,14 @@
+{
+	edit = {
+		damageParms = {
+			cuttableRadius = 14.0;
+			ragdollOnDeath = true;
+			damageName = "EMP impact";
+			damageTypes = "DAMAGETYPE_HANDGRENADE"; // This is greande collision, not explosion, so no electric damage 
+			goreTypes = "GORETYPE_SMALL_WOUND GORETYPE_BIG_WOUND GORETYPE_HEAD_EXPLODE GORETYPE_DISMEMBER_ARMS GORETYPE_DISMEMBER_LEGS GORETYPE_TORSO_SAW GORETYPE_GIB";
+			declGoreBehavior = "standard/explosion";
+			minDamage = 120;
+			maxDamage = 120;
+		}
+	}
+}

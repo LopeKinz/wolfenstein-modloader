@@ -1,0 +1,19 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "P1 - Revival";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c07/c07p1";
+			}
+			item[1] = {
+				devMenuDisplayName = "P2 - Downtown Bunker";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c07/c07p2";
+			}
+			item[2] = {
+				devMenuDisplayName = "P3 - Ready Up";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c07/c07p3";
+			}
+		}
+	}
+}

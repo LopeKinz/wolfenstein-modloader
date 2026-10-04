@@ -1,0 +1,28 @@
+{
+  "id": "example.weapon_tuning",
+  "name": "Weapon Tuning (Example)",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Raises the damage of several weapons. Shows how to surgically change numbers in damage decls without touching the rest of the file.",
+  "priority": 100,
+  "assets": {
+    "damage:damage/tungsten/mg60": {
+      "set": {
+        "edit.damageParms.minDamage": 22.0,
+        "edit.damageParms.maxDamage": 30.0
+      }
+    },
+    "damage:damage/tungsten/mg46": {
+      "set": {
+        "edit.damageParms.minDamage": 20.0,
+        "edit.damageParms.maxDamage": 28.0
+      }
+    },
+    "damage:damage/tungsten/buckshot": {
+      "set": {
+        "edit.damageParms.minDamage": 25,
+        "edit.damageParms.maxDamage": 40
+      }
+    }
+  }
+}

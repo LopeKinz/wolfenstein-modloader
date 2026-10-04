@@ -1,0 +1,41 @@
+{
+	edit = {
+		devMenuList = {
+			num = 4;
+			item[0] = {
+				devMenuDisplayName = "campaign - fergus";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c08/c08p2/c08p2_fergus_devstarts";
+			}
+			item[1] = {
+				devMenuDisplayName = "campaign - wyatt";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c08/c08p2/c08p2_wyatt_devstarts";
+			}
+			item[2] = {
+				devMenuDisplayName = "D1 - garage - fergus";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_district01\"";
+					item[1] = "si_nextlayeractive \"layer/district1,layer/fergus\"";
+					item[2] = "si_filllayeractive \"layer/fergus\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p2";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "D1 - garage - wyatt";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_district01\"";
+					item[1] = "si_nextlayeractive \"layer/district1,layer/wyatt\"";
+					item[2] = "si_filllayeractive \"layer/wyatt\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p2";
+				}
+			}
+		}
+	}
+}

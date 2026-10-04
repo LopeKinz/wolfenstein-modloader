@@ -1,0 +1,99 @@
+{
+	inherit = "projectile/base/bullet_default";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			num = 9;
+			item[0] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+				sound1 = "weapons/handgun/player/reverb/medium_room";
+				sound2 = "weapons/handgun/player/reverb/medium_room_rear";
+			}
+			item[1] = {
+				envType = "SET_INDOOR_SMALL_ROOM";
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+				sound1 = "weapons/handgun/player/reverb/small_room";
+				sound2 = "weapons/handgun/player/reverb/small_room_rear";
+			}
+			item[2] = {
+				envType = "SET_INDOOR_MID_ROOM";
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+				sound1 = "weapons/handgun/player/reverb/medium_room";
+				sound2 = "weapons/handgun/player/reverb/medium_room_rear";
+			}
+			item[3] = {
+				envType = "SET_INDOOR_LARGE_ROOM";
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+				sound1 = "weapons/handgun/player/reverb/large_room";
+				sound2 = "weapons/handgun/player/reverb/large_room_rear";
+			} 
+			item[4] = {
+				envType = "SET_INDOOR_LARGE_HALL";
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+				sound1 = "weapons/handgun/player/reverb/xl_room";
+				sound2 = "weapons/handgun/player/reverb/xl_room_rear";
+			}
+			item[5] = {
+				envType = "SET_INDOOR_CORIDOR";
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+				sound1 = "weapons/handgun/player/reverb/medium_room";
+				sound2 = "weapons/handgun/player/reverb/medium_room_rear";
+			}
+			item[6] = {
+				envType = "SET_OUTDOOR_OPEN_SPACE";
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+				sound1 = "weapons/handgun/player/reverb/outdoor";
+				sound2 = "weapons/handgun/player/reverb/outdoor_rear";
+			}
+			item[7] = {
+				envType = "SET_OUTDOOR_COURT_YARD";
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+				sound1 = "weapons/handgun/player/reverb/outdoor";
+				sound2 = "weapons/handgun/player/reverb/outdoor_rear";
+			}
+			item[8] = {
+				envType = "SET_OUTDOOR_SINGLE_WALL";
+				sound0 = "weapons/handgun/player/handgun_46_fire";
+				sound1 = "weapons/handgun/player/reverb/outdoor";
+				sound2 = "weapons/handgun/player/reverb/outdoor_rear";
+			}
+		}
+		damageDecl = "damage/tungsten/light";
+		spread = 0.6000;
+		weaponFeedBack = {
+			weaponKickInfo = {
+				weaponKickInfo[0] = {
+					kick = 0.75;
+					maxKick = 2;
+					recoilSpeed = 25;
+					recoverySpeed = 6;
+				}
+				weaponKickInfo[1] = {
+					kick = 0.5500000119;
+					maxKick = 0.75;
+					recoverySpeed = 8;
+				}
+				weaponKickInfo[2] = {
+					kick = 0.200000003;
+					recoilSpeed = 6;
+				}
+				weaponKickInfo[3] = {
+					kick = 0.75;
+					maxKick = 2;
+					recoilSpeed = 25;
+					recoverySpeed = 6;
+				}
+				weaponKickInfo[4] = {
+					kick = 0.200000003;
+					recoverySpeed = 7;
+				}
+				weaponKickInfo[5] = {
+					kick = 0.200000003;
+					recoverySpeed = 7;
+				}
+			}
+			spreadAdditionPerShot = 0.3000000119;
+			spreadAdditionMax = 1.25;
+		}
+	}
+}

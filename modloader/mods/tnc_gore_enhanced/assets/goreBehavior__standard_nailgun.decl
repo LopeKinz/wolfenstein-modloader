@@ -1,0 +1,16 @@
+{
+	inherit = "standard/smg";
+	edit = {
+		probability = {
+			item[0] = {
+				probability = 0.5;
+			}
+			item[1] = {
+				probability = 0.5;
+			}
+			item[2] = {
+				probability = 0.5;
+			}
+		}
+	}
+}

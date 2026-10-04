@@ -1,0 +1,108 @@
+{
+	inherit = "default";
+	edit = {
+		defaultEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		metalEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		metalHollow = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		metalSheet = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		metalVent = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		stoneEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		fleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			decalMaterial = {
+				num = 0;
+			}
+			isBloody = false;
+		}
+		woodEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		cardboardEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		liquidEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		glassEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		plasticEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		asphaltEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		dirtEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		concreteEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		plasterEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		foilageEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		linoleumEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		fabricEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		rubberEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		rockEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		steamPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		waterPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		armorEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		sludgeEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		bloodPoolEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		mutantFleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		thickPaddingEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		oilPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		electronicsEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		panzerMetalEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		breakableArmorEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/lm_eyegun_buildup";
+		}
+	}
+}

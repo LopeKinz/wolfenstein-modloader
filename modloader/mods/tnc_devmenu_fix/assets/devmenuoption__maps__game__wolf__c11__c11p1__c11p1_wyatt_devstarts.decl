@@ -1,0 +1,72 @@
+{
+	edit = {
+		devMenuList = {
+			num = 5;
+			item[0] = {
+				devMenuDisplayName = "start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"player_start\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c11p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c11/c11p1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "west terminal";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c11p1_gameplay_player_start_westterminal\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c11p1,layer/code,layer/wolfsdk/devstart_westterminal\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_westterminal\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c11/c11p1";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "hugin room";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c11p1_gameplay_player_start_hugin\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c11p1,layer/code,layer/wolfsdk/devstart_hugin\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_hugin\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c11/c11p1";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "munin room";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c11p1_gameplay_player_start_munin\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c11p1,layer/code,layer/wolfsdk/devstart_munin\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_munin\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c11/c11p1";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "exterior start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"c11p1_gameplay_player_start_exterior\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c11p1,layer/code,layer/wolfsdk/devstart_exterior\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/devstart_exterior\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c11/c11p1";
+				}
+			}
+		}
+	}
+}

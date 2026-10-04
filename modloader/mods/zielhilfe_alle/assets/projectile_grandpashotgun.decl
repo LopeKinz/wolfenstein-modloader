@@ -1,0 +1,84 @@
+{
+	inherit = "projectile/shotgun";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			item[0] = {
+				sound0 = "weapons/grandpashotgun/grandpashotgun_fire";
+				sound1 = "weapons/grandpashotgun/grandpashotgun_env_outdoor";
+				sound2 = "weapons/grandpashotgun/grandpashotgun_env_outdoor_rear";
+			}
+			item[1] = {
+				sound0 = "weapons/grandpashotgun/grandpashotgun_fire";
+				sound1 = "weapons/grandpashotgun/grandpashotgun_env_int_s";
+				sound2 = "weapons/grandpashotgun/grandpashotgun_env_int_s_rear";
+			}
+			item[2] = {
+				sound0 = "weapons/grandpashotgun/grandpashotgun_fire";
+				sound1 = "weapons/grandpashotgun/grandpashotgun_env_int_m";
+				sound2 = "weapons/grandpashotgun/grandpashotgun_env_int_m_rear";
+			}
+			item[3] = {
+				sound0 = "weapons/grandpashotgun/grandpashotgun_fire";
+				sound1 = "weapons/grandpashotgun/grandpashotgun_env_int_l";
+				sound2 = "weapons/grandpashotgun/grandpashotgun_env_int_l_rear";
+			}
+			item[5] = {
+				sound0 = "weapons/grandpashotgun/grandpashotgun_fire";
+				sound1 = "weapons/grandpashotgun/grandpashotgun_env_int_xl";
+				sound2 = "weapons/grandpashotgun/grandpashotgun_env_int_xl_rear";
+			}
+			item[6] = {
+				sound0 = "weapons/grandpashotgun/grandpashotgun_fire";
+				sound1 = "weapons/grandpashotgun/grandpashotgun_env_outdoor";
+				sound2 = "weapons/grandpashotgun/grandpashotgun_env_outdoor_rear";
+			}
+			item[7] = {
+				sound0 = "weapons/grandpashotgun/grandpashotgun_fire";
+				sound1 = "weapons/grandpashotgun/grandpashotgun_env_outdoor";
+				sound2 = "weapons/grandpashotgun/grandpashotgun_env_outdoor_rear";
+			}
+			item[8] = {
+				sound0 = "weapons/grandpashotgun/grandpashotgun_fire";
+				sound1 = "weapons/grandpashotgun/grandpashotgun_env_outdoor";
+				sound2 = "weapons/grandpashotgun/grandpashotgun_env_outdoor_rear";
+			}
+		}
+		weaponFeedBack = {
+			weaponKickInfo = {
+				weaponKickInfo[0] = {
+					kick = 3;
+					maxKick = 6;
+					recoilSpeed = 100;
+					recoverySpeed = 15;
+				}
+				weaponKickInfo[1] = {
+					kick = 8;
+					maxKick = 16;
+					recoilSpeed = 140;
+					recoverySpeed = 17;
+				}
+				weaponKickInfo[2] = {
+					kick = 1;
+					recoilSpeed = 12;
+					recoverySpeed = 20;
+				}
+				weaponKickInfo[3] = {
+					kick = 1;
+					recoilSpeed = 24;
+					recoverySpeed = 16;
+				}
+				weaponKickInfo[4] = {
+					maxKick = 25;
+					recoverySpeed = 14;
+				}
+				weaponKickInfo[5] = {
+					maxKick = 25;
+					recoverySpeed = 14;
+				}
+			}
+			spreadAdditionPerShot = 0.200000003;
+			spreadAdditionMax = 2.5;
+		}
+	}
+}

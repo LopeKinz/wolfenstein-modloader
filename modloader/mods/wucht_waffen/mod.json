@@ -1,0 +1,16 @@
+{
+  "id": "wolfsdk.wucht_waffen",
+  "name": "Impact: Weapons and Explosions",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Raises two mix bus gains in soundmixing:default: 'Player Weapon' from -11 to -6 dB and 'Explosions' from -5 to -2 dB. The mix bus sits after the HDR stage, so it bypasses the precomputed rmsTable curves that could catch a volume boost at decl level again. 'World Sfx Master' is deliberately left alone because footsteps and vehicles hang off it too. Side effect: the master bus limiter (threshold -0.2 dB) kicks in earlier, so loud scenes may pump a little. Not confirmed in game: that changed sound decls take effect is inferred from the archive structure (same entry remainder as entityDef/weapon, no .bin counterpart like for particle), not observed. No audio file is touched; streamed.resources and english.streamed stay untouched.",
+  "priority": 150,
+  "assets": {
+    "soundmixing:default": {
+      "set": {
+        "edit.subBus.subBus[1].gain": -6,
+        "edit.subBus.subBus[5].gain": -2
+      }
+    }
+  }
+}

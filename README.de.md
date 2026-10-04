@@ -8,9 +8,30 @@ Community-Dokumentation und Reverse-Engineering-Forschung zum Modden von:
 - **Wolfenstein II: The New Colossus** (id Tech 6)
 
 > [!NOTE]
-> Dieses Repository veröffentlicht die Dokumentation und das **Wolfenstein-SDK**
-> in vier Programmiersprachen. Mods, Spieldateien und große
-> Forschungsartefakte sind nicht Teil der öffentlichen Veröffentlichung.
+> Dieses Repository veröffentlicht die Dokumentation, das **Wolfenstein-SDK**
+> in vier Programmiersprachen sowie den Quellcode der WolfSDK-Apps mit ihren
+> Mods. Spieldateien und große Forschungsartefakte sind nicht Teil der
+> öffentlichen Veröffentlichung.
+
+## Download
+
+**WolfSDK 0.2.0** ist die erste App-Version: ein **Loader** für Spieler und ein
+**Studio** für Modder.
+
+| Download | Für |
+|---|---|
+| [WolfSDK-Loader-0.2.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Loader-0.2.0.zip) | Spieler: Mods anwenden und rückgängig machen, Cheats und Tweaks |
+| [WolfSDK-Studio-0.2.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Studio-0.2.0.zip) | Modder: Spieldateien durchsuchen und ersetzen; enthält auch den Loader |
+
+Installation: entpacken und `WolfSDK.cmd` starten. Python ist dabei, sonst muss
+nichts installiert werden.
+
+Voraussetzungen: Windows und die Steam-Version von *Wolfenstein: The New Order*
+oder *Wolfenstein II: The New Colossus*. Eigene Karten brauchen das
+Freedom-Chronicles-DLC.
+
+Versionshinweise: [wolfsdk-0.2.0](https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0).
+Quellcode beider Apps: [`modloader/`](modloader/) (MIT-Lizenz).
 
 ## SDK
 

@@ -1,0 +1,63 @@
+{
+	edit = {
+		aimAssistRange = 3072;
+		impactEffectTable = "wolf/mg60";
+		spread = 0.4000;
+		crosshairSpread = 1.0;
+		tracerInfo = {
+			tracerMtr = "textures/w_sfx/tracer_mg60";
+			tracers = 1;
+			tracerSpeed = 5000;
+			tracerLength = 80;
+			tracerHeight = 5;
+			sndTracer = "projectile/bullet_bys/heavy_bullet_by";
+		}
+		waterInteraction = {
+			allowWaterInteraction = true;
+		}
+		damageDecl = "damage/tungsten/mg60";
+		
+		weaponFeedBack = {
+			weaponKickInfo = {
+				weaponKickInfo[0] = {
+					kick = 0.7;
+					maxKick = 0.7;
+					recoilSpeed = 25.0;
+					recoverySpeed = 3.0;
+				}
+				weaponKickInfo[1] = {
+					kick = 0.7;
+					maxKick = 1.0;
+					recoilSpeed = 25.0;
+					recoverySpeed = 2.0;
+				}
+				weaponKickInfo[2] = {
+					kick = 0.10;
+					maxKick = 25.0;
+					recoilSpeed = 2.0;
+					recoverySpeed = 5.0;
+				}
+				weaponKickInfo[3] = {
+					kick = 0.7;
+					maxKick = 1.0;
+					recoilSpeed = 17.0;
+					recoverySpeed = 2.0;
+				}
+				weaponKickInfo[4] = {
+					kick = 1.3;
+					maxKick = 6.0;
+					recoilSpeed = 25.0;
+					recoverySpeed = 10.0;
+				}
+				weaponKickInfo[5] = {
+					kick = 0;
+					maxKick = 0;
+					recoilSpeed = 0;
+					recoverySpeed = 0;
+				}
+			}
+			spreadAdditionPerShot = 0.35;
+			spreadAdditionMax = 1.55;
+		}
+	}
+}

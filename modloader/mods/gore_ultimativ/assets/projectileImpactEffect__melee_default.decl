@@ -1,0 +1,205 @@
+{
+	inherit = "default";
+	edit = {
+		defaultEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_generic";
+		}
+		metalEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_metal_solid";
+		}
+		metalHollow = {
+			decalMaterial = {
+				num = 0;
+			}
+			sndImpact = "impacts/knife/knife_impact_metal_hollow";
+		}
+		metalSheet = {
+			decalMaterial = {
+				num = 0;
+			}
+			sndImpact = "impacts/knife/knife_impact_metal_sheet";
+		}
+		metalVent = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+		}
+		stoneEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_concrete";
+		}
+		fleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			sndImpact = "impacts/knife/knive_hit_body";
+		}
+		woodEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+			sndImpact = "impacts/knife/knife_impact_wood_solid";
+		}
+		cardboardEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+		}
+		liquidEffect = {
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+		}
+		glassEffect = {
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+			sndImpact = "impacts/knife/knife_impact_glass_pane";
+		}
+		plasticEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+			sndImpact = "impacts/knife/knife_impact_wood_box";
+		}
+		asphaltEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_concrete";
+		}
+		dirtEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+		}
+		concreteEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_concrete";
+		}
+		foilageEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+		}
+		linoleumEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+		}
+		fabricEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+			sndImpact = "impacts/knife/knife_impact_generic";
+		}
+		rubberEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+		}
+		rockEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_concrete";
+		}
+		steamPipeEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_metal_sheet";
+		}
+		waterPipeEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_metal_sheet";
+		}
+		armorEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+		}
+		sludgeEffect = {
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+		}
+		bloodPoolEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		mutantFleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		thickPaddingEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/dust01";
+		}
+		porcelainEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		plasterEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_concrete";
+		}
+		electronicsEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_concrete";
+		}
+		oilPipeEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_metal_sheet";
+		}
+		panzerMetalEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_metal_hollow";
+		}
+		breakableArmorEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+			particleImpact = "wolf/bulletimpacts/knife/default01";
+			sndImpact = "impacts/knife/knife_impact_metal_hollow";
+		}
+		electricShieldEffect = {
+			sndImpact = NULL;
+		}
+	}
+}

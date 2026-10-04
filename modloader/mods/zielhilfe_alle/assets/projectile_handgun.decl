@@ -1,0 +1,37 @@
+{
+	inherit = "projectile/base/bullet_light_default";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			item[0] = {
+				sound0 = "weapons/handgun/handgun60/handgun60_shot";
+				sound1 = "weapons/handgun/player/reverb/large_room";
+				sound2 = "weapons/handgun/player/reverb/large_room_rear";
+			}
+			item[1] = {
+				sound0 = "weapons/handgun/handgun60/handgun60_shot";
+			}
+			item[2] = {
+				sound0 = "weapons/handgun/handgun60/handgun60_shot";
+			}
+			item[3] = {
+				sound0 = "weapons/handgun/handgun60/handgun60_shot";
+			}
+			item[4] = {
+				sound0 = "weapons/handgun/handgun60/handgun60_shot";
+			}
+			item[5] = {
+				sound0 = "weapons/handgun/handgun60/handgun60_shot";
+			}
+			item[6] = {
+				sound0 = "weapons/handgun/handgun60/handgun60_shot";
+			}
+			item[7] = {
+				sound0 = "weapons/handgun/handgun60/handgun60_shot";
+			}
+			item[8] = {
+				sound0 = "weapons/handgun/handgun60/handgun60_shot";
+			}
+		}
+	}
+}

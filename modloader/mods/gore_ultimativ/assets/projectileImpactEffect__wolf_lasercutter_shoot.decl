@@ -1,0 +1,109 @@
+{
+	inherit = "wolf/lasercutter_decals";
+	edit = {
+		defaultEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		metalEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		metalHollow = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		metalSheet = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		metalVent = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		stoneEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		fleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			decalMaterial = {
+				num = 0;
+			}
+			isBloody = false;
+		}
+		woodEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		cardboardEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		liquidEffect = {
+			particleImpact = "wolf/bulletimpacts/lkw_water";
+		}
+		glassEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		plasticEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		asphaltEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		dirtEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		concreteEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		plasterEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		foilageEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		linoleumEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		fabricEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		rubberEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		rockEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		steamPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		waterPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		armorEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		sludgeEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		bloodPoolEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		mutantFleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		thickPaddingEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		oilPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		electronicsEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		panzerMetalEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		breakableArmorEffect = {
+			particleImpact = "wolf/bulletimpacts/lasercutter_default";
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+			sndImpact = "projectile/bullet_impacts/imp_metal";
+		}
+	}
+}

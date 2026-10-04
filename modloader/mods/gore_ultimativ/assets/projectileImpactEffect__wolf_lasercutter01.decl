@@ -1,0 +1,108 @@
+{
+	inherit = "wolf/lasercutter_base";
+	edit = {
+		defaultEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		metalEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		metalHollow = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		metalSheet = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		metalVent = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		stoneEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		fleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";			
+			decalMaterial = {
+				num = 0;
+			}
+			isBloody = false;
+		}
+		woodEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		cardboardEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		liquidEffect = {
+			particleImpact = "wolf/bulletimpacts/lkw_water";
+		}
+		glassEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		plasticEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		asphaltEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		dirtEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		concreteEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		plasterEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		foilageEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		linoleumEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		fabricEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		rubberEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		rockEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		steamPipeEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		waterPipeEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		armorEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		sludgeEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		bloodPoolEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		mutantFleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+		}
+		thickPaddingEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		oilPipeEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		electronicsEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		panzerMetalEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		breakableArmorEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/weapon/lasercut_sparks_oneshot";
+		}
+	}
+}

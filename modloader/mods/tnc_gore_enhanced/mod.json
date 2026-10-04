@@ -1,0 +1,83 @@
+{
+  "id": "wolfsdk.tnc_gore_enhanced",
+  "name": "Gore Enhanced (TNC)",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "spiel": "tnc",
+  "priority": 170,
+  "description": "TNC-only schema-preserving gore probability boost for standard behaviors. Built from the installed TNC declarations, never from TNO.",
+  "assets": {
+    "goreBehavior:standard/ramshackles": {
+      "file": "assets/goreBehavior__standard_ramshackles.decl"
+    },
+    "goreBehavior:standard/smg": {
+      "file": "assets/goreBehavior__standard_smg.decl"
+    },
+    "goreBehavior:standard/rifle": {
+      "file": "assets/goreBehavior__standard_rifle.decl"
+    },
+    "goreBehavior:standard/heavy": {
+      "file": "assets/goreBehavior__standard_heavy.decl"
+    },
+    "goreBehavior:standard/dieselgewehr": {
+      "file": "assets/goreBehavior__standard_dieselgewehr.decl"
+    },
+    "goreBehavior:standard/dkw_canister": {
+      "file": "assets/goreBehavior__standard_dkw_canister.decl"
+    },
+    "goreBehavior:standard/explosive": {
+      "file": "assets/goreBehavior__standard_explosive.decl"
+    },
+    "goreBehavior:standard/hammergewehr": {
+      "file": "assets/goreBehavior__standard_hammergewehr.decl"
+    },
+    "goreBehavior:standard/pistol": {
+      "file": "assets/goreBehavior__standard_pistol.decl"
+    },
+    "goreBehavior:standard/lasergewehr": {
+      "file": "assets/goreBehavior__standard_lasergewehr.decl"
+    },
+    "goreBehavior:standard/shotgun": {
+      "file": "assets/goreBehavior__standard_shotgun.decl"
+    },
+    "goreBehavior:standard/ubergewehr": {
+      "file": "assets/goreBehavior__standard_ubergewehr.decl"
+    },
+    "goreBehavior:standard/nailgun": {
+      "file": "assets/goreBehavior__standard_nailgun.decl"
+    },
+    "goreBehavior:standard/magnum": {
+      "file": "assets/goreBehavior__standard_magnum.decl"
+    },
+    "goreBehavior:standard/armorpiercing": {
+      "file": "assets/goreBehavior__standard_armorpiercing.decl"
+    },
+    "goreBehavior:standard/shotgun_rotor": {
+      "file": "assets/goreBehavior__standard_shotgun_rotor.decl"
+    },
+    "goreBehavior:standard/dkw_ignition_muzzle": {
+      "file": "assets/goreBehavior__standard_dkw_ignition_muzzle.decl"
+    },
+    "goreBehavior:standard/grenade_diesel": {
+      "file": "assets/goreBehavior__standard_grenade_diesel.decl"
+    },
+    "goreBehavior:standard/grenade_electro": {
+      "file": "assets/goreBehavior__standard_grenade_electro.decl"
+    },
+    "goreBehavior:standard/grenade_diesel_electro": {
+      "file": "assets/goreBehavior__standard_grenade_diesel_electro.decl"
+    },
+    "goreBehavior:standard/radial/explosive_big": {
+      "file": "assets/goreBehavior__standard_radial_explosive_big.decl"
+    },
+    "goreBehavior:standard/radial/explosive_small": {
+      "file": "assets/goreBehavior__standard_radial_explosive_small.decl"
+    },
+    "goreBehavior:standard/submunitions": {
+      "file": "assets/goreBehavior__standard_submunitions.decl"
+    },
+    "goreBehavior:standard/signature/supersoldier_backpack": {
+      "file": "assets/goreBehavior__standard_signature_supersoldier_backpack.decl"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+	inherit = "projectile/base/bullet_light_default";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			item[0] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire_left";
+				sound1 = "weapons/handgun/player/reverb/dw_medium_room";
+				sound2 = "weapons/handgun/player/reverb/dw_medium_room_rear";
+			}
+			item[1] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire_left";
+				sound1 = "weapons/handgun/player/reverb/dw_small_room";
+				sound2 = "weapons/handgun/player/reverb/dw_small_room_rear";
+			}
+			item[2] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire_left";
+				sound1 = "weapons/handgun/player/reverb/dw_medium_room";
+				sound2 = "weapons/handgun/player/reverb/dw_medium_room_rear";
+			}
+			item[3] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire_left";
+				sound1 = "weapons/handgun/player/reverb/dw_large_room";
+				sound2 = "weapons/handgun/player/reverb/dw_large_room_rear";
+			}
+			item[4] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire_left";
+				sound1 = "weapons/handgun/player/reverb/dw_xl_room";
+				sound2 = "weapons/handgun/player/reverb/dw_xl_room_rear";
+			}
+			item[5] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire_left";
+				sound1 = "weapons/handgun/player/reverb/dw_medium_room";
+				sound2 = "weapons/handgun/player/reverb/dw_medium_room_rear";
+			}
+			item[6] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire_left";
+				sound1 = "weapons/handgun/player/reverb/dw_outdoor";
+				sound2 = "weapons/handgun/player/reverb/dw_outdoor_rear";
+			}
+			item[7] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire_left";
+				sound1 = "weapons/handgun/player/reverb/dw_outdoor";
+				sound2 = "weapons/handgun/player/reverb/dw_outdoor_rear";
+			}
+			item[8] = {
+				sound0 = "weapons/handgun/player/handgun_46_fire_left";
+				sound1 = "weapons/handgun/player/reverb/dw_outdoor";
+				sound2 = "weapons/handgun/player/reverb/dw_outdoor_rear";
+			}
+		}
+	}
+}

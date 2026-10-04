@@ -1,0 +1,85 @@
+{
+	edit = {
+		devMenuList = {
+			num = 6;
+			item[0] = {
+				devMenuDisplayName = "Start";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_start\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Wall";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_wall\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p1";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Streets";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_streets\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p1,layer/code,layer/wolfsdk/player_start_streets\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/player_start_streets\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p1";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Maintenance";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_maintenance\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p1";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Roundhouse";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_roundhouse\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p1,layer/code\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p1";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "Horton";
+				devMenuCommandStrings = {
+					num = 7;
+					item[0] = "si_spawnspot \"gp_player_start_campaign_horton\"";
+					item[1] = "si_nextlayeractive \"layer/wyatt,layer/c08p1,layer/code,layer/wolfsdk/player_start_horton\"";
+					item[2] = "si_filllayeractive \"layer/wolfsdk/player_start_horton\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 0";
+					item[6] = "devmap game/wolf/c08/c08p1";
+				}
+			}
+		}
+	}
+}

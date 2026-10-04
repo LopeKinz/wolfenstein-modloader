@@ -1,0 +1,13 @@
+{
+  "id": "wolfsdk.fraktionen_hass",
+  "name": "Factions - Panzerhunds Go Berserk",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "faction/auth/panzerhund is a faction of its own (6 entityDefs), but it only inherits from faction/auth through parentFaction and has no relationships block of its own. This mod adds faction/auth there with ATTITUDE_HATE: Panzerhunds should then attack the 237 enemies on their own side. Adding an entry instead of creating a new one -- the patcher could not get a new faction into the archive. The reverse direction (faction/auth hates the Panzerhund) stays open; whether guards shoot back depends on whether the AI reacts to damage it takes. Untested in game: built and checked, but never launched.",
+  "priority": 150,
+  "assets": {
+    "faction:faction/auth/panzerhund": {
+      "file": "assets/faction__faction_auth_panzerhund.decl"
+    }
+  }
+}

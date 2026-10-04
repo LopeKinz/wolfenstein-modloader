@@ -1,0 +1,91 @@
+{
+	edit = {
+		devMenuList = {
+			num = 6;
+			item[0] = {
+				devMenuDisplayName = "C1V1 Start";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c1v1_gameplay_player_start\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c1v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 4";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c01/c1v1";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "After Escape";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c1v1_gameplay_player_start_escape\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c1v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 4";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c01/c1v1";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Commander Meeting";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c1v1_gameplay_player_start_meeting\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c1v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 4";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c01/c1v1";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Panzerhund";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c1v1_gameplay_player_start_panzerhund\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c1v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 4";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c01/c1v1";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Apartments";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c1v1_gameplay_player_start_apartment\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c1v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 4";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c01/c1v1";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "End";
+				devMenuCommandStrings = {
+					num = 8;
+					item[0] = "si_spawnspot \"c1v1_gameplay_player_start_end\"";
+					item[1] = "si_nextlayeractive \"layer/dlc/c1v1\"";
+					item[2] = "si_filllayeractive \"\"";
+					item[3] = "si_devprogression \"\"";
+					item[4] = "si_checkpointName \"\"";
+					item[5] = "si_gamemode 4";
+					item[6] = "si_mainmenustart 1";
+					item[7] = "devmap game/dlc/c01/c1v1";
+				}
+			}
+		}
+	}
+}

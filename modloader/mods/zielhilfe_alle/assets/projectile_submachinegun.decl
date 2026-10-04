@@ -1,0 +1,63 @@
+{
+	inherit = "projectile/base/bullet_light_default";
+	edit = {
+		aimAssistRange = 3072;
+		envFireSounds = {
+			num = 8;
+			item[0] = {
+				sound0 = "weapons/smg/smg_fire_split";
+				sound1 = "weapons/smg/env/smg_env_roomsmall";
+				sound2 = "weapons/smg/env/smg_env_roomsmall_rear";
+			}
+			item[1] = {
+				envType = "SET_INDOOR_MID_ROOM";
+				sound0 = "weapons/smg/smg_fire_split";
+				sound1 = "weapons/smg/env/smg_env_roommedium";
+				sound2 = "weapons/smg/env/smg_env_roommedium_rear";
+			}
+			item[2] = {
+				envType = "SET_INDOOR_LARGE_ROOM";
+				sound0 = "weapons/smg/smg_fire_split";
+				sound1 = "weapons/smg/env/smg_env_roomlarge";
+				sound2 = "weapons/smg/env/smg_env_roomlarge_rear";
+			}
+			item[3] = {
+				envType = "SET_INDOOR_LARGE_HALL";
+				sound0 = "weapons/smg/smg_fire_split";
+				sound1 = "weapons/smg/env/smg_env_roomxl";
+				sound2 = "weapons/smg/env/smg_env_roomxl_rear";
+			}
+			item[4] = {
+				envType = "SET_INDOOR_CORIDOR";
+				sound0 = "weapons/smg/smg_fire_split";
+				sound1 = "weapons/smg/env/smg_env_roomlarge";
+				sound2 = "weapons/smg/env/smg_env_roomlarge_rear";
+			}
+			item[5] = {
+				envType = "SET_OUTDOOR_OPEN_SPACE";
+				sound0 = "weapons/smg/smg_fire_split";
+				sound1 = "weapons/smg/env/smg_env_outdoor";
+				sound2 = "weapons/smg/env/smg_env_outdoor_rear";
+			}
+			item[6] = {
+				envType = "SET_OUTDOOR_COURT_YARD";
+				sound0 = "weapons/smg/smg_fire_split";
+				sound1 = "weapons/smg/env/smg_env_outdoor";
+				sound2 = "weapons/smg/env/smg_env_outdoor_rear";
+			}
+			item[7] = {
+				envType = "SET_OUTDOOR_SINGLE_WALL";
+				sound0 = "weapons/smg/smg_fire_split";
+				sound1 = "weapons/smg/env/smg_env_outdoor";
+				sound2 = "weapons/smg/env/smg_env_outdoor_rear";
+			}
+		}
+		damageDecl = "damage/tungsten/smg";
+		spread = 0.8000;
+		crosshairSpread = 1.7000000477;
+		weaponFeedBack = {
+			spreadAdditionPerShot = 0.5;
+			spreadAdditionMax = 2;
+		}
+	}
+}

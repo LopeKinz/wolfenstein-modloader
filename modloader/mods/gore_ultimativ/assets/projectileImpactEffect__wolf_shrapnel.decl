@@ -1,0 +1,208 @@
+{
+	inherit = "wolf/shotgun";
+	edit = {
+		defaultEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";			
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		metalEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		metalHollow = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		metalSheet = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		metalVent = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		stoneEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		fleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		woodEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		cardboardEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		liquidEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/bullethole_glass2";
+			}
+			decalMaterial = {
+				num = 0;
+			}
+			decalQuad = true;
+			particleImpact = "wolf/bulletimpacts/water01";
+		}
+		glassEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		plasticEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		asphaltEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		dirtEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		concreteEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		plasterEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		foilageEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		linoleumEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		fabricEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		rubberEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		rockEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		steamPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/steampipe";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		waterPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/waterpipe";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		armorEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		sludgeEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		bloodPoolEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		mutantFleshEffect = {
+			particleImpact = "wolf/bulletimpacts/blood_medium";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		thickPaddingEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		oilPipeEffect = {
+			particleImpact = "wolf/bulletimpacts/shrapnel_default";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		electronicsEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_electronics";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		panzerMetalEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_panzer";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		breakableArmorEffect = {
+			particleImpact = "wolf/bulletimpacts/shotgun_armor_breakable";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		electricShieldEffect = {
+			particleImpact = "wolf/bulletimpacts/electronics";
+			sndImpact = "projectile/bullet_impacts/imp_metal";
+			decalMaterial = {
+				num = 0;
+			}
+		}
+	}
+}

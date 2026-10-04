@@ -1,0 +1,8 @@
+{
+	edit = {
+		aiIncomingDamageScale = 2.20;
+		playerIncomingDamageScale = 1.0;
+		check_respawnHealth = 20.0;
+		check_respawnThreshold = 2;
+	}
+}

@@ -1,0 +1,19 @@
+{
+	edit = {
+		devMenuList = {
+			num = 3;
+			item[0] = {
+				devMenuDisplayName = "P1 - A New Home";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c04/c04p1";
+			}
+			item[1] = {
+				devMenuDisplayName = "P2 - High Explosives";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c04/c04p2";
+			}
+			item[2] = {
+				devMenuDisplayName = "P3 - Settling In";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c04/c04p3";
+			}
+		}
+	}
+}

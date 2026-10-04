@@ -1,0 +1,217 @@
+{
+	inherit = "wolf/lasercutter_base";
+	edit = {
+		debugDefaultEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/surf_invalid";
+			}
+			decalSize = 26;
+			particleImpact = "bulletimpacts/default_surface";
+		}
+		debugStreamArea = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/surf_streamarea";
+			}
+			decalSize = 26;
+			particleImpact = "bulletimpacts/streamarea_surface";
+		}
+		defaultEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		metalEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		metalHollow = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		metalSheet = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		metalVent = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		stoneEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		fleshEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+		woodEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		cardboardEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		liquidEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		glassEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		plasticEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		asphaltEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		dirtEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		concreteEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		plasterEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		foilageEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		linoleumEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		fabricEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		rubberEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		rockEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		steamPipeEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		waterPipeEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		armorEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		sludgeEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		bloodPoolEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		mutantFleshEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		thickPaddingEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		oilPipeEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		electronicsEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		panzerMetalEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		breakableArmorEffect = {
+			decalMaterial = {
+				num = 1;
+				item[0] = "textures/w_particles/decals/laserscorch_default";
+			}
+		}
+		electricShieldEffect = {
+			decalMaterial = {
+				num = 0;
+			}
+		}
+	}
+}

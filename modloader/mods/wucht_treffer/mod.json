@@ -1,0 +1,19 @@
+{
+  "id": "wolfsdk.wucht_treffer",
+  "name": "Impact: Hit Sounds",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "description": "Two decls for impacts. The family node inheritences/impacts (45 descendants) now lets four impacts sound at the same time instead of two -- in the original a burst drops the rest -- and raises the lower bound of the random volume from -6 to -3 dB without giving up the spread. On top of that, imp_flesh (the body hit, pulled in by 15 files) gets its own volume.offset of 4 dB so flesh stands out from concrete and metal. No number above 4 dB, no new audio file. Not confirmed in game: that changed sound decls take effect is inferred from the archive structure (same entry remainder as entityDef/weapon, no .bin counterpart like for particle), not observed. No audio file is touched; streamed.resources and english.streamed stay untouched.",
+  "priority": 151,
+  "assets": {
+    "sound:inheritences/impacts": {
+      "set": {
+        "edit.parms.volume.min": -3,
+        "edit.parms.maxPlay.maxShaders": 4
+      }
+    },
+    "sound:projectile/bullet_impacts/imp_flesh": {
+      "file": "assets/sound__imp_flesh.decl"
+    }
+  }
+}

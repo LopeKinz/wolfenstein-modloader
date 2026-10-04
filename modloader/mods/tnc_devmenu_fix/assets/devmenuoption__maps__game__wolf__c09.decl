@@ -1,0 +1,15 @@
+{
+	edit = {
+		devMenuList = {
+			num = 2;
+			item[0] = {
+				devMenuDisplayName = "P1 - The Audition";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c09/c09p1";
+			}
+			item[1] = {
+				devMenuDisplayName = "P2 - Venus Surface";
+				devMenuSubList = "devmenuoption/maps/game/wolf/c09/c09p2";
+			}
+		}
+	}
+}
