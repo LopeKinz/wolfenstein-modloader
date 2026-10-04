@@ -306,3 +306,4 @@ footer p { max-width: 46rem; margin: 0 0 .8rem; }
 .proof figcaption { font-size: .92rem; color: var(--plaster-dim); font-style: italic; margin-top: .35rem; }
 
 .entry > *, .body, .games > * { min-width: 0; }
+.discord { display: block; max-width: 100%; border: 0; }
