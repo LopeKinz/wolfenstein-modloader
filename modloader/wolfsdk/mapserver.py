@@ -47,6 +47,13 @@ every id as the query parameter id= (URL-encoded):
   GET /api/<g>/models/info?id=                   {bounds, lods, joints, surfaces: [{albedo, ...}]}
   GET /api/<g>/models/mesh.bin?id=&lod=0         WMD1 (wolfsdk/md6.py)
   GET /api/<g>/models/albedo.png?id=<tex>&max=1024&v=<key>   a surface's colour map
+  GET /api/<g>/models/uv2.bin?id=&surface=N&v=<key>             f32[2nv]: a hair surface's second uv set
+  GET /api/<g>/models/anims.json?id=                       {skeleton, joints, anims: [{id, name, group}]} (TNC md6mesh)
+  GET /api/<g>/models/skeleton.json?id=                    {names, parents, rot, pos}: bind pose, local, game axes
+  GET /api/<g>/models/skin.bin?id=                         WSK1: per surface u32 nv, u16 joint[4nv], f32 weight[4nv]
+  GET /api/<g>/models/anim.json?id=&anim=<md6anim>         {name, fps, frames, tracks: [{joint, rot?, pos?}]}
+  GET /api/<g>/models/pbr.json?id=<material>&v=<key>         {alpha, roughness, emissive, maps: {slot: URL}} (TNC)
+  GET /api/<g>/models/pbr.png?id=<material>&slot=mr|normal|base|occ&v=<key>   one material map
   GET /api/<g>/models/export?id=&format=glb|gltf|obj&surfaces=0,2,5&max=4096 (default: full resolution)
       the model as a file to save (wolfsdk/modelexport.py), Content-Disposition
       attachment; surfaces: the indices to export (absent or empty: those shown at start)
@@ -115,11 +122,13 @@ TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=u
          ".ico": "image/x-icon", ".bin": "application/octet-stream"}
 _TEX = re.compile(r"/api/(?:(tnc|tno)/)?tex/([0-9a-f]{16})(\.png)?\Z")
 _MAP = re.compile(r"/api/(?:(tnc|tno)/)?map/(.+)/(scene\.json|geometry\.bin|collision\.json)\Z")
-_STUDIO = re.compile(r"/api/([^/]+)/(videos|sounds|textures|texts|models|scripts)(?:/([a-z.]+))?\Z")
+_STUDIO = re.compile(r"/api/([^/]+)/(videos|sounds|textures|texts|models|scripts)(?:/([a-z0-9.]+))?\Z")
 _NEW = ("replace", "export.zip")         # every kind: English JSON errors (studiomod)
 _LEAVES = {"videos": ("info", "frames", "frame.png", "audio.wav", "file") + _NEW, "sounds": ("info", "audio") + _NEW,
            "textures": ("info", "image.png", "export") + _NEW, "texts": ("info", "text", "file") + _NEW,
-           "models": ("info", "mesh.bin", "albedo.png", "export") + _NEW, "scripts": ("info", "nodetypes", "save")}
+           "models": ("info", "mesh.bin", "uv2.bin", "albedo.png", "pbr.json", "pbr.png", "export",
+                      "anims.json", "skeleton.json", "skin.bin", "anim.json") + _NEW,
+           "scripts": ("info", "nodetypes", "save")}
 _JSON_ERRORS = re.compile(r"/api/[^/]+/(?:models(?:/|\Z)|scripts(?:/|\Z)|[a-z]+/(?:replace|export\.zip)\Z|mods\Z)")
 _EXPORT = re.compile(r"/api/[^/]+/models/export\Z")
 _POSTS = re.compile(r"/api/[^/]+/(?:models/export|scripts/save|[a-z]+/replace)\Z")
@@ -330,6 +339,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._bytes(srv.maps_json(), "application/json", head)
         if path == "/api/tno/maps":
             return self._bytes(srv.tno_maps_json(), "application/json", head)
+        if path == "/api/yb/maps":
+            raise _Fail(404, "Maps of Wolfenstein: Youngblood are not supported yet.")
         if path == "/api/games":
             return self._bytes(studio.dumps(srv.studio.games()), "application/json", head)
         m = _STUDIO.match(path)
@@ -447,6 +458,22 @@ class Handler(BaseHTTPRequestHandler):
         if leaf == "albedo.png":
             return self._bytes(st.model_albedo(game, item, num("max", studio.ALBEDO_MAX)), "image/png", head,
                                (("Cache-Control", "max-age=86400"),))   # v= changes when an archive or .texdb does
+        if leaf == "uv2.bin":
+            return self._bytes(st.model_uv2(game, item, num("surface", 0)), "application/octet-stream", head,
+                               (("Cache-Control", "max-age=86400"),))
+        if leaf == "anims.json":
+            return self._bytes(studio.dumps(st.model_anims(game, item)), json_, head)
+        if leaf == "skeleton.json":
+            return self._bytes(studio.dumps(st.model_skeleton(game, item)), json_, head)
+        if leaf == "skin.bin":
+            return self._bytes(st.model_skin(game, item), "application/octet-stream", head)
+        if leaf == "anim.json":     # anim = md6anim name
+            return self._bytes(st.model_anim(game, item, arg("anim", "")), json_, head)
+        if leaf == "pbr.json":      # id = material name
+            return self._bytes(studio.dumps(st.model_pbr(game, item)), json_, head, (("Cache-Control", "max-age=86400"),))
+        if leaf == "pbr.png":
+            return self._bytes(st.model_pbr_png(game, item, arg("slot", "")), "image/png", head,
+                               (("Cache-Control", "max-age=86400"),))
         if leaf == "export":
             raw, skin = arg("surfaces"), arg("skin")
             try:

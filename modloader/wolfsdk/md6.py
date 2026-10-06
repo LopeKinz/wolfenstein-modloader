@@ -23,7 +23,9 @@ str = u32 length + bytes, nothing compressed inside the payload.
 Vertex (48 B): 0x00 f32[3] position (model space, bind pose, metres, z up),
 0x14 u8[4] normal (c-128)/127 (80 80 80 = none), 0x18 u8[4] tangent,
 0x1C u8[4] joint slots, 0x20 f32[2] uv to render (0x0C holds a copy in kind
-0/1 and hair data in kind 2, so 0x0C is not the uv).
+0/1, so 0x0C is not the uv). Kind 2 (hair cards): 0x0C u16[2] the uv as unorm16,
+0x10 u16[2] the second uv set as unorm16 (the strand mask's, uv2(); the hair
+shaders' in_TexCoord1; the copy matched 723,173/723,173 vertices).
 
 WMD1 (little endian, every part 4-byte aligned): b"WMD1", u32 surface count,
 per surface u32 vertex count, u32 index count, f32 position[3 nv],
@@ -112,6 +114,17 @@ def surface_arrays(mesh, lod=0):
         raise MapGeoError("md6mesh %s: position or UV not finite" % mesh["name"])
     idx[1::3], idx[2::3] = idx[2::3], idx[1::3]   # clockwise -> counter-clockwise
     return pos, nrm, uv, idx
+
+
+def uv2(mesh, lod=0):
+    """The second uv set f32[2nv] of a hair mesh (kind 2), None for every other mesh or an absent LOD."""
+    lo = mesh["lods"][lod]
+    if lo is None or mesh["kind"] != 2:
+        return None
+    u = array("H", lo["verts"])                    # 24 u16 per vertex; 0x10 = u16 index 8
+    out = array("f", bytes(8 * lo["nv"]))
+    out[0::2], out[1::2] = array("f", (x / 65535 for x in u[8::24])), array("f", (x / 65535 for x in u[9::24]))
+    return out
 
 
 def fix_normals(pos, nrm, idx, min_cos=0.5):

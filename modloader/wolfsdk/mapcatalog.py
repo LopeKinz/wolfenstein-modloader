@@ -131,8 +131,7 @@ class Mount:
         except Exception:
             self.close()
             raise
-        self.texdbs = [a.path.with_suffix(".texdb") for a in self.archives
-                       if a.path.with_suffix(".texdb").exists()]
+        self.texdbs = [q for q in map(_texdb_of, (a.path for a in self.archives)) if q is not None]
         self._index = None
         self._lock = threading.Lock()
 
@@ -164,13 +163,13 @@ class Mount:
         return [hit for (t, _), hit in self._idx().items() if t == type_]
 
     def read(self, archive, entry):
-        """The entry's payload, Kraken undone (mode 4: 12-byte prefix first)."""
+        """The entry's payload, Kraken undone (modes 4 and Youngblood's 6: 12-byte prefix first)."""
         with self._lock:
             raw = archive.read_raw(entry)
         if entry.compression == 0:
             return raw
         oo = oodle.load(self.game_root)
-        return oo.decompress(raw[12:] if entry.compression == 4 else raw, entry.usize)
+        return oo.decompress(raw[12:] if entry.compression in (4, 6) else raw, entry.usize)
 
     @property
     def key(self):
@@ -180,6 +179,14 @@ class Mount:
             st = p.stat()
             h.update(("%s|%d|%d\n" % (p, st.st_size, st.st_mtime_ns)).encode("utf-8"))
         return h.hexdigest()[:16]
+
+
+def _texdb_of(path):
+    """The .texdb beside an archive, or None. Youngblood pairs chunk_2_pc.resources with chunk_2.texdb."""
+    for q in (path.with_suffix(".texdb"), path.with_name(path.stem[:-3] + ".texdb") if path.stem.endswith("_pc") else None):
+        if q is not None and q.exists():
+            return q
+    return None
 
 
 def mount(game_root, map_id):

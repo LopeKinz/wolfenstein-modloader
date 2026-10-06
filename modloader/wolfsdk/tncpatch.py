@@ -1738,10 +1738,11 @@ class Installation:
                     fh.seek(row)
                     fh.write(struct.pack("<Q", old))
                 fh.truncate(app["size"])
-        # A file written as a new one: its backup name goes back onto the
-        # live name -- original content, file id and link count in one move.
+        # A file written as a new one -- relinked cache or whole video/sound
+        # file: its backup name goes back onto the live name -- original
+        # content, file id and link count in one move.
         # Each step is idempotent: once the backup name is gone, it is back.
-        for name, info in sorted(relinked.items()):
+        for name, info in sorted(dict(relinked, **(journal.get("files") or {})).items()):
             live, keep = self.base / name, self.backup / info["link"]
             with contextlib.suppress(OSError):
                 live.with_name(live.name + NEW_SUFFIX).unlink()
@@ -1811,7 +1812,7 @@ class Installation:
                 # failed can leave behind -- and the sweep, if it is held.
                 out += [(self.base / n, REPLACE), (self.base / (n + TMP_SUFFIX), OVERWRITE)]
         out += [(self.backup / n, REMOVE) for n in rebuilt]         # the full copies
-        for name, info in sorted(relinked.items()):
+        for name, info in sorted(dict(relinked, **(journal.get("files") or {})).items()):
             live, keep = self.base / name, self.backup / info["link"]
             # A second name that is still the live file only gets unlinked,
             # and unlinking another name works while the file is held.
@@ -2028,6 +2029,7 @@ class Installation:
             # stays applied and consistent until the file is free.
             _refuse_held(self._restore_targets(journal))
             self._restore(journal)
+            _forget_sounds()        # packs moved back: every cached offset is stale
             # What this module wrote is back; whether the archive as a whole is
             # back is a different question, and this is the only place that can
             # still answer it. A payload byte somebody else changed survives

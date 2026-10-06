@@ -363,12 +363,55 @@ def catalog_for(title_key):
     return CATALOG
 
 
-def categories_for(title_key):
+def categories_for(title_key, full=False):
     seen = []
-    for tweak in catalog_for(title_key):
+    for tweak in (full_catalog if full else catalog_for)(title_key):
         if tweak.category not in seen:
             seen.append(tweak.category)
     return tuple(seen)
+
+
+_TNO_KINDS = {"bool": BOOL, "int": INT, "float": FLOAT}
+_tno_full_cache = None
+
+
+def full_catalog(title_key):
+    """Every settable cvar of a title, for the loader page's complete list.
+
+    The New Colossus: catalog_for already is the whole mined registry. The New
+    Order: the hand-curated CATALOG first (measured, with notes), then every
+    other cvar of the engine's registry (docs/cvars_tno.json) that is not
+    read-only, grouped by prefix like The New Colossus. tno_route delivers them
+    all: a plain +arg, or +toggle for the CHEAT-flagged ones.
+    """
+    global _tno_full_cache
+    if title_key == "tnc":
+        return _tnc_catalog()
+    if _tno_full_cache is None:
+        have = {t.key.lower() for t in CATALOG}
+        rest = []
+        for e in _tno_registry().values():
+            name = e["name"]
+            if name.lower() in have or "ROM" in e["flags"]:
+                continue
+            prefix = name.split("_", 1)[0] + "_" if "_" in name else "?"
+            values = e.get("values") or ()
+            rest.append(Tweak(
+                key=name, label=name, category=_TNC_GROUPS.get(prefix, "Misc"),
+                kind=CHOICE if values else _TNO_KINDS.get(e.get("type"), TEXT),
+                default=e.get("value"), lo=e.get("min"), hi=e.get("max"),
+                choices=tuple((v, v) for v in values), note=e.get("description") or "",
+                confidence="medium"))
+        order = ["Cheats", "Quality of Life", "Movement", "Game & Cheats", "AI", "Effects", "Renderer",
+                 "Textures", "Audio", "Input", "Menu", "System", "Animation", "Decls",
+                 "Virtual Textures", "Network", "VR"]
+        rank = {n: i for i, n in enumerate(order)}
+        # curated first inside a shared group (Movement), then by name
+        full = [(t, 0) for t in CATALOG] + [(t, 1) for t in rest]
+        full.sort(key=lambda p: (rank.get(p[0].category, len(order)), p[0].category, p[1],
+                                 p[0].key.lower() if p[1] else 0))
+        _tno_full_cache = [t for t, _ in full]
+    return _tno_full_cache
 
 
 _tnc_exposed_cache = None

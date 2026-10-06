@@ -83,12 +83,8 @@ REFUSED = {
                        "archives the loader writes, and there is no Vorbis encoder here yet.",
     ("tno", "videos"): "The New Order's videos are loose Bink files the loader does not write for "
                        "that game; replacing videos works for Wolfenstein II.",
-    # ponytail: held back until revert restores whole files (tools/verify_studio_media.py, "after revert")
-    ("tnc", "sounds"): "Replacing sounds is held back in this release: resetting the mods does not yet "
-                       "restore the replaced sound packs. It comes in an update.",
-    ("tnc", "videos"): "Replacing videos is held back in this release: resetting the mods does not yet "
-                       "restore the replaced video files. It comes in an update.",
 }
+READ_ONLY = {"yb": "Wolfenstein: Youngblood is read only in the Studio: the loader cannot apply mods to it yet."}
 
 
 # -- checks ----------------------------------------------------------------------
@@ -360,6 +356,8 @@ def replace_info(st, game, kind, item, skin=None):
 
 def _info(st, game, kind, item, skin):
     st.root(game)
+    if game in READ_ONLY:
+        raise studio.Unsupported(READ_ONLY[game])
     if kind in ("sounds", "videos"):
         _listed(st, game, kind, item)
         if (game, kind) in REFUSED:
@@ -686,6 +684,8 @@ def _clashes(mods_dir, game, mod):
 
 def _check_target(mods_dir, game, name, folder, author):
     """BadRequest unless exactly one of a new mod's name and a Studio mod's folder is given and usable."""
+    if game in READ_ONLY:
+        raise studio.BadRequest(READ_ONLY[game])
     if bool(name) == bool(folder):
         raise studio.BadRequest("Name a new mod (name=) or pick one of your Studio mods (folder=), one of the two.")
     check_author(author)

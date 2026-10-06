@@ -672,9 +672,13 @@ def cmd_map_uninstall(args):
 
 
 def cmd_gui(args):
-    from . import gui
+    if getattr(args, "classic", False):
+        from . import gui
 
-    gui.main(getattr(args, "game", None))
+        return gui.main(getattr(args, "game", None))
+    from . import webui
+
+    return webui.main(getattr(args, "game", None))
 
 
 def cmd_maps(args):
@@ -729,7 +733,9 @@ def build_parser():
     sub.add_parser("info", help="show the installation and its patch state").set_defaults(fn=cmd_info)
     sub.add_parser("games", help="list the installed Wolfenstein games").set_defaults(fn=cmd_games)
     sub.add_parser("types", help="list asset types with their counts").set_defaults(fn=cmd_types)
-    sub.add_parser("gui", help="open the loader window").set_defaults(fn=cmd_gui)
+    s = sub.add_parser("gui", help="open the loader window")
+    s.add_argument("--classic", action="store_true", help="the old tkinter window instead of the app window")
+    s.set_defaults(fn=cmd_gui)
 
     s = sub.add_parser("maps", help="open the Studio on the maps (3D, fullscreen)")
     s.add_argument("map_id", nargs="?", help="e.g. game/dlc/c02/c2v1 (otherwise the map list)")
@@ -806,7 +812,7 @@ def build_parser():
     s.add_argument("--binds", action="store_true", help="pass the key bindings too")
     s.set_defaults(fn=cmd_play)
 
-    s = sub.add_parser("ingame-menu", help="add the mod page to the in-game DevGUI")
+    s = sub.add_parser("ingame-menu", help="add the mod page to the in-game DevGUI (The New Order; not yet seen in game)")
     s.add_argument("--preview", action="store_true", help="only show it, write nothing")
     s.add_argument("--remove", action="store_true", help="remove it again (reverts all mod patches)")
     s.set_defaults(fn=cmd_ingame_menu)

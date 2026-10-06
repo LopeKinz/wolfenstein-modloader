@@ -33,7 +33,7 @@ from array import array
 from bisect import bisect_left, bisect_right
 from pathlib import Path
 
-from . import image, oodle
+from . import image, oodle, tilechain
 
 BIM_MAGIC = b"BIM\x0e"
 BIM_HEADER = 0x32
@@ -42,6 +42,7 @@ TEXDB_MAGIC = bytes.fromhex("4fa5c2292ef3c761")
 TEXDB_TABLE = 0x20
 ID_MASK = (1 << 60) - 1  # the engine's `shl r14, 4` drops the top nibble
 CODEC_RAW, CODEC_OODLE, CODEC_TILED = 0, 1, 2
+CODEC_V16 = {3: CODEC_OODLE, 4: CODEC_TILED}   # Youngblood (BIM 16) renumbered them; same layout (r14_youngblood.md)
 
 # The engine's own format names (.text 0x784A70, see tools/probe_matpipe.py).
 FORMATS = {
@@ -130,9 +131,10 @@ class TexdbSet:
         """The stored bytes of `key`, or None if no .texdb has it.
 
         With `size` -- the mip's stored_size, which is all the engine reads --
-        a longer block whose surplus is zero fill comes back cut to `size`.
-        That is what tncpatch leaves when it writes a shorter replacement
-        into a block's place; retail blocks are exactly `size` long.
+        a longer block comes back cut to `size`. A block ends where the next
+        offset in the table begins, which overshoots when a neighbour is not
+        listed (pistole_61_pm, r11_pbrexport.md), and tncpatch leaves zero fill
+        behind a shorter replacement.
         """
         broken = None
         for path in self.paths:
@@ -156,7 +158,7 @@ class TexdbSet:
                     block = fh.read(end - start)
             except OSError as exc:
                 raise TncImageError("%s: %s" % (path.name, exc.strerror or exc))
-            if size is not None and len(block) > size and not block[size:].strip(b"\0"):
+            if size is not None and len(block) > size:
                 block = block[:size]
             return block
         if broken:
@@ -177,8 +179,8 @@ def parse_bimage(data):
     """Header and mip table of a TNC .bimage. Pixel data is left in place."""
     if data[:3] != b"BIM":
         raise TncImageError("not a BIM (magic %r)" % bytes(data[:4]))
-    if data[:4] != BIM_MAGIC:
-        raise TncImageError("BIM version %d is not read (only 14)" % data[3])
+    if data[:4] not in (BIM_MAGIC, b"BIM\x10"):
+        raise TncImageError("BIM version %d is not read (only 14 and 16)" % data[3])
     if len(data) < BIM_HEADER:
         raise TncImageError("BIM header cut off (%d bytes)" % len(data))
     faces = 6 if struct.unpack_from("<I", data, 0x04)[0] == 2 else 1
@@ -193,6 +195,8 @@ def parse_bimage(data):
     for i in range(count):
         level, face, w, h, raw, codec, stored, off = struct.unpack_from(
             "<8I", data, BIM_HEADER + BIM_MIP * i)
+        if data[3] == 16:
+            codec = CODEC_V16.get(codec, codec)
         if (level, face) != divmod(i, faces) or not w or not h:
             raise TncImageError("mip record %d is level %d/face %d, %dx%d" % (i, level, face, w, h))
         mips.append({"level": level, "face": face, "width": w, "height": h,
@@ -439,9 +443,17 @@ def decode(fmt, raw, width, height, step=1):
 
 # -- the preview ------------------------------------------------------------
 
-def _unpack(block, mip, root):
+TILED_MAX = 1024   # ponytail: pure-Python wavelet decode, ~1 s at 512 px, ~4 s at 1024; bigger tile chains are skipped
+
+
+def _unpack(block, mip, root, fmt=None):
     if mip["codec"] == CODEC_RAW:
         return block
+    if mip["codec"] == CODEC_TILED:
+        try:
+            return tilechain.decode_mip_record(mip, block, oodle.load(root), fmt.replace("_SRGB", ""))
+        except (oodle.OodleError, ValueError, struct.error) as exc:
+            raise TncImageError("mip %d: tile chain cannot be decoded: %s" % (mip["level"], exc))
     if mip["codec"] != CODEC_OODLE:
         raise TncImageError("mip %d: unknown codec %d" % (mip["level"], mip["codec"]))
     try:
@@ -456,7 +468,7 @@ def to_png(entry, data, texdbs, max_side=512):
     """(PNG bytes, one-line info) for an `image` entry's decompressed payload.
 
     Takes the smallest mip that still covers `max_side` and walks down from
-    there past mips it cannot use (tile chains, top levels the build did not
+    there past mips it cannot use (tile chains over TILED_MAX, top levels the build did not
     ship, blocks no .texdb has -- the engine does the same), saying so in the
     info line. The result is at most `max_side` on its longer side.
     """
@@ -474,7 +486,8 @@ def to_png(entry, data, texdbs, max_side=512):
     notes, missing = [], None
     for m in chain[start:]:
         if m["streamed"]:
-            if m["codec"] == CODEC_TILED:
+            if m["codec"] == CODEC_TILED and (fmt.replace("_SRGB", "") not in ("BC4", "BC5")
+                                              or max(m["width"], m["height"]) > TILED_MAX):
                 if "tile chain skipped" not in notes:
                     notes.append("tile chain skipped")
                 continue
@@ -492,7 +505,7 @@ def to_png(entry, data, texdbs, max_side=512):
             if len(block) != m["stored_size"]:
                 raise TncImageError("TexDB block %016x has %d bytes, mip %d expects %d"
                                     % (key, len(block), m["level"], m["stored_size"]))
-            source = "TexDB"
+            source = "TexDB, tile chain" if m["codec"] == CODEC_TILED else "TexDB"
         else:
             block = data[m["offset"]:m["offset"] + m["stored_size"]]
             if len(block) != m["stored_size"]:
@@ -501,7 +514,7 @@ def to_png(entry, data, texdbs, max_side=512):
             source = "embedded"
         side = max(m["width"], m["height"])
         step = max(1, -(-side // max_side))
-        w, h, rgba = decode(fmt, _unpack(block, m, root), m["width"], m["height"], step)
+        w, h, rgba = decode(fmt, _unpack(block, m, root, fmt), m["width"], m["height"], step)
         if bim["faces"] > 1:
             notes.append("cube map, face 1/%d" % bim["faces"])
         if step > 1:
