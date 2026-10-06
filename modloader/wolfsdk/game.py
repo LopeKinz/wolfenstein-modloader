@@ -69,6 +69,19 @@ TITLES = {
     ),
 }
 
+# Read-only in the Studio. Not in TITLES: the loader, its GUI and the CLI must not offer
+# it (no patcher, and the cvar catalogue of either other game would be wrong for it).
+YOUNGBLOOD = Title(
+    key="yb",
+    name="Wolfenstein: Youngblood",
+    exe="Youngblood_x64vk.exe",
+    app_id="1056960",
+    folders=("Wolfenstein Youngblood",),
+    engine="id Tech 6",
+    marker="gameresources_pc.resources",
+    mods=False,
+)
+
 # Kept so older code and saved configs that say EXE_NAME/APP_ID still mean TNO.
 EXE_NAME = TITLES["tno"].exe
 APP_ID = TITLES["tno"].app_id
@@ -285,7 +298,15 @@ def _remembered_paths():
     return out
 
 
-def _steam_candidates():
+def find_root(title):
+    """Install folder of `title` in a Steam library (exe and marker present), or None."""
+    for path in _steam_candidates([title]):
+        if (path / title.exe).is_file() and (path / "base" / title.marker).is_file():
+            return path
+    return None
+
+
+def _steam_candidates(titles=None):
     """Every Steam library folder that could hold one of the games."""
     root = _steam_root()
     if not root:
@@ -305,7 +326,7 @@ def _steam_candidates():
         common = lib / "steamapps" / "common"
         if not common.is_dir():
             continue
-        for title in TITLES.values():
+        for title in titles or TITLES.values():
             for name in title.folders:
                 out.append(common / name)
     return out

@@ -54,6 +54,21 @@ window.StudioModels = function (kit) {
   expRow.append(expFmt, expBtn);
   $('mskinnote').after(expHead, expRow, expNote);
 
+  // the animation player sits under the facts (built here as well): clips made for the model's skeleton
+  const anHead = el('h2', 'cap', 'Animation'), anQ = el('input'), anRow = el('div', 'row');
+  const anSel = el('select'), anPlay = el('button', null, 'Play'), anNote = el('p', 'dim small');
+  anQ.type = 'search';
+  anQ.id = 'manimq';
+  anQ.placeholder = 'Filter animations …';
+  anQ.setAttribute('aria-label', 'Filter animations');
+  anSel.id = 'manim';
+  anSel.setAttribute('aria-label', 'Animation');
+  anPlay.id = 'manimplay';
+  anPlay.type = 'button';
+  anNote.id = 'manimnote';
+  anRow.append(anSel, anPlay);
+  $('mfacts').after(anHead, anQ, anRow, anNote);
+
   // ---- three.js, created on the first model ------------------------------------------------
 
   function init() {
@@ -66,12 +81,16 @@ window.StudioModels = function (kit) {
     }
     R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     R.outputEncoding = THREE.sRGBEncoding;
+    R.toneMapping = THREE.ACESFilmicToneMapping;
     R.setClearColor(0x000000, 0);        // the pane's gradient shows through
     scene = new THREE.Scene();
     world = new THREE.Group();
     world.rotation.x = -Math.PI / 2;     // game (x, y, z) -> three (x, z, -y), as app.js
     scene.add(world);
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x3c3a36, 0.6));
+    const pm = new THREE.PMREMGenerator(R);
+    scene.environment = pm.fromScene(studioRoom(), 0.04).texture;   // reflections for the metal/gloss maps
+    pm.dispose();
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x3c3a36, 0.25));
     camera = new THREE.PerspectiveCamera(35, 1, 0.01, 1000);
     const head = new THREE.DirectionalLight(0xffffff, 0.65);   // a head light: the side you look at is lit
     head.position.set(0.4, 0.7, 1);
@@ -87,6 +106,21 @@ window.StudioModels = function (kit) {
     return true;
   }
 
+  // a grey room with a few bright panels: a neutral studio environment for PBR reflections
+  function studioRoom() {
+    const room = new THREE.Scene(), cube = new THREE.BoxGeometry(1, 1, 1);
+    const walls = new THREE.Mesh(cube, new THREE.MeshBasicMaterial({ color: 0x3a3c40, side: THREE.BackSide }));
+    walls.scale.set(20, 10, 20);
+    room.add(walls);
+    for (const [x, y, z, sx, sy, sz, k] of [[0, 4.9, 0, 8, 0.1, 8, 3], [-9.9, 1, 2, 0.1, 4, 6, 2], [9.9, 2, -3, 0.1, 3, 5, 1.5], [0, 1, 9.9, 6, 3, 0.1, 1]]) {
+      const panel = new THREE.Mesh(cube, new THREE.MeshBasicMaterial({ color: new THREE.Color().setScalar(k) }));
+      panel.position.set(x, y, z);
+      panel.scale.set(sx, sy, sz);
+      room.add(panel);
+    }
+    return room;
+  }
+
   function resize() {
     const w = box.clientWidth, h = box.clientHeight;
     if (!R || !w || !h) return;
@@ -98,6 +132,12 @@ window.StudioModels = function (kit) {
 
   function loop() {
     requestAnimationFrame(loop);
+    if (M && M.playing && !pane.hidden) {   // a playing clip redraws every frame; otherwise only on change
+      const now = performance.now();
+      M.mixer.update((now - M.clock) / 1000);
+      M.clock = now;
+      dirty = true;
+    }
     if (!dirty || pane.hidden) return;
     dirty = false;
     R.render(scene, camera);
@@ -160,8 +200,8 @@ window.StudioModels = function (kit) {
         if (v < lo[k]) lo[k] = v;
         if (v > hi[k]) hi[k] = v;
       }
-      const mat = new THREE.MeshPhongMaterial({ color: new THREE.Color(GREY).convertSRGBToLinear(), side: THREE.DoubleSide,
-        specular: 0x141414, shininess: 14, wireframe: wire });
+      const mat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(GREY).convertSRGBToLinear(), side: THREE.DoubleSide,
+        roughness: 0.75, metalness: 0, wireframe: wire });
       if (sf.alpha === 'mask') mat.alphaTest = 0.5;
       const mesh = new THREE.Mesh(g, mat);
       mesh.visible = sf.visible !== false;
@@ -174,6 +214,8 @@ window.StudioModels = function (kit) {
   }
 
   function dispose(m) {
+    if (m.mixer) m.mixer.stopAllAction();
+    m.playing = false;
     world.remove(m.root);
     for (const p of m.parts) { p.mesh.geometry.dispose(); p.mat.dispose(); }
     for (const t of m.textures) t.dispose();
@@ -194,9 +236,9 @@ window.StudioModels = function (kit) {
     }
   }
 
-  function texture(im) {
+  function texture(im, linear) {
     const t = new THREE.Texture(im);
-    t.encoding = THREE.sRGBEncoding;
+    t.encoding = linear ? THREE.LinearEncoding : THREE.sRGBEncoding;
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
     t.flipY = false;                     // game UVs are top-down, like the image rows
     t.anisotropy = Math.min(8, R.capabilities.getMaxAnisotropy());
@@ -211,9 +253,11 @@ window.StudioModels = function (kit) {
     dirty = true;
   }
 
-  async function loadTextures(m, my, signal) {
-    const urls = [...new Set(m.parts.map((p) => p.sf.albedo).filter(Boolean))];
-    m.tex = { total: urls.length, ok: 0, failed: 0 };
+  // maps load for the surfaces given (at open: the visible ones); a surface switched on later brings its own
+  async function loadTextures(m, my, signal, parts) {
+    const urls = [...new Set(parts.map((p) => p.sf.albedo).filter((u) => u && !m.texReq.has(u)))];
+    urls.forEach((u) => m.texReq.add(u));
+    m.tex.total += urls.length;
     await Promise.all(urls.map(async (u) => {
       let t = null, err = null;
       try {
@@ -234,6 +278,65 @@ window.StudioModels = function (kit) {
       m.tex[t ? 'ok' : 'failed']++;
       rows();
       showFacts();
+    }));
+  }
+
+  const WHITE = new THREE.DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1);
+  WHITE.needsUpdate = true;
+
+  // three r128 samples alphaMap on uv and aoMap on uv2; the game's hair shaders do the opposite
+  // (strand mask on in_TexCoord1, colour and AO on the first set), so the two chunks swap coordinates
+  function maskOnUv2(mat) {
+    mat.onBeforeCompile = (sh) => {
+      sh.fragmentShader = sh.fragmentShader
+        .replace('#include <alphamap_fragment>', THREE.ShaderChunk.alphamap_fragment.replace(/\bvUv\b/g, 'vUv2'))
+        .replace('#include <aomap_fragment>', THREE.ShaderChunk.aomap_fragment.replace(/\bvUv2\b/g, 'vUv'));
+    };
+    mat.customProgramCacheKey = () => 'mask-on-uv2';
+  }
+
+  // Material maps (studio.model_pbr): normal, roughness/metal, occlusion, a base colour with metal tint
+  // or alpha. A material without them, or one that fails, keeps the colour map alone.
+  async function loadPbr(m, my, signal, parts) {
+    const urls = [...new Set(parts.map((p) => p.sf.pbr).filter((u) => u && /^\/api\//.test(u) && !m.pbrReq.has(u)))];
+    urls.forEach((u) => m.pbrReq.add(u));
+    await Promise.all(urls.map(async (u) => {
+      const parts = m.parts.filter((p) => p.sf.pbr === u);
+      try {
+        const info = await (await fetchOk(u, { signal })).json();
+        const maps = {};
+        await Promise.all(Object.entries(info.maps || {}).map(async ([slot, url]) => {
+          if (!/^\/api\//.test(url)) return;
+          maps[slot] = texture(await imageOf(await (await fetchOk(url, { signal })).blob()), slot !== 'base');
+        }));
+        if (my !== gen) { Object.values(maps).forEach((t) => t.dispose()); return; }
+        m.textures.push(...Object.values(maps));
+        for (const p of parts) {
+          const mat = p.mat;
+          if (maps.base) { p.orig = maps.base; if (!p.skin) setMap(p, maps.base); }
+          if (maps.mr) { mat.roughnessMap = mat.metalnessMap = maps.mr; mat.roughness = mat.metalness = 1; }
+          else if (info.roughness != null) mat.roughness = info.roughness;
+          // glTF convention (green flipped server-side), UVs top-down like glTF: as GLTFLoader, y scale -1
+          if (maps.normal) { mat.normalMap = maps.normal; mat.normalScale.set(1, -1); }
+          if (maps.mask && p.sf.uv2 && /^\/api\//.test(p.sf.uv2)) {   // hair: the strand mask on the second uv set
+            const uv2 = new Float32Array(await (await fetchOk(p.sf.uv2, { signal })).arrayBuffer());
+            if (my !== gen) return;
+            p.mesh.geometry.setAttribute('uv2', new THREE.BufferAttribute(uv2, 2));
+            mat.alphaMap = maps.mask;
+            mat.aoMap = maps.occ || WHITE;   // an aoMap is what gives three's shader the second uv
+            maskOnUv2(mat);
+          } else if (maps.occ) { p.mesh.geometry.setAttribute('uv2', p.mesh.geometry.attributes.uv); mat.aoMap = maps.occ; }
+          if (info.emissive && mat.map) { mat.emissive.set(0xffffff); mat.emissiveMap = mat.map; }
+          if (info.alpha === 'mask' || (info.alpha === 'mask2' && mat.alphaMap)) mat.alphaTest = 0.5;
+          // r128: F0 = 0.16 * reflectivity^2, so glTF's specular factor (F0 / 0.04) is reflectivity 0.5 * sqrt(f)
+          if (info.specular != null) mat.reflectivity = 0.5 * Math.sqrt(info.specular);
+          if (info.clearcoat) { mat.clearcoat = info.clearcoat[0]; mat.clearcoatRoughness = info.clearcoat[1]; }
+          mat.needsUpdate = true;
+        }
+        dirty = true;
+      } catch (e) {
+        if (e.name !== 'AbortError') console.warn('material maps of', u, e.message);
+      }
     }));
   }
 
@@ -274,6 +377,7 @@ window.StudioModels = function (kit) {
     $('msurfs').textContent = '';
     $('mmsg').hidden = true;
     skinUi();
+    animUi();
     pane.dataset.loaded = '0';
     if (!init()) { fail('3D view not possible: this browser does not provide WebGL.'); return; }
     dirty = true;
@@ -297,13 +401,19 @@ window.StudioModels = function (kit) {
       fail(e.message);
       return;
     }
-    M = Object.assign({ game, id, info, textures: [], tex: { total: 0, ok: 0, failed: 0 }, skin: null, done: false }, build(info, surfs));
+    M = Object.assign({ game, id, info, textures: [], tex: { total: 0, ok: 0, failed: 0 }, texReq: new Set(), pbrReq: new Set(),
+      skin: null, done: false }, build(info, surfs));
     fit();
     rows();
     skinUi();
     showFacts();
-    wait(M.parts.some((p) => p.sf.albedo) ? 'Loading textures …' : '');
-    await loadTextures(M, my, signal);
+    animUi();
+    const shown = M.parts.filter((p) => p.mesh.visible);
+    wait(shown.some((p) => p.sf.albedo) ? 'Loading textures …' : '');
+    await loadTextures(M, my, signal, shown);
+    if (my !== gen) { stale++; return; }
+    wait('');                              // the colour maps are on: material maps follow without a veil
+    await loadPbr(M, my, signal, shown);
     if (my !== gen) { stale++; return; }
     wait('');
     M.done = true;
@@ -311,6 +421,139 @@ window.StudioModels = function (kit) {
     pane.dataset.loaded = '1';
     showFacts();
   }
+
+  // ---- animation: md6skl bones + skin weights + md6anim tracks (server: wolfsdk/md6anim.py) ----------------
+
+  function animUi() {
+    const ok = !!(M && (M.game === 'tnc' || M.game === 'yb') && M.info.format === 'md6mesh' && M.info.joints > 0);
+    for (const x of [anHead, anQ, anRow, anNote]) x.hidden = !ok;
+    anSel.textContent = '';
+    anSel.append(new Option('Base pose', ''));
+    anSel.disabled = anPlay.disabled = true;
+    anPlay.textContent = 'Play';
+    anNote.textContent = '';
+    if (!ok) return;
+    const m = M;
+    anNote.textContent = 'Looking for animations …';
+    getJson(api('models', 'anims.json', { id: m.id })).then((L) => {
+      if (m !== M) return;
+      m.anims = L.anims;
+      fillAnims();
+      anNote.textContent = L.anims.length ? plural(L.anims.length, 'animation', 'animations') + ' for ' + tailOf(L.skeleton)
+        : 'No animation names this skeleton (' + tailOf(L.skeleton) + ').';
+    }).catch((e) => { if (m === M) anNote.textContent = e.message; });
+  }
+
+  function fillAnims() {
+    const q = anQ.value.trim().toLowerCase(), cur = anSel.value, groups = new Map();
+    anSel.textContent = '';
+    anSel.append(new Option('Base pose', ''));
+    for (const a of (M && M.anims) || []) {
+      if (q && !a.id.toLowerCase().includes(q)) continue;
+      if (!groups.has(a.group)) {
+        const og = document.createElement('optgroup');
+        og.label = a.group;
+        groups.set(a.group, og);
+        anSel.append(og);
+      }
+      groups.get(a.group).append(new Option(a.name, a.id));
+    }
+    anSel.value = cur;
+    if (anSel.value !== cur) anSel.value = '';
+    anSel.disabled = !(M && M.anims && M.anims.length);
+  }
+
+  // first clip: the surfaces become SkinnedMeshes on the model's bones (bind pose = the md6skl's)
+  async function rig(m) {
+    if (m.rig) return m.rig;
+    const [S, buf] = await Promise.all([getJson(api('models', 'skeleton.json', { id: m.id })),
+      fetchOk(api('models', 'skin.bin', { id: m.id })).then((r) => r.arrayBuffer())]);
+    const bones = S.names.map((n, i) => {
+      const b = new THREE.Bone();
+      b.name = 'j' + i;                  // joint names can repeat; tracks address bones by index
+      b.position.fromArray(S.pos[i]);
+      b.quaternion.fromArray(S.rot[i]);
+      return b;
+    });
+    bones.forEach((b, i) => (S.parents[i] >= 0 ? bones[S.parents[i]] : m.root).add(b));
+    m.root.updateMatrixWorld(true);
+    const skeleton = new THREE.Skeleton(bones), dv = new DataView(buf);
+    let o = 8;
+    for (let i = 0; i < dv.getUint32(4, true) && i < m.parts.length; i++) {
+      const nv = dv.getUint32(o, true), p = m.parts[i];
+      const js = new Uint16Array(buf.slice(o + 4, o + 4 + 8 * nv)), ws = new Float32Array(buf.slice(o + 4 + 8 * nv, o + 4 + 24 * nv));
+      o += 4 + 24 * nv;
+      if (nv !== p.verts || !nv) continue;   // a surface the mesh.bin packs differently stays rigid
+      const g = p.mesh.geometry;
+      g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(js, 4));
+      g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(ws, 4));
+      p.mat.skinning = true;             // three r128 compiles the skinning chunks only with this flag
+      p.mat.needsUpdate = true;
+      const sm = new THREE.SkinnedMesh(g, p.mat);
+      sm.visible = p.mesh.visible;
+      sm.frustumCulled = false;          // the posed model leaves the bind pose's bounds
+      m.root.remove(p.mesh);
+      m.root.add(sm);
+      sm.bind(skeleton);
+      p.mesh = sm;
+    }
+    // back to the md6skl bind pose (Skeleton.pose() would give the root bones their world matrix, the view's
+    // Z-up turn included, so a figure would lie on its side)
+    const rest = () => bones.forEach((b, i) => { b.position.fromArray(S.pos[i]); b.quaternion.fromArray(S.rot[i]); });
+    m.rig = { skeleton, rest };
+    return m.rig;
+  }
+
+  async function playAnim(id) {
+    const m = M;
+    if (!m) return;
+    if (m.action) {
+      m.action.stop();
+      m.mixer.uncacheClip(m.action.getClip());
+      m.action = null;
+    }
+    m.playing = false;
+    anPlay.textContent = 'Play';
+    anPlay.disabled = true;
+    if (!id) {
+      if (m.rig) m.rig.rest();
+      anNote.textContent = '';
+      dirty = true;
+      return;
+    }
+    anNote.textContent = 'Loading animation …';
+    try {
+      await rig(m);
+      const A = await getJson(api('models', 'anim.json', { id: m.id, anim: id }));
+      if (m !== M || anSel.value !== id) return;
+      const times = Float32Array.from({ length: A.frames }, (_, f) => f / A.fps), tracks = [];
+      for (const t of A.tracks) {
+        if (t.rot) tracks.push(new THREE.QuaternionKeyframeTrack('j' + t.joint + '.quaternion', t.rot.length === 4 ? [0] : times, t.rot));
+        if (t.pos) tracks.push(new THREE.VectorKeyframeTrack('j' + t.joint + '.position', t.pos.length === 3 ? [0] : times, t.pos));
+      }
+      m.rig.rest();                      // joints the clip leaves alone keep the bind pose
+      m.mixer = m.mixer || new THREE.AnimationMixer(m.root);
+      m.action = m.mixer.clipAction(new THREE.AnimationClip(A.name, Math.max(A.frames - 1, 1) / A.fps, tracks));
+      m.action.play();
+      m.playing = true;
+      m.clock = performance.now();
+      anPlay.disabled = false;
+      anPlay.textContent = 'Pause';
+      anNote.textContent = A.name + ' · ' + plural(A.frames, 'frame', 'frames') + ' · ' + A.fps + ' fps';
+      dirty = true;
+    } catch (e) {
+      if (m === M) anNote.textContent = e.message;
+    }
+  }
+  anQ.addEventListener('input', fillAnims);
+  anSel.addEventListener('change', () => playAnim(anSel.value));
+  anPlay.addEventListener('click', () => {
+    if (!M || !M.action) return;
+    M.playing = !M.playing;
+    M.clock = performance.now();
+    anPlay.textContent = M.playing ? 'Pause' : 'Play';
+    dirty = true;
+  });
 
   // ---- camera ---------------------------------------------------------------------------------
 
@@ -400,8 +643,12 @@ window.StudioModels = function (kit) {
   }
 
   function show(i, on) {
-    M.parts[i].mesh.visible = on;
+    const p = M.parts[i], m = M, my = gen;
+    p.mesh.visible = on;
     dirty = true;
+    if (on && ((p.sf.albedo && !m.texReq.has(p.sf.albedo)) || (p.sf.pbr && !m.pbrReq.has(p.sf.pbr)))) {
+      loadTextures(m, my, undefined, [p]).then(() => my === gen && loadPbr(m, my, undefined, [p]));
+    }
   }
   $('msurfs').addEventListener('change', (e) => {
     if (!M || !e.target.dataset.i) return;
@@ -556,9 +803,13 @@ window.StudioModels = function (kit) {
       parts: p.map((x) => ({ name: x.sf.name, material: x.sf.material, tris: x.tris, verts: x.verts, visible: x.mesh.visible,
         tex: x.tex, map: x.mat.map ? [x.mat.map.image.naturalWidth, x.mat.map.image.naturalHeight] : null, skin: !!x.skin,
         first: Array.from(x.mesh.geometry.index.array.slice(0, 3)), computed: x.computed, wire: x.mat.wireframe,
+        pbr: ['normalMap', 'roughnessMap', 'aoMap', 'emissiveMap'].filter((k) => x.mat[k]), alphaTest: x.mat.alphaTest,
         start: x.sf.visible !== false })),
       skin: M && M.skin ? { name: M.skin.name, w: M.skin.w, h: M.skin.h, material: M.skin.material } : null,
       export: lastExport, exportNote: expNote.textContent, exportOk: !expBtn.disabled,
+      anims: M && M.anims ? M.anims.length : null, animNote: anNote.textContent,
+      anim: M && M.action ? { clip: M.action.getClip().name, playing: !!M.playing, time: M.action.time,
+        skinned: p.filter((x) => x.mesh.isSkinnedMesh).length } : null,
       cam: R ? camera.position.toArray() : null, dist: R ? camera.position.distanceTo(controls.target) : null,
     };
   }

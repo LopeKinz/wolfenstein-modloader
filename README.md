@@ -14,20 +14,23 @@ Community documentation and reverse-engineering research for modding:
 
 ## Download
 
-**WolfSDK 0.2.0** is the first app release: a **Loader** for players and a
-**Studio** for modders.
+**WolfSDK 0.3.0**: a **Loader** for players and a **Studio** for modders. New
+in 0.3.0: a modern loader window, an update notifier, the complete cvar lists,
+animations in the Studio's model viewer, sound and video replacement for *The
+New Colossus*, and a read-only preview of *Wolfenstein: Youngblood* in the
+Studio.
 
 | Download | For |
 |---|---|
-| [WolfSDK-Loader-0.2.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Loader-0.2.0.zip) | Players: apply and undo mods, cheats and tweaks |
-| [WolfSDK-Studio-0.2.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Studio-0.2.0.zip) | Modders: browse and replace game files; contains the Loader too |
+| [WolfSDK-Loader-0.3.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.3.0/WolfSDK-Loader-0.3.0.zip) | Players: apply and undo mods, cheats and tweaks |
+| [WolfSDK-Studio-0.3.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.3.0/WolfSDK-Studio-0.3.0.zip) | Modders: browse and replace game files; contains the Loader too |
 
 Install: unzip and run `WolfSDK.cmd`. Python is bundled, nothing else to install.
 
 Requirements: Windows and the Steam version of *Wolfenstein: The New Order* or
 *Wolfenstein II: The New Colossus*. Custom maps need the Freedom Chronicles DLC.
 
-Release notes: [wolfsdk-0.2.0](https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0).
+Release notes: [wolfsdk-0.3.0](https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.3.0).
 Source of both apps: [`modloader/`](modloader/) (MIT License).
 
 ## SDK

@@ -45,7 +45,7 @@
         <span class="de">Wir nehmen die Wolfenstein-Spiele auseinander, um zu verstehen, wie ihre Dateien funktionieren, und schreiben alles auf, was wir finden – damit jeder sie <span class="t" data-t="modding">modden</span> kann.</span>
       </p>
       <div class="actions">
-        <a class="btn solid" href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0"><span class="en">Download 0.2.0</span><span class="de">0.2.0 herunterladen</span></a>
+        <a class="btn solid" href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.3.0"><span class="en">Download 0.3.0</span><span class="de">0.3.0 herunterladen</span></a>
         <a class="btn" href="#roadmap"><span class="en">See the research roadmap</span><span class="de">Forschungs-Roadmap ansehen</span></a>
         <a class="btn" href="wiki/index.html"><span class="en">Read the wiki, explained</span><span class="de">Das Wiki lesen, erklärt</span></a>
       </div>
@@ -89,15 +89,15 @@
   <section class="file" id="studio" aria-labelledby="h-studio">
     <div class="wrap">
       <div class="rail">
-        <h2 id="h-studio">WolfSDK 0.2.0</h2>
-        <p><span class="en">Out now: the Loader for players and the Studio for modders.</span><span class="de">Jetzt erhältlich: der Loader für Spieler und das Studio für Modder.</span></p>
+        <h2 id="h-studio">WolfSDK 0.3.0</h2>
+        <p><span class="en">Out now: version 0.3.0 of the Loader for players and the Studio for modders, with a new loader window.</span><span class="de">Jetzt erhältlich: Version 0.3.0 des Loaders für Spieler und des Studios für Modder, mit neuem Loader-Fenster.</span></p>
       </div>
       <div class="body">
         <p class="en">Two free apps for Windows that turn the research on this page into buttons. Unzip, run <code>WolfSDK.cmd</code>, done: Python is bundled. You need the Steam version of The New Order or The New Colossus. The Studio download contains the Loader too.</p>
         <p class="de">Zwei kostenlose Apps für Windows, die aus der Forschung auf dieser Seite Knöpfe machen. Entpacken, <code>WolfSDK.cmd</code> starten, fertig: Python ist dabei. Du brauchst die Steam-Version von The New Order oder The New Colossus. Der Studio-Download enthält auch den Loader.</p>
         <div style="display:flex;flex-wrap:wrap;gap:.9rem;margin:1.4rem 0 2rem">
-          <a class="btn solid" href="https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Loader-0.2.0.zip"><span class="en">Loader 0.2.0 for players</span><span class="de">Loader 0.2.0 für Spieler</span></a>
-          <a class="btn" href="https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.2.0/WolfSDK-Studio-0.2.0.zip"><span class="en">Studio 0.2.0 for modders</span><span class="de">Studio 0.2.0 für Modder</span></a>
+          <a class="btn solid" href="https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.3.0/WolfSDK-Loader-0.3.0.zip"><span class="en">Loader 0.3.0 for players</span><span class="de">Loader 0.3.0 für Spieler</span></a>
+          <a class="btn" href="https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.3.0/WolfSDK-Studio-0.3.0.zip"><span class="en">Studio 0.3.0 for modders</span><span class="de">Studio 0.3.0 für Modder</span></a>
         </div>
         <article class="dossier">
           <h3>Loader</h3>
@@ -106,6 +106,12 @@
           <ul>
             <li class="en"><b>Apply and undo mods.</b> Every change is backed up; one click resets the game files.</li>
             <li class="de"><b>Mods anwenden und rückgängig machen.</b> Jede Änderung wird gesichert; ein Klick setzt die Spieldateien zurück.</li>
+            <li class="en"><b>New in 0.3.0: a modern window.</b> Tabs, a play bar with the install state, changes saved as you make them. It asks before starting when your mods are not in the game yet.</li>
+            <li class="de"><b>Neu in 0.3.0: ein modernes Fenster.</b> Reiter, eine Spielleiste mit dem Zustand der Installation, Änderungen werden sofort gespeichert. Vor dem Start fragt es nach, wenn deine Mods noch nicht im Spiel sind.</li>
+            <li class="en"><b>New in 0.3.0: update notifier.</b> Shows new WolfSDK releases from GitHub; asks GitHub once per start and nothing else, can be turned off.</li>
+            <li class="de"><b>Neu in 0.3.0: Update-Hinweis.</b> Zeigt neue WolfSDK-Versionen von GitHub an; fragt GitHub einmal pro Start und sonst nichts, abschaltbar.</li>
+            <li class="en"><b>New in 0.3.0: the complete cvar lists.</b> All 3,186 cvars of The New Order and all 3,116 of The New Colossus, searchable.</li>
+            <li class="de"><b>Neu in 0.3.0: die vollständigen Cvar-Listen.</b> Alle 3.186 Cvars von The New Order und alle 3.116 von The New Colossus, durchsuchbar.</li>
             <li class="en"><b>Cheats and quality-of-life tweaks,</b> with presets: Ultra+, Clean Image, Photo Mode. The presets are not yet confirmed in game.</li>
             <li class="de"><b>Cheats und Komfort-Tweaks,</b> mit Voreinstellungen: Ultra+, Clean Image, Photo Mode. Die Voreinstellungen sind im Spiel noch nicht bestätigt.</li>
             <li class="en"><b>Sandbox Tools mod.</b> God mode and infinite ammo, confirmed in game.</li>
@@ -127,19 +133,23 @@
           <ul>
             <li class="en"><b>Browse both games.</b> Maps, videos, audio, textures and texts.</li>
             <li class="de"><b>Beide Spiele durchsuchen.</b> Karten, Videos, Audio, Texturen und Texte.</li>
-            <li class="en"><b>3D viewer.</b> 17,315 models with textures; export to GLB, glTF or OBJ.</li>
-            <li class="de"><b>3D-Ansicht.</b> 17.315 Modelle mit Texturen; Export als GLB, glTF oder OBJ.</li>
+            <li class="en"><b>3D viewer.</b> 17,315 models with textures and, new in 0.3.0, their animations; export to GLB, glTF or OBJ.</li>
+            <li class="de"><b>3D-Ansicht.</b> 17.315 Modelle mit Texturen und, neu in 0.3.0, ihren Animationen; Export als GLB, glTF oder OBJ.</li>
             <li class="en"><b>Replace textures, texts and <span class="t" data-t="decl">Decls</span>.</b> Colour and specular textures (<span class="t" data-t="bc">BC1</span>); normal maps (BC5) are new and not yet tried in game.</li>
             <li class="de"><b>Texturen, Texte und <span class="t" data-t="decl">Decls</span> ersetzen.</b> Farb- und Specular-Texturen (<span class="t" data-t="bc">BC1</span>); Normal-Maps (BC5) sind neu und im Spiel noch nicht ausprobiert.</li>
+            <li class="en"><b>New in 0.3.0: replace sounds and videos</b> in The New Colossus; Revert restores the originals. Not yet tried in game.</li>
+            <li class="de"><b>Neu in 0.3.0: Töne und Videos ersetzen</b> in The New Colossus; Zurücksetzen stellt die Originale wieder her. Im Spiel noch nicht ausprobiert.</li>
+            <li class="en"><b>New in 0.3.0: a Wolfenstein: Youngblood preview.</b> Texts, scripts, videos, textures and models with animations, read only.</li>
+            <li class="de"><b>Neu in 0.3.0: eine Vorschau auf Wolfenstein: Youngblood.</b> Texte, Skripte, Videos, Texturen und Modelle mit Animationen, nur lesen.</li>
             <li class="en"><b>Cutscene sound in sync with the video.</b></li>
             <li class="de"><b>Zwischensequenz-Ton synchron zum Video.</b></li>
             <li class="en"><b><span class="t" data-t="kiscule">Kiscule</span> script and mission editor.</b> 3,010 scripts as node graphs, all 205 node types can be inserted, mission objectives can be added or removed, and edits add up over several saves. Not yet tried in game.</li>
             <li class="de"><b><span class="t" data-t="kiscule">Kiscule</span>-Skript- und Missionseditor.</b> 3.010 Skripte als Knotengraphen, alle 205 Knotentypen lassen sich einfügen, Missionsziele lassen sich hinzufügen oder entfernen, und Änderungen summieren sich über mehrere Speichervorgänge. Im Spiel noch nicht ausprobiert.</li>
           </ul>
-          <p class="note en">Held back: replacing sounds and videos, coming in an update. Planned: a map editor, map import from Blender/glTF, animations, The New Order models in the Studio, brand-new assets.</p>
-          <p class="note de">Zurückgehalten: Töne und Videos ersetzen, kommt mit einem Update. Geplant: ein Karteneditor, Kartenimport aus Blender/glTF, Animationen, Modelle von The New Order im Studio, ganz neue Assets.</p>
+          <p class="note en">Planned: a map editor, map import from Blender/glTF, The New Order models in the Studio, Youngblood maps, brand-new assets.</p>
+          <p class="note de">Geplant: ein Karteneditor, Kartenimport aus Blender/glTF, Modelle von The New Order im Studio, Karten von Youngblood, ganz neue Assets.</p>
         </article>
-        <p style="margin-top:1.6rem"><span class="en">Release notes:</span><span class="de">Versionshinweise:</span> <a href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.2.0">wolfsdk-0.2.0</a> · <span class="en">Source code (MIT license):</span><span class="de">Quellcode (MIT-Lizenz):</span> <a href="https://github.com/LopeKinz/wolfenstein-modloader/tree/main/modloader">modloader/</a></p>
+        <p style="margin-top:1.6rem"><span class="en">Release notes:</span><span class="de">Versionshinweise:</span> <a href="https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.3.0">wolfsdk-0.3.0</a> · <span class="en">Source code (MIT license):</span><span class="de">Quellcode (MIT-Lizenz):</span> <a href="https://github.com/LopeKinz/wolfenstein-modloader/tree/main/modloader">modloader/</a></p>
       </div>
     </div>
   </section>
@@ -311,13 +321,13 @@ const ROADMAP = [
     ["New objects on a kit-built map were too dark and new stairs could not be walked. Fixes for both are built.", "Neue Objekte auf einer Baukasten-Karte waren zu dunkel, neue Treppen nicht begehbar. Für beides gibt es gebaute Fixes."],
     ["Lighting borrows a lightmap pixel from a similar object; stairs get an invisible ramp (max 28° in simulation). Verified offline only.", "Das Licht leiht sich einen Lightmap-Pixel von einem ähnlichen Objekt; Treppen bekommen eine unsichtbare Rampe (max. 28° in der Simulation). Nur offline geprüft."]],
   ["wip", "TNC", "Research-Report-R2-Wwisereplace", ["Replacing sounds", "Töne ersetzen"],
-    ["Part 2's sound packs are ordinary archives, so sounds can be swapped and new sound events added.", "Die Soundpakete von Teil 2 sind gewöhnliche Archive, Töne lassen sich also tauschen und neue Sound-Ereignisse anlegen."],
+    ["Part 2's sound packs are ordinary archives, so sounds can be swapped and new sound events added. Since 0.3.0 the Studio swaps them for you.", "Die Soundpakete von Teil 2 sind gewöhnliche Archive, Töne lassen sich also tauschen und neue Sound-Ereignisse anlegen. Seit 0.3.0 tauscht das Studio sie für dich."],
     ["A 16-bit PCM replacement must update both stored size fields (0 mismatches across 131,236 cases); a new event chain was added to a copy of a bank. Not played in the game yet.", "Ein 16-Bit-PCM-Ersatz muss beide gespeicherten Größenfelder anpassen (0 Abweichungen in 131.236 Fällen); eine neue Ereigniskette wurde in die Kopie einer Bank eingefügt. Im Spiel noch nicht abgespielt."]],
   ["wip", "TNC", "Research-Report-R4-Model-Import", ["Importing your own 3D models", "Eigene 3D-Modelle importieren"],
     ["An importer for common 3D formats (OBJ, GLB) writes the game's model files.", "Ein Importer für gängige 3D-Formate (OBJ, GLB) schreibt die Modelldateien des Spiels."],
     ["Byte-identical {roundtrip|round trips}; all 450 of 450 character {mesh|mesh} files rebuilt and the archive hash checks pass. Nothing run in the game yet.", "Bytegenaue {roundtrip|Round-Trips}; alle 450 von 450 Figuren-{mesh|Mesh}-Dateien neu gebaut, die Archiv-Hash-Prüfungen bestehen. Im Spiel noch nicht ausgeführt."]],
   ["wip", "TNO TNC", "Research-Report-R2-Videoreplace", ["Replacing videos", "Videos ersetzen"],
-    ["All 209 videos in both games are loose files without an integrity check, so they can be swapped.", "Alle 209 Videos beider Spiele sind lose Dateien ohne Integritätsprüfung, sie lassen sich also tauschen."],
+    ["All 209 videos in both games are loose files without an integrity check, so they can be swapped. Since 0.3.0 the Studio swaps those of Part 2 for you.", "Alle 209 Videos beider Spiele sind lose Dateien ohne Integritätsprüfung, sie lassen sich also tauschen. Seit 0.3.0 tauscht das Studio die von Teil 2 für dich."],
     ["The game's own decoder played a swapped-in video; playback of a replacement inside the running game is untested.", "Der eigene Decoder des Spiels spielte ein getauschtes Video ab; die Wiedergabe eines Ersatzes im laufenden Spiel ist ungetestet."]],
   ["wip", "TNC", "Research-Report-R5-Kiscule-Command", ["Map scripts that run any command", "Karten-Skripte, die jeden Befehl ausführen"],
     ["A custom map's own script could run locked commands, without any console at all.", "Das eigene Skript einer Karte könnte gesperrte Befehle ausführen, ganz ohne Konsole."],
@@ -338,12 +348,12 @@ const ROADMAP = [
   ["open", "TNO", "Research-Report-R3-Tnoskinned", ["New 3D models in Part 1", "Neue 3D-Modelle in Teil 1"],
     ["Part 1's character models can now be read, but new shapes still cannot be put into the game.", "Die Figurenmodelle von Teil 1 lassen sich jetzt lesen, neue Formen aber noch nicht ins Spiel bringen."],
     ["The reader decodes 725 of 755 character {mesh|mesh} files byte-exact, confirmed by a second decoder; offline only, no writer yet.", "Der Leser dekodiert 725 von 755 Figuren-{mesh|Mesh}-Dateien bytegenau, bestätigt durch einen zweiten Decoder; nur offline, noch ohne Schreiber."]],
-  ["open", "TNC", "Research-Report-R3-Tileinner", ["Large detail textures", "Große Detail-Texturen"],
-    ["Big normal and roughness maps use a tiled format whose inside is not understood. Replacements can avoid it by using the simpler format.", "Große Normal- und Rauheits-Maps nutzen ein gekacheltes Format, dessen Inneres nicht verstanden ist. Ersatz-Texturen können es umgehen, indem sie das einfachere Format nutzen."],
-    ["The codec-2 tile container round-trips byte-exact, but the pixel layout inside a tile is still unsolved after 9 rejected guesses. A {bc|BC4/BC5} encoder is still missing.", "Der Codec-2-Kachelcontainer ist bytegenau, das Pixel-Layout in einer Kachel ist nach 9 verworfenen Annahmen weiter ungelöst. Ein {bc|BC4/BC5}-Encoder fehlt noch."]],
-  ["open", "TNO TNC", "Research-Report-R3-Animdecode", ["Character animations", "Figuren-Animationen"],
-    ["Posing a weapon works, but soldier animations cannot be read yet.", "Eine Waffe zu posieren klappt, Soldaten-Animationen lassen sich aber noch nicht lesen."],
-    ["Rotation compression is solved (86 of 86 samples), but there is no full .md6anim decode and the soldier bind pose still fails for many joints.", "Die Rotations-Kompression ist gelöst (86 von 86 Proben), aber eine vollständige .md6anim-Dekodierung fehlt, und die Grundpose der Soldaten scheitert noch an vielen Gelenken."]],
+  ["wip", "TNC", "Research-Report-R3-Tileinner", ["Large detail textures", "Große Detail-Texturen"],
+    ["Big normal and roughness maps use a tiled format. Its inside is now understood and the Studio shows these textures (0.3.0); writing it is not possible yet, so replacements use the simpler format.", "Große Normal- und Rauheits-Maps nutzen ein gekacheltes Format. Sein Inneres ist jetzt verstanden, und das Studio zeigt diese Texturen (0.3.0); schreiben lässt es sich noch nicht, Ersatz-Texturen nutzen also das einfachere Format."],
+    ["The codec-2 tiles turned out to be wavelet pages; the Studio decodes them straight to pixels. An encoder for writing them is still missing.", "Die Codec-2-Kacheln sind Wavelet-Seiten; das Studio dekodiert sie direkt zu Pixeln. Ein Encoder, der sie schreibt, fehlt noch."]],
+  ["done", "TNC", "Research-Report-R3-Animdecode", ["Character animations", "Figuren-Animationen"],
+    ["Character and weapon animations can be read: the Studio plays them on the models (new in 0.3.0).", "Figuren- und Waffen-Animationen lassen sich lesen: das Studio spielt sie auf den Modellen ab (neu in 0.3.0)."],
+    ["The .md6anim decode is complete and matches the research decoder on every sampled clip; the bind pose comes from the .md6skl skeleton. Writing new animations into the game is not done yet.", "Die .md6anim-Dekodierung ist vollständig und stimmt bei jedem geprüften Clip mit dem Forschungs-Decoder überein; die Grundpose kommt aus dem .md6skl-Skelett. Neue Animationen ins Spiel schreiben geht noch nicht."]],
   ["open", "TNC", "Research-Report-R2-Ainav", ["Enemy paths on new maps", "Gegnerwege auf neuen Karten"],
     ["Enemies need a walkable-area map to move. No tool can create one, so custom maps must reuse an existing one.", "Gegner brauchen eine Karte begehbarer Flächen. Kein Werkzeug kann eine erzeugen, eigene Karten müssen also eine vorhandene wiederverwenden."],
     ["All 55 {navmesh|navmesh} files are decoded and scripts can open or close named regions, but creating new navigation data is not possible yet; enemy behaviour on kit maps is untested.", "Alle 55 {navmesh|Navmesh}-Dateien sind dekodiert, und Skripte können benannte Bereiche öffnen oder schließen, neue Navigationsdaten zu erzeugen geht aber noch nicht; das Gegnerverhalten auf Baukasten-Karten ist ungetestet."]],

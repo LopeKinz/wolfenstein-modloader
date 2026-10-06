@@ -32,7 +32,7 @@
   const KIND = { video: 'videos', audio: 'sounds', texturen: 'textures', texte: 'texts', modelle: 'models', scripts: 'scripts' };
   const NOUN = { videos: ['Video', 'Videos'], sounds: ['Sound', 'Sounds'], textures: ['Texture', 'Textures'], texts: ['Text', 'Texts'],
     models: ['Model', 'Models'], scripts: ['Script', 'Scripts'] };
-  const GAMES = { tnc: 'Wolfenstein II: The New Colossus', tno: 'Wolfenstein: The New Order' };
+  const GAMES = { tnc: 'Wolfenstein II: The New Colossus', tno: 'Wolfenstein: The New Order', yb: 'Wolfenstein: Youngblood' };
   const WAVE_FROM_EDGE = [0, 2, 1, 4, 5, 3];
   const LANGS = { 'english(us)': 'English (US)', english: 'English', german: 'German', 'french(france)': 'French',
     french: 'French', italian: 'Italian', 'portuguese(brazil)': 'Portuguese (Brazil)',

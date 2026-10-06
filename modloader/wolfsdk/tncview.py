@@ -19,7 +19,7 @@ import struct
 from pathlib import Path
 
 from . import tnccrypt, tncimage
-from .idcl import Archive, COMP_KRAKEN, COMP_KRAKEN_BLOCKS, COMP_STORED, IdclError
+from .idcl import Archive, COMP_KRAKEN, COMP_KRAKEN_BLOCKS, COMP_OODLE, COMP_OODLE_BLOCKS, COMP_STORED, IdclError
 from .oodle import OodleError
 
 # Constant in all 25 mode-4 payloads of the retail game (tools/extract_tnc.py
@@ -58,12 +58,12 @@ def payload(archive, entry, oo):
     raw = archive.read_raw(entry)
     if entry.compression == COMP_STORED:
         return raw
-    if entry.compression == COMP_KRAKEN_BLOCKS:
+    if entry.compression in (COMP_KRAKEN_BLOCKS, COMP_OODLE_BLOCKS):
         if raw[:len(BLOCK_PREFIX)] != BLOCK_PREFIX:
-            raise IdclError("%s: mode 4 without the known header (%s)"
-                            % (entry.name, raw[:12].hex()))
+            raise IdclError("%s: mode %d without the known header (%s)"
+                            % (entry.name, entry.compression, raw[:12].hex()))
         raw = raw[len(BLOCK_PREFIX):]
-    elif entry.compression != COMP_KRAKEN:
+    elif entry.compression not in (COMP_KRAKEN, COMP_OODLE):
         raise IdclError("%s: unknown compression mode %d" % (entry.name, entry.compression))
     try:
         return oo.decompress(raw, entry.usize, fuzz_safe=True)

@@ -60,9 +60,9 @@
   const mb = (n) => (n / 1048576).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const srgb = (hex) => new THREE.Color(hex).convertSRGBToLinear();
-  let GAME = document.body.dataset.game === 'tno' ? 'tno' : 'tnc';
-  const API = () => (GAME === 'tno' ? '/api/tno/' : '/api/');   // the unprefixed URLs are Wolfenstein II's
-  const mapKey = () => (GAME === 'tno' ? 'map.tno' : 'map');
+  let GAME = ['tno', 'yb'].includes(document.body.dataset.game) ? document.body.dataset.game : 'tnc';
+  const API = () => (GAME === 'tnc' ? '/api/' : '/api/' + GAME + '/');   // the unprefixed URLs are Wolfenstein II's
+  const mapKey = () => (GAME === 'tnc' ? 'map' : 'map.' + GAME);
   const shown = () => { const s = document.body.dataset.section; return !s || s === 'karten'; };
   const mapUrl = (id, file) => API() + 'map/' + id.split('/').map(encodeURIComponent).join('/') + '/' + file;
   const csv = (k) => (Q.has(k) ? new Set(Q.get(k).split(',').filter(Boolean)) : null);

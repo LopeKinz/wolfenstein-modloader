@@ -2,7 +2,7 @@
 
 Two titles share this window and they are not alike. The New Order brings 31
 hand-curated tweaks with measured retail behaviour; The New Colossus brings
-2231 mined cvar names and no measurements. So the tweak page is not a fixed
+3116 mined cvar names and no measurements. So the tweak page is not a fixed
 form any more -- it is a filtered view over whichever catalogue the selected
 title provides, and it is rebuilt when the title changes.
 
@@ -28,13 +28,18 @@ ROOT = Path(__file__).resolve().parent.parent
 MODS_DIR = ROOT / "mods"
 
 PAD = 10
+GUTTER = 20            # left/right edge of header, tabs, pages and play bar
+PAGE = (GUTTER, 16)    # page padding
 # How many tweak rows to build at once. The full New Colossus catalogue is
-# 2231 entries; building them all makes the window take seconds to appear,
+# 3116 entries; building them all makes the window take seconds to appear,
 # and nobody scrolls through two thousand rows anyway -- they search.
 ROW_LIMIT = 120
 
 
 PLACEHOLDER = "Search cvar or text…"
+# The mod list's "on" column. Off is a glyph too: an empty cell showed no
+# switch at all. Anything but "" and OFF counts as on (verify_gui ticks with "x").
+ON, OFF = "●", "○"
 
 
 def _placeholder(entry, var, text):
@@ -52,6 +57,14 @@ def _placeholder(entry, var, text):
     entry.bind("<FocusIn>", hide)
     entry.bind("<FocusOut>", lambda e: show())
     show()
+
+
+def _autowrap(label, pady=0):
+    """Pack a label across its parent and re-wrap it to its width: ttk has no
+    wrap-to-fit, and a fixed wraplength is wrong in every other window size."""
+    label.pack(anchor="w", fill="x", pady=pady)
+    label.bind("<Configure>", lambda e: label.configure(wraplength=max(120, e.width)))
+    return label
 
 
 class ScrollFrame(ttk.Frame):
@@ -83,7 +96,7 @@ class ScrollFrame(ttk.Frame):
 
 class App(ttk.Frame):
     def __init__(self, master, game_path=None, fonts=None):
-        super().__init__(master, padding=(PAD, PAD, PAD, PAD))
+        super().__init__(master)   # no padding: header, tabs and play bar run edge to edge
         self.pack(fill="both", expand=True)
         self.fonts = fonts or {}
         self.config_data = load_config()
@@ -100,13 +113,13 @@ class App(ttk.Frame):
         # the button bar afterwards and it is handed zero height -- present in
         # the widget tree, invisible on screen.
         self._build_footer()
-        workspace = ttk.Frame(self)
-        workspace.pack(fill="both", expand=True, pady=(PAD, 0))
-        self.sidebar = ttk.Frame(workspace, width=190)
-        self.sidebar.pack(side="left", fill="y", padx=(0, PAD))
-        self.sidebar.pack_propagate(False)
-        self.notebook = ttk.Notebook(workspace, style="Content.TNotebook")
-        self.notebook.pack(side="right", fill="both", expand=True)
+        # Sections as tabs across the full width, Vortex style; the notebook
+        # below keeps its own tab strip hidden and only manages the pages.
+        self.tabbar = ttk.Frame(self, padding=(GUTTER - 14, 0, GUTTER, 0))
+        self.tabbar.pack(fill="x")
+        ttk.Frame(self, style="Line.TFrame", height=1).pack(fill="x")
+        self.notebook = ttk.Notebook(self, style="Content.TNotebook")
+        self.notebook.pack(fill="both", expand=True)
         self._build_dashboard_tab()
         self._build_tweaks_tab()
         self._build_mods_tab()
@@ -120,20 +133,13 @@ class App(ttk.Frame):
     # -- header ------------------------------------------------------------
 
     def _build_header(self):
-        bar = ttk.Frame(self)
+        # One row: brand | game, engine, path ... folder button. The path is
+        # packed last, so a narrow window clips it and nothing else.
+        bar = ttk.Frame(self, padding=(GUTTER, 14, GUTTER, 6))
         bar.pack(fill="x")
-
-        left = ttk.Frame(bar)
-        left.pack(side="left", fill="x", expand=True)
-        title = ttk.Frame(left)
-        title.pack(side="left")
-        ttk.Label(title, text="WOLFSDK", style="H1.TLabel").pack(anchor="w")
-        ttk.Label(title, text="MOD MANAGER  /  ASSET TOOLKIT",
-                  style="Muted.TLabel").pack(anchor="w")
-        self.badge_var = tk.StringVar(value="")
-        self.badge = ttk.Label(left, textvariable=self.badge_var,
-                               style="Badge.TLabel")
-        self.badge.pack(side="left", padx=(PAD, 0))
+        ttk.Frame(bar, style="Accent.TFrame", width=4).pack(side="left", fill="y", padx=(0, 10))
+        ttk.Label(bar, text="WOLFSDK", style="Brand.TLabel").pack(side="left")
+        ttk.Frame(bar, style="Line.TFrame", width=1).pack(side="left", fill="y", padx=16, pady=6)
 
         ttk.Button(bar, text="Choose folder…", style="Ghost.TButton",
                    command=self._choose_game).pack(side="right")
@@ -144,20 +150,18 @@ class App(ttk.Frame):
         self.installs = {g.title.name: g for g in Game.find_all()}
         self.title_var = tk.StringVar()
         self.title_box = ttk.Combobox(
-            bar, textvariable=self.title_var, state="readonly", width=30,
+            bar, textvariable=self.title_var, state="readonly", width=28,
             values=list(self.installs),
         )
-        self.title_box.pack(side="right", padx=(0, PAD))
+        self.title_box.pack(side="left")
         self.title_box.bind("<<ComboboxSelected>>", self._switch_title)
-
-        second = ttk.Frame(self)
-        second.pack(fill="x", pady=(4, 0))
+        self.badge_var = tk.StringVar(value="")
+        self.badge = ttk.Label(bar, textvariable=self.badge_var,
+                               style="Badge.TLabel")
+        self.badge.pack(side="left", padx=(8, 0))
         self.path_var = tk.StringVar(value="(not found)")
-        ttk.Label(second, textvariable=self.path_var,
-                  style="Muted.TLabel").pack(side="left")
-
-        rule = ttk.Frame(self, style="Line.TFrame", height=1)
-        rule.pack(fill="x", pady=(PAD, 0))
+        ttk.Label(bar, textvariable=self.path_var,
+                  style="Muted.TLabel").pack(side="left", padx=(12, PAD))
 
     def _switch_title(self, _event=None):
         game = self.installs.get(self.title_var.get())
@@ -206,30 +210,72 @@ class App(ttk.Frame):
     # -- dashboard and navigation -----------------------------------------
 
     def _build_dashboard_tab(self):
-        page = ttk.Frame(self.notebook, padding=(18, 14))
+        page = ttk.Frame(self.notebook, padding=PAGE)
         self.notebook.add(page, text="Overview")
 
-        ttk.Label(page, text="Overview", style="H1.TLabel").pack(anchor="w")
-        ttk.Label(page, text="Game state, active mods and the next safe steps.",
-                  style="Muted.TLabel").pack(anchor="w", pady=(2, 16))
-
-        hero = ttk.Frame(page, style="Card.TFrame", padding=18)
-        hero.pack(fill="x")
+        # The strip on the left takes the state's colour, so the card reads
+        # green / amber / red before a word of it is read.
+        card = ttk.Frame(page, style="Card.TFrame")
+        card.pack(fill="x")
+        self.dashboard_strip = ttk.Frame(card, style="Warn.TFrame", width=4)
+        self.dashboard_strip.pack(side="left", fill="y")
+        hero = ttk.Frame(card, style="Panel.TFrame", padding=(20, 16))
+        hero.pack(side="left", fill="x", expand=True)
         ttk.Label(hero, text="INSTALL STATUS",
-                  style="PanelMuted.TLabel").pack(anchor="w")
+                  style="PanelEyebrow.TLabel").pack(anchor="w")
         self.dashboard_state_var = tk.StringVar(value="Looking for the game…")
         self.dashboard_state_label = ttk.Label(
             hero, textvariable=self.dashboard_state_var, style="PanelWarn.TLabel")
         self.dashboard_state_label.pack(anchor="w", pady=(5, 2))
         self.dashboard_hint_var = tk.StringVar(value="")
-        ttk.Label(hero, textvariable=self.dashboard_hint_var,
-                  style="PanelMuted.TLabel", wraplength=760,
-                  justify="left").pack(anchor="w")
+        _autowrap(ttk.Label(hero, textvariable=self.dashboard_hint_var,
+                            style="PanelMuted.TLabel", justify="left"))
+
+        # Actions and the custom map side by side, above the numbers: in a
+        # short window the numbers clip, not the buttons. This page does not
+        # scroll.
+        cols = ttk.Frame(page)
+        cols.pack(fill="x", pady=(PAD, 0))
+        cols.columnconfigure((0, 1), weight=1, uniform="col")
+
+        actions = ttk.Frame(cols, style="Card.TFrame", padding=(20, 16))
+        actions.grid(row=0, column=0, sticky="nsew", padx=(0, 5))
+        ttk.Label(actions, text="Quick actions", style="H2.TLabel").pack(anchor="w")
+        _autowrap(ttk.Label(actions, style="PanelMuted.TLabel", justify="left",
+                            text="Check first, then apply. Start game sits in the bar at the bottom."),
+                  pady=(2, PAD))
+        row = ttk.Frame(actions, style="Panel.TFrame")
+        row.pack(fill="x", side="bottom")
+        ttk.Button(row, text="Manage mods",
+                   command=lambda: self._navigate(2)).pack(side="left")
+        self.dashboard_check_btn = ttk.Button(
+            row, text="Check mod set", command=self._check_mods)
+        self.dashboard_check_btn.pack(side="left", padx=(6, 0))
+        self.action_buttons.append(self.dashboard_check_btn)
+
+        # A custom map is no mod: it is its own DLC folder (mapinstall.py).
+        # Buttons in their own row, so a long status line cannot shove them out.
+        mapcard = ttk.Frame(cols, style="Card.TFrame", padding=(20, 16))
+        mapcard.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
+        ttk.Label(mapcard, text="Custom map", style="H2.TLabel").pack(anchor="w")
+        self.map_var = tk.StringVar(value="")
+        _autowrap(ttk.Label(mapcard, textvariable=self.map_var,
+                            style="PanelMuted.TLabel", justify="left"), pady=(2, PAD))
+        maprow = ttk.Frame(mapcard, style="Panel.TFrame")
+        maprow.pack(fill="x", side="bottom")
+        self.map_note = ""
+        self.map_buttons = [
+            ttk.Button(maprow, text="Remove map", command=self._map_uninstall),
+            ttk.Button(maprow, text="Install map…", command=self._map_install),
+        ]
+        for button in self.map_buttons:
+            button.pack(side="right", padx=(6, 0))
+        self.action_buttons.extend(self.map_buttons)
 
         stats = ttk.Frame(page)
         stats.pack(fill="x", pady=(PAD, 0))
         for column in range(3):
-            stats.columnconfigure(column, weight=1)
+            stats.columnconfigure(column, weight=1, uniform="stat")
         self.dashboard_mods_var = tk.StringVar(value="0")
         self.dashboard_tweaks_var = tk.StringVar(value="0")
         self.dashboard_assets_var = tk.StringVar(value="—")
@@ -238,76 +284,37 @@ class App(ttk.Frame):
             (1, "TWEAKS", self.dashboard_tweaks_var, "cvars set"),
             (2, "ARCHIVES", self.dashboard_assets_var, "patch support"),
         ):
-            card = ttk.Frame(stats, style="Card.TFrame", padding=16)
+            card = ttk.Frame(stats, style="Card.TFrame", padding=(20, 14))
             card.grid(row=0, column=column, sticky="nsew",
                       padx=(0 if column == 0 else 5, 0 if column == 2 else 5))
-            ttk.Label(card, text=title, style="PanelMuted.TLabel").pack(anchor="w")
+            ttk.Label(card, text=title, style="PanelEyebrow.TLabel").pack(anchor="w")
             ttk.Label(card, textvariable=variable,
-                      style="H2.TLabel").pack(anchor="w", pady=(6, 1))
+                      style="Stat.TLabel").pack(anchor="w", pady=(2, 0))
             ttk.Label(card, text=caption, style="PanelMuted.TLabel").pack(anchor="w")
 
-        actions = ttk.Frame(page, style="Card.TFrame", padding=18)
-        actions.pack(fill="x", pady=(PAD, 0))
-        ttk.Label(actions, text="Quick actions", style="H2.TLabel").pack(anchor="w")
-        ttk.Label(actions, text="Check first, then apply — or start right away if the mod set is already in sync.",
-                  style="PanelMuted.TLabel").pack(anchor="w", pady=(2, PAD))
-        row = ttk.Frame(actions, style="Panel.TFrame")
-        row.pack(fill="x")
-        ttk.Button(row, text="Manage mods",
-                   command=lambda: self._navigate(2)).pack(side="left")
-        self.dashboard_check_btn = ttk.Button(
-            row, text="Check mod set", command=self._check_mods)
-        self.dashboard_check_btn.pack(side="left", padx=(6, 0))
-        self.dashboard_start_btn = ttk.Button(
-            row, text="Start game", style="Accent.TButton", command=self._launch)
-        self.dashboard_start_btn.pack(side="right")
-        self.action_buttons.extend([self.dashboard_check_btn, self.dashboard_start_btn])
-
-        # A custom map is no mod: it is its own DLC folder (mapinstall.py).
-        # One row, not another card: this page does not scroll, and a card
-        # pushed its own buttons off the bottom. Buttons before the label,
-        # as in the footer, so a long status line cannot shove them out.
-        maprow = ttk.Frame(actions, style="Panel.TFrame")
-        maprow.pack(fill="x", pady=(8, 0))
-        self.map_note = ""
-        self.map_buttons = [
-            ttk.Button(maprow, text="Remove map", command=self._map_uninstall),
-            ttk.Button(maprow, text="Install map…", command=self._map_install),
-        ]
-        for button in self.map_buttons:
-            button.pack(side="right", padx=(6, 0))
-        self.map_var = tk.StringVar(value="")
-        ttk.Label(maprow, textvariable=self.map_var,
-                  style="PanelMuted.TLabel").pack(side="left", fill="x", expand=True)
-        self.action_buttons.extend(self.map_buttons)
-
-        safety = ttk.Frame(page, style="Card.TFrame", padding=18)
+        safety = ttk.Frame(page, style="Card.TFrame", padding=(20, 12))
         safety.pack(fill="x", pady=(PAD, 0))
-        ttk.Label(safety, text="Safety net", style="H2.TLabel").pack(anchor="w")
+        ttk.Label(safety, text="Safety net", style="H2.TLabel").pack(side="left")
         ttk.Label(
             safety,
-            text=("A write-ahead journal, bit-exact backups and an exclusive "
-                  "write lock protect your install, even if something is interrupted."),
-            style="PanelMuted.TLabel", wraplength=800,
-            justify="left").pack(anchor="w", pady=(3, 0))
+            text="Local and offline, no DLL injection. A journal, bit-exact backups "
+                 "and a write lock protect your install.",
+            style="PanelMuted.TLabel").pack(side="left", padx=(PAD, 0))
 
     def _build_navigation(self):
-        ttk.Label(self.sidebar, text="SECTIONS",
-                  style="Muted.TLabel").pack(anchor="w", padx=10, pady=(8, 7))
         labels = ("Overview", "Cheats & QoL", "Mods", "Studio", "System & Info")
-        self.nav_buttons = []
+        self.nav_buttons, self.nav_marks = [], []
         for index, label in enumerate(labels):
+            item = ttk.Frame(self.tabbar)
+            item.pack(side="left")
             button = ttk.Button(
-                self.sidebar, text=label, style="Nav.TButton",
+                item, text=label, style="Tab.TButton", takefocus=True,
                 command=lambda i=index: self._navigate(i))
-            button.pack(fill="x", pady=1)
+            button.pack(fill="x")
+            mark = ttk.Frame(item, height=2)   # the underline of the selected tab
+            mark.pack(fill="x", padx=14)
             self.nav_buttons.append(button)
-        spacer = ttk.Frame(self.sidebar)
-        spacer.pack(fill="both", expand=True)
-        ttk.Separator(self.sidebar).pack(fill="x", padx=10, pady=8)
-        ttk.Label(self.sidebar, text="LOCAL · OFFLINE\nNO DLL INJECTION",
-                  style="Muted.TLabel", justify="left").pack(
-                      anchor="w", padx=10, pady=(0, 8))
+            self.nav_marks.append(mark)
         self.notebook.bind("<<NotebookTabChanged>>", self._sync_navigation)
         self._navigate(0)
 
@@ -319,18 +326,25 @@ class App(ttk.Frame):
         if not hasattr(self, "nav_buttons"):
             return
         current = self.notebook.index(self.notebook.select())
-        for index, button in enumerate(self.nav_buttons):
-            button.configure(style="NavSelected.TButton" if index == current
-                             else "Nav.TButton")
+        for index, (button, mark) in enumerate(zip(self.nav_buttons, self.nav_marks)):
+            on = index == current
+            button.configure(style="TabSelected.TButton" if on else "Tab.TButton")
+            mark.configure(style="Accent.TFrame" if on else "TFrame")
+
+    def _dash(self, tone, state, hint):
+        """The install-status card: tone is ok, warn or danger."""
+        self.dashboard_state_var.set(state)
+        self.dashboard_hint_var.set(hint)
+        self.dashboard_state_label.configure(style="Panel%s.TLabel" % tone.capitalize())
+        self.dashboard_strip.configure(style="%s.TFrame" % tone.capitalize())
+        self.status_dot.configure(style="Panel%s.TLabel" % tone.capitalize())
 
     def _refresh_dashboard(self):
         if not hasattr(self, "dashboard_state_var"):
             return
         self._refresh_map()
         if not self.game:
-            self.dashboard_state_var.set("No game install found")
-            self.dashboard_hint_var.set("Choose a game folder at the top right.")
-            self.dashboard_state_label.configure(style="PanelDanger.TLabel")
+            self._dash("danger", "No game install found", "Choose a game folder at the top right.")
             self.dashboard_assets_var.set("NOT READY")
             return
         active = len(self._enabled_mods()) if hasattr(self, "tree") else 0
@@ -339,31 +353,24 @@ class App(ttk.Frame):
         self.dashboard_tweaks_var.set(str(tweaks))
         self.dashboard_assets_var.set("READY" if self.game.supports_mods else "LAUNCH ONLY")
         if not self.game.supports_mods:
-            self.dashboard_state_var.set("%s is ready to launch" % self.game.title.name)
-            self.dashboard_hint_var.set("Cvars work; archive mods are disabled for this game.")
-            self.dashboard_state_label.configure(style="PanelWarn.TLabel")
+            self._dash("warn", "%s is ready to launch" % self.game.title.name,
+                       "Cvars work; archive mods are disabled for this game.")
             return
         install = self._install()
         try:
             journal = install.read_journal()
             if journal and journal.get("state") == "applying":
-                self.dashboard_state_var.set("Recovery needed")
-                self.dashboard_hint_var.set("The last patch run was interrupted. Choose Revert now.")
-                self.dashboard_state_label.configure(style="PanelDanger.TLabel")
+                self._dash("danger", "Recovery needed",
+                           "The last patch run was interrupted. Choose Revert now.")
             elif journal:
-                self.dashboard_state_var.set("Mod set active · backup in place")
-                self.dashboard_hint_var.set("%d mod(s) with %d asset(s) are installed in the game."
-                                            % (len(journal.get("mods", [])),
-                                               len(journal.get("assets", []))))
-                self.dashboard_state_label.configure(style="PanelOk.TLabel")
+                self._dash("ok", "Mod set active · backup in place",
+                           "%d mod(s) with %d asset(s) are installed in the game."
+                           % (len(journal.get("mods", [])), len(journal.get("assets", []))))
             else:
-                self.dashboard_state_var.set("Original state · ready")
-                self.dashboard_hint_var.set("No archive mods installed. A check runs without writing anything.")
-                self.dashboard_state_label.configure(style="PanelOk.TLabel")
+                self._dash("ok", "Original state · ready",
+                           "No archive mods installed. A check runs without writing anything.")
         except Exception as exc:  # noqa: BLE001
-            self.dashboard_state_var.set("Could not read the status")
-            self.dashboard_hint_var.set(str(exc))
-            self.dashboard_state_label.configure(style="PanelDanger.TLabel")
+            self._dash("danger", "Could not read the status", str(exc))
         finally:
             install.close()
 
@@ -431,7 +438,7 @@ class App(ttk.Frame):
     # -- tweaks tab --------------------------------------------------------
 
     def _build_tweaks_tab(self):
-        outer = ttk.Frame(self.notebook, padding=PAD)
+        outer = ttk.Frame(self.notebook, padding=PAGE)
         self.notebook.add(outer, text="  Cheats & QoL  ")
 
         bar = ttk.Frame(outer)
@@ -441,7 +448,7 @@ class App(ttk.Frame):
                           style="Search.TEntry", width=30)
         entry.pack(side="left")
         self.filter_var.trace_add("write", lambda *_: self._rebuild_tweaks())
-        # An empty box next to 2231 hidden entries tells nobody what to do
+        # An empty box next to 3116 hidden entries tells nobody what to do
         # with it. ttk has no placeholder, so it is a grey value that steps
         # aside on focus -- and _rebuild_tweaks has to ignore it.
         _placeholder(entry, self.filter_var, PLACEHOLDER)
@@ -454,7 +461,7 @@ class App(ttk.Frame):
                             lambda e: self._rebuild_tweaks())
 
         self.only_set = tk.BooleanVar(value=False)
-        ttk.Checkbutton(bar, text="only set", variable=self.only_set,
+        ttk.Checkbutton(bar, text="only set", variable=self.only_set, style="Plain.TCheckbutton",
                         command=self._rebuild_tweaks).pack(side="left", padx=(PAD, 0))
 
         self.count_var = tk.StringVar(value="")
@@ -556,9 +563,11 @@ class App(ttk.Frame):
             if tweak.category != current:
                 current = tweak.category
                 head = ttk.Frame(self.tweak_rows)
-                head.pack(fill="x", pady=(PAD, 2))
+                head.pack(fill="x", pady=(PAD + 4, 4))
                 ttk.Label(head, text=current.upper(),
                           style="Accent.TLabel").pack(side="left")
+                ttk.Frame(head, style="Line.TFrame", height=1).pack(
+                    side="left", fill="x", expand=True, padx=(PAD, 0))
             self._add_tweak_row(self.tweak_rows, tweak)
 
         if len(matches) > ROW_LIMIT:
@@ -572,21 +581,22 @@ class App(ttk.Frame):
         self.count_var.set("%d of %d cvars" % (len(matches), len(catalog)))
 
     def _add_tweak_row(self, parent, tweak):
-        row = ttk.Frame(parent, style="Card.TFrame", padding=(PAD, 5))
+        row = ttk.Frame(parent, style="Card.TFrame", padding=(PAD, 7))
         row.pack(fill="x", pady=1)
         row.columnconfigure(1, weight=1)
+        row.columnconfigure(0, minsize=92)   # a tick box and a value box: labels start in one column
 
         var = self.tweak_vars[tweak.key]
         if tweak.kind == cvars.BOOL:
             widget = ttk.Checkbutton(row, variable=var, onvalue=tweak.value_on,
                                      offvalue="", text="")
         elif tweak.kind == cvars.CHOICE:
-            widget = ttk.Combobox(row, textvariable=var, width=10,
+            widget = ttk.Combobox(row, textvariable=var, width=8,
                                   state="readonly",
                                   values=[""] + [c[0] for c in tweak.choices])
         else:
-            widget = ttk.Entry(row, textvariable=var, width=10)
-        widget.grid(row=0, column=0, rowspan=2, sticky="w", padx=(0, PAD))
+            widget = ttk.Entry(row, textvariable=var, width=8)
+        widget.grid(row=0, column=0, sticky="w", padx=(0, PAD))   # level with the label, notes below
 
         label = ttk.Label(row, text=tweak.label, style="Panel.TLabel")
         label.grid(row=0, column=1, sticky="w")
@@ -594,18 +604,25 @@ class App(ttk.Frame):
         meta = tweak.key if tweak.label != tweak.key else ""
         if tweak.default is not None:
             meta += ("   " if meta else "") + "default %s" % tweak.default
-        if cvars.blocked_for(self.title_key, tweak.key):
-            meta += ("   ↻ not a retail command - delivered via default.cfg on the next apply/start"
-                     if self.title_key == "tnc" else "   ↻ cheat cvar - also sent as +toggle at start")
-        elif tweak.confidence == "low":
-            meta += "   ~ unverified"
         ttk.Label(row, text=meta, style="Mono.TLabel").grid(
             row=0, column=2, sticky="e", padx=(PAD, 0))
 
+        # Flags on their own line: on the meta line they pushed the label aside.
+        flag = ""
+        if cvars.blocked_for(self.title_key, tweak.key):
+            flag = ("↻ not a retail command - delivered via default.cfg on the next apply/start"
+                    if self.title_key == "tnc" else "↻ cheat cvar - also sent as +toggle at start")
+        elif tweak.confidence == "low":
+            flag = "~ unverified"
+        line = 1
         if tweak.note:
             ttk.Label(row, text=tweak.note, style="PanelMuted.TLabel",
                       wraplength=720, justify="left").grid(
-                row=1, column=1, columnspan=2, sticky="w", pady=(2, 0))
+                row=line, column=1, columnspan=2, sticky="w", pady=(2, 0))
+            line += 1
+        if flag:
+            ttk.Label(row, text=flag, style="Flag.TLabel").grid(
+                row=line, column=1, columnspan=2, sticky="w", pady=(2, 0))
 
     def _apply_preset(self, reset=False):
         """Fill in (or take back) one cvars.TNC_PRESETS group.
@@ -659,69 +676,82 @@ class App(ttk.Frame):
     # -- mods tab ----------------------------------------------------------
 
     def _build_mods_tab(self):
-        frame = ttk.Frame(self.notebook, padding=PAD)
+        frame = ttk.Frame(self.notebook, padding=PAGE)
         self.notebook.add(frame, text="  Mods  ")
 
+        # One toolbar: search on the left, the list actions on the right.
+        # Right-hand buttons are packed first so the search box is the one
+        # that gives way in a narrow window.
         top = ttk.Frame(frame)
         top.pack(fill="x")
-        ttk.Button(top, text="Reload", style="Ghost.TButton",
-                   command=self._reload_mods).pack(side="left")
-        ttk.Button(top, text="Open folder", style="Ghost.TButton",
-                   command=self._open_mods_dir).pack(side="left", padx=(6, 0))
-        ttk.Button(top, text="All on", style="Ghost.TButton",
-                   command=lambda: self._set_all_mods(True)).pack(side="left", padx=(6, 0))
-        ttk.Button(top, text="All off", style="Ghost.TButton",
-                   command=lambda: self._set_all_mods(False)).pack(side="left", padx=(6, 0))
-        self.check_btn = ttk.Button(top, text="Check",
-                                    command=self._check_mods)
+        self.check_btn = ttk.Button(top, text="Check", command=self._check_mods)
         self.check_btn.pack(side="right")
-
-        searchbar = ttk.Frame(frame)
-        searchbar.pack(fill="x", pady=(PAD, 0))
+        for text, command in (("All off", lambda: self._set_all_mods(False)),
+                              ("All on", lambda: self._set_all_mods(True)),
+                              ("Open folder", self._open_mods_dir),
+                              ("Reload", self._reload_mods)):
+            ttk.Button(top, text=text, style="Ghost.TButton",
+                       command=command).pack(side="right", padx=(0, 6))
         self.mod_filter_var = tk.StringVar()
-        mod_search = ttk.Entry(searchbar, textvariable=self.mod_filter_var,
+        mod_search = ttk.Entry(top, textvariable=self.mod_filter_var,
                                style="Search.TEntry")
         mod_search.pack(side="left", fill="x", expand=True)
         _placeholder(mod_search, self.mod_filter_var, "Search mods…")
         self.mod_filter_var.trace_add("write", lambda *_: self._filter_mods())
         self.mod_count_var = tk.StringVar()
-        ttk.Label(searchbar, textvariable=self.mod_count_var,
-                  style="Muted.TLabel").pack(side="right", padx=(PAD, 0))
-
-        columns = ("on", "name", "version", "priority", "assets")
-        self.tree = ttk.Treeview(frame, columns=columns, show="headings", height=10)
-        for col, text, width, anchor in (
-            ("on", "Active", 55, "center"),
-            ("name", "Mod", 360, "w"),
-            ("version", "Version", 80, "w"),
-            ("priority", "Priority", 60, "center"),
-            ("assets", "Assets", 70, "e"),
-        ):
-            self.tree.heading(col, text=text)
-            self.tree.column(col, width=width, anchor=anchor)
-        self.tree.bind("<Button-1>", self._toggle_mod)
-        self.tree.bind("<space>", self._toggle_selected_mod)
-        self.tree.bind("<<TreeviewSelect>>", self._show_mod_details)
+        ttk.Label(top, textvariable=self.mod_count_var,
+                  style="Muted.TLabel").pack(side="left", padx=(PAD, PAD))
 
         # Packed from the bottom before the list: a long description or a small
         # window shrinks the list, never pushes the safety messages out of sight.
-        self.mod_log = tk.Text(frame, height=5, wrap="word")
+        self.mod_log = tk.Text(frame, height=4, wrap="word")
         theme.style_text(self.mod_log, "input", self.fonts)
         self.mod_log.pack(side="bottom", fill="x")
-        ttk.Label(frame, text="Checks & messages",
-                  style="Muted.TLabel").pack(side="bottom", anchor="w", pady=(PAD, 4))
-        details = ttk.Frame(frame, style="Card.TFrame", padding=PAD)
-        details.pack(side="bottom", fill="x", pady=(PAD, 0))
+        ttk.Label(frame, text="CHECKS & MESSAGES",
+                  style="Eyebrow.TLabel").pack(side="bottom", anchor="w", pady=(PAD + 4, 6))
+
+        # The list and, beside it, the selected mod: the description no longer
+        # steals the list's height.
+        body = ttk.Frame(frame)
+        body.pack(fill="both", expand=True, pady=(PAD, 0))
+        body.columnconfigure(0, weight=1)
+        body.rowconfigure(0, weight=1)
+        columns = ("on", "name", "version", "priority", "assets")
+        self.tree = ttk.Treeview(body, columns=columns, show="headings", height=10)
+        for col, text, width, anchor in (
+            ("on", "ACTIVE", 64, "center"),
+            ("name", "MOD", 280, "w"),
+            ("version", "VERSION", 76, "w"),
+            ("priority", "PRIORITY", 72, "center"),
+            ("assets", "ASSETS", 64, "e"),
+        ):
+            self.tree.heading(col, text=text, anchor=anchor)
+            self.tree.column(col, width=width, anchor=anchor, stretch=col == "name")
+        # Switched-off mods dim, so the active set stands out at a glance.
+        self.tree.tag_configure("off", foreground=theme.PALETTE["dim"])
+        self.tree.tag_configure("on", foreground=theme.PALETTE["text"])
+        self.tree.bind("<Button-1>", self._toggle_mod)
+        self.tree.bind("<space>", self._toggle_selected_mod)
+        self.tree.bind("<<TreeviewSelect>>", self._show_mod_details)
+        self.tree.grid(row=0, column=0, sticky="nsew")
+        scroll = ttk.Scrollbar(body, orient="vertical", command=self.tree.yview)
+        scroll.grid(row=0, column=1, sticky="ns")
+        self.tree.configure(yscrollcommand=scroll.set)
+
+        details = ttk.Frame(body, style="Card.TFrame", padding=(18, 16), width=300)
+        details.grid(row=0, column=2, sticky="nsew", padx=(PAD, 0))
+        details.pack_propagate(False)
+        ttk.Label(details, text="SELECTED MOD", style="PanelEyebrow.TLabel").pack(anchor="w")
         self.mod_detail_title = tk.StringVar(value="No mod selected")
         self.mod_detail_text = tk.StringVar(
             value="Select a mod to see its description and details.")
-        ttk.Label(details, textvariable=self.mod_detail_title,
-                  style="H2.TLabel").pack(anchor="w")
-        detail = ttk.Label(details, textvariable=self.mod_detail_text,
-                           style="PanelMuted.TLabel", justify="left")
-        detail.pack(anchor="w", pady=(3, 0))
-        details.bind("<Configure>", lambda e: detail.configure(wraplength=max(200, e.width - 2 * PAD)))
-        self.tree.pack(fill="both", expand=True, pady=(PAD, 0))
+        _autowrap(ttk.Label(details, textvariable=self.mod_detail_title,
+                            style="H2.TLabel", justify="left"), pady=(4, 0))
+        self.mod_toggle_btn = ttk.Button(details, text="Turn on", state="disabled",
+                                         command=self._toggle_selected_mod)
+        self.mod_toggle_btn.pack(side="bottom", fill="x")
+        _autowrap(ttk.Label(details, textvariable=self.mod_detail_text,
+                            style="PanelMuted.TLabel", justify="left"), pady=(6, 0))
         self._reload_mods()
 
     def _open_mods_dir(self):
@@ -748,8 +778,9 @@ class App(ttk.Frame):
         for m in self.mods:
             self.tree.insert(
                 "", "end", iid=m.id,
-                values=("●" if m.id in enabled else "", m.name, m.version,
+                values=(ON if m.id in enabled else OFF, m.name, m.version,
                         m.priority, len(m.assets)),
+                tags=("on" if m.id in enabled else "off",),
             )
         self._filter_mods()
         self._log_mods("\n".join("! " + e for e in errors) if errors else
@@ -759,11 +790,12 @@ class App(ttk.Frame):
         self._refresh_dashboard()
 
     def _toggle_mod(self, event):
+        # Only the ACTIVE column switches; a click elsewhere just selects the
+        # row, so its details can be read without toggling it.
         row = self.tree.identify_row(event.y)
-        if not row:
+        if not row or self.tree.identify_column(event.x) != "#1":
             return
-        current = self.tree.set(row, "on")
-        self.tree.set(row, "on", "" if current else "●")
+        self._mark(row, not self._is_on(row))
         self._update_mod_count()
         self._refresh_dashboard()
 
@@ -771,13 +803,13 @@ class App(ttk.Frame):
         selected = self.tree.selection()
         if selected:
             row = selected[0]
-            self.tree.set(row, "on", "" if self.tree.set(row, "on") else "●")
+            self._mark(row, not self._is_on(row))
             self._update_mod_count()
         return "break"
 
     def _set_all_mods(self, enabled):
         for mod in self.mods:
-            self.tree.set(mod.id, "on", "●" if enabled else "")
+            self._mark(mod.id, enabled)
         self._update_mod_count()
         self._refresh_dashboard()
 
@@ -817,11 +849,22 @@ class App(ttk.Frame):
         if mod.author:
             meta += "  ·  " + mod.author
         if mod.description:
-            meta += "\n" + mod.description
+            meta += "\n\n" + mod.description
         self.mod_detail_text.set(meta)
+        self.mod_toggle_btn.configure(state="normal",
+                                      text="Turn off" if self._is_on(mod.id) else "Turn on")
 
     def _enabled_mods(self):
-        return [m for m in self.mods if self.tree.set(m.id, "on")]
+        return [m for m in self.mods if self._is_on(m.id)]
+
+    def _is_on(self, row):
+        return self.tree.set(row, "on") not in ("", OFF)
+
+    def _mark(self, row, on):
+        self.tree.set(row, "on", ON if on else OFF)
+        self.tree.item(row, tags=("on" if on else "off",))
+        if row in self.tree.selection():
+            self.mod_toggle_btn.configure(text="Turn off" if on else "Turn on")
 
     def _enabled_ids(self):
         """What goes into config.json: this title's ticks plus the other's.
@@ -841,32 +884,41 @@ class App(ttk.Frame):
     # -- studio tab --------------------------------------------------------
 
     def _build_studio_tab(self):
-        page = ttk.Frame(self.notebook, padding=(18, 14))
+        page = ttk.Frame(self.notebook, padding=PAGE)
         self.notebook.add(page, text="  Studio  ")
-        ttk.Label(page, text="Studio", style="H1.TLabel").pack(anchor="w")
-        ttk.Label(page, text="View, listen to and export everything from both games – in its own window.",
-                  style="Muted.TLabel").pack(anchor="w", pady=(2, 16))
-        card = ttk.Frame(page, style="Card.TFrame", padding=18)
-        card.pack(fill="x")
-        for name, what in (
-            ("Maps", "walk through every level in 3D, with textures and collision"),
-            ("Models", "weapons, enemies, characters, vehicles and props in 3D, "
-                        "preview your own skin, export as GLB/OBJ"),
-            ("Video and audio", "play cutscenes and sounds"),
-            ("Textures and text", "browse every image and game text"),
-        ):
-            row = ttk.Frame(card, style="Panel.TFrame")
-            row.pack(fill="x", pady=2)
-            ttk.Label(row, text=name, style="H2.TLabel", width=18).pack(side="left")
-            ttk.Label(row, text=what, style="PanelMuted.TLabel").pack(side="left")
-        if importlib.util.find_spec(__package__ + ".mapserver") is None:   # the loader package ships without it
-            ttk.Label(page, text="The Studio is part of WolfSDK Studio, the separate package for modders "
-                                 "(WolfSDK-Studio-<version>.zip).",
-                      style="Muted.TLabel").pack(anchor="w", pady=(PAD, 0))
-            return
-        self.studio_btn = ttk.Button(page, text="Open Studio", style="Accent.TButton",
-                                     command=self._open_studio)
-        self.studio_btn.pack(anchor="w", pady=(PAD, 0))
+        # Intro and the one action in a card on top, what it holds below.
+        head = ttk.Frame(page, style="Card.TFrame", padding=(20, 16))
+        head.pack(fill="x")
+        if importlib.util.find_spec(__package__ + ".mapserver") is not None:   # the loader package ships without it
+            self.studio_btn = ttk.Button(head, text="Open Studio", style="Accent.TButton",
+                                         command=self._open_studio)
+            self.studio_btn.pack(side="right", padx=(PAD, 0))
+            intro = "View, listen to and export everything from both games, in its own window."
+        else:
+            intro = ("The Studio is part of WolfSDK Studio, the separate package for modders "
+                     "(WolfSDK-Studio-<version>.zip).")
+        text = ttk.Frame(head, style="Panel.TFrame")
+        text.pack(side="left", fill="x", expand=True)
+        ttk.Label(text, text="WolfSDK Studio", style="H2.TLabel").pack(anchor="w")
+        _autowrap(ttk.Label(text, text=intro, style="PanelMuted.TLabel", justify="left"),
+                  pady=(2, 0))
+
+        grid = ttk.Frame(page)
+        grid.pack(fill="x", pady=(PAD, 0))
+        grid.columnconfigure((0, 1), weight=1, uniform="tile")
+        for i, (name, what) in enumerate((
+            ("MAPS", "Walk through every level in 3D, with textures and collision."),
+            ("MODELS", "Weapons, enemies, characters, vehicles and props in 3D, "
+                       "with animations. Preview your own skin, export as GLB/OBJ."),
+            ("VIDEO AND AUDIO", "Play cutscenes and sounds."),
+            ("TEXTURES AND TEXT", "Browse every image and game text."),
+        )):
+            tile = ttk.Frame(grid, style="Card.TFrame", padding=(20, 16))
+            tile.grid(row=i // 2, column=i % 2, sticky="nsew",
+                      padx=(0, 5) if i % 2 == 0 else (5, 0), pady=(0, PAD))
+            ttk.Label(tile, text=name, style="PanelEyebrow.TLabel").pack(anchor="w")
+            _autowrap(ttk.Label(tile, text=what, style="Panel.TLabel", justify="left"),
+                      pady=(6, 0))
 
     def _open_studio(self):
         """The Studio (maps in 3D, videos, sound, textures, texts) is a browser
@@ -892,7 +944,7 @@ class App(ttk.Frame):
     # -- info tab ----------------------------------------------------------
 
     def _build_info_tab(self):
-        frame = ttk.Frame(self.notebook, padding=PAD)
+        frame = ttk.Frame(self.notebook, padding=PAGE)
         self.notebook.add(frame, text="  Console & Info  ")
         support = ttk.Frame(frame)
         support.pack(fill="x", pady=(0, PAD))
@@ -902,67 +954,85 @@ class App(ttk.Frame):
                    command=lambda: webbrowser.open(SUPPORT_URL)).pack(side="right")
         text = tk.Text(frame, wrap="word", height=20)
         theme.style_text(text, "mono", self.fonts)
+        text.configure(padx=18, pady=14, cursor="arrow")
+        scroll = ttk.Scrollbar(frame, orient="vertical", command=text.yview)
+        text.configure(yscrollcommand=scroll.set)
+        scroll.pack(side="right", fill="y")
         text.pack(fill="both", expand=True)
-        lines = [
-            "The New Order console: Ctrl+^ (Ctrl + the key left of 1), no setting needed.",
-            "",
-        ]
+        # Headings, commands and their meaning in three voices instead of one
+        # grey block; notes in the body font with a hanging indent.
+        p = theme.PALETTE
+        text.tag_configure("h", font=self.fonts.get("h2"), foreground=p["text"],
+                           spacing1=14, spacing3=6)
+        text.tag_configure("cmd", foreground=p["text"])
+        text.tag_configure("desc", foreground=p["muted"])
+        text.tag_configure("note", font=self.fonts.get("body"), foreground=p["muted"],
+                           lmargin2=14, spacing3=6)
+
+        def heading(s):
+            text.insert("end", s + "\n", "h")
+
+        heading("The New Order console")
+        text.insert("end", "Ctrl+^ (Ctrl + the key left of 1), no setting needed.\n\n", "desc")
         for name, desc in cvars.COMMANDS:
-            lines.append("  %-27s %s" % (name, desc))
-        lines += [
-            "",
-            "Default key bindings, The New Order only (in The New Colossus a key cannot",
-            "reach these commands; use the Sandbox Tools mod there):",
-            "",
-        ]
+            text.insert("end", "  %-27s " % name, "cmd")
+            text.insert("end", desc + "\n", "desc")
+        heading("Default key bindings")
+        text.insert("end", "The New Order only (in The New Colossus a key cannot reach these "
+                           "commands; use the Sandbox Tools mod there).\n", "note")
         for combo, command, desc in cvars.TNO_BINDS:
-            lines.append("  %-6s %-34s %s" % (combo, command, desc))
-        lines += [
-            "",
-            "Notes:",
-            "  - The New Order: Cheats and QoL change no game file. They are passed",
-            "    as arguments when the game starts.",
-            "  - The New Colossus: cvars the retail console accepts go as start",
-            "    arguments, the rest into the game's default.cfg inside the archives",
-            "    ('Revert' removes it). Not yet confirmed in game.",
-            "  - The game is started through Steam. Starting the EXE directly does",
-            "    nothing: the SteamStub wrapper hands the start back and exits.",
-            "  - Mods write into the .resources archives. 'Revert' restores the",
-            "    originals bit for bit. The mod list only ever shows the mods of",
-            "    the selected game; both games have their own archives, their own",
-            "    backups and their own mods.",
-            "  - Cvar lists come from the engines' own registries (The New Colossus",
-            "    3,116 settable, The New Order 3,194) with the game's own descriptions.",
-        ]
-        text.insert("1.0", "\n".join(lines))
+            text.insert("end", "  %-6s %-34s " % (combo, command), "cmd")
+            text.insert("end", desc + "\n", "desc")
+        heading("Notes")
+        for note in (
+            "The New Order: Cheats and QoL change no game file. They are passed "
+            "as arguments when the game starts.",
+            "The New Colossus: cvars the retail console accepts go as start "
+            "arguments, the rest into the game's default.cfg inside the archives "
+            "('Revert' removes it). Not yet confirmed in game.",
+            "The game is started through Steam. Starting the EXE directly does "
+            "nothing: the SteamStub wrapper hands the start back and exits.",
+            "Mods write into the .resources archives. 'Revert' restores the "
+            "originals bit for bit. The mod list only ever shows the mods of "
+            "the selected game; both games have their own archives, their own "
+            "backups and their own mods.",
+            "Cvar lists come from the engines' own registries (The New Colossus "
+            "3,116 settable, The New Order 3,194) with the game's own descriptions.",
+        ):
+            text.insert("end", "–  " + note + "\n", "note")
         text.configure(state="disabled")
 
     # -- footer ------------------------------------------------------------
 
     def _build_footer(self):
-        bar = ttk.Frame(self)
-        bar.pack(side="bottom", fill="x", pady=(PAD, 0))
+        # The play bar: install state (dot), last message, and the actions
+        # that touch the game, on every page.
+        bar = ttk.Frame(self, style="Bar.TFrame", padding=(GUTTER, 12))
+        bar.pack(side="bottom", fill="x")
+        ttk.Frame(self, style="Line.TFrame", height=1).pack(side="bottom", fill="x")
 
         # Buttons first, label last. Tk's packer hands each widget its
         # requested size in pack order, and a Label requests room for its
         # whole string -- packed first it claimed the entire bar and pushed
         # all four buttons out of the window. They were there the whole time,
         # just off-screen.
-        start_btn = ttk.Button(bar, text="Start game", style="Accent.TButton",
+        start_btn = ttk.Button(bar, text="Start game", style="Play.TButton",
                                command=self._launch)
-        start_btn.pack(side="right", padx=(6, 0))
+        start_btn.pack(side="right", padx=(PAD, 0))
         apply_btn = ttk.Button(bar, text="Apply mods", command=self._apply)
         apply_btn.pack(side="right", padx=(6, 0))
         revert_btn = ttk.Button(bar, text="Revert", command=self._revert)
         revert_btn.pack(side="right", padx=(6, 0))
         self.mod_buttons = [apply_btn, revert_btn]
-        save_btn = ttk.Button(bar, text="Save", style="Ghost.TButton",
-                              command=self._save)
+        save_btn = ttk.Button(bar, text="Save", command=self._save)
         save_btn.pack(side="right", padx=(6, 0))
         self.action_buttons = [start_btn, apply_btn, revert_btn, save_btn]
 
+        self.status_dot = ttk.Label(bar, text="●", style="PanelWarn.TLabel")
+        self.status_dot.pack(side="left", padx=(0, 8))
         self.status_var = tk.StringVar(value="")
-        self.status_label = ttk.Label(bar, textvariable=self.status_var, anchor="w")
+        self.status_label = ttk.Label(bar, textvariable=self.status_var, anchor="w",
+                                      style="Panel.TLabel")
         self.status_label.pack(side="left", fill="x", expand=True)
         self.progress = ttk.Progressbar(bar, mode="indeterminate", length=80)
 

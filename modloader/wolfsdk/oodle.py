@@ -249,7 +249,8 @@ def find_dll(game_root=None):
             game_root = Game.find(title="tnc").root
         except GameError as exc:
             raise OodleError("Wolfenstein II not found: %s" % exc)
-    return Path(game_root) / DLL_NAME
+    six = Path(game_root) / "oo2core_6_win64.dll"      # Youngblood ships Oodle 6, same entry points
+    return six if six.is_file() and not (Path(game_root) / DLL_NAME).is_file() else Path(game_root) / DLL_NAME
 
 
 def load(game_root=None):

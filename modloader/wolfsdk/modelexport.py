@@ -7,8 +7,10 @@
 Nothing is decoded here: the geometry is LOD 0 of the Studio's models/mesh.bin
 (Studio.model_mesh: md6.surface_arrays or mapgeo.model_surfaces, md6.fix_normals),
 the colour maps are its models/albedo.png (Studio.model_albedo) of each surface's
-albedo URL, so a file holds what the viewer shows. Bind pose only: skeleton,
-skin weights, morphs and animations are not exported.
+albedo URL, so a file holds what the viewer shows. Wolfenstein II glTF materials
+also get pbrmat's maps (normal, metal/roughness, occlusion, alpha mask; a metal-tinted
+or masked base colour at up to PBR_TEX px replaces the colour map). OBJ keeps the colour
+map only. Bind pose only: skeleton, skin weights, morphs and animations are not exported.
 
 surfaces: indices into info.surfaces; None = the ones the Studio shows at start
 (md6Def meshKits, studio._kits). Surfaces without triangles are left out.
@@ -59,8 +61,9 @@ from array import array
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
-from . import studio
+from . import image, pbrmat, studio
 
+PBR_TEX = 2048   # side of pbrmat's tinted base colour in exports (pure Python per pixel: 4096 would take long)
 FORMATS = {"glb": ("model/gltf-binary", ".glb"), "gltf": ("application/zip", "_gltf.zip"),
            "obj": ("application/zip", "_obj.zip")}
 PNG_SIG = b"\x89PNG\r\n\x1a\n"
@@ -140,7 +143,7 @@ def png_size(png):
 
 # -- gather ----------------------------------------------------------------------
 
-def _gather(st, game, mid, surfaces, skin, max_tex):
+def _gather(st, game, mid, surfaces, skin, max_tex, pbr=True):
     """(info, [(surface info, pos, nrm, uv, idx) y-up], [material], {material: image index or None},
     [(file stem, PNG bytes)])."""
     info = st.info(game, studio.MODELS, mid)
@@ -162,10 +165,10 @@ def _gather(st, game, mid, surfaces, skin, max_tex):
     chosen = [i for i in surfaces if len(parts[i][3])]
     if not chosen:
         raise studio.BadRequest("The chosen surfaces have no triangles.")
-    surfs, mats, tex_of, images, by_key, stems = [], [], {}, [], {}, set()
+    surfs, mats, tex_of, images, by_key, stems, pbr_of, vcol = [], [], {}, [], {}, set(), {}, {}
     for i in chosen:
         s, (pos, nrm, uv, idx) = table[i], parts[i]
-        surfs.append((s, y_up(pos), y_up(_normals(pos, nrm, idx)), uv, idx))
+        surfs.append((s, y_up(pos), y_up(_normals(pos, nrm, idx)), uv, idx, None, None))
         mat = s["material"]
         if mat in tex_of:
             continue
@@ -174,6 +177,17 @@ def _gather(st, game, mid, surfaces, skin, max_tex):
             key = "skin"
         else:
             key = parse_qs(urlsplit(s["albedo"]).query)["id"][0] if s["albedo"] else None
+        if pbr and game == "tnc" and key != "skin":
+            pbr_of[mat] = _pbr(st, game, mat, min(max_tex, PBR_TEX), images, stems)
+            if "base" in pbr_of[mat]:   # the albedo with metal tint / alpha replaces the plain colour map
+                tex_of[mat] = pbr_of[mat].pop("base")
+                continue
+            if pbr_of[mat].get("alpha") == "mask2" and "mask" in pbr_of[mat]:
+                # hair: glTF takes alpha from the base colour only, the strand mask lies on uv set 2 and the
+                # colour on set 1 -> base colour = mask on TEXCOORD_1, colour per vertex (COLOR_0, multiplied in)
+                tex_of[mat] = pbr_of[mat].pop("mask")
+                vcol[mat] = st.model_albedo(game, key, studio.ALBEDO_MAX) if key else None
+                continue
         if key is not None and key not in by_key:
             stem = _stem(mat.rsplit("/", 1)[-1] + ("_skin" if key == "skin" else ""))
             while stem in stems:
@@ -182,12 +196,46 @@ def _gather(st, game, mid, surfaces, skin, max_tex):
             by_key[key] = len(images)
             images.append((stem, skin[1] if key == "skin" else st.model_albedo(game, key, max_tex)))
         tex_of[mat] = by_key.get(key)
-    return info, surfs, mats, tex_of, images
+    if vcol:
+        surfs = [_hair(st, game, mid, t, vcol) if t[0]["material"] in vcol and t[0].get("uv2") else t for t in surfs]
+    return info, surfs, mats, tex_of, images, pbr_of
+
+
+def _hair(st, game, mid, surf, vcol):
+    """The surface tuple with its second uv set and the colour map sampled per vertex (linear RGB)."""
+    s, pos, nrm, uv, idx, _u2, _c = surf
+    uv2 = array("f", st.model_uv2(game, mid, s["index"]))
+    col = array("f", [1.0]) * (len(uv) // 2 * 3)
+    png = vcol[s["material"]]
+    if png:
+        w, h, px = image.from_png(png)
+        lin = [((c / 255 + 0.055) / 1.055) ** 2.4 if c > 10 else c / 255 / 12.92 for c in range(256)]
+        for k in range(len(uv) // 2):   # game uvs are top-down like the image rows (as the viewer's flipY off)
+            j = 4 * ((int(uv[2 * k + 1] * h) % h) * w + int(uv[2 * k] * w) % w)
+            col[3 * k:3 * k + 3] = array("f", (lin[px[j]], lin[px[j + 1]], lin[px[j + 2]]))
+    return s, pos, nrm, uv, idx, uv2, col
+
+
+def _pbr(st, game, mat, cap, images, stems):
+    """{slot: image index, ...factors} of pbrmat's maps for `mat`, appended to `images`; {} when none."""
+    try:
+        built = pbrmat.build(st.catalog(game, studio.MODELS).mount, mat, cap)
+    except Exception:  # noqa: BLE001 -- as the viewer: a material without readable maps keeps its colour map
+        return {}
+    out = {k: built[k] for k in ("alpha", "roughness", "emissive", "specular", "clearcoat") if built.get(k)}
+    for slot, png in built["slots"].items():
+        stem = _stem(mat.rsplit("/", 1)[-1] + "_" + slot)
+        while stem in stems:
+            stem += "_"
+        stems.add(stem)
+        out[slot] = len(images)
+        images.append((stem, png))
+    return out
 
 
 # -- writers ---------------------------------------------------------------------
 
-def _gltf(name, mid, surfs, mats, tex_of, images, embed):
+def _gltf(name, mid, surfs, mats, tex_of, images, embed, pbr_of=None):
     """(glTF JSON dict, buffer bytes). embed: the PNGs go into the buffer (GLB), else textures/<stem>.png."""
     blob, views, accs = bytearray(), [], []
 
@@ -210,25 +258,50 @@ def _gltf(name, mid, surfs, mats, tex_of, images, embed):
         return len(accs) - 1
 
     nodes, meshes = [{"name": name, "children": list(range(1, len(surfs) + 1))}], []
-    for s, pos, nrm, uv, idx in surfs:
-        prim = {"attributes": {"POSITION": acc(pos, "VEC3", 5126, 34962, True),
-                               "NORMAL": acc(nrm, "VEC3", 5126, 34962),
-                               "TEXCOORD_0": acc(uv, "VEC2", 5126, 34962)},
+    for s, pos, nrm, uv, idx, uv2, col in surfs:
+        attrs = {"POSITION": acc(pos, "VEC3", 5126, 34962, True), "NORMAL": acc(nrm, "VEC3", 5126, 34962),
+                 "TEXCOORD_0": acc(uv, "VEC2", 5126, 34962)}
+        if uv2 is not None:
+            attrs.update(TEXCOORD_1=acc(uv2, "VEC2", 5126, 34962), COLOR_0=acc(col, "VEC3", 5126, 34962))
+        prim = {"attributes": attrs,
                 "indices": acc(idx, "SCALAR", 5125, 34963), "material": mats.index(s["material"]), "mode": 4}
         meshes.append({"name": s["name"], "primitives": [prim]})
         nodes.append({"name": s["name"], "mesh": len(meshes) - 1})
     materials = []
     for m in mats:
-        pbr = {"metallicFactor": 0.0, "roughnessFactor": 0.9}
+        p = (pbr_of or {}).get(m, {})
+        pbr = {"metallicFactor": 0.0, "roughnessFactor": p.get("roughness", 0.9)}
         if tex_of[m] is None:
             pbr["baseColorFactor"] = GREY
         else:
             pbr["baseColorTexture"] = {"index": tex_of[m]}
-        materials.append({"name": m, "pbrMetallicRoughness": pbr, "doubleSided": True})
+        mat = {"name": m, "pbrMetallicRoughness": pbr, "doubleSided": True}
+        if "mr" in p:                    # pbrmat: G roughness, B metal
+            pbr.update(metallicFactor=1.0, roughnessFactor=1.0, metallicRoughnessTexture={"index": p["mr"]})
+        if "normal" in p:
+            mat["normalTexture"] = {"index": p["normal"]}
+        if "occ" in p:
+            mat["occlusionTexture"] = {"index": p["occ"]}
+        if p.get("emissive") and tex_of[m] is not None:
+            mat.update(emissiveTexture={"index": tex_of[m]}, emissiveFactor=[1, 1, 1])
+        if p.get("alpha") == "mask":
+            mat.update(alphaMode="MASK", alphaCutoff=0.5)
+        if p.get("alpha") == "mask2" and tex_of[m] is not None:     # hair: the mask on TEXCOORD_1 (_hair)
+            pbr["baseColorTexture"]["texCoord"] = 1
+            mat.update(alphaMode="MASK", alphaCutoff=0.5)
+        if "specular" in p:              # hair: F0 far below glTF's 0.04
+            mat.setdefault("extensions", {})["KHR_materials_specular"] = {"specularFactor": p["specular"]}
+        if "clearcoat" in p:             # eyes: the cornea lobe
+            mat.setdefault("extensions", {})["KHR_materials_clearcoat"] = {
+                "clearcoatFactor": p["clearcoat"][0], "clearcoatRoughnessFactor": p["clearcoat"][1]}
+        materials.append(mat)
     doc = {"asset": {"version": "2.0", "generator": "wolfsdk modelexport",
                      "extras": {"model": mid, "axes": "Y up, metres; game (x, y, z) -> (x, z, -y)", "note": NOTE}},
            "scene": 0, "scenes": [{"name": name, "nodes": [0]}], "nodes": nodes, "meshes": meshes,
            "materials": materials}
+    used = sorted({e for m in materials for e in m.get("extensions", {})})
+    if used:
+        doc["extensionsUsed"] = used
     if images:
         doc["samplers"] = [{"magFilter": 9729, "minFilter": 9987, "wrapS": 10497, "wrapT": 10497}]
         doc["textures"] = [{"sampler": 0, "source": i} for i in range(len(images))]
@@ -255,7 +328,7 @@ def _obj(name, mid, surfs, mats, tex_of, images):
            "# Axes: Y up, metres (game Z up: (x, y, z) -> (x, z, -y)); vt: v = 1 - the game's v",
            "mtllib %s.mtl" % name]
     base = 1
-    for s, pos, nrm, uv, idx in surfs:
+    for s, pos, nrm, uv, idx, *_hair_attrs in surfs:
         out.append("o " + _token(s["name"]))
         out += ["v %s %s %s" % (g(x), g(y), g(z)) for x, y, z in zip(pos[0::3], pos[1::3], pos[2::3])]
         out += ["vt %s %s" % (g(u), g(1 - v)) for u, v in zip(uv[0::2], uv[1::2])]
@@ -291,7 +364,9 @@ def export(st, game, mid, fmt="glb", surfaces=None, skin=None, max_tex=FULL_TEX)
     """(file name, bytes, content type) of model `mid` as `fmt` (see the module docstring)."""
     if fmt not in FORMATS:
         raise studio.BadRequest("format must be glb, gltf or obj.")
-    info, surfs, mats, tex_of, images = _gather(st, game, mid, surfaces, skin, max_tex)
+    if game == "yb":
+        raise studio.Unsupported("Exporting Youngblood models is not supported yet: the Studio shows them only.")
+    info, surfs, mats, tex_of, images, pbr_of = _gather(st, game, mid, surfaces, skin, max_tex, pbr=fmt != "obj")
     name = _stem(info["name"])
     mime, ext = FORMATS[fmt]
     pngs = [("textures/%s.png" % stem, png) for stem, png in images]
@@ -299,7 +374,7 @@ def export(st, game, mid, fmt="glb", surfaces=None, skin=None, max_tex=FULL_TEX)
         obj, mtl = _obj(name, mid, surfs, mats, tex_of, images)
         data = _zip([(name + ".obj", obj.encode("utf-8")), (name + ".mtl", mtl.encode("utf-8"))] + pngs)
     else:
-        doc, blob = _gltf(name, mid, surfs, mats, tex_of, images, embed=fmt == "glb")
+        doc, blob = _gltf(name, mid, surfs, mats, tex_of, images, embed=fmt == "glb", pbr_of=pbr_of)
         if fmt == "glb":
             data = _glb(doc, blob)
         else:

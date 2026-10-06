@@ -206,6 +206,8 @@ DEPENDENCY_SIZE = 32
 COMP_STORED = 0
 COMP_KRAKEN = 2
 COMP_KRAKEN_BLOCKS = 4  # 12-byte prefix then Kraken; trigger unknown
+COMP_OODLE = 5          # Youngblood: plain Oodle frame (re_probes/agent_reports/r14_youngblood.md)
+COMP_OODLE_BLOCKS = 6   # Youngblood: the mode-4 prefix, then a mode-5 frame
 
 
 class IdclError(Exception):
@@ -282,7 +284,7 @@ class Archive:
         self._fh = open(self.path, "rb")
         try:
             self.header = Header(self._fh.read(HEADER_SIZE))
-            if self.header.version != VERSION:
+            if self.header.version not in (VERSION, 13):   # 13 = Youngblood, same layout (read only)
                 raise IdclError("%s: unsupported version %d" % (self.path.name, self.header.version))
             self.strings = self._read_strings()
             self.entries = self._read_entries()

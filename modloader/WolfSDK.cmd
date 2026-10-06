@@ -40,7 +40,7 @@ if errorlevel 1 pause
 exit /b
 
 :probe
-"%PY%" -c "import tkinter, wolfsdk.cli, wolfsdk.gui; r = tkinter.Tk(); r.withdraw(); r.destroy()" >"%LOG%" 2>&1
+"%PY%" -c "import tkinter, wolfsdk.cli, wolfsdk.gui, wolfsdk.webui; r = tkinter.Tk(); r.withdraw(); r.destroy()" >"%LOG%" 2>&1
 if errorlevel 1 goto fehler
 start "" "%PYW%" -m wolfsdk gui
 exit /b

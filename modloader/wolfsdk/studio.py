@@ -15,6 +15,9 @@
     st.export_rows(game, kind, q, group, lang) the hits a ZIP export takes, or TooLarge (413)
     st.model_mesh(game, id, lod)               WMD1 bytes (wolfsdk/md6.py)
     st.model_albedo(game, texture id, max)     PNG of a model surface's colour map
+    st.model_uv2(game, id, surface)            f32[2nv]: a hair surface's second uv set (md6.uv2)
+    st.model_pbr(game, material)               {alpha, roughness, emissive, maps: {slot: URL}} (TNC, pbrmat)
+    st.model_pbr_png(game, material, slot)     PNG of one of those maps
 
 kind is videos | sounds | textures | texts | models, game is tnc | tno. Ids are catalog
 keys, never paths: a request can only name what a catalog lists, so nothing
@@ -68,17 +71,23 @@ Errors are German: Missing (404), BadRequest (400), Unsupported (422: the
 asset exists but cannot be shown, e.g. a BC6H texture or a binary "text").
 """
 
+import hashlib
 import json
 import math
+import os
 import re
 import struct
 import threading
+from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures.process import BrokenProcessPool
 from array import array
 from collections import Counter, OrderedDict
 from pathlib import Path, PurePosixPath
+from urllib.parse import quote
 
-from . import (bink, cutsceneaudio, decl, idcl, image, kiscule, mapcatalog, mapgeo, maptex, md6, oodle, tnccrypt, tncimage,
-               tncview, tnoaudio, wwise)
+from . import (bink, cutsceneaudio, decl, idcl, image, kiscule, mapcatalog, mapgeo, maptex, md6, md6anim, oodle, pbrmat, tnccrypt,
+               ybmesh,
+               tncimage, tncview, tnoaudio, wwise)
 from .bim import BimError, parse as parse_bim
 from .resources import ResourceError, load_master, Archive as TnoArchive
 
@@ -90,7 +99,9 @@ MODEL_KEEP = 3            # decoded models held for info + mesh.bin (the largest
 MODEL_GROUPS = (("models/weapons/", "Weapons"), ("models/characters/player/", "Player"),
                 ("models/characters/", "Characters and enemies"), ("models/robots/", "Robots"),
                 ("models/animals/", "Animals"), ("models/vehicles/", "Vehicles"), ("models/", "Props"))
-NAMES = {"tnc": "Wolfenstein II: The New Colossus", "tno": "Wolfenstein: The New Order"}
+NAMES = {"tnc": "Wolfenstein II: The New Colossus", "tno": "Wolfenstein: The New Order",
+         "yb": "Wolfenstein: Youngblood"}
+IDT6 = ("tnc", "yb")      # idTech 6 archives (idcl): Youngblood is read with the Wolfenstein II readers, read only
 AUTO_EXACT = 1500         # frames an automatic seek may decode (measured 520-770 fps: ~2-3 s)
 POSTER_SPREAD = 20        # luma standard deviation below which a still reads as flat (black, white, a fade)
 POSTER_SCAN = 1200        # frames a poster search may decode past the keyframes (~1.5-2 s)
@@ -114,7 +125,46 @@ BINARY = {
             "jointconversion", "model", "morphVertices", "prtMeshDist", "renderProg", "sample",
             "skeleton", "staticParticleModel", "video", "voicetrack"},
 }
+BINARY["yb"] = BINARY["tnc"] | {"extkiscule", "rs_emb_sfile", "umbratome", "hknavvolume", "havokcompendium"}
+# ponytail: TNC's list plus the binary types new in Youngblood that r14_youngblood names; any other answers Unsupported when opened
+SCRIPT_TYPE = {"tnc": kiscule.TYPE, "yb": "extkiscule"}   # Youngblood fixed the type name's typo
 TEXT_FILES = (".lang", ".txt", ".cfg", ".json", ".def", ".decl")  # of the mixed type 'file'
+
+
+# Material maps are pure-Python decodes (~1.5 s a material, cold): a few worker processes build them in
+# parallel, one Mount each (ponytail: ~150 MB per worker; more workers when a model has many materials).
+PBR_WORKERS = max(1, min(4, (os.cpu_count() or 2) - 2))
+_worker_mount = None
+
+
+def _pbr_init(paths, root):
+    global _worker_mount
+    _worker_mount = mapcatalog.Mount(paths, root)
+
+
+def _pbr_job(material):
+    return pbrmat.build(_worker_mount, material)
+
+
+def _md6_skin(m):
+    """(slot bytes u8[4 nv], weights f32[4 nv]) of a Wolfenstein II mesh's LOD 0: the skinvmtr formula on kind 1
+    (w1 = (tangent.b3 & 127)/254, w2 = (normal.b3 >> 4)/45, w3 = (normal.b3 & 15)/60, w0 = rest, r13_skinwrite.md);
+    hair cards and meshes without tangents follow slot 0."""
+    lo = m["lods"][0]
+    if lo is None:
+        return None
+    v, nv = lo["verts"], lo["nv"]
+    slots, weights = bytearray(4 * nv), array("f", bytes(16 * nv))
+    for k in range(4):
+        slots[k::4] = v[0x1C + k::48]
+    if m["kind"] == 1:
+        for i in range(nv):
+            n3, t3 = v[48 * i + 0x17], v[48 * i + 0x1B]
+            w1, w2, w3 = (t3 & 127) / 254, (n3 >> 4) / 45, (n3 & 15) / 60
+            weights[4 * i:4 * i + 4] = array("f", (max(0.0, 1 - w1 - w2 - w3), w1, w2, w3))
+    else:
+        weights[0::4] = array("f", [1.0]) * nv
+    return bytes(slots), weights
 
 
 class StudioError(Exception):
@@ -243,12 +293,13 @@ class Studio:
         self._build_locks = {}
         self._lock = threading.Lock()
         self._read_lock = threading.Lock()   # ponytail: one lock for all archive reads, per-archive if it ever matters
-        self._tnc_arcs = None                # (stamp, [idcl.Archive])
-        self._tno_arcs = None                # (stamp, [resources.Archive])
-        self._texdbs = None
+        self._held = {}                      # game -> (stamp, [idcl.Archive] or [resources.Archive])
+        self._texdbs = {}                    # idTech 6 game -> TexdbSet
         self.cache = _Cache(CACHE_BYTES)
         self._posters = {}                   # (game, video id) -> frame
         self._models = OrderedDict()         # model id -> (catalog, info, surfaces, {lod: WMD1}), the last MODEL_KEEP
+        self._skels = {}                     # (catalog token, md6skl name) -> md6anim.skeleton()
+        self._pool, self._pool_key = None, None   # material-map workers, made for one archive set
 
     # -- games ------------------------------------------------------------------
 
@@ -256,9 +307,11 @@ class Studio:
         if self._roots is None:
             found = {}
             if any(k not in self._given for k in NAMES):
-                from .game import Game
+                from .game import YOUNGBLOOD, Game, find_root
                 try:
                     found = {g.title.key: g.root for g in Game.find_all()}
+                    if "yb" not in self._given:
+                        found["yb"] = find_root(YOUNGBLOOD)
                 except Exception:  # noqa: BLE001 -- a broken config must not hide the given root
                     found = {}
             self._roots = {k: self._given.get(k) or found.get(k) for k in NAMES}
@@ -266,7 +319,7 @@ class Studio:
 
     def root(self, game):
         if game not in NAMES:
-            raise Missing("Unknown game: %s (tnc or tno)" % game)
+            raise Missing("Unknown game: %s (tnc, tno or yb)" % game)
         r = self.roots()[game]
         if r is None or not r.is_dir():
             raise Missing("%s was not found." % NAMES[game])
@@ -277,19 +330,24 @@ class Studio:
         for key, name in NAMES.items():
             r = self.roots()[key]
             ok = r is not None and r.is_dir()
+            full = ok and key != "yb"           # Youngblood so far: texts, scripts, textures, models and videos
             out.append({"id": key, "name": name, "available": ok, "root": str(r) if ok else None,
-                        "sections": {"maps": ok, "videos": ok, "sounds": ok,
-                                     "textures": ok, "texts": ok, "models": ok and key == "tnc", "scripts": ok and key == "tnc"}})
+                        "sections": {"maps": full, "videos": ok, "sounds": full,
+                                     "textures": ok, "texts": ok, "models": ok and key in IDT6, "scripts": ok and key in IDT6}})
         return out
 
     def close(self):
-        for held in (self._tnc_arcs, self._tno_arcs):
-            for a in (held or (None, []))[1]:
+        for _stamp_, arcs in self._held.values():
+            for a in arcs:
                 a.close()
-        self._tnc_arcs = self._tno_arcs = None
-        cat = self._cats.pop(("tnc", MODELS), None)
-        if cat is not None:
-            cat.mount.close()
+        self._held = {}
+        if self._pool is not None:
+            self._pool.shutdown(wait=False, cancel_futures=True)
+            self._pool = self._pool_key = None
+        for g in IDT6:
+            cat = self._cats.pop((g, MODELS), None)
+            if cat is not None:
+                cat.mount.close()
 
     # -- catalogs ---------------------------------------------------------------
 
@@ -303,7 +361,10 @@ class Studio:
         with lock:                     # one build per catalog; other catalogs go on
             stamp = self._catalog_stamp(game, kind, root)
             if self._stamps.get(key) != stamp or key not in self._cats:
-                self._cats[key] = getattr(self, "_%s_%s" % (kind, game))(root)
+                make = getattr(self, "_%s_%s" % (kind, game), None)
+                if make is None:
+                    raise Unsupported("%s: %s are not supported yet." % (NAMES[game], kind))
+                self._cats[key] = make(root)
                 self._stamps[key] = stamp
             return self._cats[key]
 
@@ -313,13 +374,13 @@ class Studio:
         if kind == "sounds":
             return None                       # wwise/tnoaudio keep their own index per process
         stamp, paths = self._archive_paths(game, root)
-        if kind == MODELS and game == "tnc":  # a skin changes blocks in the .texdb, not only the archive
+        if kind == MODELS and game in IDT6:   # a skin changes blocks in the .texdb, not only the archive
             return stamp + _stamp([p.with_suffix(".texdb") for p in paths])
         return stamp
 
     def _archive_paths(self, game, root):
         base = root / "base"
-        if game == "tnc":
+        if game in IDT6:
             # patches first (newest copy wins), then base/, then the DLC folders
             patches = sorted(base.glob("patch_*.resources"),
                              key=lambda p: -int(re.match(r"patch_(\d+)", p.name).group(1)))
@@ -333,21 +394,19 @@ class Studio:
     def _archives(self, game, root):
         stamp, paths = self._archive_paths(game, root)
         with self._lock:
-            held = self._tnc_arcs if game == "tnc" else self._tno_arcs
+            held = self._held.get(game)
             if held and held[0] == stamp:
                 return held[1]
-        if game == "tnc":
+        if game in IDT6:
             arcs = [idcl.Archive(p) for p in paths]
         else:
             base = root / "base"
             arcs = [TnoArchive(base / i, base / r) for i, r in paths]
         with self._lock:
-            old = self._tnc_arcs if game == "tnc" else self._tno_arcs
-            if game == "tnc":
-                self._tnc_arcs = (stamp, arcs)
-                self._texdbs = tncimage.TexdbSet.for_game(root)
-            else:
-                self._tno_arcs = (stamp, arcs)
+            old = self._held.get(game)
+            self._held[game] = (stamp, arcs)
+            if game in IDT6:
+                self._texdbs[game] = tncimage.TexdbSet.for_game(root)
         for a in (old or (None, []))[1]:
             a.close()                  # an archive a running read holds reopens nothing: reads fail loudly
         return arcs
@@ -382,6 +441,9 @@ class Studio:
 
     def _videos_tnc(self, root):
         return self._videos(root, [root / "base" / "bink"] + sorted(root.glob("dlc/*/base/bink")))
+
+    def _videos_yb(self, root):
+        return self._videos(root, [root / "base" / "bink"])
 
     def _videos_tno(self, root):
         return self._videos(root, [root / "base" / "bink"])
@@ -427,7 +489,7 @@ class Studio:
         return out
 
     def _where(self, game, root, a):
-        p = a.path if game == "tnc" else a.resources_path
+        p = a.path if game in IDT6 else a.resources_path
         return p.relative_to(root).as_posix()
 
     def _textures(self, game, root):
@@ -441,6 +503,9 @@ class Studio:
 
     def _textures_tnc(self, root):
         return self._textures("tnc", root)
+
+    def _textures_yb(self, root):
+        return self._textures("yb", root)
 
     def _textures_tno(self, root):
         return self._textures("tno", root)
@@ -456,7 +521,7 @@ class Studio:
         rows, extra = [], {}
         for a, e in self._entries(game, root, want):
             tid = "%s:%s" % (e.type, e.name)
-            m = re.fullmatch(r"strings/(\w+)\.lang", e.name)
+            m = re.fullmatch(r"strings/(\w+)\.(?:lang|json)", e.name)   # .json: Youngblood's plain strings
             rows.append({"id": tid, "name": e.name, "group": "strings" if m else e.type,
                          "lang": m.group(1) if m else None, "size": e.usize, "type": e.type})
             extra[tid] = (a, e)
@@ -468,15 +533,24 @@ class Studio:
     def _texts_tno(self, root):
         return self._texts("tno", root)
 
+    def _texts_yb(self, root):
+        return self._texts("yb", root)
+
     # scripts
 
     def _scripts_tnc(self, root):
+        return self._scripts("tnc", root)
+
+    def _scripts_yb(self, root):
+        return self._scripts("yb", root)
+
+    def _scripts(self, game, root):
         rows, extra = [], {}
-        for a, e in self._entries("tnc", root, lambda t, n: t == kiscule.TYPE):
+        for a, e in self._entries(game, root, lambda t, n: t == SCRIPT_TYPE[game]):
             m = re.fullmatch(r"(?:generated/decls/)?maps/game/(.*)/kiscules/([^/]+)\.decl", e.name)
             rows.append({"id": e.name, "name": m.group(2) if m else e.name, "group": m.group(1) if m else "shared",
                          "lang": None, "size": e.usize, "nodes": None, "edges": None, "missions": None,
-                         "editable": "dlc" not in a.path.relative_to(root).parts})
+                         "editable": game == "tnc" and "dlc" not in a.path.relative_to(root).parts})
             extra[e.name] = (a, e)
         return _Catalog(rows, extra)
 
@@ -495,12 +569,12 @@ class Studio:
         except (kiscule.KisculeError, oodle.OodleError, ValueError) as exc:
             raise Unsupported("%s is not readable as a script: %s" % (e.name, exc))
 
-    def _script_counts(self, rows):
+    def _script_counts(self, game, rows):
         """Fill nodes/edges/missions of the rows a page shows (all 3010 scripts would take a minute)."""
         for r in rows:
             if r["nodes"] is None:
                 try:
-                    r["nodes"], r["edges"], r["missions"] = kiscule.summary(self.script_graph("tnc", r["id"])[1])
+                    r["nodes"], r["edges"], r["missions"] = kiscule.summary(self.script_graph(game, r["id"])[1])
                 except Unsupported:
                     r["nodes"] = r["edges"] = r["missions"] = 0
                     r["editable"] = False
@@ -517,10 +591,18 @@ class Studio:
     # models
 
     def _models_tnc(self, root):
-        mount = mapcatalog.Mount(self._archive_paths("tnc", root)[1], root)
+        return self._models_of("tnc", root)
+
+    def _models_yb(self, root):
+        return self._models_of("yb", root)
+
+    def _models_of(self, game, root):
+        paths = self._archive_paths(game, root)[1]
+        mount = mapcatalog.Mount(paths, root)
         mount.find("", "")              # the name index is lazy and not thread-safe: build it now
         rows, extra, seen = [], {}, set()
-        for type_, ext in (("baseModel", ".md6mesh"), ("model", ".lwo")):
+        kinds = (("baseModel", ".md6mesh"), ("model", ".lwo")) if game == "tnc" else (("baseModel", ".md6mesh"),)
+        for type_, ext in kinds:              # Youngblood's static .lwo models are another format: not listed yet
             for a, e in mount.entries(type_):
                 path = e.name.split("$", 1)[0]
                 if not path.endswith(ext) or not path.startswith("models/") or path in seen:
@@ -532,8 +614,9 @@ class Studio:
                              "lang": None, "format": ext[1:], "size": e.usize, "tris": None, "surfaces": None})
                 extra[e.name] = (a, e)
         out = _Catalog(rows, extra)
-        out.mount, out.token, out.defs = mount, mount.key, None
-        old = self._cats.get(("tnc", MODELS))
+        out.mount, out.token, out.defs, out.anims = mount, mount.key, None, None
+        out.paths, out.root, out.game = paths, root, game   # paths, root: what a material-map worker mounts
+        old = self._cats.get((game, MODELS))
         with self._lock:
             self._models.clear()
         if old is not None:
@@ -548,7 +631,7 @@ class Studio:
     def _decode_model(self, cat, row, data):
         """(surface table [(name, material, verts, tris)], surfaces, bounds, lods, joints)."""
         if row["format"] == "md6mesh":
-            md = md6.parse(data)
+            md = self._md6_of(cat, row["id"], data)
             surfs = md["meshes"]
             lods = 1 + max((i for m in surfs for i, lo in enumerate(m["lods"]) if lo), default=0)
             sk = cat.mount.find("skeleton", md["skeleton"])
@@ -606,6 +689,10 @@ class Studio:
                          albedo_size=sizes[tid])
             elif tid is not None:
                 s["albedo_error"] = sizes[tid]
+            if game == "tnc" and mat:
+                s["pbr"] = "/api/%s/models/pbr.json?id=%s&v=%s" % (game, quote(mat, safe=""), cat.token)
+            if game == "tnc" and row["format"] == "md6mesh" and surfs[i]["kind"] == 2:   # hair: the strand mask's uv set
+                s["uv2"] = "/api/%s/models/uv2.bin?id=%s&surface=%d&v=%s" % (game, quote(mid, safe=""), i, cat.token)
             out.append(s)
         info = dict(row, archive=self._where(game, self.root(game), a), bounds={"min": bounds[:3], "max": bounds[3:]},
                     lods=lods, joints=joints, surfaces=out, tris=sum(s["tris"] for s in out),
@@ -683,7 +770,8 @@ class Studio:
         else:
             empty = (array("f"), array("f"), array("f"), array("I"))
             try:
-                parts = [md6.surface_arrays(m, lod) or empty for m in surfs]
+                reader = ybmesh if game == "yb" else md6
+                parts = [reader.surface_arrays(m, lod) or empty for m in surfs]
                 for m, (p, n, _uv, ix) in zip(surfs, parts):
                     if m["kind"] != 2:          # hair cards: bent on purpose (md6.py)
                         md6.fix_normals(p, n, ix)
@@ -709,6 +797,169 @@ class Studio:
         except Exception as exc:  # noqa: BLE001 -- as texture_png: malformed data escapes as anything
             raise Unsupported("Texture cannot be shown: %s" % exc)
 
+    # -- animations (Wolfenstein II md6mesh + md6skl + md6anim, wolfsdk/md6anim.py) ----------
+
+    def _rig(self, game, mid):
+        """(catalog, md6 parse, skeleton) of a skinned Wolfenstein II or Youngblood model."""
+        info = self._model(game, mid)[0]
+        if game not in IDT6 or info["format"] != "md6mesh":
+            raise Unsupported("Animations are shown for md6mesh models of Wolfenstein II and Youngblood only.")
+        cat = self.catalog(game, MODELS)
+        md = self._md6_of(cat, mid)
+        key = (cat.token, md["skeleton"])
+        skel = self._skels.get(key)
+        if skel is None:
+            hit = cat.mount.find("skeleton", md["skeleton"])
+            if hit is None:
+                raise Unsupported("Model %s names skeleton %s, which is in no archive." % (info["name"], md["skeleton"]))
+            try:
+                skel = self._skels[key] = md6anim.skeleton(cat.mount.read(*hit))
+            except (md6anim.AnimError, struct.error, IndexError) as exc:
+                raise Unsupported("Skeleton %s cannot be read: %s" % (md["skeleton"], exc))
+        return cat, md, skel
+
+    def _md6_of(self, cat, mid, data=None):
+        """md6.parse, or for Youngblood ybmesh.parse with its streamed LODs (the rs_emb_sfile entry)."""
+        data = cat.mount.read(*cat.extra[mid]) if data is None else data
+        if cat.game != "yb":
+            return md6.parse(data)
+        sf = cat.mount.find("rs_emb_sfile", ybmesh.stream_name(mid))
+        return ybmesh.parse(data, cat.mount.read(*sf) if sf else None, oodle.load(cat.root))
+
+    def _anim_index(self, cat):
+        """{skeleton name: [anim names]} over every md6anim of the mount, read once and cached on disk."""
+        def make():
+            out = {}
+            for a, e in cat.mount.entries("anim"):
+                try:
+                    name = md6anim.skeleton_name(cat.mount.read(a, e))
+                except (OSError, ValueError, idcl.IdclError, oodle.OodleError, struct.error):
+                    continue
+                lst = out.setdefault(name.lower(), [])
+                if e.name not in lst:
+                    lst.append(e.name)
+            return json.dumps(out).encode()
+        if cat.anims is None:
+            cat.anims = json.loads(maptex._cached("anims_%s_v1.json" % cat.token, make))
+        return cat.anims
+
+    def model_anims(self, game, mid):
+        """{skeleton, joints, anims: [{id, name, group}]}: the clips made for this model's skeleton."""
+        cat, md, skel = self._rig(game, mid)
+        rows = []
+        for n in sorted(self._anim_index(cat).get(md["skeleton"].lower(), ())):
+            folder, leaf = _split(n)
+            rows.append({"id": n, "name": leaf[:-8] if leaf.endswith(".md6anim") else leaf, "group": folder})
+        return {"skeleton": md["skeleton"], "joints": len(skel["names"]), "anims": rows}
+
+    def model_skeleton(self, game, mid):
+        """{skeleton, names, parents, rot, pos}: the bind pose as local quaternion + position, game axes."""
+        _cat, md, skel = self._rig(game, mid)
+        r6 = lambda v: [round(c, 6) for c in v]  # noqa: E731
+        return {"skeleton": md["skeleton"], "names": skel["names"], "parents": skel["parents"],
+                "rot": [r6(q) for q in skel["rot"]], "pos": [r6(p) for p in skel["pos"]]}
+
+    def model_skin(self, game, mid):
+        """b"WSK1", u32 surface count, per surface (info order, LOD 0): u32 nv, u16 joint[4 nv], f32 weight[4 nv]
+        (_md6_skin, ybmesh.vertex_skin: the same weight formula in both games)."""
+        cat, md, skel = self._rig(game, mid)
+        n = len(skel["names"])
+        inv = [0] * len(md["joints"])
+        for i, j in enumerate(md["joints"]):
+            if j < len(inv):
+                inv[j] = i
+        out = bytearray(b"WSK1" + struct.pack("<I", len(md["meshes"])))
+        for m in md["meshes"]:
+            slots, weights = (ybmesh.vertex_skin(m, 0) if cat.game == "yb" else _md6_skin(m)) or (b"", array("f"))
+            first = m["joint_first"]
+            joints = array("H", (inv[first + s] if first + s < len(inv) and inv[first + s] < n else 0 for s in slots))
+            out += struct.pack("<I", len(slots) // 4) + joints.tobytes() + weights.tobytes()   # stays 4-aligned
+        return bytes(out)
+
+    def model_anim(self, game, mid, anim):
+        """{name, fps, frames, tracks: [{joint, rot?, pos?}]}: per-frame local transforms (flat lists), game axes;
+        a track constant over the clip has one value. Joints the clip leaves alone keep the bind pose."""
+        cat, md, skel = self._rig(game, mid)
+        if anim not in self._anim_index(cat).get(md["skeleton"].lower(), ()):
+            raise Missing("%s is not an animation for skeleton %s." % (anim, md["skeleton"]))
+        hit = cat.mount.find("anim", anim)
+
+        def make():
+            try:
+                cl = md6anim.clip(cat.mount.read(*hit))
+            except (md6anim.AnimError, struct.error, IndexError, ZeroDivisionError) as exc:
+                raise Unsupported("Animation %s cannot be decoded: %s" % (anim, exc))
+            tracks = []
+            for j, (qs, ts) in sorted(md6anim.pose(skel, cl).items()):
+                t = {"joint": j}
+                for key, vals in (("rot", qs), ("pos", ts)):
+                    if vals:
+                        same = all(max(abs(a - b) for a, b in zip(v, vals[0])) < 1e-6 for v in vals)
+                        t[key] = [round(c, 6) for v in (vals[:1] if same else vals) for c in v]
+                tracks.append(t)
+            return json.dumps({"name": _split(anim)[1][:-8], "fps": cl["fps"], "frames": cl["frames"],
+                               "tracks": tracks}).encode()
+        return self.cache.get(("anim", cat.token, anim), make)
+
+    def model_uv2(self, game, mid, index):
+        """f32[2nv] little endian: LOD 0's second uv set of hair surface `index` (md6.uv2)."""
+        info, surfs, _meshes = self._model(game, mid)
+        if not 0 <= index < len(surfs) or info["format"] != "md6mesh":
+            raise Missing("Model %s has no surface %d." % (info["name"], index))
+        got = md6.uv2(surfs[index])
+        if got is None:
+            raise Missing("Surface %d of %s has no second uv set." % (index, info["name"]))
+        return got.tobytes()
+
+    def model_pbr(self, game, material):
+        """{alpha, roughness, emissive, maps: {slot: URL}} of a TNC material (pbrmat), built once
+        and cached on disk under the material and the Mount's key like model_albedo."""
+        cat, stem = self._pbr_stem(game, material)
+        info = json.loads(maptex._cached(stem + ".json", lambda: self._pbr_build(cat, material, stem)))
+        info["maps"] = {s: "/api/%s/models/pbr.png?id=%s&slot=%s&v=%s" % (game, quote(material, safe=""), s, cat.token)
+                        for s in info.pop("slots")}
+        return info
+
+    def model_pbr_png(self, game, material, slot):
+        cat, stem = self._pbr_stem(game, material)
+        if slot not in json.loads(maptex._cached(stem + ".json", lambda: self._pbr_build(cat, material, stem)))["slots"]:
+            raise Missing("Material %s has no %s map." % (material, slot))
+        return maptex._cached("%s_%s.png" % (stem, slot), lambda: pbrmat.build(cat.mount, material)["slots"][slot])
+
+    def _pbr_stem(self, game, material):
+        if game != "tnc":
+            raise Unsupported("Material maps are read for Wolfenstein II only.")
+        cat = self.catalog(game, MODELS)
+        if not material or cat.mount.find("material", material) is None:
+            raise Missing("Not found: material %s" % material)
+        key = hashlib.sha1(material.encode("utf-8")).hexdigest()[:16]
+        return cat, "pbr_%s_%s_v%d" % (key, cat.token, pbrmat.VERSION)
+
+    def _pbr_built(self, cat, material):
+        """pbrmat.build in the worker pool (made for this archive set); here when the pool cannot run."""
+        with self._lock:
+            if self._pool_key != cat.token:
+                if self._pool is not None:
+                    self._pool.shutdown(wait=False, cancel_futures=True)
+                self._pool = ProcessPoolExecutor(PBR_WORKERS, initializer=_pbr_init, initargs=(cat.paths, cat.root))
+                self._pool_key = cat.token
+            pool = self._pool
+        try:
+            return pool.submit(_pbr_job, material).result()
+        except (BrokenProcessPool, OSError, RuntimeError):
+            return pbrmat.build(cat.mount, material)
+
+    def _pbr_build(self, cat, material, stem):
+        """The JSON cache entry; writes the slot PNGs beside it on the way."""
+        try:
+            built = self._pbr_built(cat, material)
+        except Exception as exc:  # noqa: BLE001 -- as texture_png: malformed data escapes as anything
+            raise Unsupported("Material %s cannot be read: %s" % (material, exc))
+        for slot, png in built["slots"].items():
+            maptex._cached("%s_%s.png" % (stem, slot), lambda png=png: png)
+        built["slots"] = sorted(built["slots"])
+        return json.dumps(built).encode("utf-8")
+
     # -- listing and info ------------------------------------------------------------
 
     def listing(self, game, kind, q="", group=None, lang=None, offset=0, limit=100, facets=False, find=None):
@@ -726,7 +977,7 @@ class Studio:
         hits = self.hits(game, kind, q, group, lang, searched)
         out.update(total=len(hits), offset=offset, limit=limit, items=hits[offset:offset + limit])
         if kind == SCRIPTS:
-            self._script_counts(out["items"])
+            self._script_counts(game, out["items"])
         if find is not None:
             out["index"] = next((i for i, r in enumerate(hits) if r["id"] == find), -1)
         return out
@@ -799,7 +1050,7 @@ class Studio:
         out = dict(row, archive=self._where(game, self.root(game), a))
         data = self._read(game, a, e)
         try:
-            if game == "tnc":
+            if game in IDT6:
                 bim = tncimage.parse_bimage(data)
                 out.update(width=bim["width"], height=bim["height"], format=bim["format"],
                            mips=len([m for m in bim["mips"] if m["face"] == 0]), faces=bim["faces"],
@@ -821,10 +1072,10 @@ class Studio:
     def _read(self, game, a, e):
         """The entry's payload (archive compression undone)."""
         try:
-            if game == "tnc":
+            if game in IDT6:
                 with self._read_lock:
                     raw = a.read_raw(e)
-                return tncview.payload(_Bytes(raw), e, oodle.load(self.root("tnc")))
+                return tncview.payload(_Bytes(raw), e, oodle.load(self.root(game)))
             with self._read_lock:
                 return a.read(e)
         except (OSError, ValueError, idcl.IdclError, ResourceError, oodle.OodleError) as exc:
@@ -965,8 +1216,8 @@ class Studio:
         def make():
             data = self._read(game, a, e)
             try:
-                if game == "tnc":
-                    return tncimage.to_png(e, data, self._texdbs, max_side)[0]
+                if game in IDT6:
+                    return tncimage.to_png(e, data, self._texdbs[game], max_side)[0]
                 bim = parse_bim(data)
                 mip = next((i for i, m in enumerate(bim.mips) if max(m[0], m[1]) <= max_side),
                            len(bim.mips) - 1)
@@ -984,9 +1235,9 @@ class Studio:
             raise Missing("Not found: text %s" % tid)
         a, e = hit
         data = self._read(game, a, e)
-        if game == "tnc":
+        if game in IDT6:
             try:
-                inner = tncview.unwrap(e, data)[0]
+                inner = self._unwrap(game, e, data)
             except tnccrypt.TncCryptError as exc:
                 raise Unsupported("%s cannot be opened: %s" % (e.name, exc))
             got = tncview.as_text(inner)
@@ -997,6 +1248,15 @@ class Studio:
             raise Unsupported("%s is not text (binary data)." % e.name)
         return data.rstrip(b"\0").decode("utf-8", "replace")
 
+    def _unwrap(self, game, e, data):
+        """tncview.unwrap, plus Youngblood's `lang` strings: u32 usize, u32 csize, then an Oodle frame."""
+        if e.type == "lang" and len(data) >= 8:
+            try:
+                return oodle.load(self.root(game)).decompress(data[8:], struct.unpack_from("<I", data)[0])
+            except oodle.OodleError as exc:
+                raise Unsupported("%s cannot be unpacked: %s" % (e.name, exc))
+        return tncview.unwrap(e, data)[0]
+
     def text_file(self, game, tid):
         """The text entry's bytes as its file: TNC decrypted/unpacked (cfile, compfile), TNO as stored."""
         cat = self.catalog(game, "texts")
@@ -1005,9 +1265,9 @@ class Studio:
             raise Missing("Not found: text %s" % tid)
         a, e = hit
         data = self._read(game, a, e)
-        if game == "tnc":
+        if game in IDT6:
             try:
-                return tncview.unwrap(e, data)[0]
+                return self._unwrap(game, e, data)
             except tnccrypt.TncCryptError as exc:
                 raise Unsupported("%s cannot be opened: %s" % (e.name, exc))
         return data

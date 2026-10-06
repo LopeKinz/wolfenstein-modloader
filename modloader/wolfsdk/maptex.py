@@ -46,7 +46,7 @@ import threading
 import weakref
 from pathlib import Path
 
-from . import image, oodle, tncimage
+from . import image, oodle, tilechain, tncimage
 from .tncimage import TncImageError
 
 WTX_MAGIC = b"WTX1"
@@ -55,9 +55,10 @@ WTX_FORMATS = {"RGBA8": 0, "BC1": 1, "BC3": 3, "BC4": 4, "BC5": 5, "BC7": 7}
 BLOCK_BYTES = {"BC1": 8, "BC4": 8, "BC3": 16, "BC5": 16, "BC7": 16}
 ALBEDO_KEYS = (("loosealbedo", "image"), ("sparediffusemap", "image"), ("transmap", "image"),
                ("texturemap", "image"), ("decaldiffusemap", "decalatlas"),
-               ("watersurfacealbedo", "image"))
+               ("watersurfacealbedo", "image"), ("diffusemap", "image"))   # diffusemap: Youngblood
 CACHE = Path(os.environ.get("LOCALAPPDATA") or Path.home()) / "wolfsdk" / "mapcache" / "tex"
-CACHE_VERSION = 1   # bump when decoding changes, old files are then ignored
+TILED = ("BC4", "BC5")   # formats whose tile-chain (codec 2) mips tilechain decodes
+CACHE_VERSION = 2   # bump when decoding changes, old files are then ignored (2: tile chains decoded)
 
 _ID = re.compile(r"[0-9a-f]{16}\Z")
 _state = weakref.WeakKeyDictionary()   # Mount -> (id -> (archive, entry), TexdbSet)
@@ -109,12 +110,15 @@ def albedo_for_material(mount, material_name):
     hit = mount.find("material", material_name)
     if hit is None:
         return None
-    slots = dict(line.split("\t", 1) for line in
-                 mount.read(*hit).decode("utf-8", "replace").splitlines() if "\t" in line)
+    slots = dict(line.strip().split("\t", 1) for line in
+                 mount.read(*hit).decode("utf-8", "replace").splitlines() if "\t" in line.strip())
     for key, type_ in ALBEDO_KEYS:
-        img = mount.find(type_, slots.get(key, "").strip().strip('"'))
-        if img is not None:
-            return "%016x" % img[1].hash_0x60
+        name = slots.get(key, "").strip().strip('"')
+        # Youngblood's diffusemap names the source .tga; its image entry adds the kind
+        for cand in (name, name + "$mtlkind=albedo$streamed", name + "$mtlkind=albedo") if name else ():
+            img = mount.find(type_, cand)
+            if img is not None:
+                return "%016x" % img[1].hash_0x60
     return None
 
 
@@ -158,10 +162,41 @@ def _level(mount, texdbs, entry, data, bim, m):
             block = oodle.load(mount.game_root).decompress(block, m["raw_size"], fuzz_safe=True)
         except oodle.OodleError as exc:
             raise TncImageError("Mip %d cannot be unpacked: %s" % (m["level"], exc))
+    elif m["codec"] == tncimage.CODEC_TILED:   # wavelet pages -> the BC blocks the GPU would encode; slow: cached
+        fmt, tiled = _format(bim)[0], block
+        if fmt not in TILED:
+            raise TncImageError("Mip %d: tile chains of %s are not decoded" % (m["level"], fmt))
+        try:
+            block = _cached("tile_%016x_%d_%d_v%d.bc" % (entry.hash_0x60, bim["mip_base"], m["level"], CACHE_VERSION),
+                            lambda: tilechain.decode_mip_record(m, tiled, oodle.load(mount.game_root), fmt))
+        except (oodle.OodleError, ValueError, struct.error) as exc:
+            raise TncImageError("Mip %d tile chain cannot be decoded: %s" % (m["level"], exc))
     if len(block) != m["raw_size"]:
         raise TncImageError("Mip %d unpacks to %d bytes, expected %d"
                             % (m["level"], len(block), m["raw_size"]))
     return block
+
+
+def mip_rgba(mount, texture_id, max_side):
+    """(w, h, rgba) of the mip _mip serves, as tncimage.decode gives it. A tile chain comes from its
+    wavelet pixels (tilechain.decode_mip_pixels): no BC encode + decode round trip, cached on disk."""
+    a, e = _hit(mount, texture_id)
+    data = mount.read(a, e)
+    bim = tncimage.parse_bimage(data)
+    base = _format(bim)[0]
+    m = next((m for m in bim["mips"] if m["face"] == 0 and max(m["width"], m["height"]) <= max_side), None)
+    if base in TILED and m is not None and m["codec"] == tncimage.CODEC_TILED and m["streamed"]:
+        key = tncimage.texdb_key(e.hash_0x60, bim["mip_base"], m["level"])
+        block = _st(mount)[1].lookup(key, m["stored_size"])
+        if block is not None:
+            try:
+                px = _cached("tilepx_%016x_%d_%d_v%d.rgba" % (e.hash_0x60, bim["mip_base"], m["level"], CACHE_VERSION),
+                             lambda: tilechain.decode_mip_pixels(m, block, oodle.load(mount.game_root), base))
+            except (oodle.OodleError, ValueError, struct.error) as exc:
+                raise TncImageError("Mip %d tile chain cannot be decoded: %s" % (m["level"], exc))
+            return m["width"], m["height"], px
+    fmt, _srgb, w, h, raw = _mip(mount, texture_id, max_side)
+    return tncimage.decode(fmt, raw, w, h)
 
 
 def _mip(mount, texture_id, max_side):
@@ -170,7 +205,7 @@ def _mip(mount, texture_id, max_side):
     data = mount.read(a, e)
     bim = tncimage.parse_bimage(data)
     base, srgb = _format(bim)
-    chain = [m for m in bim["mips"] if m["face"] == 0 and m["codec"] != tncimage.CODEC_TILED]
+    chain = [m for m in bim["mips"] if m["face"] == 0 and (m["codec"] != tncimage.CODEC_TILED or base in TILED)]
     texdbs = _st(mount)[1]
 
     def unpacked(m):

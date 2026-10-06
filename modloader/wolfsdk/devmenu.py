@@ -16,7 +16,9 @@ comma-separated list of page objects with trailing commas allowed:
     { "pageName" : "VT", ... }
 
 Appending another page therefore gives a real in-game UI with no injection and
-no executable patch -- the engine renders it, we only supply data.
+no executable patch -- the engine renders it, we only supply data. Not yet seen
+in a running game; in Wolfenstein II the engine zeroes `devgui` every frame, so
+there it needs a process patch (re_probes/agent_reports/r11_devgui.md).
 
 Entry forms the stock file uses, and that we reuse:
 

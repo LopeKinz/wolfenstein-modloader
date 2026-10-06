@@ -143,6 +143,10 @@ class Block(list):
     def items_array(self):
         """The `item[i]` sequence of a block with `num`, the count checked."""
         num = int(self.require("num"))
+        if num and self.get("item[0]", _MISS) is _MISS:   # Youngblood (kiscule version 8): items keyed by node id
+            keyed = [v for k, v in self if k.startswith("item[")]
+            if len(keyed) == num:
+                return keyed
         out = []
         for i in range(num):
             v = self.get("item[%d]" % i, _MISS)
@@ -270,7 +274,8 @@ class Node:
         self.kind = unquote(blk.require("name"))
         self.id = int(blk.require("id"))
         p = blk.get("nodePos")
-        self.pos = (int(p.require("x")), int(p.require("y"))) if p else None
+        # Youngblood writes "$0x<double bits> 2920": the readable number is the last word
+        self.pos = (int(float(p.require("x").split()[-1])), int(float(p.require("y").split()[-1]))) if p else None
         # `parameters = NULL;` occurs -- nodes without a parameter object.
         par = blk.get("parameters")
         if not isinstance(par, Block):
