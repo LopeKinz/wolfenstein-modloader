@@ -1,4 +1,4 @@
-# WolfSDK 0.3.0
+# WolfSDK 0.3.1
 
 Mod loader and modding studio for **Wolfenstein: The New Order** (id Tech 5)
 and **Wolfenstein II: The New Colossus** (id Tech 6). Windows, Steam versions
@@ -6,9 +6,9 @@ of both games. Free, MIT license (see [LICENSE](LICENSE)).
 
 Two packages:
 
-- **WolfSDK Loader** (`WolfSDK-Loader-0.3.0.zip`) for players: tick mods,
+- **WolfSDK Loader** (`WolfSDK-Loader-0.3.1.zip`) for players: tick mods,
   apply them, start the game, revert to the original.
-- **WolfSDK Studio** (`WolfSDK-Studio-0.3.0.zip`) for modders: the same
+- **WolfSDK Studio** (`WolfSDK-Studio-0.3.1.zip`) for modders: the same
   loader plus the Studio, which browses the games' assets and saves your
   changes as mods.
 
@@ -21,8 +21,8 @@ python.org). The loader window is a local page in its own app window of
 Microsoft Edge, which comes with Windows (else Chrome, else your default
 browser); nothing of it goes online.
 
-1. **Download:** `WolfSDK-Loader-0.3.0.zip`. Modders take
-   `WolfSDK-Studio-0.3.0.zip` instead: the same loader plus the Studio.
+1. **Download:** `WolfSDK-Loader-0.3.1.zip`. Modders take
+   `WolfSDK-Studio-0.3.1.zip` instead: the same loader plus the Studio.
 2. **Extract:** right-click the ZIP → *Extract All…*, into a normal folder,
    e.g. `Documents\WolfSDK`. Do not start it straight from inside the ZIP
    (then `WolfSDK.cmd` only tells you to extract the ZIP first), and do not
@@ -91,6 +91,13 @@ Mods for *The New Colossus* that come with it:
 - **Photo Mode:** F8 freezes time, turns on a free camera and hides the HUD
   and menus; F8 again returns. Bind it once in the console:
   `bind F8 "resourceExec default_snap.cfg -s"`.
+- **Cheat Menu (Example):** a *Cheats* sub menu in the developer menu: god
+  mode, infinite health and ammo, enemies ignore you, quarter damage, remove
+  all enemies, slow motion, high jump, fast run, low gravity and more. Each
+  entry switches on or off; no key bind needed. The developer menu comes with
+  *Hidden Menu Options*. Tick it together with *Dev Menu Map Loading*: it
+  keeps that mod's entries and wins by priority (the loader reports that as a
+  conflict, on purpose).
 
 ### Confirmed in game, and what is not yet
 
@@ -111,6 +118,7 @@ Mods for *The New Colossus* that come with it:
 - *The New Order*: the console with Ctrl+^, cheat cvars kept via `+toggle`,
   and the F1–F4 binds; the cvars beyond the 31 measured tweaks are sent the
   same way but were not tried one by one.
+- The Cheat Menu (Example) mod.
 - Most other shipped mods are only checked structurally. Unless a mod's
   description says otherwise, treat it as untested in game.
 
@@ -151,7 +159,7 @@ is locked behind it.
 
 ## For modders: WolfSDK Studio
 
-`WolfSDK-Studio-0.3.0.zip` is the loader from above plus the Studio.
+`WolfSDK-Studio-0.3.1.zip` is the loader from above plus the Studio.
 Extract and start it the same way. The Studio needs *Wolfenstein II: The New
 Colossus*; it finds *The New Order* by itself if that is installed too.
 

@@ -15,16 +15,17 @@ Community-Dokumentation und Reverse-Engineering-Forschung zum Modden von:
 
 ## Download
 
-**WolfSDK 0.3.0**: ein **Loader** für Spieler und ein **Studio** für Modder. Neu
-in 0.3.0: ein modernes Loader-Fenster, ein Update-Hinweis, die vollständigen
+**WolfSDK 0.3.1**: ein **Loader** für Spieler und ein **Studio** für Modder. Neu
+in 0.3.1: ein Cheat-Menü fürs Entwicklermenü (Beispiel-Mod) und eine Korrektur für
+*The New Colossus*. Neu in 0.3.0: ein modernes Loader-Fenster, ein Update-Hinweis, die vollständigen
 Cvar-Listen, Animationen im Modell-Viewer des Studios, Sound- und
 Video-Austausch für *The New Colossus* und eine Vorschau auf *Wolfenstein:
 Youngblood* im Studio (nur lesen).
 
 | Download | Für |
 |---|---|
-| [WolfSDK-Loader-0.3.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.3.0/WolfSDK-Loader-0.3.0.zip) | Spieler: Mods anwenden und rückgängig machen, Cheats und Tweaks |
-| [WolfSDK-Studio-0.3.0.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.3.0/WolfSDK-Studio-0.3.0.zip) | Modder: Spieldateien durchsuchen und ersetzen; enthält auch den Loader |
+| [WolfSDK-Loader-0.3.1.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.3.1/WolfSDK-Loader-0.3.1.zip) | Spieler: Mods anwenden und rückgängig machen, Cheats und Tweaks |
+| [WolfSDK-Studio-0.3.1.zip](https://github.com/LopeKinz/wolfenstein-modloader/releases/download/wolfsdk-0.3.1/WolfSDK-Studio-0.3.1.zip) | Modder: Spieldateien durchsuchen und ersetzen; enthält auch den Loader |
 
 Installation: entpacken und `WolfSDK.cmd` starten. Python ist dabei, sonst muss
 nichts installiert werden.
@@ -33,7 +34,7 @@ Voraussetzungen: Windows und die Steam-Version von *Wolfenstein: The New Order*
 oder *Wolfenstein II: The New Colossus*. Eigene Karten brauchen das
 Freedom-Chronicles-DLC.
 
-Versionshinweise: [wolfsdk-0.3.0](https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.3.0).
+Versionshinweise: [wolfsdk-0.3.1](https://github.com/LopeKinz/wolfenstein-modloader/releases/tag/wolfsdk-0.3.1).
 Quellcode beider Apps: [`modloader/`](modloader/) (MIT-Lizenz).
 
 ## SDK

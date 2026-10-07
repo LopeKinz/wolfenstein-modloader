@@ -226,7 +226,9 @@ def build_args(settings, binds=(), title_key=None):
     title_key "tno" routes every name through tno_route(). Any other title
     passes unknown keys through unchanged, as before.
     """
-    merged = dict(ALWAYS)
+    # The intro skip is The New Order's: The New Colossus answers "Unknown command
+    # 'com_skipIntroVideo'" (its condump, 2026-10-07).
+    merged = dict(ALWAYS) if title_key in (None, "tno") else {}
     merged.update(settings)
     args = []
     for key, value in merged.items():
