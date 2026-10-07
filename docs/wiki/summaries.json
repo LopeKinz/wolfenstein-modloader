@@ -77,8 +77,8 @@
  "Home": {
   "status": "reference",
   "en": {
-   "oneLine": "Start page: where to begin with WolfSDK 0.3.0, how proof is graded, and what works in both games.",
-   "summary": "The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It opens with a 'Start here' table that sends players to the WolfSDK Loader guide, modders to the Studio guide, and everyone to the FAQ and the mod.json format, in English and German, plus the download of WolfSDK 0.3.0. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game.",
+   "oneLine": "Start page: where to begin with WolfSDK 0.3.1, how proof is graded, and what works in both games.",
+   "summary": "The start page of the wiki covers Wolfenstein: The New Order and Wolfenstein II: The New Colossus. It opens with a 'Start here' table that sends players to the WolfSDK Loader guide, modders to the Studio guide, and everyone to the FAQ and the mod.json format, in English and German, plus the download of WolfSDK 0.3.1. It explains the three levels of proof: measured in the running game, inferred from the program file, or only a text string found in the file. A big table shows what currently works, what does not, and what is still unverified for each game.",
    "points": [
     "Strict rule: a text found in the game program does not prove the feature exists; of 2,231 harvested setting names in Wolfenstein II, 409 were not settings at all.",
     "The New Order: patched archives load in game (14/14 rebuilt files, 48 minutes of play, 0 errors); cheat settings from config files stay locked, while the {console|console} (Ctrl+^) is code-read only and untested.",
@@ -88,8 +88,8 @@
    ]
   },
   "de": {
-   "oneLine": "Startseite: wo du mit WolfSDK 0.3.0 anfängst, wie Beweise eingestuft werden und was in beiden Spielen funktioniert.",
-   "summary": "Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie beginnt mit einer Tabelle „Start here“, die Spieler zur Anleitung des WolfSDK Loaders schickt, Modder zur Studio-Anleitung und alle zur FAQ und zum mod.json-Format, auf Englisch und Deutsch, dazu der Download von WolfSDK 0.3.0. Sie erklärt die drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur ein Text, der in der Datei gefunden wurde. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist.",
+   "oneLine": "Startseite: wo du mit WolfSDK 0.3.1 anfängst, wie Beweise eingestuft werden und was in beiden Spielen funktioniert.",
+   "summary": "Die Startseite des Wikis behandelt Wolfenstein: The New Order und Wolfenstein II: The New Colossus. Sie beginnt mit einer Tabelle „Start here“, die Spieler zur Anleitung des WolfSDK Loaders schickt, Modder zur Studio-Anleitung und alle zur FAQ und zum mod.json-Format, auf Englisch und Deutsch, dazu der Download von WolfSDK 0.3.1. Sie erklärt die drei Beweisstufen: im laufenden Spiel gemessen, aus der Programmdatei abgeleitet oder nur ein Text, der in der Datei gefunden wurde. Eine große Tabelle zeigt für jedes Spiel, was funktioniert, was nicht und was noch unbestätigt ist.",
    "points": [
     "Strenge Regel: Ein Text im Spielprogramm beweist nicht, dass die Funktion existiert; von 2.231 gesammelten Einstellungsnamen in Wolfenstein II waren 409 gar keine Einstellungen.",
     "The New Order: Gepatchte Archive laden im Spiel (14/14 neu gebaute Dateien, 48 Minuten Spielzeit, 0 Fehler); Cheat-Einstellungen aus Konfigurationsdateien bleiben gesperrt, die {console|Konsole} (Strg+^) ist nur aus dem Code gelesen und ungetestet.",
@@ -1649,10 +1649,10 @@
  "Modding-Limits": {
   "status": "reference",
   "en": {
-   "oneLine": "What WolfSDK 0.3.0 and The New Order cannot do yet, why, and which file rules a patcher must obey.",
-   "summary": "This page starts with the limits of the WolfSDK 0.3.0 apps that players and modders run into: Steam versions only, custom maps that need a DLC, sound and video replacement that is not yet tried in game, and testing on one PC so far. The rest lists what cannot be changed in Wolfenstein: The New Order (TNO) and why, based on the game's own log file. Many cheat {cvar|settings} are locked in the retail version, and none of five tested ways around the lock from config files worked; a later code reading (not yet run in game) finds the {console|console} opens with Ctrl+^ and that toggle can set cheat settings. It explains two strict file rules the patcher must follow and shows that {decl|decl} text files are the way to change damage, health and gore instead.",
+   "oneLine": "What WolfSDK 0.3.1 and The New Order cannot do yet, why, and which file rules a patcher must obey.",
+   "summary": "This page starts with the limits of the WolfSDK 0.3.1 apps that players and modders run into: Steam versions only, custom maps that need a DLC, sound and video replacement that is not yet tried in game, and testing on one PC so far. The rest lists what cannot be changed in Wolfenstein: The New Order (TNO) and why, based on the game's own log file. Many cheat {cvar|settings} are locked in the retail version, and none of five tested ways around the lock from config files worked; a later code reading (not yet run in game) finds the {console|console} opens with Ctrl+^ and that toggle can set cheat settings. It explains two strict file rules the patcher must follow and shows that {decl|decl} text files are the way to change damage, health and gore instead.",
    "points": [
-    "WolfSDK 0.3.0 supports only the Steam versions, has been tested on one PC, and its new sound and video replacement (Revert restores them now) is not yet tried in game.",
+    "WolfSDK 0.3.1 supports only the Steam versions, has been tested on one PC, and its new sound and video replacement (Revert restores them now) is not yet tried in game.",
     "Four mods that carry whole modified retail files are left out of the public package; custom maps need The Freedom Chronicles, episode 2.",
     "In TNO, cvars like g_infiniteAmmo are locked, while g_permaGodMode and g_damageScale are not; cheat is the default flag (2,865 of 3,194).",
     "{compression|Compressed} data must end with a sync marker, and data in an archive must stay in ascending order, so patches write into the existing slot.",
@@ -1661,10 +1661,10 @@
    ]
   },
   "de": {
-   "oneLine": "Was WolfSDK 0.3.0 und The New Order noch nicht können, warum, und welche Dateiregeln ein Patcher einhalten muss.",
-   "summary": "Diese Seite beginnt mit den Grenzen der WolfSDK-0.3.0-Apps, auf die Spieler und Modder stoßen: nur Steam-Versionen, eigene Karten, die ein DLC brauchen, Austausch von Sounds und Videos, der im Spiel noch nicht ausprobiert ist und bisher Tests auf nur einem PC. Danach listet sie, was sich an Wolfenstein: The New Order (TNO) nicht ändern lässt und warum, gestützt auf die eigene Logdatei des Spiels. Viele Cheat-{cvar|Einstellungen} sind in der Verkaufsversion gesperrt, und keiner von fünf getesteten Wegen über Konfigurationsdateien kam an der Sperre vorbei; eine spätere Code-Analyse (noch nicht im Spiel ausprobiert) ergibt, dass sich die {console|Konsole} mit Strg+^ öffnet und toggle Cheat-Einstellungen setzen kann. Sie erklärt zwei strenge Dateiregeln für den Patcher und zeigt, dass Schaden, Leben und Gore stattdessen über {decl|Decl}-Textdateien geändert werden.",
+   "oneLine": "Was WolfSDK 0.3.1 und The New Order noch nicht können, warum, und welche Dateiregeln ein Patcher einhalten muss.",
+   "summary": "Diese Seite beginnt mit den Grenzen der WolfSDK-0.3.1-Apps, auf die Spieler und Modder stoßen: nur Steam-Versionen, eigene Karten, die ein DLC brauchen, Austausch von Sounds und Videos, der im Spiel noch nicht ausprobiert ist und bisher Tests auf nur einem PC. Danach listet sie, was sich an Wolfenstein: The New Order (TNO) nicht ändern lässt und warum, gestützt auf die eigene Logdatei des Spiels. Viele Cheat-{cvar|Einstellungen} sind in der Verkaufsversion gesperrt, und keiner von fünf getesteten Wegen über Konfigurationsdateien kam an der Sperre vorbei; eine spätere Code-Analyse (noch nicht im Spiel ausprobiert) ergibt, dass sich die {console|Konsole} mit Strg+^ öffnet und toggle Cheat-Einstellungen setzen kann. Sie erklärt zwei strenge Dateiregeln für den Patcher und zeigt, dass Schaden, Leben und Gore stattdessen über {decl|Decl}-Textdateien geändert werden.",
    "points": [
-    "WolfSDK 0.3.0 unterstützt nur die Steam-Versionen, wurde auf einem PC getestet, und der neue Austausch von Sounds und Videos (Revert stellt sie jetzt wieder her) ist im Spiel noch nicht ausprobiert.",
+    "WolfSDK 0.3.1 unterstützt nur die Steam-Versionen, wurde auf einem PC getestet, und der neue Austausch von Sounds und Videos (Revert stellt sie jetzt wieder her) ist im Spiel noch nicht ausprobiert.",
     "Vier Mods, die ganze veränderte Originaldateien mitbringen, fehlen im öffentlichen Paket; eigene Karten brauchen The Freedom Chronicles, Episode 2.",
     "In TNO sind Cvars wie g_infiniteAmmo gesperrt, g_permaGodMode und g_damageScale dagegen nicht; Cheat ist das Standard-Flag (2.865 von 3.194).",
     "{compression|Komprimierte} Daten müssen mit einer Sync-Markierung enden, und Daten im Archiv müssen aufsteigend sortiert bleiben, deshalb schreiben Patches in den vorhandenen Platz.",
@@ -2251,7 +2251,7 @@
  "Modding-Guide": {
   "status": "reference",
   "en": {
-   "oneLine": "Where to start modding with WolfSDK 0.3.0, plus a reference for weapons, skins, enemies, Wolfenstein II console access and load order.",
+   "oneLine": "Where to start modding with WolfSDK 0.3.1, plus a reference for weapons, skins, enemies, Wolfenstein II console access and load order.",
    "summary": "This guide first sends each reader to the right tool: players to the WolfSDK Loader, modders to the WolfSDK Studio and the mod.json format, programmers to the command line and the SDK packages. The reference part then shows how to change weapon damage and handling, weapon skins and enemies' looks, health and weapons through {decl|decls}, small text definitions inside the game archives, plus the proven console unlock for Wolfenstein II: The New Colossus. All listed paths were tested against the real game files.",
    "points": [
     "Prefer surgical 'set' edits that change single values; mods then stay compatible with each other.",
@@ -2263,7 +2263,7 @@
    ]
   },
   "de": {
-   "oneLine": "Wo du mit WolfSDK 0.3.0 ins Modden einsteigst, dazu eine Referenz für Waffen, Skins, Gegner, die Konsole von Wolfenstein II und die Ladereihenfolge.",
+   "oneLine": "Wo du mit WolfSDK 0.3.1 ins Modden einsteigst, dazu eine Referenz für Waffen, Skins, Gegner, die Konsole von Wolfenstein II und die Ladereihenfolge.",
    "summary": "Diese Anleitung schickt jeden zuerst zum passenden Werkzeug: Spieler zum WolfSDK Loader, Modder zum WolfSDK Studio und zum mod.json-Format, Programmierer zur Kommandozeile und zu den SDK-Paketen. Der Referenzteil zeigt dann, wie du Waffenschaden und Handhabung, Waffen-Skins sowie Aussehen, Leben und Waffen von Gegnern über {decl|Decls} änderst, kleine Textdefinitionen in den Spielarchiven, dazu die bewiesene Konsolen-Freischaltung für Wolfenstein II: The New Colossus. Alle genannten Pfade wurden an den echten Spieldateien geprüft.",
    "points": [
     "Bevorzuge gezielte „set“-Änderungen einzelner Werte; dann bleiben Mods untereinander verträglich.",
@@ -3562,7 +3562,7 @@
  "WolfSDK-Loader": {
   "status": "reference",
   "en": {
-   "oneLine": "Player guide to the WolfSDK Loader 0.3.0: install it, switch on and apply mods, revert, cheats, presets and custom maps.",
+   "oneLine": "Player guide to the WolfSDK Loader 0.3.1: install it, switch on and apply mods, revert, cheats, presets and custom maps.",
    "summary": "The WolfSDK Loader is a free mod manager for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows only). You switch mods on in a local window (an app window of Edge or Chrome; nothing goes online), click Apply mods and start the game; settings are saved at once, there is no Save button; Revert puts the original game files back from the loader's backups. It also sets {cvar|cvars} for cheats and quality of life, offers graphics presets for The New Colossus and installs custom maps for that game. It shows new releases at the top right. The page marks every feature as confirmed in game or not yet confirmed in game.",
    "points": [
     "Confirmed in game: applying and reverting mods with backups, and installing a custom map.",
@@ -3573,7 +3573,7 @@
    ]
   },
   "de": {
-   "oneLine": "Anleitung für Spieler zum WolfSDK Loader 0.3.0: installieren, Mods einschalten und anwenden, zurücksetzen, Cheats, Presets und eigene Karten.",
+   "oneLine": "Anleitung für Spieler zum WolfSDK Loader 0.3.1: installieren, Mods einschalten und anwenden, zurücksetzen, Cheats, Presets und eigene Karten.",
    "summary": "Der WolfSDK Loader ist ein kostenloser Mod-Manager für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (nur Steam-Versionen unter Windows). Du schaltest Mods in einem lokalen Fenster ein (ein App-Fenster von Edge oder Chrome; nichts geht ins Internet), klickst auf „Apply mods“ und startest das Spiel; Einstellungen werden sofort gespeichert, einen Save-Knopf gibt es nicht; „Revert“ stellt die Original-Spieldateien aus den Sicherungen des Loaders wieder her. Er setzt außerdem {cvar|Cvars} für Cheats und Komfort, bietet Grafik-Presets für The New Colossus und installiert eigene Karten für dieses Spiel. Neue Versionen zeigt er oben rechts an. Die Seite kennzeichnet jede Funktion als im Spiel bestätigt oder im Spiel noch nicht bestätigt.",
    "points": [
     "Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen sowie eine eigene Karte installieren.",
@@ -3587,7 +3587,7 @@
  "WolfSDK-Loader-DE": {
   "status": "reference",
   "en": {
-   "oneLine": "Player guide to the WolfSDK Loader 0.3.0: install it, switch on and apply mods, revert, cheats, presets and custom maps.",
+   "oneLine": "Player guide to the WolfSDK Loader 0.3.1: install it, switch on and apply mods, revert, cheats, presets and custom maps.",
    "summary": "The WolfSDK Loader is a free mod manager for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows only). You switch mods on in a local window (an app window of Edge or Chrome; nothing goes online), click Apply mods and start the game; settings are saved at once, there is no Save button; Revert puts the original game files back from the loader's backups. It also sets {cvar|cvars} for cheats and quality of life, offers graphics presets for The New Colossus and installs custom maps for that game. It shows new releases at the top right. The page marks every feature as confirmed in game or not yet confirmed in game.",
    "points": [
     "Confirmed in game: applying and reverting mods with backups, and installing a custom map.",
@@ -3598,7 +3598,7 @@
    ]
   },
   "de": {
-   "oneLine": "Anleitung für Spieler zum WolfSDK Loader 0.3.0: installieren, Mods einschalten und anwenden, zurücksetzen, Cheats, Presets und eigene Karten.",
+   "oneLine": "Anleitung für Spieler zum WolfSDK Loader 0.3.1: installieren, Mods einschalten und anwenden, zurücksetzen, Cheats, Presets und eigene Karten.",
    "summary": "Der WolfSDK Loader ist ein kostenloser Mod-Manager für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (nur Steam-Versionen unter Windows). Du schaltest Mods in einem lokalen Fenster ein (ein App-Fenster von Edge oder Chrome; nichts geht ins Internet), klickst auf „Apply mods“ und startest das Spiel; Einstellungen werden sofort gespeichert, einen Save-Knopf gibt es nicht; „Revert“ stellt die Original-Spieldateien aus den Sicherungen des Loaders wieder her. Er setzt außerdem {cvar|Cvars} für Cheats und Komfort, bietet Grafik-Presets für The New Colossus und installiert eigene Karten für dieses Spiel. Neue Versionen zeigt er oben rechts an. Die Seite kennzeichnet jede Funktion als im Spiel bestätigt oder im Spiel noch nicht bestätigt.",
    "points": [
     "Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen sowie eine eigene Karte installieren.",
@@ -3612,8 +3612,8 @@
  "WolfSDK-Studio": {
   "status": "reference",
   "en": {
-   "oneLine": "Modder guide to the WolfSDK Studio 0.3.0: browse and export game assets, replace textures, texts, decls, sounds and videos, play model animations, edit Kiscule scripts.",
-   "summary": "The WolfSDK Studio is the modding tool in the Studio download of WolfSDK 0.3.0. It shows the maps, videos, sounds, textures, texts and 3D models of Wolfenstein II: The New Colossus and Wolfenstein: The New Order, and exports them, for example models as GLB, glTF or OBJ. Replaced textures, normal maps, texts, {decl|decls}, sounds and videos, and edits to {kiscule|Kiscule} mission scripts, are never written into the game directly: each change is saved as a mod that the WolfSDK Loader applies. New in 0.3.0: animations in the model viewer, replacing sounds and videos for The New Colossus (not yet tried in game) and a read-only Youngblood preview.",
+   "oneLine": "Modder guide to the WolfSDK Studio 0.3.1: browse and export game assets, replace textures, texts, decls, sounds and videos, play model animations, edit Kiscule scripts.",
+   "summary": "The WolfSDK Studio is the modding tool in the Studio download of WolfSDK 0.3.1. It shows the maps, videos, sounds, textures, texts and 3D models of Wolfenstein II: The New Colossus and Wolfenstein: The New Order, and exports them, for example models as GLB, glTF or OBJ. Replaced textures, normal maps, texts, {decl|decls}, sounds and videos, and edits to {kiscule|Kiscule} mission scripts, are never written into the game directly: each change is saved as a mod that the WolfSDK Loader applies. New in 0.3.0: animations in the model viewer, replacing sounds and videos for The New Colossus (not yet tried in game) and a read-only Youngblood preview.",
    "points": [
     "Applying and reverting Studio mods through the Loader is confirmed in game.",
     "The model viewer shows the 17,315 models of The New Colossus; the export is the base pose only, without skeleton or animations.",
@@ -3623,8 +3623,8 @@
    ]
   },
   "de": {
-   "oneLine": "Anleitung für Modder zum WolfSDK Studio 0.3.0: Spiel-Assets ansehen und exportieren, Texturen, Texte, Decls, Sounds und Videos ersetzen, Modell-Animationen abspielen, Kiscule-Skripte bearbeiten.",
-   "summary": "Das WolfSDK Studio ist das Modding-Werkzeug im Studio-Download von WolfSDK 0.3.0. Es zeigt Karten, Videos, Sounds, Texturen, Texte und 3D-Modelle von Wolfenstein II: The New Colossus und Wolfenstein: The New Order und exportiert sie, Modelle zum Beispiel als GLB, glTF oder OBJ. Ersetzte Texturen, Normal Maps, Texte, {decl|Decls}, Sounds und Videos sowie Änderungen an {kiscule|Kiscule}-Missionsskripten schreibt es nie direkt ins Spiel: Jede Änderung wird als Mod gespeichert, die der WolfSDK Loader anwendet. Neu in 0.3.0: Animationen im Modell-Viewer, Sounds und Videos ersetzen für The New Colossus (im Spiel noch nicht ausprobiert) und eine Youngblood-Vorschau (nur lesend).",
+   "oneLine": "Anleitung für Modder zum WolfSDK Studio 0.3.1: Spiel-Assets ansehen und exportieren, Texturen, Texte, Decls, Sounds und Videos ersetzen, Modell-Animationen abspielen, Kiscule-Skripte bearbeiten.",
+   "summary": "Das WolfSDK Studio ist das Modding-Werkzeug im Studio-Download von WolfSDK 0.3.1. Es zeigt Karten, Videos, Sounds, Texturen, Texte und 3D-Modelle von Wolfenstein II: The New Colossus und Wolfenstein: The New Order und exportiert sie, Modelle zum Beispiel als GLB, glTF oder OBJ. Ersetzte Texturen, Normal Maps, Texte, {decl|Decls}, Sounds und Videos sowie Änderungen an {kiscule|Kiscule}-Missionsskripten schreibt es nie direkt ins Spiel: Jede Änderung wird als Mod gespeichert, die der WolfSDK Loader anwendet. Neu in 0.3.0: Animationen im Modell-Viewer, Sounds und Videos ersetzen für The New Colossus (im Spiel noch nicht ausprobiert) und eine Youngblood-Vorschau (nur lesend).",
    "points": [
     "Das Anwenden und Zurücksetzen von Studio-Mods über den Loader ist im Spiel bestätigt.",
     "Der Modellbetrachter zeigt die 17.315 Modelle von The New Colossus; der Export enthält nur die Grundpose, ohne Skelett und Animationen.",
@@ -3637,8 +3637,8 @@
  "WolfSDK-Studio-DE": {
   "status": "reference",
   "en": {
-   "oneLine": "Modder guide to the WolfSDK Studio 0.3.0: browse and export game assets, replace textures, texts, decls, sounds and videos, play model animations, edit Kiscule scripts.",
-   "summary": "The WolfSDK Studio is the modding tool in the Studio download of WolfSDK 0.3.0. It shows the maps, videos, sounds, textures, texts and 3D models of Wolfenstein II: The New Colossus and Wolfenstein: The New Order, and exports them, for example models as GLB, glTF or OBJ. Replaced textures, normal maps, texts, {decl|decls}, sounds and videos, and edits to {kiscule|Kiscule} mission scripts, are never written into the game directly: each change is saved as a mod that the WolfSDK Loader applies. New in 0.3.0: animations in the model viewer, replacing sounds and videos for The New Colossus (not yet tried in game) and a read-only Youngblood preview.",
+   "oneLine": "Modder guide to the WolfSDK Studio 0.3.1: browse and export game assets, replace textures, texts, decls, sounds and videos, play model animations, edit Kiscule scripts.",
+   "summary": "The WolfSDK Studio is the modding tool in the Studio download of WolfSDK 0.3.1. It shows the maps, videos, sounds, textures, texts and 3D models of Wolfenstein II: The New Colossus and Wolfenstein: The New Order, and exports them, for example models as GLB, glTF or OBJ. Replaced textures, normal maps, texts, {decl|decls}, sounds and videos, and edits to {kiscule|Kiscule} mission scripts, are never written into the game directly: each change is saved as a mod that the WolfSDK Loader applies. New in 0.3.0: animations in the model viewer, replacing sounds and videos for The New Colossus (not yet tried in game) and a read-only Youngblood preview.",
    "points": [
     "Applying and reverting Studio mods through the Loader is confirmed in game.",
     "The model viewer shows the 17,315 models of The New Colossus; the export is the base pose only, without skeleton or animations.",
@@ -3648,8 +3648,8 @@
    ]
   },
   "de": {
-   "oneLine": "Anleitung für Modder zum WolfSDK Studio 0.3.0: Spiel-Assets ansehen und exportieren, Texturen, Texte, Decls, Sounds und Videos ersetzen, Modell-Animationen abspielen, Kiscule-Skripte bearbeiten.",
-   "summary": "Das WolfSDK Studio ist das Modding-Werkzeug im Studio-Download von WolfSDK 0.3.0. Es zeigt Karten, Videos, Sounds, Texturen, Texte und 3D-Modelle von Wolfenstein II: The New Colossus und Wolfenstein: The New Order und exportiert sie, Modelle zum Beispiel als GLB, glTF oder OBJ. Ersetzte Texturen, Normal Maps, Texte, {decl|Decls}, Sounds und Videos sowie Änderungen an {kiscule|Kiscule}-Missionsskripten schreibt es nie direkt ins Spiel: Jede Änderung wird als Mod gespeichert, die der WolfSDK Loader anwendet. Neu in 0.3.0: Animationen im Modell-Viewer, Sounds und Videos ersetzen für The New Colossus (im Spiel noch nicht ausprobiert) und eine Youngblood-Vorschau (nur lesend).",
+   "oneLine": "Anleitung für Modder zum WolfSDK Studio 0.3.1: Spiel-Assets ansehen und exportieren, Texturen, Texte, Decls, Sounds und Videos ersetzen, Modell-Animationen abspielen, Kiscule-Skripte bearbeiten.",
+   "summary": "Das WolfSDK Studio ist das Modding-Werkzeug im Studio-Download von WolfSDK 0.3.1. Es zeigt Karten, Videos, Sounds, Texturen, Texte und 3D-Modelle von Wolfenstein II: The New Colossus und Wolfenstein: The New Order und exportiert sie, Modelle zum Beispiel als GLB, glTF oder OBJ. Ersetzte Texturen, Normal Maps, Texte, {decl|Decls}, Sounds und Videos sowie Änderungen an {kiscule|Kiscule}-Missionsskripten schreibt es nie direkt ins Spiel: Jede Änderung wird als Mod gespeichert, die der WolfSDK Loader anwendet. Neu in 0.3.0: Animationen im Modell-Viewer, Sounds und Videos ersetzen für The New Colossus (im Spiel noch nicht ausprobiert) und eine Youngblood-Vorschau (nur lesend).",
    "points": [
     "Das Anwenden und Zurücksetzen von Studio-Mods über den Loader ist im Spiel bestätigt.",
     "Der Modellbetrachter zeigt die 17.315 Modelle von The New Colossus; der Export enthält nur die Grundpose, ohne Skelett und Animationen.",
@@ -3662,8 +3662,8 @@
  "FAQ": {
   "status": "reference",
   "en": {
-   "oneLine": "Short answers to the most common questions about WolfSDK 0.3.0, for players and modders of both games.",
-   "summary": "This FAQ answers what players and modders ask most about WolfSDK 0.3.0, the free mod loader and modding studio for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows). It covers downloading and installing, applying and reverting mods, game updates, other stores, the German version, custom maps and their DLC, both consoles, cheats, making your own mod, updating from 0.2.0 and replacing textures, sounds and videos. Each answer says whether a feature is confirmed in game or not yet confirmed in game.",
+   "oneLine": "Short answers to the most common questions about WolfSDK 0.3.1, for players and modders of both games.",
+   "summary": "This FAQ answers what players and modders ask most about WolfSDK 0.3.1, the free mod loader and modding studio for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows). It covers downloading and installing, applying and reverting mods, game updates, other stores, the German version, custom maps and their DLC, both consoles, cheats, making your own mod, updating from 0.2.0 and replacing textures, sounds and videos. Each answer says whether a feature is confirmed in game or not yet confirmed in game.",
    "points": [
     "Confirmed in game: applying and reverting mods with backups, installing a custom map, god mode and infinite ammo from Sandbox Tools, and maps loading from the developer menu.",
     "Only the Steam versions work: Game Pass locks the game files, GOG and Epic are untested, and WolfSDK has been tested on one PC so far.",
@@ -3673,8 +3673,8 @@
    ]
   },
   "de": {
-   "oneLine": "Kurze Antworten auf die häufigsten Fragen zu WolfSDK 0.3.0, für Spieler und Modder beider Spiele.",
-   "summary": "Diese FAQ beantwortet, was Spieler und Modder am häufigsten zu WolfSDK 0.3.0 fragen, dem kostenlosen Mod-Loader und Modding-Studio für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (Steam-Versionen unter Windows). Es geht um Download und Installation, das Anwenden und Zurücksetzen von Mods, Spiel-Updates, andere Stores, die deutsche Version, eigene Karten und ihr DLC, beide Konsolen, Cheats, eigene Mods, das Update von 0.2.0 und das Ersetzen von Texturen, Sounds und Videos. Jede Antwort sagt, ob eine Funktion im Spiel bestätigt oder im Spiel noch nicht bestätigt ist.",
+   "oneLine": "Kurze Antworten auf die häufigsten Fragen zu WolfSDK 0.3.1, für Spieler und Modder beider Spiele.",
+   "summary": "Diese FAQ beantwortet, was Spieler und Modder am häufigsten zu WolfSDK 0.3.1 fragen, dem kostenlosen Mod-Loader und Modding-Studio für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (Steam-Versionen unter Windows). Es geht um Download und Installation, das Anwenden und Zurücksetzen von Mods, Spiel-Updates, andere Stores, die deutsche Version, eigene Karten und ihr DLC, beide Konsolen, Cheats, eigene Mods, das Update von 0.2.0 und das Ersetzen von Texturen, Sounds und Videos. Jede Antwort sagt, ob eine Funktion im Spiel bestätigt oder im Spiel noch nicht bestätigt ist.",
    "points": [
     "Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen, eine eigene Karte installieren, God-Mode und unendliche Munition aus Sandbox Tools und das Laden von Karten aus dem Entwicklermenü.",
     "Nur die Steam-Versionen funktionieren: Game Pass sperrt die Spieldateien, GOG und Epic sind ungetestet, und WolfSDK wurde bisher auf einem PC getestet.",
@@ -3687,8 +3687,8 @@
  "FAQ-DE": {
   "status": "reference",
   "en": {
-   "oneLine": "Short answers to the most common questions about WolfSDK 0.3.0, for players and modders of both games.",
-   "summary": "This FAQ answers what players and modders ask most about WolfSDK 0.3.0, the free mod loader and modding studio for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows). It covers downloading and installing, applying and reverting mods, game updates, other stores, the German version, custom maps and their DLC, both consoles, cheats, making your own mod, updating from 0.2.0 and replacing textures, sounds and videos. Each answer says whether a feature is confirmed in game or not yet confirmed in game.",
+   "oneLine": "Short answers to the most common questions about WolfSDK 0.3.1, for players and modders of both games.",
+   "summary": "This FAQ answers what players and modders ask most about WolfSDK 0.3.1, the free mod loader and modding studio for Wolfenstein: The New Order and Wolfenstein II: The New Colossus (Steam versions on Windows). It covers downloading and installing, applying and reverting mods, game updates, other stores, the German version, custom maps and their DLC, both consoles, cheats, making your own mod, updating from 0.2.0 and replacing textures, sounds and videos. Each answer says whether a feature is confirmed in game or not yet confirmed in game.",
    "points": [
     "Confirmed in game: applying and reverting mods with backups, installing a custom map, god mode and infinite ammo from Sandbox Tools, and maps loading from the developer menu.",
     "Only the Steam versions work: Game Pass locks the game files, GOG and Epic are untested, and WolfSDK has been tested on one PC so far.",
@@ -3698,8 +3698,8 @@
    ]
   },
   "de": {
-   "oneLine": "Kurze Antworten auf die häufigsten Fragen zu WolfSDK 0.3.0, für Spieler und Modder beider Spiele.",
-   "summary": "Diese FAQ beantwortet, was Spieler und Modder am häufigsten zu WolfSDK 0.3.0 fragen, dem kostenlosen Mod-Loader und Modding-Studio für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (Steam-Versionen unter Windows). Es geht um Download und Installation, das Anwenden und Zurücksetzen von Mods, Spiel-Updates, andere Stores, die deutsche Version, eigene Karten und ihr DLC, beide Konsolen, Cheats, eigene Mods, das Update von 0.2.0 und das Ersetzen von Texturen, Sounds und Videos. Jede Antwort sagt, ob eine Funktion im Spiel bestätigt oder im Spiel noch nicht bestätigt ist.",
+   "oneLine": "Kurze Antworten auf die häufigsten Fragen zu WolfSDK 0.3.1, für Spieler und Modder beider Spiele.",
+   "summary": "Diese FAQ beantwortet, was Spieler und Modder am häufigsten zu WolfSDK 0.3.1 fragen, dem kostenlosen Mod-Loader und Modding-Studio für Wolfenstein: The New Order und Wolfenstein II: The New Colossus (Steam-Versionen unter Windows). Es geht um Download und Installation, das Anwenden und Zurücksetzen von Mods, Spiel-Updates, andere Stores, die deutsche Version, eigene Karten und ihr DLC, beide Konsolen, Cheats, eigene Mods, das Update von 0.2.0 und das Ersetzen von Texturen, Sounds und Videos. Jede Antwort sagt, ob eine Funktion im Spiel bestätigt oder im Spiel noch nicht bestätigt ist.",
    "points": [
     "Im Spiel bestätigt: Mods mit Sicherung anwenden und zurücksetzen, eine eigene Karte installieren, God-Mode und unendliche Munition aus Sandbox Tools und das Laden von Karten aus dem Entwicklermenü.",
     "Nur die Steam-Versionen funktionieren: Game Pass sperrt die Spieldateien, GOG und Epic sind ungetestet, und WolfSDK wurde bisher auf einem PC getestet.",

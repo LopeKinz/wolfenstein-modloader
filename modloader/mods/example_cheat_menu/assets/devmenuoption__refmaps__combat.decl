@@ -1,0 +1,134 @@
+{
+	edit = {
+		devMenuList = {
+			num = 15;
+			item[0] = {
+				devMenuDisplayName = "God mode (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "God";
+					item[1] = "echo WolfSDK cheats: God mode (on/off)";
+				}
+			}
+			item[1] = {
+				devMenuDisplayName = "Infinite health (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "InfiniteHealth";
+					item[1] = "echo WolfSDK cheats: Infinite health (on/off)";
+				}
+			}
+			item[2] = {
+				devMenuDisplayName = "Cannot die (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "NoPlayerDeath";
+					item[1] = "echo WolfSDK cheats: Cannot die (on/off)";
+				}
+			}
+			item[3] = {
+				devMenuDisplayName = "Enemies ignore you (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "Notarget";
+					item[1] = "echo WolfSDK cheats: Enemies ignore you (on/off)";
+				}
+			}
+			item[4] = {
+				devMenuDisplayName = "Infinite ammo (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "toggle g_infiniteAmmo 1 0";
+					item[1] = "echo WolfSDK cheats: Infinite ammo (on/off)";
+				}
+			}
+			item[5] = {
+				devMenuDisplayName = "Infinite grenades (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "toggle g_infiniteThrowItems 1 0";
+					item[1] = "echo WolfSDK cheats: Infinite grenades (on/off)";
+				}
+			}
+			item[6] = {
+				devMenuDisplayName = "Full ammo on every pickup (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "toggle g_demoAmmo 1 0";
+					item[1] = "echo WolfSDK cheats: Full ammo on every pickup (on/off)";
+				}
+			}
+			item[7] = {
+				devMenuDisplayName = "Quarter damage (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "toggle g_damageScale 0.25 1";
+					item[1] = "echo WolfSDK cheats: Quarter damage (on/off)";
+				}
+			}
+			item[8] = {
+				devMenuDisplayName = "Remove all enemies";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "killMonsters";
+					item[1] = "echo WolfSDK cheats: Remove all enemies";
+				}
+			}
+			item[9] = {
+				devMenuDisplayName = "Slow motion (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "toggle timescale 0.35 1";
+					item[1] = "echo WolfSDK cheats: Slow motion (on/off)";
+				}
+			}
+			item[10] = {
+				devMenuDisplayName = "High jump (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "toggle pm_jumpheight 3 1.15";
+					item[1] = "echo WolfSDK cheats: High jump (on/off)";
+				}
+			}
+			item[11] = {
+				devMenuDisplayName = "Fast run (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "toggle pm_runspeed 9 5.2";
+					item[1] = "echo WolfSDK cheats: Fast run (on/off)";
+				}
+			}
+			item[12] = {
+				devMenuDisplayName = "Low gravity (on/off)";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "toggle g_gravity 3 9.82";
+					item[1] = "echo WolfSDK cheats: Low gravity (on/off)";
+				}
+			}
+			item[13] = {
+				devMenuDisplayName = "Lamp at your position";
+				devMenuCommandStrings = {
+					num = 2;
+					item[0] = "addLight -point -color 1 0.7 0.3 -radius 450 -intensity 2";
+					item[1] = "echo WolfSDK cheats: Lamp at your position";
+				}
+			}
+			item[14] = {
+				devMenuDisplayName = "All values back to normal";
+				devMenuCommandStrings = {
+					num = 9;
+					item[0] = "g_infiniteAmmo 0";
+					item[1] = "g_infiniteThrowItems 0";
+					item[2] = "g_demoAmmo 0";
+					item[3] = "g_damageScale 1";
+					item[4] = "timescale 1";
+					item[5] = "pm_jumpheight 1.15";
+					item[6] = "pm_runspeed 5.2";
+					item[7] = "g_gravity 9.82";
+					item[8] = "echo WolfSDK cheats: All values back to normal";
+				}
+			}
+		}
+	}
+}

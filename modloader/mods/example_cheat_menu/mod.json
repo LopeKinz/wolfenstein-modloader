@@ -1,0 +1,17 @@
+{
+  "id": "example.cheat_menu",
+  "name": "Cheat Menu (Example)",
+  "version": "1.0.0",
+  "author": "wolfsdk",
+  "spiel": "tnc",
+  "priority": 160,
+  "description": "Adds a 'Cheats' sub menu to the developer menu: god mode, infinite health, cannot die, enemies ignore you, infinite ammo and grenades, full ammo on every pickup, quarter damage, remove all enemies, slow motion, high jump, fast run, low gravity, a lamp at your position and 'All values back to normal'. Each row runs console lines at the dev menu's unrestricted level, so no key bind is needed. The dev menu itself comes with Hidden Menu Options. An example of a menu mod made of two plain decls: it replaces the dev menu's main list and keeps every entry of Dev Menu Map Loading, so tick both (this one wins by priority). Not yet confirmed in game.",
+  "assets": {
+    "devMenuOption:devmenuoption/main": {
+      "file": "assets/devmenuoption__main.decl"
+    },
+    "devMenuOption:devmenuoption/refmaps/combat": {
+      "file": "assets/devmenuoption__refmaps__combat.decl"
+    }
+  }
+}
